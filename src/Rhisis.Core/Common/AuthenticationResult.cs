@@ -9,4 +9,11 @@
         AccountTemporarySuspended,
         AccountDeleted
     }
+
+    public class ItemConstants
+    {
+        public static readonly int WeaponArmonRefineMax = 10;
+        public static readonly int JewleryRefineMax = 20;
+        public static readonly int ElementRefineMax = 10;
+    }
 }

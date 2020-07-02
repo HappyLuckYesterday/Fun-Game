@@ -7,6 +7,7 @@ using Rhisis.Core.Resources.Dyo;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Maps.Regions;
+using Rhisis.World.Game.Structures;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -73,7 +74,7 @@ namespace Rhisis.World.Game.Maps
                     }
                     else if (respawnRegion.ObjectType == WorldObjectType.Item)
                     {
-                        var item = _itemFactory.CreateItem(respawnRegion.ModelId, 0, 0, 0);
+                        Item item = _itemFactory.CreateItem(respawnRegion.ModelId, 0, 0, 0);
 
                         for (int i = 0; i < respawnRegion.Count; ++i)
                         {

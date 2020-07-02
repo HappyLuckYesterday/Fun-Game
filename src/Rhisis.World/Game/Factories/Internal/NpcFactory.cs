@@ -80,11 +80,11 @@ namespace Rhisis.World.Game.Factories.Internal
             {
                 const int NpcShopItemsPerTab = 100;
                 ShopData npcShopData = npc.NpcData.Shop;
-                npc.Shop = new ItemContainerComponent[npcShopData.Items.Length];
+                npc.Shop = new NpcShopItemContainerComponent[npcShopData.Items.Length];
 
                 for (var i = 0; i < npcShopData.Items.Length; i++)
                 {
-                    npc.Shop[i] = new ItemContainerComponent(NpcShopItemsPerTab);
+                    npc.Shop[i] = new NpcShopItemContainerComponent(NpcShopItemsPerTab);
 
                     IEnumerable<Item> shopTabItems = npcShopData.Items[i].Select((item, index) =>
                     {

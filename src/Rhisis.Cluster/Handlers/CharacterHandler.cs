@@ -16,7 +16,6 @@ using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rhisis.Cluster.WorldCluster.Server;
 
 namespace Rhisis.Cluster.Handlers
 {
@@ -158,13 +157,42 @@ namespace Rhisis.Cluster.Handlers
                 StatPoints = 0, //TODO: create default stat point constant.
                 SkillPoints = 0, //TODO: create default skill point constant.
                 Experience = 0,
+                ClusterId = _clusterServer.ClusterConfiguration.Id
             };
 
             //TODO: create game constants for slot.
-            newCharacter.Items.Add(new DbItem(defaultEquipment.StartSuit, 44));
-            newCharacter.Items.Add(new DbItem(defaultEquipment.StartHand, 46));
-            newCharacter.Items.Add(new DbItem(defaultEquipment.StartShoes, 47));
-            newCharacter.Items.Add(new DbItem(defaultEquipment.StartWeapon, 52));
+            newCharacter.Items.Add(new DbItemStorage
+            {
+                Item = new DbItem
+                {
+                    GameItemId = defaultEquipment.StartSuit
+                },
+                Slot = 44
+            });
+            newCharacter.Items.Add(new DbItemStorage
+            {
+                Item = new DbItem
+                {
+                    GameItemId = defaultEquipment.StartHand
+                },
+                Slot = 46
+            });
+            newCharacter.Items.Add(new DbItemStorage
+            {
+                Item = new DbItem
+                {
+                    GameItemId = defaultEquipment.StartShoes
+                },
+                Slot = 47
+            });
+            newCharacter.Items.Add(new DbItemStorage
+            {
+                Item = new DbItem
+                {
+                    GameItemId = defaultEquipment.StartWeapon
+                },
+                Slot = 52
+            });
 
             _database.Characters.Add(newCharacter);
             _database.SaveChanges();
@@ -289,6 +317,7 @@ namespace Rhisis.Cluster.Handlers
         {
             return _database.Characters.AsNoTracking()
                 .Include(x => x.Items)
+                    .ThenInclude(x => x.Item)
                 .Where(x => x.UserId == userId && !x.IsDeleted)
                 .Select(x => new ClusterCharacter(x));
         }

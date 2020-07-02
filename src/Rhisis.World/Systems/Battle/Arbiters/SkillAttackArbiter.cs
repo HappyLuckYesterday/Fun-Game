@@ -68,12 +68,7 @@ namespace Rhisis.World.Systems.Battle.Arbiters
 
             if (Attacker is IPlayerEntity player)
             {
-                weaponItem = player.Inventory.GetEquipedItem(ItemPartType.RightWeapon);
-
-                if (weaponItem.Id == -1)
-                {
-                    weaponItem = InventorySystem.Hand;
-                }
+                weaponItem = player.Inventory.GetEquipedItem(ItemPartType.RightWeapon) ?? player.Hand;
             }
 
             AttackResult weaponAttackPower = BattleHelper.GetWeaponAttackPower(Attacker, weaponItem);

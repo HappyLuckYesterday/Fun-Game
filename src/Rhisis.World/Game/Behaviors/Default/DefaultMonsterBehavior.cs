@@ -7,6 +7,7 @@ using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Battle;
@@ -33,6 +34,7 @@ namespace Rhisis.World.Game.Behaviors
         private readonly IBattleSystem _battleSystem;
         private readonly IFollowSystem _followSystem;
         private readonly IDropSystem _dropSystem;
+        private readonly IItemFactory _itemFactory;
         private readonly IMoverPacketFactory _moverPacketFactory;
 
         public DefaultMonsterBehavior(IMonsterEntity monster,
@@ -42,6 +44,7 @@ namespace Rhisis.World.Game.Behaviors
             IBattleSystem battleSystem, 
             IFollowSystem followSystem, 
             IDropSystem dropSystem, 
+            IItemFactory itemFactory,
             IMoverPacketFactory moverPacketFactory)
         {
             _monster = monster;
@@ -51,6 +54,7 @@ namespace Rhisis.World.Game.Behaviors
             _battleSystem = battleSystem;
             _followSystem = followSystem;
             _dropSystem = dropSystem;
+            _itemFactory = itemFactory;
             _moverPacketFactory = moverPacketFactory;
         }
 
@@ -123,9 +127,10 @@ namespace Rhisis.World.Game.Behaviors
 
                 if (dropItem.Probability * _worldConfiguration.Rates.Drop >= dropChance)
                 {
-                    var item = new Item(dropItem.ItemId, 1, -1, -1, -1, (byte)RandomHelper.Random(0, dropItem.ItemMaxRefine));
+                    byte itemRefine = (byte)RandomHelper.Random(0, dropItem.ItemMaxRefine);
+                    Item droppedItem = _itemFactory.CreateItem(dropItem.ItemId, itemRefine, ElementType.None, 0);
 
-                    _dropSystem.DropItem(_monster, item, killerEntity);
+                    _dropSystem.DropItem(_monster, droppedItem, killerEntity);
                     itemCount++;
                 }
             }
@@ -151,9 +156,9 @@ namespace Rhisis.World.Game.Behaviors
 
                     if (dropChance < itemDropProbability * _worldConfiguration.Rates.Drop)
                     {
-                        var item = new Item(itemData.Id, 1, -1, -1, -1, (byte)itemRefine);
+                        Item itemToDrop = _itemFactory.CreateItem(itemData.Id, (byte)itemRefine, ElementType.None, 0);
 
-                        _dropSystem.DropItem(_monster, item, killerEntity);
+                        _dropSystem.DropItem(_monster, itemToDrop, killerEntity);
                         break;
                     }
                 }

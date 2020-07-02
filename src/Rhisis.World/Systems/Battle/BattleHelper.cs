@@ -1,4 +1,5 @@
-﻿using Rhisis.Core.Data;
+﻿using Rhisis.Core.Common;
+using Rhisis.Core.Data;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
 using Rhisis.World.Game.Entities;
@@ -123,7 +124,7 @@ namespace Rhisis.World.Systems.Battle
         {
             // TODO: check if item has expired.
             float multiplier = 1.0f;
-            int refine = weapon.Data.WeaponKind == WeaponKindType.Ultimate ? Item.RefineMax : weapon.Refine;
+            int refine = weapon.Data.WeaponKind == WeaponKindType.Ultimate ? ItemConstants.WeaponArmonRefineMax : weapon.Refine;
 
             if (refine > 0)
             {

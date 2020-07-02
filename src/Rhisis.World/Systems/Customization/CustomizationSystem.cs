@@ -55,7 +55,7 @@ namespace Rhisis.World.Systems.Customization
             }
             else
             {
-                Item couponItem = player.Inventory.GetItemById(DefineItem.II_SYS_SYS_SCR_FACEOFFFREE);
+                InventoryItem couponItem = player.Inventory.GetItem(DefineItem.II_SYS_SYS_SCR_FACEOFFFREE);
 
                 if (couponItem == null)
                 {
@@ -97,7 +97,7 @@ namespace Rhisis.World.Systems.Customization
             }
             else
             {
-                var couponItem = player.Inventory.GetItemById(DefineItem.II_SYS_SYS_SCR_HAIRCHANGE);
+                var couponItem = player.Inventory.GetItem(DefineItem.II_SYS_SYS_SCR_HAIRCHANGE);
                 if (couponItem == null)
                 {
                     _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WARNNING_COUPON);

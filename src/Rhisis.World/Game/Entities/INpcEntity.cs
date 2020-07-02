@@ -13,7 +13,7 @@ namespace Rhisis.World.Game.Entities
         /// <remarks>
         /// One item container represents one shop tab.
         /// </remarks>
-        ItemContainerComponent[] Shop { get; set; }
+        NpcShopItemContainerComponent[] Shop { get; set; }
 
         /// <summary>
         /// Gets the NPC data.

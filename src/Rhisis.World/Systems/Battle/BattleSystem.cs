@@ -140,7 +140,7 @@ namespace Rhisis.World.Systems.Battle
                     return;
                 }
 
-                Item bulletItem = player.Inventory.GetEquipedItem(ItemPartType.Bullet);
+                InventoryItem bulletItem = player.Inventory.GetEquipedItem(ItemPartType.Bullet);
 
                 if (bulletItem == null || bulletItem.Data.ItemKind3 != ItemKind3.ARROW)
                 {

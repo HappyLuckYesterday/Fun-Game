@@ -1,4 +1,6 @@
-﻿namespace Rhisis.World.Game.Components
+﻿using Rhisis.World.Game.Structures;
+
+namespace Rhisis.World.Game.Components
 {
     public sealed class TradeComponent
     {
@@ -16,7 +18,7 @@
         /// <summary>
         /// Gets or sets the current items for trade.
         /// </summary>
-        public ItemContainerComponent Items { get; private set; }
+        public ItemContainerComponent<Item> Items { get; private set; }
 
         /// <summary>
         /// Gets the number of items to trade.
@@ -57,7 +59,7 @@
             ItemCount = 0;
             Gold = 0;
             State = TradeState.Item;
-            Items = new ItemContainerComponent(_maxTradeItemsCapacity);
+            Items = new ItemContainerComponent<Item>(_maxTradeItemsCapacity);
         }
     }
 }

@@ -110,7 +110,7 @@ namespace Rhisis.World.Systems.Taskbar
 
                 if (appletShortcut.Type == ShortcutType.Item && appletShortcut.ItemIndex.HasValue)
                 {
-                    Item inventoryItem = player.Inventory.GetItemAtIndex(appletShortcut.ItemIndex.Value);
+                    InventoryItem inventoryItem = player.Inventory.GetItemAtIndex(appletShortcut.ItemIndex.Value);
                     
                     if (inventoryItem is null)
                     {

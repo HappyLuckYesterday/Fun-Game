@@ -17,7 +17,15 @@ namespace Rhisis.World.Game.Factories
         /// <param name="item">Item model.</param>
         /// <param name="owner">Item owner.</param>
         /// <returns>New item entity.</returns>
-        IItemEntity CreateItemEntity(IMapInstance currentMapContext, IMapLayer currentMapLayerContext, ItemDescriptor item, IWorldEntity owner = null);
+        IItemEntity CreateItemEntity(IMapInstance currentMapContext, IMapLayer currentMapLayerContext, Item item, IWorldEntity owner = null);
+
+        /// <summary>
+        /// Cretes a new <see cref="Item"/>.
+        /// </summary>
+        /// <param name="id">Item id.</param>
+        /// <param name="creatorId">Creator id.</param>
+        /// <returns>New Item.</returns>
+        Item CreateItem(int id, int creatorId = -1);
 
         /// <summary>
         /// Creates a new <see cref="Item"/>.
@@ -42,10 +50,17 @@ namespace Rhisis.World.Game.Factories
         Item CreateItem(string name, byte refine, ElementType element, byte elementRefine, int creatorId = -1);
 
         /// <summary>
-        /// Creates a new <see cref="Item"/> from a <see cref="DbItem"/> instance.
+        /// Creates a new <see cref="Item"/> from a <see cref="DbItemStorage"/> instance.
         /// </summary>
         /// <param name="databaseItem">Database item.</param>
         /// <returns>New item.</returns>
-        Item CreateItem(DbItem databaseItem);
+        Item CreateItem(DbItemStorage databaseItem);
+
+        /// <summary>
+        /// Creates a new <see cref="InventoryItem"/> form a <see cref="DbItemStorage"/> instance.
+        /// </summary>
+        /// <param name="databaseItem">Database item.</param>
+        /// <returns>New inventory item.</returns>
+        InventoryItem CreateInventoryItem(DbItemStorage databaseItem);
     }
 }
