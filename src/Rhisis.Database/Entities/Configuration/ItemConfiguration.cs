@@ -14,7 +14,9 @@ namespace Rhisis.Database.Entities.Configuration
             builder.Property(x => x.Refine).HasColumnType("TINYINT").IsRequired(false);
             builder.Property(x => x.Element).HasColumnType("TINYINT").IsRequired(false);
             builder.Property(x => x.ElementRefine).HasColumnType("TINYINT").IsRequired(false);
-            builder.HasMany(x => x.ItemAttributes).WithOne(x => x.Item).HasForeignKey(x => x.ItemId);
+            builder.HasMany(x => x.ItemAttributes)
+                .WithOne(x => x.Item)
+                .HasForeignKey(x => x.ItemId);
         }
     }
 }

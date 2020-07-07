@@ -92,11 +92,11 @@ namespace Rhisis.World.Game.Factories.Internal
         }
 
         /// <inheritdoc />
-        public InventoryItem CreateInventoryItem(DbItemStorage databaseItem)
+        public InventoryItem CreateInventoryItem(DbItemStorage databaseStorageItem)
         {
-            ItemData itemData = GetItemData(databaseItem.Item.GameItemId);
+            ItemData itemData = GetItemData(databaseStorageItem.Item.GameItemId);
 
-            return itemData != null ? new InventoryItem(itemData, databaseItem.Quantity, -1, databaseItem.Slot, databaseItem.Id) : null;
+            return itemData != null ? new InventoryItem(itemData, databaseStorageItem.Quantity, -1, databaseStorageItem.Slot, databaseStorageItem.ItemId, databaseStorageItem.Id) : null;
         }
 
         /// <inheritdoc />

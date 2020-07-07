@@ -141,7 +141,7 @@ namespace Rhisis.World.Game.Structures
         /// </summary>
         public int Refines => Refine & (byte)Element & ElementRefine;
 
-        internal Item()
+        public Item()
         {
         }
 
@@ -173,7 +173,7 @@ namespace Rhisis.World.Game.Structures
         /// Serialize the item into the packet.
         /// </summary>
         /// <param name="packet"></param>
-        public void Serialize(INetPacketStream packet, int itemIndex)
+        public virtual void Serialize(INetPacketStream packet, int itemIndex)
         {
             packet.Write(itemIndex);
             packet.Write(Id);
@@ -203,7 +203,7 @@ namespace Rhisis.World.Game.Structures
         /// Clones this <see cref="Item"/>.
         /// </summary>
         /// <returns></returns>
-        public Item Clone()
+        public virtual Item Clone()
         {
             return new Item(Data, Quantity, DatabaseItemId)
             {
@@ -214,20 +214,21 @@ namespace Rhisis.World.Game.Structures
             };
         }
 
-        public void CopyFrom(Item itemToCopy)
+        public virtual void CopyFrom(Item itemToCopy)
         {
             _creatorId = itemToCopy.CreatorId;
             _refine = itemToCopy.Refine;
             _elementType = itemToCopy.Element;
             _elementRefine = itemToCopy.ElementRefine;
             _quantity = itemToCopy.Quantity;
+            DatabaseItemId = itemToCopy.DatabaseItemId;
             Data = itemToCopy.Data;
         }
 
         /// <summary>
         /// Reset the item.
         /// </summary>
-        public void Reset()
+        public virtual void Reset()
         {
             DatabaseItemId = null;
             Quantity = 0;

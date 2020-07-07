@@ -792,9 +792,6 @@ namespace Rhisis.Database.Migrations
 
                     b.HasIndex("StorageTypeId");
 
-                    b.HasIndex("CharacterId", "StorageTypeId", "Slot")
-                        .IsUnique();
-
                     b.ToTable("ItemsStorage");
                 });
 

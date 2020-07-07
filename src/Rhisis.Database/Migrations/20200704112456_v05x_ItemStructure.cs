@@ -657,12 +657,6 @@ namespace Rhisis.Database.Migrations
                 table: "ItemsStorage",
                 column: "StorageTypeId");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_ItemsStorage_CharacterId_StorageTypeId_Slot",
-                table: "ItemsStorage",
-                columns: new[] { "CharacterId", "StorageTypeId", "Slot" },
-                unique: true);
-
             migrationBuilder.AddForeignKey(
                 name: "FK_Characters_Users_UserId",
                 table: "Characters",

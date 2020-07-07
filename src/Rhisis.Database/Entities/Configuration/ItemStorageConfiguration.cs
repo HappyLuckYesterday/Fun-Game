@@ -10,7 +10,6 @@ namespace Rhisis.Database.Entities.Configuration
             builder.ToTable("ItemsStorage");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
-            builder.HasIndex(x => new { x.CharacterId, x.StorageTypeId, x.Slot }).IsUnique();
             builder.Property(x => x.CharacterId).IsRequired();
             builder.Property(x => x.StorageTypeId).IsRequired();
             builder.Property(x => x.Slot).IsRequired().HasColumnType("SMALLINT");
