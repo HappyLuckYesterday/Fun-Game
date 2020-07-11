@@ -17,7 +17,7 @@ namespace Rhisis.World.Packets.Internal
             
             packet.StartNewMergedPacket(npc.Id, SnapshotType.OPENSHOPWND);
 
-            foreach (ItemContainerComponent shopTab in npc.Shop)
+            foreach (NpcShopItemContainerComponent shopTab in npc.Shop)
             {
                 shopTab.Serialize(packet);
             }

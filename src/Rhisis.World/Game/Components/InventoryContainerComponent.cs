@@ -5,11 +5,10 @@ using Rhisis.World.Game.Structures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 
 namespace Rhisis.World.Game.Components
 {
-    public class InventoryContainerComponent : ItemContainerComponent
+    public class InventoryContainerComponent : ItemContainerComponent<InventoryItem>
     {
         public const int EquipOffset = 42;
         public const int MaxInventoryItems = 73;
@@ -36,7 +35,7 @@ namespace Rhisis.World.Game.Components
         /// Gets the equiped items.
         /// </summary>
         /// <returns>Collection of the equiped items.</returns>
-        public IEnumerable<Item> GetEquipedItems()
+        public IEnumerable<InventoryItem> GetEquipedItems()
         {
             return _itemsMask.GetRange(EquipOffset, MaxHumanParts).Select(x => _items.ElementAtOrDefault(x));
         }
@@ -46,7 +45,7 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <param name="equipedItemPart">Item part type.</param>
         /// <returns>Equiped item if there is one; null otherwise.</returns>
-        public Item GetEquipedItem(ItemPartType equipedItemPart)
+        public InventoryItem GetEquipedItem(ItemPartType equipedItemPart)
         {
             int equipedItemSlot = EquipOffset + (int)equipedItemPart;
 
@@ -64,7 +63,7 @@ namespace Rhisis.World.Game.Components
         /// <param name="itemToEquip">Item to equip.</param>
         /// <param name="destinationPart">Destination part.</param>
         /// <returns>True if the item has been equiped; false otherwise.</returns>
-        public bool Equip(Item itemToEquip, ItemPartType destinationPart)
+        public bool Equip(InventoryItem itemToEquip, ItemPartType destinationPart)
         {
             int sourceSlot = itemToEquip.Slot;
             int destinationSlot = MaxStorageCapacity + (int)destinationPart;
@@ -96,7 +95,7 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <param name="itemToUnequip">Item to unequip.</param>
         /// <returns>True if the item has been unequiped; false otherwise.</returns>
-        public bool Unequip(Item itemToUnequip)
+        public bool Unequip(InventoryItem itemToUnequip)
         {
             int slot = itemToUnequip.Slot;
 
@@ -141,7 +140,7 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <param name="item">Item to check.</param>
         /// <returns>True if the item is equiped; false otherwise.</returns>
-        public bool IsItemEquiped(Item item) => item.Slot > EquipOffset;
+        public bool IsItemEquiped(InventoryItem item) => item.Slot > EquipOffset;
 
         /// <summary>
         /// Gets the item cool time group.

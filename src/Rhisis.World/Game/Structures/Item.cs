@@ -1,9 +1,8 @@
 ﻿using Rhisis.Core.Data;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Game;
-using Rhisis.Database.Entities;
 using Sylver.Network.Data;
-using System.Collections.Generic;
+using System;
 using System.Diagnostics;
 
 namespace Rhisis.World.Game.Structures
@@ -11,16 +10,70 @@ namespace Rhisis.World.Game.Structures
     /// <summary>
     /// FlyFF item structure.
     /// </summary>
-    [DebuggerDisplay("({Quantity}) {Data?.Name ?? \"Empty\"} +{Refine} ({Element}+{ElementRefine})")]
-    public class Item : ItemDescriptor
+    [DebuggerDisplay("{Name} +{Refine} ({Element}+{ElementRefine}) (x{Quantity})")]
+    public class Item
     {
         public const int Empty = -1;
-        public const int RefineMax = 10;
+
+        private int _creatorId;
+        private int _quantity;
+        private byte _refine;
+        private ElementType _elementType;
+        private byte _elementRefine;
 
         /// <summary>
-        /// Flyff item refine table.
+        /// Gets the item id.
         /// </summary>
-        public static readonly IReadOnlyCollection<int> RefineTable = new[] { 0, 2, 4, 6, 8, 10, 13, 16, 19, 21, 24 };
+        public int Id => Data?.Id ?? Empty;
+
+        /// <summary>
+        /// Gets the item name.
+        /// </summary>
+        public string Name => Data?.Name ?? "Undefined";
+
+        /// <summary>
+        /// Gets the item data informations.
+        /// </summary>
+        public ItemData Data { get; private set; }
+
+        /// <summary>
+        /// Gets the item database id.
+        /// </summary>
+        public int? DatabaseItemId { get; private set; }
+
+        /// <summary>
+        /// Gets the creator id of the item.
+        /// </summary>
+        public int CreatorId
+        {
+            get => _creatorId;
+            set
+            {
+                if (Data == null)
+                {
+                    throw new InvalidOperationException("Cannot update creator id of an empty id.");
+                }
+
+                _creatorId = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the item quantity.
+        /// </summary>
+        public int Quantity
+        {
+            get => _quantity;
+            set
+            {
+                if (Data == null)
+                {
+                    throw new InvalidOperationException("Cannot update quantity of an empty item.");
+                }
+
+                _quantity = value;
+            }
+        }
 
         /// <summary>
         /// Gets the item unique Id.
@@ -28,179 +81,99 @@ namespace Rhisis.World.Game.Structures
         public int Index { get; set; }
 
         /// <summary>
-        /// Gets the creator id of the item.
-        /// </summary>
-        public int CreatorId { get; set; }
-
-        /// <summary>
-        /// Gets the item quantity.
-        /// </summary>
-        public int Quantity { get; set; }
-
-        /// <summary>
         /// Gets the item current slot.
         /// </summary>
         public int Slot { get; set; }
 
         /// <summary>
-        /// Gets the current used item quantity
+        /// Gets or sets the item refine.
         /// </summary>
-        public int ExtraUsed { get; set; }
+        public byte Refine
+        {
+            get => _refine;
+            set
+            {
+                if (Data == null)
+                {
+                    throw new InvalidOperationException("Cannot update refine option of an empty item.");
+                }
+
+                _refine = value;
+            }
+        }
 
         /// <summary>
-        /// Creates an empty <see cref="Item"/>.
+        /// Gets or sets the item element.
         /// </summary>
-        /// <remarks>
-        /// All values set to <see cref="Empty"/>.
-        /// </remarks>
+        public ElementType Element
+        {
+            get => _elementType;
+            set
+            {
+                if (Data == null)
+                {
+                    throw new InvalidOperationException("Cannot update refine element type of an empty item.");
+                }
+
+                _elementType = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the item element refine.
+        /// </summary>
+        public byte ElementRefine
+        {
+            get => _elementRefine;
+            set
+            {
+                if (Data == null)
+                {
+                    throw new InvalidOperationException("Cannot update refine element option of an empty item.");
+                }
+
+                _elementRefine = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the items refine options.
+        /// </summary>
+        public int Refines => Refine & (byte)Element & ElementRefine;
+
         public Item()
-            : this(Empty, Empty, Empty, Empty, Empty)
         {
         }
 
-        /// <summary>
-        /// Creates a <see cref="Item"/> instance with an id.
-        /// </summary>
-        /// <param name="id">Item Id.</param>
-        public Item(int id)
-            : this(id, Empty, Empty, Empty, Empty)
+        public Item(ItemData itemData, int quantity, int? databaseId)
         {
-        }
+            if (itemData == null)
+            {
+                throw new ArgumentNullException(nameof(itemData));
+            }
 
-        /// <summary>
-        /// Create an <see cref="Item"/> with an id, quantity, creator id and destination slot.
-        /// </summary>
-        /// <param name="id">Item id</param>
-        /// <param name="quantity">Itme quantity</param>
-        /// <param name="creatorId">Id of the character that created the object (for GM)</param>
-        /// <param name="slot">Item slot</param>
-        public Item(int id, int quantity, int creatorId, int slot)
-            : this(id, quantity, creatorId, slot, Empty)
-        {
-        }
+            if (quantity < 0)
+            {
+                throw new ArgumentException("Item id cannot be negative.");
+            }
 
-        /// <summary>
-        /// Create an <see cref="Item"/> with an id, quantity, creator id and destination slot.
-        /// </summary>
-        /// <param name="id">Item id</param>
-        /// <param name="quantity">Itme quantity</param>
-        /// <param name="creatorId">Id of the character that created the object (for GM)</param>
-        /// <param name="slot">Item slot</param>
-        /// <param name="uniqueId">Item unique id</param>
-        public Item(int id, int quantity, int creatorId, int slot, int uniqueId)
-            : this(id, quantity, creatorId, slot, uniqueId, 0)
-        {
-        }
+            if (quantity > itemData.PackMax)
+            {
+                throw new InvalidOperationException($"Cannot create {quantity} {Data.Name} because it exceeds the item maximum pack size.");
+            }
 
-        /// <summary>
-        /// Create an <see cref="Item"/> with an id, quantity, creator id, destination slot and refine.
-        /// </summary>
-        /// <param name="id">Item id</param>
-        /// <param name="quantity">Itme quantity</param>
-        /// <param name="creatorId">Id of the character that created the object (for GM)</param>
-        /// <param name="slot">Item slot</param>
-        /// <param name="uniqueId">Item unique id</param>
-        /// <param name="refine">Item refine</param>
-        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine)
-            : this(id, quantity, creatorId, slot, uniqueId, refine, 0)
-        {
-        }
-
-        /// <summary>
-        /// Create an <see cref="Item"/> with an id, quantity, creator id, destination slot, refine and element.
-        /// </summary>
-        /// <param name="id">Item id</param>
-        /// <param name="quantity">Itme quantity</param>
-        /// <param name="creatorId">Id of the character that created the object (for GM)</param>
-        /// <param name="slot">Item slot</param>
-        /// <param name="uniqueId">Item unique id</param>
-        /// <param name="refine">Item refine</param>
-        /// <param name="element">Item element</param>
-        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, ElementType element)
-            : this(id, quantity, creatorId, slot, uniqueId, refine, element, 0)
-        {
-        }
-
-        /// <summary>
-        /// Create an <see cref="Item"/> with an id, quantity, creator id, destination slot, refine and element.
-        /// </summary>
-        /// <param name="id">Item id</param>
-        /// <param name="quantity">Itme quantity</param>
-        /// <param name="creatorId">Id of the character that created the object (for GM)</param>
-        /// <param name="slot">Item slot</param>
-        /// <param name="uniqueId">Item unique id</param>
-        /// <param name="refine">Item refine</param>
-        /// <param name="element">Item element</param>
-        /// <param name="elementRefine"></param>
-        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, ElementType element, byte elementRefine)
-            : this(id, quantity, creatorId, slot, uniqueId, refine, element, elementRefine, 0)
-        {
-        }
-
-        /// <summary>
-        /// Create an <see cref="Item"/> with an id, quantity, creator id, destination slot, refine and element.
-        /// </summary>
-        /// <param name="id">Item id</param>
-        /// <param name="quantity">Itme quantity</param>
-        /// <param name="creatorId">Id of the character that created the object (for GM)</param>
-        /// <param name="slot">Item slot</param>
-        /// <param name="uniqueId">Item unique id</param>
-        /// <param name="refine">Item refine</param>
-        /// <param name="element">Item element</param>
-        /// <param name="elementRefine">Item element refine</param>
-        /// <param name="extraUsed">Item extra used quantity</param>
-        public Item(int id, int quantity, int creatorId, int slot, int uniqueId, byte refine, ElementType element,
-            byte elementRefine, int extraUsed)
-        {
-            Id = id;
-            Quantity = quantity;
-            CreatorId = creatorId;
-            Slot = slot;
-            Index = uniqueId;
-            Refine = refine;
-            Element = element;
-            ElementRefine = elementRefine;
-            ExtraUsed = extraUsed;
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="Item"/> based on a database item.
-        /// </summary>
-        /// <param name="dbItem">Database item</param>
-        /// <param name="itemData">Item data.</param>
-        public Item(DbItem dbItem, ItemData itemData)
-            : this(dbItem.ItemId, dbItem.ItemCount, dbItem.CreatorId, dbItem.ItemSlot, -1, dbItem.Refine,
-                (ElementType)dbItem.Element, dbItem.ElementRefine, 0)
-        {
-            DbId = dbItem.Id;
             Data = itemData;
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="Item"/>.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="refine"></param>
-        /// <param name="element"></param>
-        /// <param name="elementRefine"></param>
-        /// <param name="itemData"></param>
-        /// <param name="creatorId"></param>
-        public Item(int id, byte refine, ElementType element, byte elementRefine, ItemData itemData, int creatorId)
-        {
-            Id = id;
-            Quantity = 1;
-            Refine = refine;
-            Element = element;
-            ElementRefine = elementRefine;
-            Data = itemData;
-            CreatorId = creatorId;
+            DatabaseItemId = databaseId.GetValueOrDefault(0);
+            _quantity = quantity;
+            Slot = Empty;
+            Index = Empty;
         }
 
         /// <summary>
         /// Serialize the item into the packet.
         /// </summary>
         /// <param name="packet"></param>
-        public void Serialize(INetPacketStream packet, int itemIndex)
+        public virtual void Serialize(INetPacketStream packet, int itemIndex)
         {
             packet.Write(itemIndex);
             packet.Write(Id);
@@ -230,48 +203,42 @@ namespace Rhisis.World.Game.Structures
         /// Clones this <see cref="Item"/>.
         /// </summary>
         /// <returns></returns>
-        public Item Clone()
+        public virtual Item Clone()
         {
-            return new Item(Id, Refine, Element, ElementRefine, Data, CreatorId)
+            return new Item(Data, Quantity, DatabaseItemId)
             {
-                ExtraUsed = ExtraUsed,
-                Slot = Slot,
-                Index = Index,
-                Quantity = Quantity
+                CreatorId = CreatorId,
+                Refine = Refine,
+                Element = Element,
+                ElementRefine = ElementRefine,
             };
         }
 
-        public void CopyFrom(Item itemToCopy)
+        public virtual void CopyFrom(Item itemToCopy)
         {
-            Id = itemToCopy.Id;
-            CreatorId = itemToCopy.CreatorId;
-            Refine = itemToCopy.Refine;
-            Element = itemToCopy.Element;
-            ElementRefine = itemToCopy.ElementRefine;
-            Quantity = itemToCopy.Quantity;
+            _creatorId = itemToCopy.CreatorId;
+            _refine = itemToCopy.Refine;
+            _elementType = itemToCopy.Element;
+            _elementRefine = itemToCopy.ElementRefine;
+            _quantity = itemToCopy.Quantity;
+            DatabaseItemId = itemToCopy.DatabaseItemId;
             Data = itemToCopy.Data;
         }
 
         /// <summary>
         /// Reset the item.
         /// </summary>
-        public void Reset()
+        public virtual void Reset()
         {
-            Id = Empty;
-            DbId = -1;
+            DatabaseItemId = null;
             Quantity = 0;
             CreatorId = Empty;
             Refine = 0;
             Element = 0;
             ElementRefine = 0;
-            ExtraUsed = 0;
             Data = null;
         }
 
-        /// <summary>
-        /// Returns the current <see cref="Item"/> on string format
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString() => $"{Data?.Name}";
+        public override string ToString() => Name;
     }
 }

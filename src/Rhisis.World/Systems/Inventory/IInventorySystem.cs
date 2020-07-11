@@ -1,5 +1,4 @@
-﻿using Rhisis.Core.Structures.Game;
-using Rhisis.World.Game;
+﻿using Rhisis.World.Game;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 
@@ -11,12 +10,23 @@ namespace Rhisis.World.Systems.Inventory
         /// Creates an item in player's inventory.
         /// </summary>
         /// <param name="player">Current player.</param>
+        /// <param name="itemId">Item id to create.</param>
+        /// <param name="quantity">Quantity to create.</param>
+        /// <param name="creatorId">Id of the character that created the item. Used for GMs and admins.</param>
+        /// <param name="sendToPlayer">Sends the packet to the current player.</param>
+        /// <returns>Number of items created.</returns>
+        int CreateItem(IPlayerEntity player, int itemId, int quantity, int creatorId = -1, bool sendToPlayer = true);
+
+        /// <summary>
+        /// Creates an item in player's inventory.
+        /// </summary>
+        /// <param name="player">Current player.</param>
         /// <param name="item">Item model to create.</param>
         /// <param name="quantity">Quantity to create.</param>
         /// <param name="creatorId">Id of the character that created the item. Used for GMs and admins.</param>
         /// <param name="sendToPlayer">Sends the packet to the current player.</param>
         /// <returns>Number of items created.</returns>
-        int CreateItem(IPlayerEntity player, ItemDescriptor item, int quantity, int creatorId = -1, bool sendToPlayer = true);
+        int CreateItem(IPlayerEntity player, Item item, int quantity, int creatorId = -1, bool sendToPlayer = true);
 
         /// <summary>
         /// Deletes an item in player's inventory.
@@ -36,7 +46,7 @@ namespace Rhisis.World.Systems.Inventory
         /// <param name="quantity">Quantity to delete.</param>
         /// <param name="sendToPlayer">Sends the packet to the current player.</param>
         /// <returns>Deleted quantity.</returns>
-        int DeleteItem(IPlayerEntity player, Item itemToDelete, int quantity, bool sendToPlayer = true);
+        int DeleteItem(IPlayerEntity player, InventoryItem itemToDelete, int quantity, bool sendToPlayer = true);
 
         /// <summary>
         /// Moves an item in player's inventory from a source slot to a destination slot.
@@ -69,14 +79,14 @@ namespace Rhisis.World.Systems.Inventory
         /// </summary>
         /// <param name="player">Current player.</param>
         /// <param name="systemItem">System item to use.</param>
-        void UseSystemItem(IPlayerEntity player, Item systemItem);
+        void UseSystemItem(IPlayerEntity player, InventoryItem systemItem);
 
         /// <summary>
         /// Uses a scroll item from player's inventory.
         /// </summary>
         /// <param name="player">Current player.</param>
         /// <param name="scrollItem">Scroll item to use.</param>
-        void UseScrollItem(IPlayerEntity player, Item scrollItem);
+        void UseScrollItem(IPlayerEntity player, InventoryItem scrollItem);
 
         /// <summary>
         /// Drops an item from player's inventory to the ground.

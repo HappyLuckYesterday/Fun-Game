@@ -9,11 +9,12 @@ using System.Linq;
 
 namespace Rhisis.World.Game.Components
 {
-    public class ItemContainerComponent : IPacketSerializer, IEnumerable<Item>
+    public class ItemContainerComponent<TItem> : IPacketSerializer, IEnumerable<TItem>
+        where TItem : Item, new()
     {
         protected const int Empty = -1;
 
-        protected readonly List<Item> _items;
+        protected readonly List<TItem> _items;
         protected readonly int[] _itemsMask;
 
         /// <summary>
@@ -47,11 +48,11 @@ namespace Rhisis.World.Game.Components
             MaxStorageCapacity = maxStorageCapacity;
             ExtraCapacity = MaxCapacity - MaxStorageCapacity;
             _itemsMask = new int[MaxCapacity];
-            _items = Enumerable.Repeat((Item)null, MaxCapacity).ToList();
+            _items = Enumerable.Repeat((TItem)null, MaxCapacity).ToList();
 
             for (int i = 0; i < MaxCapacity; i++)
             {
-                _items[i] = new Item(Empty)
+                _items[i] = new TItem()
                 {
                     Index = i
                 };
@@ -72,14 +73,14 @@ namespace Rhisis.World.Game.Components
         /// Initializes the item container.
         /// </summary>
         /// <param name="items">Items.</param>
-        public void Initialize(IEnumerable<Item> items)
+        public void Initialize(IEnumerable<TItem> items)
         {
             int itemIndex;
             int itemsCount = Math.Min(items.Count(), MaxCapacity);
 
             for (itemIndex = 0; itemIndex < itemsCount; itemIndex++)
             {
-                Item item = items.ElementAtOrDefault(itemIndex);
+                TItem item = items.ElementAtOrDefault(itemIndex);
 
                 if (item != null)
                 {
@@ -98,9 +99,9 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <param name="predicate">Match predicate.</param>
         /// <returns>Item matching the predicate function; null otherwise.</returns>
-        public Item GetItem(Func<Item, bool> predicate)
+        public TItem GetItem(Func<TItem, bool> predicate)
         {
-            Item item = _items.FirstOrDefault(predicate);
+            TItem item = _items.FirstOrDefault(predicate);
 
             if (item == null)
             {
@@ -113,16 +114,16 @@ namespace Rhisis.World.Game.Components
         /// <summary>
         /// Gets an item by its id.
         /// </summary>
-        /// <param name="id">Item id.</param>
+        /// <param name="itemId">Item id.</param>
         /// <returns>Item if found; null otherwise.</returns>
-        public Item GetItemById(int id) => GetItem(x => x.Id == id);
+        public TItem GetItem(int itemId) => GetItem(x => x.Id == itemId);
 
         /// <summary>
         /// Gets the item at a given slot.
         /// </summary>
         /// <param name="slot">Container slot.</param>
         /// <returns></returns>
-        public Item GetItemAtSlot(int slot)
+        public TItem GetItemAtSlot(int slot)
         {
             if (slot < 0 || slot >= MaxCapacity)
             {
@@ -136,7 +137,7 @@ namespace Rhisis.World.Game.Components
                 return null;
             }
 
-            Item item = _items[itemIndex];
+            TItem item = _items[itemIndex];
 
             if (item == null)
             {
@@ -151,14 +152,14 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <param name="index">Index or Unique Id.</param>
         /// <returns></returns>
-        public Item GetItemAtIndex(int index)
+        public TItem GetItemAtIndex(int index)
         {
             if (index < 0 || index >= MaxCapacity)
             {
                 return null;
             }
 
-            Item item = _items[index];
+            TItem item = _items[index];
 
             if (item == null)
             {
@@ -172,7 +173,7 @@ namespace Rhisis.World.Game.Components
         /// Gets the number of items of the inventory.
         /// </summary>
         /// <returns></returns>
-        public int GetItemCount() => _items.Count(x => x.Id != Empty);
+        public int GetItemCount() => _items.Count(x => x != null && x.Id != Empty);
 
         /// <summary>
         /// Gts the number of items in the inventory storage area.
@@ -204,7 +205,7 @@ namespace Rhisis.World.Game.Components
 
             for (int i = 0; i < MaxStorageCapacity; i++)
             {
-                Item item = GetItemAtSlot(i);
+                TItem item = GetItemAtSlot(i);
 
                 if (item == null)
                 {
@@ -285,7 +286,7 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <param name="item">Index to set.</param>
         /// <param name="index">Index.</param>
-        public void SetItemAtIndex(Item item, int index)
+        public void SetItemAtIndex(TItem item, int index)
         {
             if (item != null)
             {
@@ -299,7 +300,7 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <param name="item">Item to set.</param>
         /// <param name="slot">Slot.</param>
-        public void SetItemAtSlot(Item item, int slot)
+        public void SetItemAtSlot(TItem item, int slot)
         {
             item.Slot = slot;
 
@@ -331,7 +332,7 @@ namespace Rhisis.World.Game.Components
                         continue;
                     }
 
-                    Item inventoryItem = _items[itemIndex];
+                    TItem inventoryItem = _items[itemIndex];
 
                     if (inventoryItem.Id == itemToAdd.Id && inventoryItem.Quantity < inventoryItem.Data.PackMax)
                     {
@@ -367,7 +368,7 @@ namespace Rhisis.World.Game.Components
                         continue;
                     }
 
-                    Item inventoryItem = _items[itemIndex];
+                    TItem inventoryItem = _items[itemIndex];
 
                     if (inventoryItem.Id == Empty)
                     {
@@ -403,7 +404,7 @@ namespace Rhisis.World.Game.Components
         /// Remove the given item from the item container.
         /// </summary>
         /// <param name="itemToRemove">Item to remove.</param>
-        public void RemoveItem(Item itemToRemove)
+        public void RemoveItem(TItem itemToRemove)
         {
             if (itemToRemove == null || itemToRemove.Slot >= MaxCapacity)
             {
@@ -431,9 +432,9 @@ namespace Rhisis.World.Game.Components
 
             for (int i = 0; i < MaxCapacity; i++)
             {
-                Item item = _items.ElementAt(i);
+                TItem item = _items.ElementAt(i);
 
-                if (item.Id != Empty)
+                if (item != null && item.Id != Empty)
                 {
                     packet.Write((byte)i);
                     item.Serialize(packet, item.Index);
@@ -442,12 +443,12 @@ namespace Rhisis.World.Game.Components
 
             for (int i = 0; i < MaxCapacity; i++)
             {
-                packet.Write(_items[i].Slot);
+                packet.Write(_items[i]?.Slot ?? Empty);
             }
         }
 
         /// <inheritdoc />
-        public IEnumerator<Item> GetEnumerator() => _items.GetEnumerator();
+        public IEnumerator<TItem> GetEnumerator() => _items.GetEnumerator();
 
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

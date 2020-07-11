@@ -285,7 +285,7 @@ namespace Rhisis.World.Packets.Internal
                 packet.Write(-1); // titles
 
                 // Serialize visible effects
-                IEnumerable<Item> equipedItems = playerEntity.Inventory.GetEquipedItems();
+                IEnumerable<InventoryItem> equipedItems = playerEntity.Inventory.GetEquipedItems();
 
                 foreach (var item in equipedItems)
                 {

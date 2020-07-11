@@ -16,6 +16,7 @@ using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Drop;
@@ -62,6 +63,7 @@ namespace Rhisis.World.Systems.Quest
         private readonly IQuestPacketFactory _questPacketFactory;
         private readonly INpcDialogPacketFactory _npcDialogPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
+        private readonly IItemFactory _itemFactory;
 
         /// <inheritdoc />
         public int Order => 3;
@@ -69,7 +71,7 @@ namespace Rhisis.World.Systems.Quest
         public QuestSystem(ILogger<QuestSystem> logger, IRhisisDatabase database, IGameResources gameResources, IOptions<WorldConfiguration> worldServerConfiguration,
             IPlayerDataSystem playerDataSystem, IInventorySystem inventorySystem, IExperienceSystem experienceSystem, IJobSystem jobSystem,
             IStatisticsSystem statisticsSystem, ISkillSystem skillSystem, IDropSystem dropSystem,
-            IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory)
+            IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory, IItemFactory itemFactory)
         {
             _logger = logger;
             _database = database;
@@ -85,6 +87,7 @@ namespace Rhisis.World.Systems.Quest
             _questPacketFactory = questPacketFactory;
             _npcDialogPacketFactory = npcDialogPacketFactory;
             _textPacketFactory = textPacketFactory;
+            _itemFactory = itemFactory;
         }
 
         /// <inheritdoc />
@@ -235,7 +238,7 @@ namespace Rhisis.World.Systems.Quest
                     {
                         if (questItem.Sex == GenderType.Any || questItem.Sex == player.PlayerData.Gender)
                         {
-                            Item inventoryItem = player.Inventory.GetItemById(_gameResources.GetDefinedValue(questItem.Id));
+                            Item inventoryItem = player.Inventory.GetItem(_gameResources.GetDefinedValue(questItem.Id));
 
                             if (inventoryItem == null || inventoryItem.Quantity < questItem.Quantity)
                             {
@@ -369,9 +372,7 @@ namespace Rhisis.World.Systems.Quest
                             if (dropChance < questItem.Probability * _worldConfiguration.Rates.Drop)
                             {
                                 int itemId = _gameResources.GetDefinedValue(questItem.ItemId);
-                                var itemToCreate = new Item(itemId);
-
-                                int createdQuantity = _inventorySystem.CreateItem(player, itemToCreate, questItem.Quantity, player.PlayerData.Id);
+                                int createdQuantity = _inventorySystem.CreateItem(player, itemId, questItem.Quantity, player.PlayerData.Id);
 
                                 if (createdQuantity > 0)
                                 {
@@ -381,7 +382,7 @@ namespace Rhisis.World.Systems.Quest
                                 }
                                 else
                                 {
-                                    _dropSystem.DropItem(player, itemToCreate, player, questItem.Quantity);
+                                    _dropSystem.DropItem(player, itemId, player, questItem.Quantity);
                                 }
                             }
                         }
@@ -495,10 +496,10 @@ namespace Rhisis.World.Systems.Quest
 
                     if (_gameResources.Items.TryGetValue(rewardItemId, out ItemData itemData))
                     {
-                        var item = new Item(itemData.Id, rewardItem.Refine, rewardItem.Element, rewardItem.ElementRefine, itemData, -1);
+                        Item itemToCreate = _itemFactory.CreateItem(rewardItemId, rewardItem.Refine, rewardItem.Element, rewardItem.ElementRefine);
 
-                        _inventorySystem.CreateItem(player, item, rewardItem.Quantity);
-                        _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPITEM, $"\"{_gameResources.GetText(item.Data.Name)}\"");
+                        _inventorySystem.CreateItem(player, itemToCreate, rewardItem.Quantity);
+                        _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_REAPITEM, $"\"{_gameResources.GetText(itemToCreate.Data.Name)}\"");
                     }
                 }
             }
@@ -512,7 +513,7 @@ namespace Rhisis.World.Systems.Quest
                     {
                         if (questItem.Sex == GenderType.Any || questItem.Sex == player.PlayerData.Gender)
                         {
-                            Item inventoryItem = player.Inventory.GetItemById(_gameResources.GetDefinedValue(questItem.Id));
+                            InventoryItem inventoryItem = player.Inventory.GetItem(_gameResources.GetDefinedValue(questItem.Id));
 
                             if (inventoryItem != null)
                             {

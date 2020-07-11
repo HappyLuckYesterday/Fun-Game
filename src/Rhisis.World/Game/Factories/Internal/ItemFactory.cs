@@ -22,8 +22,6 @@ namespace Rhisis.World.Game.Factories.Internal
         private readonly ILogger<ItemFactory> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly IGameResources _gameResources;
-        private readonly ObjectFactory _itemFactory;
-        private readonly ObjectFactory _itemDatabaseFactory;
         private readonly ObjectFactory _itemEntityFactory;
 
         /// <summary>
@@ -37,10 +35,11 @@ namespace Rhisis.World.Game.Factories.Internal
             _logger = logger;
             _serviceProvider = serviceProvider;
             _gameResources = gameResources;
-            _itemFactory = ActivatorUtilities.CreateFactory(typeof(Item), new[] { typeof(int), typeof(byte), typeof(ElementType), typeof(byte), typeof(ItemData), typeof(int) });
-            _itemDatabaseFactory = ActivatorUtilities.CreateFactory(typeof(Item), new[] { typeof(DbItem), typeof(ItemData) });
             _itemEntityFactory = ActivatorUtilities.CreateFactory(typeof(ItemEntity), Type.EmptyTypes);
         }
+
+        /// <inheritdoc />
+        public Item CreateItem(int id, int creatorId = -1) => CreateItem(id, 0, ElementType.None, 0, creatorId);
 
         /// <inheritdoc />
         public Item CreateItem(int id, byte refine, ElementType element, byte elementRefine, int creatorId = -1)
@@ -51,34 +50,57 @@ namespace Rhisis.World.Game.Factories.Internal
                 return null;
             }
 
-            return _itemFactory(_serviceProvider, new object[] { id, refine, element, elementRefine, itemData, creatorId }) as Item;
+            return new Item(itemData, 1, null)
+            {
+                Refine = refine,
+                Element = element,
+                ElementRefine = elementRefine,
+                CreatorId = creatorId
+            };
         }
 
+        /// <inheritdoc />
         public Item CreateItem(string name, byte refine, ElementType element, byte elementRefine, int creatorId = -1)
         {
             var itemData = _gameResources.Items.FirstOrDefault(x => x.Value.Name == name);
+
             if (itemData.Value is null)
             {
                 _logger.LogWarning($"Cannot find item data for item name: '{name}'.");
                 return null;
             }
-            return _itemFactory(_serviceProvider, new object[] { itemData.Value.Id, refine, element, elementRefine, itemData.Value, creatorId }) as Item;
+
+            return new Item(itemData.Value, 1, null)
+            {
+                Refine = refine,
+                Element = element,
+                ElementRefine = elementRefine,
+                CreatorId = creatorId
+            };
         }
 
         /// <inheritdoc />
-        public Item CreateItem(DbItem databaseItem)
+        public Item CreateItem(DbItemStorage databaseItem)
         {
-            if (!_gameResources.Items.TryGetValue(databaseItem.ItemId, out ItemData itemData))
+            if (!_gameResources.Items.TryGetValue(databaseItem.Item.GameItemId, out ItemData itemData))
             {
-                _logger.LogWarning($"Cannot find item data for item id: '{databaseItem.ItemId}'.");
+                _logger.LogWarning($"Cannot find item data for item id: '{databaseItem.Item.GameItemId}'.");
                 return null;
             }
 
-            return _itemDatabaseFactory(_serviceProvider, new object[] { databaseItem, itemData }) as Item;
+            return new Item(itemData, databaseItem.Quantity, databaseItem.Id);
         }
 
         /// <inheritdoc />
-        public IItemEntity CreateItemEntity(IMapInstance currentMapContext, IMapLayer currentMapLayerContext, ItemDescriptor item, IWorldEntity owner = null)
+        public InventoryItem CreateInventoryItem(DbItemStorage databaseStorageItem)
+        {
+            ItemData itemData = GetItemData(databaseStorageItem.Item.GameItemId);
+
+            return itemData != null ? new InventoryItem(itemData, databaseStorageItem.Quantity, -1, databaseStorageItem.Slot, databaseStorageItem.ItemId, databaseStorageItem.Id) : null;
+        }
+
+        /// <inheritdoc />
+        public IItemEntity CreateItemEntity(IMapInstance currentMapContext, IMapLayer currentMapLayerContext, Item item, IWorldEntity owner = null)
         {
             var itemEntity = _itemEntityFactory(_serviceProvider, null) as IItemEntity;
 
@@ -96,10 +118,21 @@ namespace Rhisis.World.Game.Factories.Internal
             itemEntity.Drop = new DropComponent
             {
                 Owner = owner,
-                Item = CreateItem(item.Id, item.Refine, item.Element, item.ElementRefine)
+                Item = item
             };
 
             return itemEntity;
+        }
+
+        private ItemData GetItemData(int itemId)
+        {
+            if (!_gameResources.Items.TryGetValue(itemId, out ItemData itemData))
+            {
+                _logger.LogWarning($"Cannot find item data for item id: '{itemId}'.");
+                return null;
+            }
+
+            return itemData;
         }
     }
 }

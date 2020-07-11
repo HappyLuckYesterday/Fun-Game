@@ -90,7 +90,7 @@ namespace Rhisis.World.Systems.NpcShop
                 return;
             }
 
-            ItemContainerComponent shopTab = npc.Shop.ElementAt(shopItemInfo.Tab);
+            NpcShopItemContainerComponent shopTab = npc.Shop.ElementAt(shopItemInfo.Tab);
 
             if (shopItemInfo.Slot < 0 || shopItemInfo.Slot > shopTab.MaxCapacity - 1)
             {

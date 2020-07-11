@@ -18,7 +18,7 @@ namespace Rhisis.World.Game.Entities.Internal
         public bool IsDead => Attributes[DefineAttributes.HP] <= 0;
 
         /// <inheritdoc />
-        public ItemContainerComponent[] Shop { get; set; }
+        public NpcShopItemContainerComponent[] Shop { get; set; }
 
         /// <inheritdoc />
         public MoverData Data { get; set; }

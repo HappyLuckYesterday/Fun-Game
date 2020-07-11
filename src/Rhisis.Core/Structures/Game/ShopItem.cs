@@ -4,14 +4,8 @@ using System.Runtime.Serialization;
 namespace Rhisis.Core.Structures.Game
 {
     [DataContract]
-    public class ItemDescriptor
+    public class ShopItem
     {
-        /// <summary>
-        /// Gets the item database id.
-        /// </summary>
-        [IgnoreDataMember]
-        public int DbId { get; protected set; }
-
         /// <summary>
         /// Gets the item Id.
         /// </summary>
@@ -35,24 +29,5 @@ namespace Rhisis.Core.Structures.Game
         /// </summary>
         [DataMember(Name = "elementRefine")]
         public byte ElementRefine { get; set; }
-
-        /// <summary>
-        /// Gets the items refine options.
-        /// </summary>
-        [IgnoreDataMember]
-        public int Refines => Refine & (byte)Element & ElementRefine;
-
-        /// <summary>
-        /// Gets the item data informations.
-        /// </summary>
-        [IgnoreDataMember]
-        public ItemData Data { get; protected set; }
-
-        /// <summary>
-        /// Creates a new <see cref="ItemDescriptor"/> instance.
-        /// </summary>
-        protected ItemDescriptor()
-        {
-        }
     }
 }

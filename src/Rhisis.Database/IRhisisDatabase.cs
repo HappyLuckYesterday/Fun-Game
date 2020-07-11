@@ -22,9 +22,29 @@ namespace Rhisis.Database
         DbSet<DbCharacter> Characters { get; }
 
         /// <summary>
+        /// Gets or sets the attributes.
+        /// </summary>
+        DbSet<DbAttribute> Attributes { get; }
+
+        /// <summary>
         /// Gets or sets the items.
         /// </summary>
         DbSet<DbItem> Items { get; }
+
+        /// <summary>
+        /// Gets or sets item attributes.
+        /// </summary>
+        DbSet<DbItemAttributes> ItemAttributes { get; }
+
+        /// <summary>
+        /// Gets or sets the item storage.
+        /// </summary>
+        DbSet<DbItemStorage> ItemStorage { get; }
+
+        /// <summary>
+        /// Gets or sets the item storage types.
+        /// </summary>
+        DbSet<DbItemStorageType> ItemStorageTypes { get; }
 
         /// <summary>
         /// Gets or sets the mails.

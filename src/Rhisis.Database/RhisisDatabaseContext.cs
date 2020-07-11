@@ -24,7 +24,19 @@ namespace Rhisis.Database
         public DbSet<DbCharacter> Characters { get; set; }
 
         /// <inheritdoc />
+        public DbSet<DbAttribute> Attributes { get; }
+
+        /// <inheritdoc />
         public DbSet<DbItem> Items { get; set; }
+
+        /// <inheritdoc />
+        public DbSet<DbItemAttributes> ItemAttributes { get; set; }
+
+        /// <inheritdoc />
+        public DbSet<DbItemStorage> ItemStorage { get; set; }
+
+        /// <inheritdoc />
+        public DbSet<DbItemStorageType> ItemStorageTypes { get; set; }
 
         /// <inheritdoc />
         public DbSet<DbMail> Mails { get; set; }

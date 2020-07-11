@@ -1,4 +1,6 @@
-﻿using Rhisis.Core.Common;
+﻿using Microsoft.EntityFrameworkCore;
+using Rhisis.Core.Common;
+using Rhisis.Core.Data;
 using Rhisis.Database.Entities;
 using System;
 using System.Collections.Generic;
@@ -71,9 +73,9 @@ namespace Rhisis.Cluster.Structures
             Intelligence = dbCharacter.Intelligence;
             Dexterity = dbCharacter.Dexterity;
             EquipedItems = dbCharacter.Items.AsQueryable()
-                .Where(x => x.ItemSlot > 42 && !x.IsDeleted)
-                .OrderBy(x => x.ItemSlot)
-                .Select(x => x.ItemId);
+                .Where(x => x.Slot > 42 && x.StorageTypeId == (int)ItemStorageType.Inventory && !x.IsDeleted)
+                .OrderBy(x => x.Slot)
+                .Select(x => x.Item.GameItemId);
         }
     }
 }

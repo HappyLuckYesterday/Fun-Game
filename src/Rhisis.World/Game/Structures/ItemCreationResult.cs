@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-namespace Rhisis.World.Game.Structures
+﻿namespace Rhisis.World.Game.Structures
 {
     public struct ItemCreationResult
     {
