@@ -24,7 +24,7 @@ namespace Rhisis.World.Packets.Internal
         }
 
         /// <inheritdoc />
-        public void SendUseSkill(ILivingEntity player, IWorldEntity target, SkillInfo skill, int castingTime, SkillUseType skillUseType)
+        public void SendUseSkill(ILivingEntity player, IWorldEntity target, Skill skill, int castingTime, SkillUseType skillUseType)
         {
             using var packet = new FFPacket();
 

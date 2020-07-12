@@ -25,7 +25,7 @@ namespace Rhisis.World.Systems.Battle.Arbiters
         /// <param name="attacker">Attacker entity</param>
         /// <param name="defender">Defender entity</param>
         /// <param name="meleeSkill">Melee skill.</param>
-        public MeleeSkillAttackArbiter(ILivingEntity attacker, ILivingEntity defender, SkillInfo meleeSkill)
+        public MeleeSkillAttackArbiter(ILivingEntity attacker, ILivingEntity defender, Skill meleeSkill)
             : base(attacker, defender, meleeSkill)
         {
         }

@@ -57,6 +57,11 @@ namespace Rhisis.World.Handlers
         [HandlerAction(PacketType.PLAYERSETDESTOBJ)]
         public void OnPlayerSetDestObject(IWorldServerClient serverClient, PlayerDestObjectPacket packet)
         {
+            if (serverClient.Player.Id == packet.TargetObjectId)
+            {
+                return;
+            }
+
             _followSystem.Follow(serverClient.Player, packet.TargetObjectId, packet.Distance);
         }
 

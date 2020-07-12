@@ -14,7 +14,7 @@ namespace Rhisis.World.Systems.Battle.Arbiters
         /// <param name="attacker">Attacker entity.</param>
         /// <param name="defender">Defender entity.</param>
         /// <param name="skill">Magic skill.</param>
-        public MagicSkillAttackArbiter(ILivingEntity attacker, ILivingEntity defender, SkillInfo skill)
+        public MagicSkillAttackArbiter(ILivingEntity attacker, ILivingEntity defender, Skill skill)
             : base(attacker, defender, skill)
         {
         }
@@ -76,7 +76,7 @@ namespace Rhisis.World.Systems.Battle.Arbiters
         /// <param name="entity">Living entity.</param>
         /// <param name="skill">Skill.</param>
         /// <returns>Magic skill resistance.</returns>
-        private float GetMagicSkillResistance(ILivingEntity entity, SkillInfo skill)
+        private float GetMagicSkillResistance(ILivingEntity entity, Skill skill)
         {
             var skillResistance = skill.Data.Element switch
             {
@@ -97,7 +97,7 @@ namespace Rhisis.World.Systems.Battle.Arbiters
         /// <param name="entity">Living entity.</param>
         /// <param name="skill">Skill.</param>
         /// <returns>Magic skill resistance rate.</returns>
-        private float GetMagicSkillResitanceRate(ILivingEntity entity, SkillInfo skill) => GetMagicSkillResistance(entity, skill) / 100f;
+        private float GetMagicSkillResitanceRate(ILivingEntity entity, Skill skill) => GetMagicSkillResistance(entity, skill) / 100f;
 
         /// <summary>
         /// Gets the magic skill factor based on the equiped weapon element type and skill element type.
@@ -105,7 +105,7 @@ namespace Rhisis.World.Systems.Battle.Arbiters
         /// <param name="entity">Living entity.</param>
         /// <param name="skill">Skill.</param>
         /// <returns>Magic skill factor.</returns>
-        private float GetMagicSkillFactor(ILivingEntity entity, SkillInfo skill)
+        private float GetMagicSkillFactor(ILivingEntity entity, Skill skill)
         {
             const float DefaultMagicSkillFactor = 1.0f;
 

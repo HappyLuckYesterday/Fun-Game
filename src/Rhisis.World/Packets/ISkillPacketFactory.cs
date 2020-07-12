@@ -20,7 +20,7 @@ namespace Rhisis.World.Packets
         /// <param name="skill">Skill to use.</param>
         /// <param name="castingTime">Skill casting time.</param>
         /// <param name="skillUseType">Skill use type.</param>
-        void SendUseSkill(ILivingEntity player, IWorldEntity target, SkillInfo skill, int castingTime, SkillUseType skillUseType);
+        void SendUseSkill(ILivingEntity player, IWorldEntity target, Skill skill, int castingTime, SkillUseType skillUseType);
 
         /// <summary>
         /// Sends a request to cancel the current skill.

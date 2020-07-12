@@ -35,13 +35,13 @@ namespace Rhisis.World.Systems.Job
                 throw new KeyNotFoundException($"Cannot find job '{newJob}'.");
             }
 
-            IEnumerable<SkillInfo> jobSkills = _skillSystem.GetSkillsByJob(newJob);
+            IEnumerable<Skill> jobSkills = _skillSystem.GetSkillsByJob(newJob);
 
-            var skillTree = new List<SkillInfo>();
+            var skillTree = new List<Skill>();
 
-            foreach (SkillInfo skill in jobSkills)
+            foreach (Skill skill in jobSkills)
             {
-                SkillInfo playerSkill = player.SkillTree.GetSkill(skill.SkillId);
+                Skill playerSkill = player.SkillTree.GetSkill(skill.SkillId);
 
                 if (playerSkill != null)
                 {
@@ -49,7 +49,7 @@ namespace Rhisis.World.Systems.Job
                 }
                 else
                 {
-                    skillTree.Add(new SkillInfo(skill.SkillId, player.PlayerData.Id, skill.Data));
+                    skillTree.Add(new Skill(skill.SkillId, player.PlayerData.Id, skill.Data));
                 }
             }
 

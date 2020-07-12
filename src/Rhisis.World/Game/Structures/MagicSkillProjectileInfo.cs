@@ -12,7 +12,7 @@ namespace Rhisis.World.Game.Structures
         /// <summary>
         /// Gets the projectile skill.
         /// </summary>
-        public SkillInfo Skill { get; }
+        public Skill Skill { get; }
 
         /// <summary>
         /// Creates a new <see cref="MagicSkillProjectileInfo"/> instance.
@@ -21,7 +21,7 @@ namespace Rhisis.World.Game.Structures
         /// <param name="target">Projectile target entity.</param>
         /// <param name="skill">Projectile skill.</param>
         /// <param name="onArrived">Action to execute when the magic attack projectile arrives to its target.</param>
-        public MagicSkillProjectileInfo(ILivingEntity owner, ILivingEntity target, SkillInfo skill, Action onArrived) 
+        public MagicSkillProjectileInfo(ILivingEntity owner, ILivingEntity target, Skill skill, Action onArrived) 
             : base(owner, target, onArrived)
         {
             Skill = skill;
