@@ -53,6 +53,9 @@ namespace Rhisis.World.Game.Entities.Internal
         /// <inheritdoc />
         public Item Hand { get; set; }
 
+        /// <inheritdoc />
+        public BuffComponent Buffs { get; }
+
         /// <summary>
         /// Creates a new <see cref="NpcEntity"/> instance.
         /// </summary>
@@ -66,6 +69,7 @@ namespace Rhisis.World.Game.Entities.Internal
             Attributes = new AttributeComponent();
             Moves = new MovableComponent();
             Follow = new FollowComponent();
+            Buffs = new BuffComponent();
         }
 
         /// <inheritdoc />

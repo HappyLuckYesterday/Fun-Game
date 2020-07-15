@@ -6,6 +6,7 @@ using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Structures;
 using Sylver.Network.Common;
+using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Entities.Internal
 {
@@ -73,6 +74,9 @@ namespace Rhisis.World.Game.Entities.Internal
         /// <inheritdoc />
         public Item Hand { get; set; }
 
+        /// <inheritdoc />
+        public BuffComponent Buffs { get; }
+
         /// <summary>
         /// Creates a new <see cref="PlayerEntity"/> instance.
         /// </summary>
@@ -90,6 +94,7 @@ namespace Rhisis.World.Game.Entities.Internal
             QuestDiary = new QuestDiaryComponent();
             SkillTree = new SkillTreeComponent();
             Inventory = new InventoryContainerComponent();
+            Buffs = new BuffComponent();
             _playerFactory = playerFactory;
         }
 

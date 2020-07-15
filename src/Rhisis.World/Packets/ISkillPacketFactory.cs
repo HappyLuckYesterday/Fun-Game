@@ -34,5 +34,14 @@ namespace Rhisis.World.Packets
         /// <param name="player">Current player.</param>
         /// <param name="skillPoints">Skill points.</param>
         void SendSkillReset(IPlayerEntity player, ushort skillPoints);
+
+        /// <summary>
+        /// Sends the skill state to the given entity.
+        /// </summary>
+        /// <param name="entity">Current entity.</param>
+        /// <param name="skillId">Skill id.</param>
+        /// <param name="skillLevel">Skill level.</param>
+        /// <param name="time">Skill remaining time.</param>
+        void SendSkillState(ILivingEntity entity, int skillId, int skillLevel, int time);
     }
 }

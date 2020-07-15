@@ -1,4 +1,7 @@
-﻿namespace Rhisis.World.Game.Structures
+﻿using Rhisis.Core.Data;
+using System.Collections.Generic;
+
+namespace Rhisis.World.Game.Structures
 {
     public class BuffSkill : Buff
     {
@@ -18,11 +21,24 @@
         /// <param name="skillId">Skill id.</param>
         /// <param name="skillLevel">Skill level.</param>
         /// <param name="remainingTime">Buff remaining time.</param>
-        public BuffSkill(int skillId, int skillLevel, int remainingTime)
-            : base(remainingTime)
+        /// <param name="attributes">Bonus attributes.</param>
+        public BuffSkill(int skillId, int skillLevel, int remainingTime, IDictionary<DefineAttributes, int> attributes)
+            : base(remainingTime, attributes)
         {
             SkillId = skillId;
             SkillLevel = skillLevel;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is BuffSkill buffSkill)
+            {
+                return SkillId == buffSkill.SkillId;
+            }
+
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode() => (int)Id;
     }
 }

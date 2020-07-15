@@ -2,6 +2,7 @@
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Structures;
+using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Entities
 {
@@ -41,5 +42,10 @@ namespace Rhisis.World.Game.Entities
         /// Gets the default living entity hand item.
         /// </summary>
         Item Hand { get; }
+
+        /// <summary>
+        /// Gets the list of active buffs.
+        /// </summary>
+        BuffComponent Buffs { get; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
+using Rhisis.Core.Common.Formulas;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Resources;
@@ -228,22 +229,26 @@ namespace Rhisis.World.Systems.Skills
             if (skill == null)
             {
                 _skillPacketFactory.SendSkillCancellation(player);
-                return;
+                throw new ArgumentNullException(nameof(skill), $"Cannot use undefined skill for player {player} on target {targetObjectId}.");
             }
 
             if (CanUseSkill(player, skill))
             {
-                var target = player.FindEntity<ILivingEntity>(targetObjectId);
+                ILivingEntity target;
 
                 if (player.Id == targetObjectId)
                 {
                     target = player;
                 }
-
-                if (target == null)
+                else
                 {
-                    _skillPacketFactory.SendSkillCancellation(player);
-                    throw new ArgumentNullException(nameof(targetObjectId));
+                    target = player.FindEntity<ILivingEntity>(targetObjectId);
+                    
+                    if (target == null)
+                    {
+                        _skillPacketFactory.SendSkillCancellation(player);
+                        throw new ArgumentNullException(nameof(targetObjectId));
+                    }
                 }
 
                 switch (skill.Data.ExecuteTarget)
@@ -504,10 +509,7 @@ namespace Rhisis.World.Systems.Skills
 
             _battleSystem.DamageTarget(caster, target, attackArbiter, skillMessageType);
 
-            if (skill.LevelData.CooldownTime > 0)
-            {
-                skill.SetCoolTime(skill.LevelData.CooldownTime);
-            }
+            skill.SetCoolTime(skill.LevelData.CooldownTime);
 
             if (reduceCasterPoints)
             {
@@ -569,6 +571,7 @@ namespace Rhisis.World.Systems.Skills
         private void CastBuffSkill(ILivingEntity caster, ILivingEntity target, Skill skill, SkillUseType skillUseType)
         {
             _logger.LogTrace($"{caster} is buffing {target} with skill {skill}");
+            int castingTime = GetSkillCastingTime(caster, skill);
 
             if (target.Type == WorldEntityType.Monster)
             {
@@ -590,6 +593,8 @@ namespace Rhisis.World.Systems.Skills
                     else
                     {
                         // TODO: heal
+                        int recoveredHp = skill.LevelData.DestParam1Value + extraBonus.Heal;
+                        //int playerHp = Math.Min(target.Attributes[DefineAttributes.HP] + recoveredHp, HealthFormulas.GetMaxOriginHp()
                     }
                 }
             }
@@ -601,32 +606,56 @@ namespace Rhisis.World.Systems.Skills
                 }
             }
 
-            if (extraBonus.CastingTime > 0)
+            int buffTime = skill.LevelData.SkillTime + extraBonus.CastingTime;
+
+            if (buffTime > 0)
             {
-                // TODO: add temporary bonus
+                var attributes = new Dictionary<DefineAttributes, int>();
+
+                if (skill.LevelData.DestParam1 > 0)
+                {
+                    attributes.Add(skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
+                }
+                if (skill.LevelData.DestParam2 > 0)
+                {
+                    attributes.Add(skill.LevelData.DestParam2, skill.LevelData.DestParam2Value);
+                }
+
+                var buff = new BuffSkill(skill.SkillId, skill.Level, buffTime, attributes);
+
+                target.Buffs.Add(buff);
+
+                foreach (KeyValuePair<DefineAttributes, int> attribute in attributes)
+                {
+                    // TODO: apply player attributes
+                }
+
+                _skillPacketFactory.SendSkillState(target, buff.SkillId, buff.SkillLevel, buff.RemainingTime);
             }
 
-            _skillPacketFactory.SendSkillCancellation(caster as IPlayerEntity);
+            skill.SetCoolTime(skill.LevelData.CooldownTime);
+
+            _skillPacketFactory.SendUseSkill(caster, target, skill, castingTime, skillUseType);
         }
 
         private SkillExtraBonus GetSkillExtraBonus(ILivingEntity caster, Skill skill)
         {
-            int castingTime = skill.LevelData.SkillTime;
+            int castingTime = 0;
             int extraHealPoints = 0;
             int extraDamagePoints = 0;
 
-            castingTime += GetSkillReferTargetBonus(caster, skill, skill.Data.ReferTarget1, skill.Data.ReferStat1, skill.Data.ReferValue1);
-            extraHealPoints += GetSkillReferTargetBonus(caster, skill, skill.Data.ReferTarget1, skill.Data.ReferStat1, skill.Data.ReferValue1);
-            extraDamagePoints += GetSkillReferTargetBonus(caster, skill, skill.Data.ReferTarget1, skill.Data.ReferStat1, skill.Data.ReferValue1);
+            castingTime += GetSkillReferTargetBonus(caster, skill.Data.ReferTarget1, skill.Data.ReferStat1, skill.Data.ReferValue1);
+            extraHealPoints += GetSkillReferTargetBonus(caster, skill.Data.ReferTarget1, skill.Data.ReferStat1, skill.Data.ReferValue1);
+            extraDamagePoints += GetSkillReferTargetBonus(caster, skill.Data.ReferTarget1, skill.Data.ReferStat1, skill.Data.ReferValue1);
 
-            castingTime += GetSkillReferTargetBonus(caster, skill, skill.Data.ReferTarget2, skill.Data.ReferStat2, skill.Data.ReferValue2);
-            extraHealPoints += GetSkillReferTargetBonus(caster, skill, skill.Data.ReferTarget2, skill.Data.ReferStat2, skill.Data.ReferValue2);
-            extraDamagePoints += GetSkillReferTargetBonus(caster, skill, skill.Data.ReferTarget2, skill.Data.ReferStat2, skill.Data.ReferValue2);
+            castingTime += GetSkillReferTargetBonus(caster, skill.Data.ReferTarget2, skill.Data.ReferStat2, skill.Data.ReferValue2);
+            extraHealPoints += GetSkillReferTargetBonus(caster, skill.Data.ReferTarget2, skill.Data.ReferStat2, skill.Data.ReferValue2);
+            extraDamagePoints += GetSkillReferTargetBonus(caster, skill.Data.ReferTarget2, skill.Data.ReferStat2, skill.Data.ReferValue2);
 
             return new SkillExtraBonus(castingTime, extraHealPoints, extraDamagePoints);
         }
 
-        private int GetSkillReferTargetBonus(ILivingEntity caster, Skill skill, SkillReferTargetType targetType, DefineAttributes referStatAttribute, int referValue)
+        private int GetSkillReferTargetBonus(ILivingEntity caster, SkillReferTargetType targetType, DefineAttributes referStatAttribute, int referValue)
         {
             return targetType switch
             {

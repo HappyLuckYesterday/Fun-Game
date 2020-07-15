@@ -56,5 +56,19 @@ namespace Rhisis.World.Packets.Internal
 
             SendToPlayer(player, packet);
         }
+
+        public void SendSkillState(ILivingEntity entity, int skillId, int skillLevel, int time)
+        {
+            using var packet = new FFPacket();
+
+            packet.StartNewMergedPacket(entity.Id, SnapshotType.SETSKILLSTATE);
+            packet.Write(entity.Id);
+            packet.Write<short>(1);
+            packet.Write((short)skillId);
+            packet.Write(skillLevel);
+            packet.Write(time);
+
+            SendToVisible(packet, entity, sendToPlayer: true);
+        }
     }
 }

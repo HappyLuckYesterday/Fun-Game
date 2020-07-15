@@ -32,11 +32,12 @@ namespace Rhisis.World.Game.Structures
         /// Creates a new <see cref="Buff"/> instance.
         /// </summary>
         /// <param name="remainingTime"></param>
-        public Buff(int remainingTime)
+        /// <param name="attributes">Bonus attributes.</param>
+        public Buff(int remainingTime, IDictionary<DefineAttributes, int> attributes)
         {
             Id = RandomHelper.GenerateUniqueId();
             RemainingTime = remainingTime;
-            Attributes = new Dictionary<DefineAttributes, int>();
+            Attributes = new Dictionary<DefineAttributes, int>(attributes);
         }
 
         /// <summary>
@@ -53,6 +54,6 @@ namespace Rhisis.World.Game.Structures
         /// </summary>
         /// <param name="other">Other buff instance.</param>
         /// <returns>True if the buffs are the same; false otherwise.</returns>
-        public bool Equals([AllowNull] Buff other) => Id == other?.Id;
+        public virtual bool Equals([AllowNull] Buff other) => Id == other?.Id;
     }
 }

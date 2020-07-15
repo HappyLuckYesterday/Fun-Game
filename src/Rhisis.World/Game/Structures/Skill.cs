@@ -69,7 +69,13 @@ namespace Rhisis.World.Game.Structures
         /// Sets the skill cool time before it can be used again.
         /// </summary>
         /// <param name="coolTime">Cool time.</param>
-        public void SetCoolTime(long coolTime) => _nextSkillUsageTime = Time.GetElapsedTime() + coolTime;
+        public void SetCoolTime(long coolTime)
+        {
+            if (coolTime > 0)
+            {
+                _nextSkillUsageTime = Time.GetElapsedTime() + coolTime;
+            }
+        }
 
         /// <summary>
         /// Check if the current skill cool time is over.
