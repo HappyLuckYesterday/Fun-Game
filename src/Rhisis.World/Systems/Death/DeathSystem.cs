@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Rhisis.Core.Common.Formulas;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Resources;
@@ -10,6 +9,7 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Health;
 using Rhisis.World.Systems.Teleport;
 
 namespace Rhisis.World.Systems.Death
@@ -21,16 +21,18 @@ namespace Rhisis.World.Systems.Death
         private readonly WorldConfiguration _worldConfiguration;
         private readonly IGameResources _gameResources;
         private readonly IMapManager _mapManager;
+        private readonly IHealthSystem _healthSystem;
         private readonly ITeleportSystem _teleportSystem;
         private readonly IPlayerPacketFactory _playerPacketFactory;
         private readonly IMoverPacketFactory _moverPacketFactory;
 
-        public DeathSystem(ILogger<DeathSystem> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IMapManager mapManager, ITeleportSystem teleportSystem, IPlayerPacketFactory playerPacketFactory, IMoverPacketFactory moverPacketFactory)
+        public DeathSystem(ILogger<DeathSystem> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IMapManager mapManager, IHealthSystem healthSystem, ITeleportSystem teleportSystem, IPlayerPacketFactory playerPacketFactory, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;
             _worldConfiguration = worldConfiguration.Value;
             _gameResources = gameResources;
             _mapManager = mapManager;
+            _healthSystem = healthSystem;
             _teleportSystem = teleportSystem;
             _playerPacketFactory = playerPacketFactory;
             _moverPacketFactory = moverPacketFactory;
@@ -53,9 +55,9 @@ namespace Rhisis.World.Systems.Death
 
             _moverPacketFactory.SendMotion(player, ObjectMessageType.OBJMSG_ACC_STOP | ObjectMessageType.OBJMSG_STOP_TURN | ObjectMessageType.OBJMSG_STAND);
             _playerPacketFactory.SendPlayerRevival(player);
-            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Attributes[DefineAttributes.HP]);
-            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Attributes[DefineAttributes.MP]);
-            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Attributes[DefineAttributes.FP]);
+            _moverPacketFactory.SendUpdatePoints(player, DefineAttributes.HP, player.Attributes[DefineAttributes.HP]);
+            _moverPacketFactory.SendUpdatePoints(player, DefineAttributes.MP, player.Attributes[DefineAttributes.MP]);
+            _moverPacketFactory.SendUpdatePoints(player, DefineAttributes.FP, player.Attributes[DefineAttributes.FP]);
         }
 
         /// <inheritdoc />
@@ -98,17 +100,10 @@ namespace Rhisis.World.Systems.Death
         public void ApplyRevivalHealthPenality(IPlayerEntity player)
         {
             decimal recoveryRate = _gameResources.Penalities.GetRevivalPenality(player.Object.Level) / 100;
-            var jobData = player.PlayerData.JobData;
 
-            int strength = player.Attributes[DefineAttributes.STR];
-            int stamina = player.Attributes[DefineAttributes.STA];
-            int dexterity = player.Attributes[DefineAttributes.DEX];
-            int intelligence = player.Attributes[DefineAttributes.INT];
-
-            player.Attributes[DefineAttributes.HP] = (int)(HealthFormulas.GetMaxOriginHp(player.Object.Level, stamina, jobData.MaxHpFactor) * recoveryRate);
-            player.Attributes[DefineAttributes.MP] = (int)(HealthFormulas.GetMaxOriginMp(player.Object.Level, intelligence, jobData.MaxMpFactor, true) * recoveryRate);
-            player.Attributes[DefineAttributes.FP] = (int)(HealthFormulas.GetMaxOriginFp(player.Object.Level, stamina, dexterity, strength, jobData.MaxFpFactor, true) * recoveryRate);
-
+            player.Attributes[DefineAttributes.HP] = (int)(_healthSystem.GetMaxHp(player) * recoveryRate);
+            player.Attributes[DefineAttributes.MP] = (int)(_healthSystem.GetMaxMp(player) * recoveryRate);
+            player.Attributes[DefineAttributes.FP] = (int)(_healthSystem.GetMaxFp(player) * recoveryRate);
         }
 
         public IMapRevivalRegion GetNearestRevivalRegion(IPlayerEntity player)

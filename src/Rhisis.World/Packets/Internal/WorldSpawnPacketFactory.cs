@@ -129,7 +129,7 @@ namespace Rhisis.World.Packets.Internal
                 player.QuestDiary.Serialize(packet);
 
                 packet.Write(0); // murderer id
-                packet.Write((short)player.Statistics.StatPoints); // stat points
+                packet.Write((short)player.Statistics.AvailablePoints); // stat points
                 packet.Write<short>(0); // always 0
 
                 // item mask
@@ -258,10 +258,10 @@ namespace Rhisis.World.Packets.Internal
                 packet.Write((byte)playerEntity.VisualAppearance.FaceId);
                 packet.Write(playerEntity.PlayerData.Id);
                 packet.Write((byte)1);
-                packet.Write((short)playerEntity.Attributes[DefineAttributes.STR]); // STR
-                packet.Write((short)playerEntity.Attributes[DefineAttributes.STA]); // STA
-                packet.Write((short)playerEntity.Attributes[DefineAttributes.DEX]); // DEX
-                packet.Write((short)playerEntity.Attributes[DefineAttributes.INT]); // INT
+                packet.Write((short)playerEntity.Statistics.Strength); // STR
+                packet.Write((short)playerEntity.Statistics.Stamina); // STA
+                packet.Write((short)playerEntity.Statistics.Dexterity); // DEX
+                packet.Write((short)playerEntity.Statistics.Intelligence); // INT
                 packet.Write((short)playerEntity.Object.Level); // Level
 
                 packet.Write(-1);

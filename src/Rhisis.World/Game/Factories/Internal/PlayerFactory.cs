@@ -14,7 +14,6 @@ using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Entities.Internal;
 using Rhisis.World.Game.Maps;
-using Rhisis.World.Systems.Recovery;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -118,13 +117,16 @@ namespace Rhisis.World.Game.Factories.Internal
             player.Attributes[DefineAttributes.HP] = character.Hp;
             player.Attributes[DefineAttributes.MP] = character.Mp;
             player.Attributes[DefineAttributes.FP] = character.Fp;
-            player.Attributes[DefineAttributes.STR] = character.Strength;
-            player.Attributes[DefineAttributes.STA] = character.Stamina;
-            player.Attributes[DefineAttributes.DEX] = character.Dexterity;
-            player.Attributes[DefineAttributes.INT] = character.Intelligence;
 
-            player.Statistics = new StatisticsComponent(character);
-            player.Timers.NextHealTime = Time.TimeInSeconds() + RecoverySystem.NextIdleHealStand;
+            player.Statistics = new StatisticsComponent
+            {
+                AvailablePoints = (ushort)character.StatPoints,
+                Strength = character.Strength,
+                Stamina = character.Stamina,
+                Dexterity = character.Dexterity,
+                Intelligence = character.Intelligence
+            };
+            player.Timers.NextHealTime = Time.TimeInSeconds();
 
             player.Behavior = _behaviorManager.GetDefaultBehavior(BehaviorType.Player, player);
             player.Hand = _itemFactory.CreateItem(11, 0, ElementType.None, 0);
@@ -169,11 +171,11 @@ namespace Rhisis.World.Game.Factories.Internal
                 character.Gold = player.PlayerData.Gold;
                 character.Experience = player.PlayerData.Experience;
 
-                character.Strength = player.Attributes[DefineAttributes.STR];
-                character.Stamina = player.Attributes[DefineAttributes.STA];
-                character.Dexterity = player.Attributes[DefineAttributes.DEX];
-                character.Intelligence = player.Attributes[DefineAttributes.INT];
-                character.StatPoints = player.Statistics.StatPoints;
+                character.Strength = player.Statistics.Strength;
+                character.Stamina = player.Statistics.Stamina;
+                character.Dexterity = player.Statistics.Dexterity;
+                character.Intelligence = player.Statistics.Intelligence;
+                character.StatPoints = player.Statistics.AvailablePoints;
                 character.SkillPoints = player.Statistics.SkillPoints;
 
                 character.Hp = player.Attributes[DefineAttributes.HP];

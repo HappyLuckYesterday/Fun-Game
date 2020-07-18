@@ -8,13 +8,11 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems;
 using Rhisis.World.Systems.Experience;
+using Rhisis.World.Systems.Health;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Mobility;
 using Rhisis.World.Systems.PlayerData;
 using Rhisis.World.Systems.Quest;
-using Rhisis.World.Systems.Recovery;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Behaviors
 {
@@ -26,7 +24,7 @@ namespace Rhisis.World.Game.Behaviors
         private readonly IMobilitySystem _mobilitySystem;
         private readonly IInventorySystem _inventorySystem;
         private readonly IPlayerDataSystem _playerDataSystem;
-        private readonly IRecoverySystem _recoverySystem;
+        private readonly IHealthSystem _healthSystem;
         private readonly IRegionTriggerSystem _regionTriggerSystem;
         private readonly IQuestSystem _questSystem;
         private readonly IExperienceSystem _experienceSystem;
@@ -41,7 +39,7 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="mobilitySystem">Mobility system.</param>
         /// <param name="inventorySystem">Inventory system.</param>
         /// <param name="playerDataSystem">Player data system.</param>
-        /// <param name="recoverySystem">Recovery system.</param>
+        /// <param name="healthSystem">Recovery system.</param>
         /// <param name="regionTriggerSystem">Region trigger system.</param>
         /// <param name="questSystem">Quest system.</param>
         /// <param name="experienceSystem">Experience system.</param>
@@ -52,7 +50,7 @@ namespace Rhisis.World.Game.Behaviors
             IMobilitySystem mobilitySystem, 
             IInventorySystem inventorySystem, 
             IPlayerDataSystem playerDataSystem, 
-            IRecoverySystem recoverySystem, 
+            IHealthSystem healthSystem, 
             IRegionTriggerSystem regionTriggerSystem,
             IQuestSystem questSystem,
             IExperienceSystem experienceSystem,
@@ -64,7 +62,7 @@ namespace Rhisis.World.Game.Behaviors
             _mobilitySystem = mobilitySystem;
             _inventorySystem = inventorySystem;
             _playerDataSystem = playerDataSystem;
-            _recoverySystem = recoverySystem;
+            _healthSystem = healthSystem;
             _regionTriggerSystem = regionTriggerSystem;
             _questSystem = questSystem;
             _experienceSystem = experienceSystem;
@@ -158,7 +156,7 @@ namespace Rhisis.World.Game.Behaviors
         {
             if (_player.Timers.NextHealTime <= Time.TimeInSeconds() && !_player.Battle.IsFighting)
             {
-                _recoverySystem.IdleRecevory(_player, isSitted: false);
+                _healthSystem.IdleRecovery(_player, isSitted: false);
             }
         }
     }

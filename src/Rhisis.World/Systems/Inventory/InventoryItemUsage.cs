@@ -1,15 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Helpers;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Health;
 using Rhisis.World.Systems.PlayerData;
 using Rhisis.World.Systems.SpecialEffect;
 using Rhisis.World.Systems.Teleport;
@@ -22,6 +21,7 @@ namespace Rhisis.World.Systems.Inventory
     public sealed class InventoryItemUsage : IInventoryItemUsage
     {
         private readonly ILogger<InventoryItemUsage> _logger;
+        private readonly IHealthSystem _healthSystem;
         private readonly IInventoryPacketFactory _inventoryPacketFactory;
         private readonly IMapManager _mapManager;
         private readonly ISpecialEffectSystem _specialEffectSystem;
@@ -34,9 +34,10 @@ namespace Rhisis.World.Systems.Inventory
         /// <summary>
         /// Creates a new <see cref="InventoryItemUsage"/> instance.
         /// </summary>
-        public InventoryItemUsage(ILogger<InventoryItemUsage> logger, IInventoryPacketFactory inventoryPacketFactory, IMapManager mapManager, ISpecialEffectSystem specialEffectSystem, ITeleportSystem teleportSystem, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory, IPlayerDataSystem playerDataSystem, IOptions<WorldConfiguration> worldServerConfiguration)
+        public InventoryItemUsage(ILogger<InventoryItemUsage> logger, IHealthSystem healthSystem, IInventoryPacketFactory inventoryPacketFactory, IMapManager mapManager, ISpecialEffectSystem specialEffectSystem, ITeleportSystem teleportSystem, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory, IPlayerDataSystem playerDataSystem, IOptions<WorldConfiguration> worldServerConfiguration)
         {
             _logger = logger;
+            _healthSystem = healthSystem;
             _inventoryPacketFactory = inventoryPacketFactory;
             _mapManager = mapManager;
             _specialEffectSystem = specialEffectSystem;
@@ -54,7 +55,7 @@ namespace Rhisis.World.Systems.Inventory
                 if (parameter.Key == DefineAttributes.HP || parameter.Key == DefineAttributes.MP || parameter.Key == DefineAttributes.FP)
                 {
                     int currentPoints = player.Attributes[parameter.Key];
-                    int maxPoints = PlayerHelper.GetMaxPoints(player, parameter.Key);
+                    int maxPoints = _healthSystem.GetMaxPoints(player, parameter.Key);
                     int itemMaxRecovery = foodItemToUse.Data.AbilityMin;
 
                     if (parameter.Value >= 0)
@@ -85,8 +86,8 @@ namespace Rhisis.World.Systems.Inventory
                         }
                     }
 
-                    PlayerHelper.SetPoints(player, parameter.Key, currentPoints);
-                    _moverPacketFactory.SendUpdateAttributes(player, parameter.Key, player.Attributes[parameter.Key]);
+                    _healthSystem.SetPoints(player, parameter.Key, currentPoints);
+                    _moverPacketFactory.SendUpdatePoints(player, parameter.Key, player.Attributes[parameter.Key]);
                 }
                 else
                 {

@@ -185,13 +185,26 @@ namespace Rhisis.World.Packets.Internal
         }
 
         /// <inheritdoc />
-        public void SendUpdateAttributes(IWorldEntity entity, DefineAttributes attribute, int newValue)
+        public void SendUpdatePoints(IWorldEntity entity, DefineAttributes attribute, int newValue)
         {
             using var packet = new FFPacket();
             
             packet.StartNewMergedPacket(entity.Id, SnapshotType.SETPOINTPARAM);
             packet.Write((int)attribute);
             packet.Write(newValue);
+
+            SendToVisible(packet, entity, true);
+        }
+
+        /// <inheritdoc />
+        public void SendUpdateAttributes(IWorldEntity entity, DefineAttributes attribute, int value)
+        {
+            using var packet = new FFPacket();
+
+            packet.StartNewMergedPacket(entity.Id, SnapshotType.SETDESTPARAM);
+            packet.Write((int)attribute);
+            packet.Write(value);
+            packet.Write(-1); // nChgParameterValue, doesn't seem to be used.
 
             SendToVisible(packet, entity, true);
         }

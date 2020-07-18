@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
-using Rhisis.Core.Common.Formulas;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Resources;
@@ -11,6 +10,7 @@ using Rhisis.Database.Entities;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Attributes;
 using Rhisis.World.Systems.Battle;
 using Rhisis.World.Systems.Battle.Arbiters;
 using Rhisis.World.Systems.Inventory;
@@ -42,6 +42,7 @@ namespace Rhisis.World.Systems.Skills
         private readonly IBattleSystem _battleSystem;
         private readonly IInventorySystem _inventorySystem;
         private readonly IProjectileSystem _projectileSystem;
+        private readonly IAttributeSystem _attributeSystem;
         private readonly ISkillPacketFactory _skillPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
         private readonly IPlayerPacketFactory _playerPacketFactory;
@@ -52,7 +53,7 @@ namespace Rhisis.World.Systems.Skills
         public int Order => 1;
 
         public SkillSystem(ILogger<SkillSystem> logger, IRhisisDatabase database, IGameResources gameResources, 
-            IBattleSystem battleSystem, IInventorySystem inventorySystem, IProjectileSystem projectileSystem, 
+            IBattleSystem battleSystem, IInventorySystem inventorySystem, IProjectileSystem projectileSystem, IAttributeSystem attributeSystem,
             ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, IPlayerPacketFactory playerPacketFactory,
             ISpecialEffectPacketFactory specialEffectPacketFactory, IMoverPacketFactory moverPacketFactory)
         {
@@ -62,6 +63,7 @@ namespace Rhisis.World.Systems.Skills
             _battleSystem = battleSystem;
             _inventorySystem = inventorySystem;
             _projectileSystem = projectileSystem;
+            _attributeSystem = attributeSystem;
             _skillPacketFactory = skillPacketFactory;
             _textPacketFactory = textPacketFactory;
             _playerPacketFactory = playerPacketFactory;
@@ -551,13 +553,13 @@ namespace Rhisis.World.Systems.Skills
             if (skill.LevelData.RequiredFP > 0)
             {
                 caster.Attributes[DefineAttributes.FP] -= skill.LevelData.RequiredFP;
-                _moverPacketFactory.SendUpdateAttributes(caster, DefineAttributes.FP, caster.Attributes[DefineAttributes.FP]);
+                _moverPacketFactory.SendUpdatePoints(caster, DefineAttributes.FP, caster.Attributes[DefineAttributes.FP]);
             }
 
             if (skill.LevelData.RequiredMP > 0)
             {
                 caster.Attributes[DefineAttributes.MP] -= skill.LevelData.RequiredMP;
-                _moverPacketFactory.SendUpdateAttributes(caster, DefineAttributes.MP, caster.Attributes[DefineAttributes.MP]);
+                _moverPacketFactory.SendUpdatePoints(caster, DefineAttributes.MP, caster.Attributes[DefineAttributes.MP]);
             }
         }
 
@@ -627,7 +629,7 @@ namespace Rhisis.World.Systems.Skills
 
                 foreach (KeyValuePair<DefineAttributes, int> attribute in attributes)
                 {
-                    // TODO: apply player attributes
+                    _attributeSystem.SetAttribute(target, attribute.Key, attribute.Value);
                 }
 
                 _skillPacketFactory.SendSkillState(target, buff.SkillId, buff.SkillLevel, buff.RemainingTime);
