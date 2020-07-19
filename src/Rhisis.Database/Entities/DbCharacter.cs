@@ -195,6 +195,16 @@ namespace Rhisis.Database.Entities
         /// </summary>
         public ICollection<DbShortcut> TaskbarShortcuts { get; set; }
 
+        /// <summary>
+        /// Gets the character skills.
+        /// </summary>
+        public ICollection<DbSkill> Skills { get; set; }
+
+        /// <summary>
+        /// Gets or sets the character skill buffs.
+        /// </summary>
+        public ICollection<DbSkillBuff> SkillBuffs { get; set; }
+
         public DbCharacter()
         {
             Items = new HashSet<DbItemStorage>();

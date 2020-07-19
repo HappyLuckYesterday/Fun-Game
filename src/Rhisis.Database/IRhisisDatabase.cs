@@ -67,6 +67,16 @@ namespace Rhisis.Database
         DbSet<DbSkill> Skills { get; }
 
         /// <summary>
+        /// Gets the skill buffs.
+        /// </summary>
+        DbSet<DbSkillBuff> SkillBuffs { get; }
+
+        /// <summary>
+        /// Gets the skill buff attributes.
+        /// </summary>
+        DbSet<DbSkillBuffAttribute> SkillBuffAttributes { get; }
+
+        /// <summary>
         /// Creates a Microsoft.EntityFrameworkCore.DbSet`1 that can be used to query and save instances of TEntity.
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>

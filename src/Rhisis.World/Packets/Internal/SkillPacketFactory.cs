@@ -63,7 +63,7 @@ namespace Rhisis.World.Packets.Internal
 
             packet.StartNewMergedPacket(entity.Id, SnapshotType.SETSKILLSTATE);
             packet.Write(entity.Id);
-            packet.Write<short>(1);
+            packet.Write((short)BuffType.Skill);
             packet.Write((short)skillId);
             packet.Write(skillLevel);
             packet.Write(time);

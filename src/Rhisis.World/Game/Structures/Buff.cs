@@ -1,13 +1,21 @@
 ﻿using Rhisis.Core.Data;
 using Rhisis.Core.Helpers;
+using Rhisis.Core.IO;
+using Rhisis.Network.Packets;
+using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Rhisis.World.Game.Structures
 {
-    public class Buff : IEquatable<Buff>
+    public class Buff : IEquatable<Buff>, IPacketSerializer
     {
+        /// <summary>
+        /// Gets the buff type.
+        /// </summary>
+        public virtual BuffType Type { get; }
+
         /// <summary>
         /// Gets the buff unique id.
         /// </summary>
@@ -55,5 +63,10 @@ namespace Rhisis.World.Game.Structures
         /// <param name="other">Other buff instance.</param>
         /// <returns>True if the buffs are the same; false otherwise.</returns>
         public virtual bool Equals([AllowNull] Buff other) => Id == other?.Id;
+
+        public virtual void Serialize(INetPacketStream packet)
+        {
+            // Nothing to do.
+        }
     }
 }

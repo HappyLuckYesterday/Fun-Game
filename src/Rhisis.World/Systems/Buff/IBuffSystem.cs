@@ -1,6 +1,8 @@
-﻿namespace Rhisis.World.Systems.Buff
+﻿using Rhisis.World.Game;
+
+namespace Rhisis.World.Systems.Buff
 {
-    public interface IBuffSystem
+    public interface IBuffSystem : IGameSystemLifeCycle
     {
     }
 }

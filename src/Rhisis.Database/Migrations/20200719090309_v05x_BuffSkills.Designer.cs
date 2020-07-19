@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rhisis.Database;
 
 namespace Rhisis.Database.Migrations
 {
     [DbContext(typeof(RhisisDatabaseContext))]
-    partial class RhisisDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20200719090309_v05x_BuffSkills")]
+    partial class v05x_BuffSkills
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -40,8 +40,6 @@ namespace Rhisis.World.Systems.Skills
         private readonly IRhisisDatabase _database;
         private readonly IGameResources _gameResources;
         private readonly IBattleSystem _battleSystem;
-        private readonly IInventorySystem _inventorySystem;
-        private readonly IProjectileSystem _projectileSystem;
         private readonly IAttributeSystem _attributeSystem;
         private readonly ISkillPacketFactory _skillPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
@@ -53,7 +51,7 @@ namespace Rhisis.World.Systems.Skills
         public int Order => 1;
 
         public SkillSystem(ILogger<SkillSystem> logger, IRhisisDatabase database, IGameResources gameResources, 
-            IBattleSystem battleSystem, IInventorySystem inventorySystem, IProjectileSystem projectileSystem, IAttributeSystem attributeSystem,
+            IBattleSystem battleSystem, IAttributeSystem attributeSystem,
             ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, IPlayerPacketFactory playerPacketFactory,
             ISpecialEffectPacketFactory specialEffectPacketFactory, IMoverPacketFactory moverPacketFactory)
         {
@@ -61,8 +59,6 @@ namespace Rhisis.World.Systems.Skills
             _database = database;
             _gameResources = gameResources;
             _battleSystem = battleSystem;
-            _inventorySystem = inventorySystem;
-            _projectileSystem = projectileSystem;
             _attributeSystem = attributeSystem;
             _skillPacketFactory = skillPacketFactory;
             _textPacketFactory = textPacketFactory;

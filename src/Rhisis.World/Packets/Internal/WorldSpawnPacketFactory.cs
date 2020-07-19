@@ -171,24 +171,11 @@ namespace Rhisis.World.Packets.Internal
                         packet.Write(j);
                 }
 
-                packet.Write(int.MaxValue); // pet id
+                packet.Write(-1); // pet id
 
                 // Bag
-                packet.Write<byte>(1);
-                for (var i = 0; i < 6; i++)
-                    packet.Write(i);
-                packet.Write<byte>(0); // Base bag item count
-                for (var i = 0; i < 0; i++) // TODO
-                {
-                    packet.Write((byte)i); // Slot
-                    packet.Write(i); // Slot
-                }
-                for (var i = 0; i < 6; i++)
-                    packet.Write(i);
-                packet.Write(0);
-                packet.Write(0);
-
-                // premium bag
+                packet.Write<byte>(0);
+                packet.Write<byte>(0);
                 packet.Write<byte>(0);
 
                 packet.Write(0); // muted
@@ -201,7 +188,7 @@ namespace Rhisis.World.Packets.Internal
                 packet.Write(0); // campus points
 
                 // buffs
-                packet.Write(0); // count
+                player.Buffs.Serialize(packet);
 
                 SendToPlayer(player, packet);
             }
@@ -311,7 +298,7 @@ namespace Rhisis.World.Packets.Internal
                 }
 
                 packet.Write(-1); // pet ?
-                packet.Write(0); // buffs ?
+                player.Buffs.Serialize(packet);
             }
             else if (entityToSpawn.Type == WorldEntityType.Monster)
             {
