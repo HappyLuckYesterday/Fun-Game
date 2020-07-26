@@ -1,4 +1,6 @@
-﻿using Rhisis.Core.Data;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Query.Internal;
+using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
@@ -34,7 +36,6 @@ namespace Rhisis.World.Systems.Attributes
                     return;
             }
 
-            // TODO: set attribute
             if (value != 0)
             {
                 switch (attribute)
@@ -55,6 +56,43 @@ namespace Rhisis.World.Systems.Attributes
                 {
                     _moverPacketFactory.SendUpdateAttributes(entity, attribute, entity.Attributes[attribute]);
                 }
+            }
+        }
+
+        public void ResetAttribute(ILivingEntity entity, DefineAttributes attribute, int value, bool sendToEntity = true)
+        {
+            switch (attribute)
+            {
+                case DefineAttributes.RESIST_ALL:
+                    ResetAttribute(entity, DefineAttributes.RESIST_FIRE, value, sendToEntity);
+                    ResetAttribute(entity, DefineAttributes.RESIST_ELECTRICITY, value, sendToEntity);
+                    ResetAttribute(entity, DefineAttributes.RESIST_WATER, value, sendToEntity);
+                    ResetAttribute(entity, DefineAttributes.RESIST_WIND, value, sendToEntity);
+                    ResetAttribute(entity, DefineAttributes.RESIST_EARTH, value, sendToEntity);
+                    return;
+                case DefineAttributes.STAT_ALLUP:
+                    ResetAttribute(entity, DefineAttributes.STR, value, sendToEntity);
+                    ResetAttribute(entity, DefineAttributes.STA, value, sendToEntity);
+                    ResetAttribute(entity, DefineAttributes.DEX, value, sendToEntity);
+                    ResetAttribute(entity, DefineAttributes.INT, value, sendToEntity);
+                    return;
+            }
+
+            if (value != 0)
+            {
+                if (attribute == DefineAttributes.CHRSTATE)
+                {
+                    entity.Attributes[attribute] &= ~value;
+                }
+                else
+                {
+                    entity.Attributes[attribute] -= value;
+                }
+            }
+
+            if (sendToEntity)
+            {
+                _moverPacketFactory.SendResetAttribute(entity, attribute, value);
             }
         }
     }

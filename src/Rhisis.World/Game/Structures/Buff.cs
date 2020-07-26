@@ -24,7 +24,7 @@ namespace Rhisis.World.Game.Structures
         /// <summary>
         /// Gets the buff remaining time.
         /// </summary>
-        public int RemainingTime { get; private set; }
+        public int RemainingTime { get; set; }
 
         /// <summary>
         /// Gets a boolean value that indicates if the buff has expired.
@@ -51,10 +51,10 @@ namespace Rhisis.World.Game.Structures
         /// <summary>
         /// Decreases the buff time.
         /// </summary>
-        /// <param name="time">Time to decrease.</param>
+        /// <param name="time">Time to decrease in seconds.</param>
         public void DecreaseTime(int time = 1)
         {
-            RemainingTime -= time;
+            RemainingTime -= time * 1000;
         }
 
         /// <summary>

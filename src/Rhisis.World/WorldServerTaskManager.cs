@@ -5,6 +5,7 @@ using Rhisis.Core.Extensions;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Systems;
+using Rhisis.World.Systems.Buff;
 using Rhisis.World.Systems.Visibility;
 using System;
 using System.Threading;
@@ -21,6 +22,7 @@ namespace Rhisis.World
         private readonly IMapManager _mapManager;
         private readonly IVisibilitySystem _visibilitySystem;
         private readonly IRespawnSystem _respawnSystem;
+        private readonly IBuffSystem _buffSystem;
 
         /// <summary>
         /// Creates a new <see cref="WorldServerTaskManager"/> instance.
@@ -29,7 +31,7 @@ namespace Rhisis.World
         /// <param name="mapManager">Map manager.</param>
         /// <param name="visibilitySystem">Visibility System.</param>
         /// <param name="respawnSystem">Respawn System.</param>
-        public WorldServerTaskManager(ILogger<WorldServerTaskManager> logger, IMapManager mapManager, IVisibilitySystem visibilitySystem, IRespawnSystem respawnSystem)
+        public WorldServerTaskManager(ILogger<WorldServerTaskManager> logger, IMapManager mapManager, IVisibilitySystem visibilitySystem, IRespawnSystem respawnSystem, IBuffSystem buffSystem)
         {
             _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
@@ -37,6 +39,7 @@ namespace Rhisis.World
             _mapManager = mapManager;
             _visibilitySystem = visibilitySystem;
             _respawnSystem = respawnSystem;
+            _buffSystem = buffSystem;
         }
 
         /// <inheritdoc />
@@ -64,6 +67,11 @@ namespace Rhisis.World
                 {
                     _visibilitySystem.Execute(entity);
                     _respawnSystem.Execute(entity);
+
+                    if (entity is ILivingEntity livingEntity)
+                    {
+                        _buffSystem.UpdateBuffTimers(livingEntity);
+                    }
                 }
                 catch (Exception e)
                 {

@@ -210,6 +210,18 @@ namespace Rhisis.World.Packets.Internal
         }
 
         /// <inheritdoc />
+        public void SendResetAttribute(IWorldEntity entity, DefineAttributes attribute, int value)
+        {
+            using var packet = new FFPacket();
+
+            packet.StartNewMergedPacket(entity.Id, SnapshotType.RESETDESTPARAM);
+            packet.Write((int)attribute);
+            packet.Write(value);
+
+            SendToVisible(packet, entity, true);
+        }
+
+        /// <inheritdoc />
         public void SendMotion(IWorldEntity entity, ObjectMessageType objectMessage)
         {
             using var packet = new FFPacket();

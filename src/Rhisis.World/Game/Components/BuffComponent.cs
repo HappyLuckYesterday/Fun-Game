@@ -18,20 +18,7 @@ namespace Rhisis.World.Game.Components
 
         public void Add(Buff buff)
         {
-            if (buff is BuffSkill buffSkill)
-            {
-                BuffSkill existingBuff = _buffs.OfType<BuffSkill>().FirstOrDefault(x => x.SkillId == buffSkill.SkillId);
-
-                if (existingBuff != null && existingBuff.SkillLevel < buffSkill.SkillLevel)
-                {
-                    Remove(existingBuff);
-                    _buffs.Add(buff);
-                }
-                else if (existingBuff == null)
-                {
-                    _buffs.Add(buff);
-                }
-            }
+            _buffs.Add(buff);
         }
 
         public void Remove(Buff buff)

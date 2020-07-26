@@ -13,6 +13,7 @@ using Rhisis.World.Packets;
 using Rhisis.World.Systems.Attributes;
 using Rhisis.World.Systems.Battle;
 using Rhisis.World.Systems.Battle.Arbiters;
+using Rhisis.World.Systems.Buff;
 using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Projectile;
 using System;
@@ -41,6 +42,7 @@ namespace Rhisis.World.Systems.Skills
         private readonly IGameResources _gameResources;
         private readonly IBattleSystem _battleSystem;
         private readonly IAttributeSystem _attributeSystem;
+        private readonly IBuffSystem _buffSystem;
         private readonly ISkillPacketFactory _skillPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
         private readonly IPlayerPacketFactory _playerPacketFactory;
@@ -50,8 +52,8 @@ namespace Rhisis.World.Systems.Skills
         /// <inheritdoc />
         public int Order => 1;
 
-        public SkillSystem(ILogger<SkillSystem> logger, IRhisisDatabase database, IGameResources gameResources, 
-            IBattleSystem battleSystem, IAttributeSystem attributeSystem,
+        public SkillSystem(ILogger<SkillSystem> logger, IRhisisDatabase database, IGameResources gameResources,
+            IBattleSystem battleSystem, IAttributeSystem attributeSystem, IBuffSystem buffSystem,
             ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, IPlayerPacketFactory playerPacketFactory,
             ISpecialEffectPacketFactory specialEffectPacketFactory, IMoverPacketFactory moverPacketFactory)
         {
@@ -60,6 +62,7 @@ namespace Rhisis.World.Systems.Skills
             _gameResources = gameResources;
             _battleSystem = battleSystem;
             _attributeSystem = attributeSystem;
+            _buffSystem = buffSystem;
             _skillPacketFactory = skillPacketFactory;
             _textPacketFactory = textPacketFactory;
             _playerPacketFactory = playerPacketFactory;
@@ -124,10 +127,10 @@ namespace Rhisis.World.Systems.Skills
             }
 
             IEnumerable<Skill> jobSkills = from x in _gameResources.Skills.Values
-                                               where x.Job == jobData.Id &&
-                                                     x.JobType != DefineJob.JobType.JTYPE_COMMON &&
-                                                     x.JobType != DefineJob.JobType.JTYPE_TROUPE
-                                               select new Skill(x.Id, -1, x);
+                                           where x.Job == jobData.Id &&
+                                                 x.JobType != DefineJob.JobType.JTYPE_COMMON &&
+                                                 x.JobType != DefineJob.JobType.JTYPE_TROUPE
+                                           select new Skill(x.Id, -1, x);
 
             skillsList.AddRange(jobSkills);
 
@@ -241,7 +244,7 @@ namespace Rhisis.World.Systems.Skills
                 else
                 {
                     target = player.FindEntity<ILivingEntity>(targetObjectId);
-                    
+
                     if (target == null)
                     {
                         _skillPacketFactory.SendSkillCancellation(player);
@@ -620,15 +623,12 @@ namespace Rhisis.World.Systems.Skills
                 }
 
                 var buff = new BuffSkill(skill.SkillId, skill.Level, buffTime, attributes);
+                bool isBuffAdded = _buffSystem.AddBuff(target, buff);
 
-                target.Buffs.Add(buff);
-
-                foreach (KeyValuePair<DefineAttributes, int> attribute in attributes)
+                if (isBuffAdded)
                 {
-                    _attributeSystem.SetAttribute(target, attribute.Key, attribute.Value);
+                    _skillPacketFactory.SendSkillState(target, buff.SkillId, buff.SkillLevel, buff.RemainingTime);
                 }
-
-                _skillPacketFactory.SendSkillState(target, buff.SkillId, buff.SkillLevel, buff.RemainingTime);
             }
 
             skill.SetCoolTime(skill.LevelData.CooldownTime);

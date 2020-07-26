@@ -96,12 +96,21 @@ namespace Rhisis.World.Packets
         void SendUpdatePoints(IWorldEntity entity, DefineAttributes attribute, int newValue);
 
         /// <summary>
-        /// Sen
+        /// Send a packet to update the entity's attribute.
         /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="attribute"></param>
-        /// <param name="value"></param>
+        /// <param name="entity">Entity.</param>
+        /// <param name="attribute">Attribute to update.</param>
+        /// <param name="value">Attribute value</param>
         void SendUpdateAttributes(IWorldEntity entity, DefineAttributes attribute, int value);
+
+        /// <summary>
+        /// Send a packet to reset the entity's attribute.
+        /// </summary>
+        /// <param name="entity">Entity.</param>
+        /// <param name="attribute">Attribute to reset.</param>
+        /// <param name="value">Attribute value</param>
+
+        void SendResetAttribute(IWorldEntity entity, DefineAttributes attribute, int value);
 
         /// <summary>
         /// Sends a motion to the given entity.
