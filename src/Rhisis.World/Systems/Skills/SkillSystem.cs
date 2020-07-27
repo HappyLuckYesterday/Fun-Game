@@ -14,8 +14,6 @@ using Rhisis.World.Systems.Attributes;
 using Rhisis.World.Systems.Battle;
 using Rhisis.World.Systems.Battle.Arbiters;
 using Rhisis.World.Systems.Buff;
-using Rhisis.World.Systems.Inventory;
-using Rhisis.World.Systems.Projectile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -233,25 +231,25 @@ namespace Rhisis.World.Systems.Skills
                 throw new ArgumentNullException(nameof(skill), $"Cannot use undefined skill for player {player} on target {targetObjectId}.");
             }
 
-            if (CanUseSkill(player, skill))
+            ILivingEntity target;
+
+            if (player.Id == targetObjectId)
             {
-                ILivingEntity target;
+                target = player;
+            }
+            else
+            {
+                target = player.FindEntity<ILivingEntity>(targetObjectId);
 
-                if (player.Id == targetObjectId)
+                if (target == null)
                 {
-                    target = player;
+                    _skillPacketFactory.SendSkillCancellation(player);
+                    throw new ArgumentNullException(nameof(targetObjectId));
                 }
-                else
-                {
-                    target = player.FindEntity<ILivingEntity>(targetObjectId);
+            }
 
-                    if (target == null)
-                    {
-                        _skillPacketFactory.SendSkillCancellation(player);
-                        throw new ArgumentNullException(nameof(targetObjectId));
-                    }
-                }
-
+            if (CanUseSkill(player, target, skill))
+            {
                 switch (skill.Data.ExecuteTarget)
                 {
                     case SkillExecuteTargetType.MeleeAttack:
@@ -280,7 +278,7 @@ namespace Rhisis.World.Systems.Skills
         }
 
         /// <inheritdoc />
-        public bool CanUseSkill(IPlayerEntity player, Skill skill)
+        public bool CanUseSkill(IPlayerEntity player, ILivingEntity target, Skill skill)
         {
             if (skill.Level <= 0 || skill.Level > skill.Data.SkillLevels.Count)
             {
@@ -338,6 +336,17 @@ namespace Rhisis.World.Systems.Skills
                 if (!playerHasCorrectWeapon)
                 {
                     _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WRONGITEM);
+                    return false;
+                }
+            }
+
+            if (skill.Data.Type == SkillType.Magic)
+            {
+                BuffSkill buffSkill = target.Buffs.OfType<BuffSkill>().FirstOrDefault(x => x.SkillId == skill.SkillId);
+
+                if (buffSkill != null && buffSkill.SkillLevel > skill.Level)
+                {
+                    _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_DONOTUSEBUFF);
                     return false;
                 }
             }

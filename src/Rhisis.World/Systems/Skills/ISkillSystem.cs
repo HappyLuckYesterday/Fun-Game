@@ -35,9 +35,10 @@ namespace Rhisis.World.Systems.Skills
         /// Checks if the player can use the skill.
         /// </summary>
         /// <param name="player">Current player.</param>
+        /// <param name="target">Skill target.</param>
         /// <param name="skill">Skill to use.</param>
         /// <returns>True if the player can use the skill; false otherwise.</returns>
-        bool CanUseSkill(IPlayerEntity player, Skill skill);
+        bool CanUseSkill(IPlayerEntity player, ILivingEntity target, Skill skill);
 
         /// <summary>
         /// Resets player skills.
