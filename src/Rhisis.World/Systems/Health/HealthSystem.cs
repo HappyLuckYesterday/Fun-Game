@@ -95,14 +95,14 @@ namespace Rhisis.World.Systems.Health
 
         public int GetMaxMp(ILivingEntity entity)
         {
-            return GetMaxParamPoints(GetMaxOriginHp(entity),
+            return GetMaxParamPoints(GetMaxOriginMp(entity),
                 entity.Attributes[DefineAttributes.MP_MAX],
                 entity.Attributes[DefineAttributes.MP_MAX_RATE]);
         }
 
         public int GetMaxFp(ILivingEntity entity)
         {
-            return GetMaxParamPoints(GetMaxOriginHp(entity),
+            return GetMaxParamPoints(GetMaxOriginFp(entity),
                 entity.Attributes[DefineAttributes.FP_MAX],
                 entity.Attributes[DefineAttributes.FP_MAX_RATE]);
         }
@@ -163,16 +163,44 @@ namespace Rhisis.World.Systems.Health
             };
         }
 
+        public int GetPoints(ILivingEntity entity, DefineAttributes attribute)
+        {
+            return attribute switch
+            {
+                DefineAttributes.HP => entity.Attributes[DefineAttributes.HP],
+                DefineAttributes.MP => entity.Attributes[DefineAttributes.MP],
+                DefineAttributes.FP => entity.Attributes[DefineAttributes.FP],
+                _ => 0
+            };
+        }
+
         public void SetPoints(ILivingEntity entity, DefineAttributes attribute, int value)
         {
-            int max = GetMaxPoints(entity, attribute);
-
-            if (entity.Attributes[attribute] == value)
+            if (attribute == DefineAttributes.HP || attribute == DefineAttributes.MP || attribute == DefineAttributes.FP)
             {
-                return;
-            }
+                int max = GetMaxPoints(entity, attribute);
 
-            entity.Attributes[attribute] = Math.Min(value, max);
+                if (entity.Attributes[attribute] == value)
+                {
+                    return;
+                }
+
+                entity.Attributes[attribute] = Math.Min(value, max);
+            }
+        }
+
+        public void IncreasePoints(ILivingEntity entity, DefineAttributes attribute, int value)
+        {
+            if (value == -1)
+            {
+                SetPoints(entity, attribute, int.MaxValue);
+            }
+            else
+            {
+                int newHp = GetPoints(entity, attribute) + value;
+
+                SetPoints(entity, attribute, newHp);
+            }
         }
 
         public void IdleRecovery(IPlayerEntity player, bool isSitted = false)
@@ -188,16 +216,13 @@ namespace Rhisis.World.Systems.Health
 
             player.Timers.NextHealTime = Time.TimeInSeconds() + nextHealDelay;
 
-            int maxHp = GetMaxHp(player);
-            int maxMp = GetMaxMp(player);
-            int maxFp = GetMaxFp(player);
             int recoveryHp = GetHpRecovery(player);
             int recoveryMp = GetMpRecovery(player);
             int recoveryFp = GetFpRecovery(player);
 
-            player.Attributes[DefineAttributes.HP] = Math.Min(maxHp, player.Attributes[DefineAttributes.HP] + recoveryHp);
-            player.Attributes[DefineAttributes.MP] = Math.Min(maxMp, player.Attributes[DefineAttributes.MP] + recoveryMp);
-            player.Attributes[DefineAttributes.FP] = Math.Min(maxFp, player.Attributes[DefineAttributes.FP] + recoveryFp);
+            IncreasePoints(player, DefineAttributes.HP, recoveryHp);
+            IncreasePoints(player, DefineAttributes.MP, recoveryMp);
+            IncreasePoints(player, DefineAttributes.FP, recoveryFp);
 
             _moverPacketFactory.SendUpdatePoints(player, DefineAttributes.HP, player.Attributes[DefineAttributes.HP]);
             _moverPacketFactory.SendUpdatePoints(player, DefineAttributes.MP, player.Attributes[DefineAttributes.MP]);

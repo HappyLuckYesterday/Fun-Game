@@ -4,16 +4,19 @@ using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Health;
 
 namespace Rhisis.World.Systems.Attributes
 {
     [Injectable]
     public class AttributeSystem : IAttributeSystem
     {
+        private readonly IHealthSystem _healthSystem;
         private readonly IMoverPacketFactory _moverPacketFactory;
 
-        public AttributeSystem(IMoverPacketFactory moverPacketFactory)
+        public AttributeSystem(IHealthSystem healthSystem, IMoverPacketFactory moverPacketFactory)
         {
+            _healthSystem = healthSystem;
             _moverPacketFactory = moverPacketFactory;
         }
 
@@ -21,6 +24,11 @@ namespace Rhisis.World.Systems.Attributes
         {
             switch (attribute)
             {
+                case DefineAttributes.HP:
+                case DefineAttributes.MP:
+                case DefineAttributes.FP:
+                    _healthSystem.IncreasePoints(entity, attribute, value);
+                    break;
                 case DefineAttributes.RESIST_ALL:
                     SetAttribute(entity, DefineAttributes.RESIST_FIRE, value, sendToEntity);
                     SetAttribute(entity, DefineAttributes.RESIST_ELECTRICITY, value, sendToEntity);

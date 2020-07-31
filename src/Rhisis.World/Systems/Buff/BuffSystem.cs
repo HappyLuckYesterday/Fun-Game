@@ -42,7 +42,13 @@ namespace Rhisis.World.Systems.Buff
 
                 var buff = new BuffSkill(dbSkillBuff.SkillId, dbSkillBuff.SkillLevel, dbSkillBuff.RemainingTime, buffAttributes, dbSkillBuff.Id);
 
-                AddBuff(player, buff);
+                if (AddBuff(player, buff))
+                {
+                    foreach (KeyValuePair<DefineAttributes, int> buffAttribute in buffAttributes)
+                    {
+                        _attributeSystem.SetAttribute(player, buffAttribute.Key, buffAttribute.Value, sendToEntity: false);
+                    }
+                }
             }
         }
 
@@ -129,7 +135,9 @@ namespace Rhisis.World.Systems.Buff
         {
             if (entity.Buffs.Any())
             {
-                foreach (Game.Structures.Buff buff in entity.Buffs)
+                IEnumerable<Game.Structures.Buff> buffs = entity.Buffs.ToList();
+
+                foreach (Game.Structures.Buff buff in buffs)
                 {
                     buff.DecreaseTime();
 
@@ -139,7 +147,7 @@ namespace Rhisis.World.Systems.Buff
                     }
                 }
 
-                IEnumerable<Game.Structures.Buff> expiredBuffs = entity.Buffs.Where(x => x.HasExpired);
+                IEnumerable<Game.Structures.Buff> expiredBuffs = buffs.Where(x => x.HasExpired);
 
                 if (expiredBuffs.Any())
                 {

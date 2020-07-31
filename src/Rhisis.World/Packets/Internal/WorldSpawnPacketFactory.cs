@@ -61,10 +61,10 @@ namespace Rhisis.World.Packets.Internal
                 packet.Write(player.PlayerData.Id);
                 packet.Write((byte)player.PlayerData.Job);
 
-                packet.Write((short)player.Attributes[DefineAttributes.STR]);
-                packet.Write((short)player.Attributes[DefineAttributes.STA]);
-                packet.Write((short)player.Attributes[DefineAttributes.DEX]);
-                packet.Write((short)player.Attributes[DefineAttributes.INT]);
+                packet.Write((short)player.Statistics.Strength);
+                packet.Write((short)player.Statistics.Stamina);
+                packet.Write((short)player.Statistics.Dexterity);
+                packet.Write((short)player.Statistics.Intelligence);
 
                 packet.Write((short)player.Object.Level); // Level
                 packet.Write(-1); // Fuel

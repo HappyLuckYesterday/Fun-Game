@@ -14,6 +14,8 @@ using Rhisis.World.Systems.Attributes;
 using Rhisis.World.Systems.Battle;
 using Rhisis.World.Systems.Battle.Arbiters;
 using Rhisis.World.Systems.Buff;
+using Rhisis.World.Systems.Health;
+using Rhisis.World.Systems.Statistics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +43,7 @@ namespace Rhisis.World.Systems.Skills
         private readonly IBattleSystem _battleSystem;
         private readonly IAttributeSystem _attributeSystem;
         private readonly IBuffSystem _buffSystem;
+        private readonly IStatisticsSystem _statisticsSystem;
         private readonly ISkillPacketFactory _skillPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
         private readonly IPlayerPacketFactory _playerPacketFactory;
@@ -51,7 +54,7 @@ namespace Rhisis.World.Systems.Skills
         public int Order => 1;
 
         public SkillSystem(ILogger<SkillSystem> logger, IRhisisDatabase database, IGameResources gameResources,
-            IBattleSystem battleSystem, IAttributeSystem attributeSystem, IBuffSystem buffSystem,
+            IBattleSystem battleSystem, IAttributeSystem attributeSystem, IBuffSystem buffSystem, IStatisticsSystem statisticsSystem,
             ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, IPlayerPacketFactory playerPacketFactory,
             ISpecialEffectPacketFactory specialEffectPacketFactory, IMoverPacketFactory moverPacketFactory)
         {
@@ -61,6 +64,7 @@ namespace Rhisis.World.Systems.Skills
             _battleSystem = battleSystem;
             _attributeSystem = attributeSystem;
             _buffSystem = buffSystem;
+            _statisticsSystem = statisticsSystem;
             _skillPacketFactory = skillPacketFactory;
             _textPacketFactory = textPacketFactory;
             _playerPacketFactory = playerPacketFactory;
@@ -589,8 +593,6 @@ namespace Rhisis.World.Systems.Skills
                 return;
             }
 
-            SkillExtraBonus extraBonus = GetSkillExtraBonus(caster, skill);
-
             if (skill.LevelData.DestParam1 > 0)
             {
                 if (skill.LevelData.DestParam1 == DefineAttributes.HP)
@@ -602,9 +604,12 @@ namespace Rhisis.World.Systems.Skills
                     }
                     else
                     {
-                        // TODO: heal
-                        int recoveredHp = skill.LevelData.DestParam1Value + extraBonus.Heal;
-                        //int playerHp = Math.Min(target.Attributes[DefineAttributes.HP] + recoveredHp, HealthFormulas.GetMaxOriginHp()
+                        _logger.LogTrace($"{caster} is healing {target} in {castingTime}...");
+                        caster.Delayer.DelayAction(castingTime / 1000f, () =>
+                        {
+                            _logger.LogTrace($"{target} healed by {caster} !");
+                            ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
+                        });
                     }
                 }
             }
@@ -612,11 +617,20 @@ namespace Rhisis.World.Systems.Skills
             {
                 if (skill.LevelData.DestParam2 == DefineAttributes.HP)
                 {
-                    // TODO: heal
+                    caster.Delayer.DelayAction(castingTime / 1000f, () =>
+                    {
+                        ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
+                    });
                 }
             }
 
-            int buffTime = skill.LevelData.SkillTime + extraBonus.CastingTime;
+            var timeBonusValues = new int[]
+            {
+                skill.Data.ReferTarget1 == SkillReferTargetType.Time ? GetTimeBonus(caster, skill.Data.ReferStat1, skill.Data.ReferValue1, skill.Level) : default,
+                skill.Data.ReferTarget2 == SkillReferTargetType.Time ? GetTimeBonus(caster, skill.Data.ReferStat2, skill.Data.ReferValue2, skill.Level) : default
+            };
+
+            int buffTime = skill.LevelData.SkillTime + timeBonusValues.Sum();
 
             if (buffTime > 0)
             {
@@ -631,13 +645,19 @@ namespace Rhisis.World.Systems.Skills
                     attributes.Add(skill.LevelData.DestParam2, skill.LevelData.DestParam2Value);
                 }
 
-                var buff = new BuffSkill(skill.SkillId, skill.Level, buffTime, attributes);
-                bool isBuffAdded = _buffSystem.AddBuff(target, buff);
-
-                if (isBuffAdded)
+                caster.Delayer.DelayAction(castingTime / 1000f, () =>
                 {
-                    _skillPacketFactory.SendSkillState(target, buff.SkillId, buff.SkillLevel, buff.RemainingTime);
-                }
+                    var buff = new BuffSkill(skill.SkillId, skill.Level, buffTime, attributes);
+                    bool isBuffAdded = _buffSystem.AddBuff(target, buff);
+
+                    if (isBuffAdded)
+                    {
+                        ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
+                        ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam2, skill.LevelData.DestParam2Value);
+
+                        _skillPacketFactory.SendSkillState(target, buff.SkillId, buff.SkillLevel, buff.RemainingTime);
+                    }
+                });
             }
 
             skill.SetCoolTime(skill.LevelData.CooldownTime);
@@ -645,32 +665,49 @@ namespace Rhisis.World.Systems.Skills
             _skillPacketFactory.SendUseSkill(caster, target, skill, castingTime, skillUseType);
         }
 
-        private SkillExtraBonus GetSkillExtraBonus(ILivingEntity caster, Skill skill)
+        public int GetTimeBonus(ILivingEntity entity, DefineAttributes attribute, int value, int skillLevel)
+            => GetReferBonus(entity, attribute, value, skillLevel);
+
+        public int GetReferBonus(ILivingEntity entity, DefineAttributes attribute, int value, int skillLevel)
         {
-            int castingTime = 0;
-            int extraHealPoints = 0;
-            int extraDamagePoints = 0;
-
-            castingTime += GetSkillReferTargetBonus(caster, skill.Data.ReferTarget1, skill.Data.ReferStat1, skill.Data.ReferValue1);
-            extraHealPoints += GetSkillReferTargetBonus(caster, skill.Data.ReferTarget1, skill.Data.ReferStat1, skill.Data.ReferValue1);
-            extraDamagePoints += GetSkillReferTargetBonus(caster, skill.Data.ReferTarget1, skill.Data.ReferStat1, skill.Data.ReferValue1);
-
-            castingTime += GetSkillReferTargetBonus(caster, skill.Data.ReferTarget2, skill.Data.ReferStat2, skill.Data.ReferValue2);
-            extraHealPoints += GetSkillReferTargetBonus(caster, skill.Data.ReferTarget2, skill.Data.ReferStat2, skill.Data.ReferValue2);
-            extraDamagePoints += GetSkillReferTargetBonus(caster, skill.Data.ReferTarget2, skill.Data.ReferStat2, skill.Data.ReferValue2);
-
-            return new SkillExtraBonus(castingTime, extraHealPoints, extraDamagePoints);
-        }
-
-        private int GetSkillReferTargetBonus(ILivingEntity caster, SkillReferTargetType targetType, DefineAttributes referStatAttribute, int referValue)
-        {
-            return targetType switch
+            int attributeValue = attribute switch
             {
-                SkillReferTargetType.Time => caster.Attributes[referStatAttribute] * (referValue / 10),
-                SkillReferTargetType.Attack => caster.Attributes[referStatAttribute] * referValue,
-                SkillReferTargetType.Heal => caster.Attributes[referStatAttribute] * referValue,
-                _ => 0,
+                DefineAttributes.STA => _statisticsSystem.GetTotalStrength(entity),
+                DefineAttributes.DEX => _statisticsSystem.GetTotalDexterity(entity),
+                DefineAttributes.INT => _statisticsSystem.GetTotalIntelligence(entity),
+                _ => 1
             };
+
+            return (int)(((value / 10f) * attributeValue) + (skillLevel * (attributeValue / 50f)));
         }
+
+        private void ApplySkillParameters(ILivingEntity caster, ILivingEntity target, Skill skill, DefineAttributes attribute, int value)
+        {
+            switch (attribute)
+            {
+                case DefineAttributes.HP:
+                    if (skill.Data.ReferTarget1 == SkillReferTargetType.Heal || skill.Data.ReferTarget2 == SkillReferTargetType.Heal)
+                    {
+                        var hpValues = new int[]
+                        {
+                            skill.Data.ReferTarget1 == SkillReferTargetType.Heal ? GetReferBonus(caster, skill.Data.ReferStat1, skill.Data.ReferValue1, skill.Level) : 0,
+                            skill.Data.ReferTarget2 == SkillReferTargetType.Heal ? GetReferBonus(caster, skill.Data.ReferStat2, skill.Data.ReferValue2, skill.Level) : 0
+                        };
+
+                        int recoveredHp = skill.LevelData.DestParam1Value + hpValues.Sum();
+
+                        if (recoveredHp > 0)
+                        {
+                            _attributeSystem.SetAttribute(target, attribute, recoveredHp);
+                        }
+                    }
+                    break;
+                default:
+                    _attributeSystem.SetAttribute(target, attribute, value);
+                    break;
+            }
+        }
+
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Data;
 using Rhisis.World.Game.Entities;
+using Rhisis.World.Game.Structures;
 
 namespace Rhisis.World.Systems.Health
 {
@@ -29,7 +30,11 @@ namespace Rhisis.World.Systems.Health
 
         int GetRecoveryPoints(ILivingEntity entity, DefineAttributes attribute);
 
+        int GetPoints(ILivingEntity entity, DefineAttributes attribute);
+
         void SetPoints(ILivingEntity entity, DefineAttributes attribute, int value);
+
+        void IncreasePoints(ILivingEntity entity, DefineAttributes attribute, int value);
 
         void IdleRecovery(IPlayerEntity player, bool isSitted = false);
     }
