@@ -205,14 +205,14 @@ namespace Rhisis.World.Systems.Skills
                 requiredSkillPoints += (skillLevel - playerSkill.Level) * requiredSkillPointAmount;
             }
 
-            if (player.Statistics.SkillPoints < requiredSkillPoints)
+            if (player.SkillTree.SkillPoints < requiredSkillPoints)
             {
                 _logger.LogError($"Cannot update skills for player '{player}'. Not enough skill points.");
                 _textPacketFactory.SendDefinedText(player, DefineText.TID_RESKILLPOINT_ERROR);
                 return;
             }
 
-            player.Statistics.SkillPoints -= (ushort)requiredSkillPoints;
+            player.SkillTree.SkillPoints -= (ushort)requiredSkillPoints;
 
             foreach (KeyValuePair<int, int> skill in skillsToUpdate)
             {
@@ -382,18 +382,18 @@ namespace Rhisis.World.Systems.Skills
         {
             foreach (Skill skill in player.SkillTree.Skills)
             {
-                player.Statistics.SkillPoints += (ushort)(skill.Level * SkillPointUsage[skill.Data.JobType]);
+                player.SkillTree.SkillPoints += (ushort)(skill.Level * SkillPointUsage[skill.Data.JobType]);
                 skill.Level = 0;
             }
 
-            _skillPacketFactory.SendSkillReset(player, player.Statistics.SkillPoints);
+            _skillPacketFactory.SendSkillReset(player, player.SkillTree.SkillPoints);
         }
 
         public void AddSkillPoints(IPlayerEntity player, ushort skillPoints)
         {
             if (skillPoints > 0)
             {
-                player.Statistics.SkillPoints += skillPoints;
+                player.SkillTree.SkillPoints += skillPoints;
                 _playerPacketFactory.SendPlayerExperience(player);
             }
         }

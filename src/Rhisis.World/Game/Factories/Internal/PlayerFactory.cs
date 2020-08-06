@@ -126,6 +126,8 @@ namespace Rhisis.World.Game.Factories.Internal
                 Dexterity = character.Dexterity,
                 Intelligence = character.Intelligence
             };
+
+            player.SkillTree.SkillPoints = (ushort)character.SkillPoints;
             player.Timers.NextHealTime = Time.TimeInSeconds();
 
             player.Behavior = _behaviorManager.GetDefaultBehavior(BehaviorType.Player, player);
@@ -176,7 +178,7 @@ namespace Rhisis.World.Game.Factories.Internal
                 character.Dexterity = player.Statistics.Dexterity;
                 character.Intelligence = player.Statistics.Intelligence;
                 character.StatPoints = player.Statistics.AvailablePoints;
-                character.SkillPoints = player.Statistics.SkillPoints;
+                character.SkillPoints = player.SkillTree.SkillPoints;
 
                 character.Hp = player.Attributes[DefineAttributes.HP];
                 character.Mp = player.Attributes[DefineAttributes.MP];

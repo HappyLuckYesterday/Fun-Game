@@ -128,7 +128,7 @@ namespace Rhisis.World.Systems.Experience
 
             if (player.Object.Level != player.PlayerData.DeathLevel)
             {
-                player.Statistics.SkillPoints += (ushort)((player.Object.Level - 1) / 20 + 2);
+                player.SkillTree.SkillPoints += (ushort)((player.Object.Level - 1) / 20 + 2);
                 player.Statistics.AvailablePoints += statPoints;
             }
 

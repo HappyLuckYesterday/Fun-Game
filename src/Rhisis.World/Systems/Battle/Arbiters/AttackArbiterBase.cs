@@ -81,8 +81,7 @@ namespace Rhisis.World.Systems.Battle.Arbiters
 
                 defense = Math.Max(defense, 0);
             }
-
-            if (Defender is IMonsterEntity monster)
+            else if (Defender is IMonsterEntity monster)
             {
                 defense = GetMonsterDefense(monster, attackResult.Flags);
             }

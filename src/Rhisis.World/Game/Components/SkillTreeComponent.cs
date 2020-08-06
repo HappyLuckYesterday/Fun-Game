@@ -15,6 +15,11 @@ namespace Rhisis.World.Game.Components
         public IEnumerable<Skill> Skills { get; set; }
 
         /// <summary>
+        /// Gets or sets the available skill points.
+        /// </summary>
+        public ushort SkillPoints { get; set; }
+
+        /// <summary>
         /// Gets the skill based on the given id.
         /// </summary>
         /// <param name="skillId">Skill id.</param>

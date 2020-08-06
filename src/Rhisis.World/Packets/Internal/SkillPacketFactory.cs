@@ -18,7 +18,7 @@ namespace Rhisis.World.Packets.Internal
 
             packet.StartNewMergedPacket(player.Id, SnapshotType.DOUSESKILLPOINT);
             player.SkillTree.Serialize(packet);
-            packet.Write((int)player.Statistics.SkillPoints);
+            packet.Write((int)player.SkillTree.SkillPoints);
 
             SendToPlayer(player, packet);
         }

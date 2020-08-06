@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Cluster.Client;
 using Rhisis.Cluster.Packets;
 using Rhisis.Cluster.Structures;
+using Rhisis.Core.Data;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Game;
@@ -162,6 +163,8 @@ namespace Rhisis.Cluster.Handlers
             //TODO: create game constants for slot.
             newCharacter.Items.Add(new DbItemStorage
             {
+                StorageTypeId = (int)ItemStorageType.Inventory,
+                Quantity = 1,
                 Item = new DbItem
                 {
                     GameItemId = defaultEquipment.StartSuit
@@ -170,6 +173,8 @@ namespace Rhisis.Cluster.Handlers
             });
             newCharacter.Items.Add(new DbItemStorage
             {
+                StorageTypeId = (int)ItemStorageType.Inventory,
+                Quantity = 1,
                 Item = new DbItem
                 {
                     GameItemId = defaultEquipment.StartHand
@@ -178,6 +183,8 @@ namespace Rhisis.Cluster.Handlers
             });
             newCharacter.Items.Add(new DbItemStorage
             {
+                StorageTypeId = (int)ItemStorageType.Inventory,
+                Quantity = 1,
                 Item = new DbItem
                 {
                     GameItemId = defaultEquipment.StartShoes
@@ -186,6 +193,8 @@ namespace Rhisis.Cluster.Handlers
             });
             newCharacter.Items.Add(new DbItemStorage
             {
+                StorageTypeId = (int)ItemStorageType.Inventory,
+                Quantity = 1,
                 Item = new DbItem
                 {
                     GameItemId = defaultEquipment.StartWeapon

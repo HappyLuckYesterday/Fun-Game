@@ -7,8 +7,6 @@
         /// </summary>
         public ushort AvailablePoints { get; set; }
 
-        public ushort SkillPoints { get; set; }
-
         /// <summary>
         /// Gets or sets the original strength points.
         /// </summary>
