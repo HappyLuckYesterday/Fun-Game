@@ -95,7 +95,7 @@ namespace Rhisis.World.Systems.Battle
             _battlePacketFactory.SendAddDamage(defender, attacker, attackResult.Flags, attackResult.Damages);
 
             defender.Attributes[DefineAttributes.HP] -= attackResult.Damages;
-            _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Attributes[DefineAttributes.HP]);
+            _moverPacketFactory.SendUpdatePoints(defender, DefineAttributes.HP, defender.Attributes[DefineAttributes.HP]);
 
             CheckIfDefenderIsDead(attacker, defender, attackType);
 
@@ -202,7 +202,7 @@ namespace Rhisis.World.Systems.Battle
             {
                 _logger.LogDebug($"{attacker.Object.Name} killed {defender.Object.Name}.");
                 defender.Attributes[DefineAttributes.HP] = 0;
-                _moverPacketFactory.SendUpdateAttributes(defender, DefineAttributes.HP, defender.Attributes[DefineAttributes.HP]);
+                _moverPacketFactory.SendUpdatePoints(defender, DefineAttributes.HP, defender.Attributes[DefineAttributes.HP]);
                 ClearBattleTargets(defender);
                 ClearBattleTargets(attacker);
 

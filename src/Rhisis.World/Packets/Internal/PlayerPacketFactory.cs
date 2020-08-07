@@ -57,7 +57,7 @@ namespace Rhisis.World.Packets.Internal
             packet.Write(player.Attributes[DefineAttributes.DEX]);
             packet.Write(player.Attributes[DefineAttributes.INT]);
             packet.Write(0);
-            packet.Write<uint>(player.Statistics.StatPoints);
+            packet.Write<uint>(player.Statistics.AvailablePoints);
 
             SendToPlayer(player, packet);
         }
@@ -68,7 +68,7 @@ namespace Rhisis.World.Packets.Internal
             using var packet = new FFPacket();
             
             packet.StartNewMergedPacket(player.Id, SnapshotType.SET_GROWTH_LEARNING_POINT);
-            packet.Write((long)player.Statistics.StatPoints);
+            packet.Write((long)player.Statistics.AvailablePoints);
             packet.Write<long>(0);
 
             SendToPlayer(player, packet);
@@ -94,7 +94,7 @@ namespace Rhisis.World.Packets.Internal
             packet.Write(player.PlayerData.Experience);
             packet.Write((short)player.Object.Level);
             packet.Write(0);
-            packet.Write((int)player.Statistics.SkillPoints);
+            packet.Write((int)player.SkillTree.SkillPoints);
             packet.Write(long.MaxValue); // death exp
             packet.Write((short)player.PlayerData.DeathLevel);
 

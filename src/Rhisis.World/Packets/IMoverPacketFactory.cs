@@ -88,12 +88,29 @@ namespace Rhisis.World.Packets
         void SendFollowTarget(IWorldEntity entity, IWorldEntity targetEntity, float distance);
 
         /// <summary>
-        /// Sends the update of an attribute.
+        /// Sends points update (HP, MP, FP, GOLD).
         /// </summary>
         /// <param name="entity">Entity.</param>
         /// <param name="attribute">Attribute to update.</param>
         /// <param name="newValue">New attribute value.</param>
-        void SendUpdateAttributes(IWorldEntity entity, DefineAttributes attribute, int newValue);
+        void SendUpdatePoints(IWorldEntity entity, DefineAttributes attribute, int newValue);
+
+        /// <summary>
+        /// Send a packet to update the entity's attribute.
+        /// </summary>
+        /// <param name="entity">Entity.</param>
+        /// <param name="attribute">Attribute to update.</param>
+        /// <param name="value">Attribute value</param>
+        void SendUpdateAttributes(IWorldEntity entity, DefineAttributes attribute, int value);
+
+        /// <summary>
+        /// Send a packet to reset the entity's attribute.
+        /// </summary>
+        /// <param name="entity">Entity.</param>
+        /// <param name="attribute">Attribute to reset.</param>
+        /// <param name="value">Attribute value</param>
+
+        void SendResetAttribute(IWorldEntity entity, DefineAttributes attribute, int value);
 
         /// <summary>
         /// Sends a motion to the given entity.

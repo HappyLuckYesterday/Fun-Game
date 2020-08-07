@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Rhisis.Core.Common;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Resources;
@@ -9,10 +10,12 @@ using Rhisis.Database.Entities;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Attributes;
 using Rhisis.World.Systems.Battle;
 using Rhisis.World.Systems.Battle.Arbiters;
-using Rhisis.World.Systems.Inventory;
-using Rhisis.World.Systems.Projectile;
+using Rhisis.World.Systems.Buff;
+using Rhisis.World.Systems.Health;
+using Rhisis.World.Systems.Statistics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,99 +38,47 @@ namespace Rhisis.World.Systems.Skills
         };
 
         private readonly ILogger<SkillSystem> _logger;
-        private readonly IRhisisDatabase _database;
         private readonly IGameResources _gameResources;
         private readonly IBattleSystem _battleSystem;
-        private readonly IInventorySystem _inventorySystem;
-        private readonly IProjectileSystem _projectileSystem;
+        private readonly IAttributeSystem _attributeSystem;
+        private readonly IBuffSystem _buffSystem;
+        private readonly IStatisticsSystem _statisticsSystem;
         private readonly ISkillPacketFactory _skillPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
         private readonly IPlayerPacketFactory _playerPacketFactory;
-        private readonly ISpecialEffectPacketFactory _specialEffectPacketFactory;
         private readonly IMoverPacketFactory _moverPacketFactory;
 
-        /// <inheritdoc />
-        public int Order => 1;
-
-        public SkillSystem(ILogger<SkillSystem> logger, IRhisisDatabase database, IGameResources gameResources, 
-            IBattleSystem battleSystem, IInventorySystem inventorySystem, IProjectileSystem projectileSystem, 
-            ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, IPlayerPacketFactory playerPacketFactory,
-            ISpecialEffectPacketFactory specialEffectPacketFactory, IMoverPacketFactory moverPacketFactory)
+        public SkillSystem(ILogger<SkillSystem> logger, IGameResources gameResources,
+            IBattleSystem battleSystem, IAttributeSystem attributeSystem, IBuffSystem buffSystem, IStatisticsSystem statisticsSystem,
+            ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, 
+            IPlayerPacketFactory playerPacketFactory, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;
-            _database = database;
             _gameResources = gameResources;
             _battleSystem = battleSystem;
-            _inventorySystem = inventorySystem;
-            _projectileSystem = projectileSystem;
+            _attributeSystem = attributeSystem;
+            _buffSystem = buffSystem;
+            _statisticsSystem = statisticsSystem;
             _skillPacketFactory = skillPacketFactory;
             _textPacketFactory = textPacketFactory;
             _playerPacketFactory = playerPacketFactory;
-            _specialEffectPacketFactory = specialEffectPacketFactory;
             _moverPacketFactory = moverPacketFactory;
         }
 
-        /// <inheritdoc />
-        public void Initialize(IPlayerEntity player)
+        public IEnumerable<Skill> GetSkillsByJob(DefineJob.Job job)
         {
-            IEnumerable<SkillInfo> jobSkills = GetSkillsByJob(player.PlayerData.Job);
-            IEnumerable<DbSkill> playerSkills = _database.Skills.Where(x => x.CharacterId == player.PlayerData.Id).AsNoTracking().AsEnumerable();
-
-            player.SkillTree.Skills = (from x in jobSkills
-                                       join s in playerSkills on x.SkillId equals s.SkillId into dbSkills
-                                       from dbSkill in dbSkills.DefaultIfEmpty()
-                                       select new SkillInfo(x.SkillId, player.PlayerData.Id, _gameResources.Skills[x.SkillId], dbSkill?.Level ?? default, dbSkill?.Id)).ToList();
-        }
-
-        /// <inheritdoc />
-        public void Save(IPlayerEntity player)
-        {
-            var skillsSet = from x in _database.Skills.Where(x => x.CharacterId == player.PlayerData.Id).AsNoTracking().ToList()
-                            join s in player.SkillTree.Skills on
-                             new { x.SkillId, x.CharacterId }
-                             equals
-                             new { s.SkillId, s.CharacterId }
-                            select new { DbSkill = x, PlayerSkill = s };
-
-            foreach (var skillToUpdate in skillsSet)
-            {
-                skillToUpdate.DbSkill.Level = (byte)skillToUpdate.PlayerSkill.Level;
-
-                _database.Skills.Update(skillToUpdate.DbSkill);
-            }
-
-            foreach (SkillInfo skill in player.SkillTree.Skills)
-            {
-                if (!skill.DatabaseId.HasValue && skill.Level > 0)
-                {
-                    var newSkill = new DbSkill
-                    {
-                        SkillId = skill.SkillId,
-                        Level = (byte)skill.Level,
-                        CharacterId = player.PlayerData.Id
-                    };
-
-                    _database.Skills.Add(newSkill);
-                }
-            }
-
-            _database.SaveChanges();
-        }
-
-        public IEnumerable<SkillInfo> GetSkillsByJob(DefineJob.Job job)
-        {
-            var skillsList = new List<SkillInfo>();
+            var skillsList = new List<Skill>();
 
             if (_gameResources.Jobs.TryGetValue(job, out JobData jobData) && jobData.Parent != null)
             {
                 skillsList.AddRange(GetSkillsByJob(jobData.Parent.Id));
             }
 
-            IEnumerable<SkillInfo> jobSkills = from x in _gameResources.Skills.Values
-                                               where x.Job == jobData.Id &&
-                                                     x.JobType != DefineJob.JobType.JTYPE_COMMON &&
-                                                     x.JobType != DefineJob.JobType.JTYPE_TROUPE
-                                               select new SkillInfo(x.Id, -1, x);
+            IEnumerable<Skill> jobSkills = from x in _gameResources.Skills.Values
+                                           where x.Job == jobData.Id &&
+                                                 x.JobType != DefineJob.JobType.JTYPE_COMMON &&
+                                                 x.JobType != DefineJob.JobType.JTYPE_TROUPE
+                                           select new Skill(x.Id, -1, x);
 
             skillsList.AddRange(jobSkills);
 
@@ -135,7 +86,7 @@ namespace Rhisis.World.Systems.Skills
         }
 
         /// <inheritdoc />
-        public void UpdateSkills(IPlayerEntity player, IReadOnlyDictionary<int, int> skillsToUpdate)
+        public bool UpdateSkills(IPlayerEntity player, IReadOnlyDictionary<int, int> skillsToUpdate)
         {
             int requiredSkillPoints = 0;
 
@@ -143,13 +94,13 @@ namespace Rhisis.World.Systems.Skills
             {
                 int skillId = skill.Key;
                 int skillLevel = skill.Value;
-                SkillInfo playerSkill = player.SkillTree.GetSkill(skillId);
+                Skill playerSkill = player.SkillTree.GetSkill(skillId);
 
                 if (playerSkill == null)
                 {
                     _textPacketFactory.SendDefinedText(player, DefineText.TID_RESKILLPOINT_ERROR);
                     _logger.LogError($"Cannot find skill with id '{skillId}' for player '{player}'.");
-                    return;
+                    return false;
                 }
 
                 if (playerSkill.Level == skillLevel)
@@ -162,7 +113,7 @@ namespace Rhisis.World.Systems.Skills
                 {
                     _textPacketFactory.SendDefinedText(player, DefineText.TID_RESKILLPOINT_ERROR);
                     _logger.LogError($"Cannot update skill with '{skillId}' for player '{player}'. Player need to be level '{playerSkill.Data.RequiredLevel}' to learn this skill.");
-                    return;
+                    return false;
                 }
 
                 if (!CheckRequiredSkill(playerSkill.Data.RequiredSkillId1, playerSkill.Data.RequiredSkillLevel1, skillsToUpdate))
@@ -171,7 +122,7 @@ namespace Rhisis.World.Systems.Skills
 
                     _textPacketFactory.SendDefinedText(player, DefineText.TID_RESKILLPOINT_ERROR);
                     _logger.LogError($"Cannot update skill with '{skillId}' for player '{player}'. Skill '{requiredSkill1.Name}' must be at least Lv.{requiredSkill1.RequiredSkillLevel1}");
-                    return;
+                    return false;
                 }
 
                 if (!CheckRequiredSkill(playerSkill.Data.RequiredSkillId2, playerSkill.Data.RequiredSkillLevel2, skillsToUpdate))
@@ -180,34 +131,34 @@ namespace Rhisis.World.Systems.Skills
 
                     _textPacketFactory.SendDefinedText(player, DefineText.TID_RESKILLPOINT_ERROR);
                     _logger.LogError($"Cannot update skill with '{skillId}' for player '{player}'. Skill '{requiredSkill2.Name}' must be at least Lv.{requiredSkill2.RequiredSkillLevel1}");
-                    return;
+                    return false;
                 }
 
                 if (skillLevel < 0 || skillLevel < playerSkill.Level || skillLevel > playerSkill.Data.MaxLevel)
                 {
                     _textPacketFactory.SendDefinedText(player, DefineText.TID_RESKILLPOINT_ERROR);
                     _logger.LogError($"Cannot update skill with '{skillId}' for player '{player}'. The skill level is out of bounds.");
-                    return;
+                    return false;
                 }
 
                 if (!SkillPointUsage.TryGetValue(playerSkill.Data.JobType, out int requiredSkillPointAmount))
                 {
                     _textPacketFactory.SendDefinedText(player, DefineText.TID_RESKILLPOINT_ERROR);
                     _logger.LogError($"Cannot update skill with '{skillId}' for player '{player}'. Cannot find required skill point for job type '{playerSkill.Data.JobType}'.");
-                    return;
+                    return false;
                 }
 
                 requiredSkillPoints += (skillLevel - playerSkill.Level) * requiredSkillPointAmount;
             }
 
-            if (player.Statistics.SkillPoints < requiredSkillPoints)
+            if (player.SkillTree.SkillPoints < requiredSkillPoints)
             {
                 _logger.LogError($"Cannot update skills for player '{player}'. Not enough skill points.");
                 _textPacketFactory.SendDefinedText(player, DefineText.TID_RESKILLPOINT_ERROR);
-                return;
+                return false;
             }
 
-            player.Statistics.SkillPoints -= (ushort)requiredSkillPoints;
+            player.SkillTree.SkillPoints -= (ushort)requiredSkillPoints;
 
             foreach (KeyValuePair<int, int> skill in skillsToUpdate)
             {
@@ -217,29 +168,39 @@ namespace Rhisis.World.Systems.Skills
                 player.SkillTree.SetSkillLevel(skillId, skillLevel);
             }
 
-            _specialEffectPacketFactory.SendSpecialEffect(player, DefineSpecialEffects.XI_SYS_EXCHAN01, false);
             _skillPacketFactory.SendSkillTreeUpdate(player);
+
+            return true;
         }
 
         /// <inheritdoc />
-        public void UseSkill(IPlayerEntity player, SkillInfo skill, uint targetObjectId, SkillUseType skillUseType)
+        public void UseSkill(IPlayerEntity player, Skill skill, uint targetObjectId, SkillUseType skillUseType)
         {
             if (skill == null)
             {
                 _skillPacketFactory.SendSkillCancellation(player);
-                return;
+                throw new ArgumentNullException(nameof(skill), $"Cannot use undefined skill for player {player} on target {targetObjectId}.");
             }
 
-            if (CanUseSkill(player, skill))
+            ILivingEntity target;
+
+            if (player.Id == targetObjectId)
             {
-                var target = player.FindEntity<ILivingEntity>(targetObjectId);
+                target = player;
+            }
+            else
+            {
+                target = player.FindEntity<ILivingEntity>(targetObjectId);
 
                 if (target == null)
                 {
                     _skillPacketFactory.SendSkillCancellation(player);
                     throw new ArgumentNullException(nameof(targetObjectId));
                 }
+            }
 
+            if (CanUseSkill(player, target, skill))
+            {
                 switch (skill.Data.ExecuteTarget)
                 {
                     case SkillExecuteTargetType.MeleeAttack:
@@ -251,6 +212,13 @@ namespace Rhisis.World.Systems.Skills
                     case SkillExecuteTargetType.MagicAttackShot:
                         CastMagicAttackShot(player, target, skill, skillUseType);
                         break;
+                    case SkillExecuteTargetType.AnotherWith:
+                        CastBuffSkill(player, target, skill, skillUseType);
+                        break;
+                    default:
+                        _logger.LogDebug($"Unknown {skill.Data.ExecuteTarget} for {skill.Name}");
+                        _skillPacketFactory.SendSkillCancellation(player);
+                        break;
                 }
             }
             else
@@ -261,7 +229,7 @@ namespace Rhisis.World.Systems.Skills
         }
 
         /// <inheritdoc />
-        public bool CanUseSkill(IPlayerEntity player, SkillInfo skill)
+        public bool CanUseSkill(IPlayerEntity player, ILivingEntity target, Skill skill)
         {
             if (skill.Level <= 0 || skill.Level > skill.Data.SkillLevels.Count)
             {
@@ -312,13 +280,24 @@ namespace Rhisis.World.Systems.Skills
                         break;
 
                     default:
-                        playerHasCorrectWeapon = skill.Data.LinkKind != rightWeaponKind;
+                        playerHasCorrectWeapon = skill.Data.LinkKind == rightWeaponKind;
                         break;
                 }
 
                 if (!playerHasCorrectWeapon)
                 {
                     _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_WRONGITEM);
+                    return false;
+                }
+            }
+
+            if (skill.Data.Type == SkillType.Magic)
+            {
+                BuffSkill buffSkill = target.Buffs.OfType<BuffSkill>().FirstOrDefault(x => x.SkillId == skill.SkillId);
+
+                if (buffSkill != null && buffSkill.SkillLevel > skill.Level)
+                {
+                    _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_DONOTUSEBUFF);
                     return false;
                 }
             }
@@ -348,20 +327,20 @@ namespace Rhisis.World.Systems.Skills
 
         public void Reskill(IPlayerEntity player)
         {
-            foreach (SkillInfo skill in player.SkillTree.Skills)
+            foreach (Skill skill in player.SkillTree.Skills)
             {
-                player.Statistics.SkillPoints += (ushort)(skill.Level * SkillPointUsage[skill.Data.JobType]);
+                player.SkillTree.SkillPoints += (ushort)(skill.Level * SkillPointUsage[skill.Data.JobType]);
                 skill.Level = 0;
             }
 
-            _skillPacketFactory.SendSkillReset(player, player.Statistics.SkillPoints);
+            _skillPacketFactory.SendSkillReset(player, player.SkillTree.SkillPoints);
         }
 
         public void AddSkillPoints(IPlayerEntity player, ushort skillPoints)
         {
             if (skillPoints > 0)
             {
-                player.Statistics.SkillPoints += skillPoints;
+                player.SkillTree.SkillPoints += skillPoints;
                 _playerPacketFactory.SendPlayerExperience(player);
             }
         }
@@ -394,7 +373,7 @@ namespace Rhisis.World.Systems.Skills
         /// <param name="caster">Entity casting the skill.</param>
         /// <param name="skill">Skill to be cast.</param>
         /// <returns>Skill casting time in milliseconds.</returns>
-        private int GetSkillCastingTime(ILivingEntity caster, SkillInfo skill)
+        private int GetSkillCastingTime(ILivingEntity caster, Skill skill)
         {
             if (skill.Data.Type == SkillType.Skill)
             {
@@ -417,7 +396,7 @@ namespace Rhisis.World.Systems.Skills
         /// <param name="target">Living target entity touched by the skill.</param>
         /// <param name="skill">Skill to be casted.</param>
         /// <param name="skillUseType">Skill use type.</param>
-        private void CastMeleeSkill(ILivingEntity caster, ILivingEntity target, SkillInfo skill, SkillUseType skillUseType)
+        private void CastMeleeSkill(ILivingEntity caster, ILivingEntity target, Skill skill, SkillUseType skillUseType)
         {
             int skillCastingTime = GetSkillCastingTime(caster, skill);
 
@@ -444,7 +423,7 @@ namespace Rhisis.World.Systems.Skills
         /// <param name="target">Living target entity touched by the skill.</param>
         /// <param name="skill">Skill to be casted.</param>
         /// <param name="skillUseType">Skill use type.</param>
-        private void CastMagicSkill(ILivingEntity caster, ILivingEntity target, SkillInfo skill, SkillUseType skillUseType)
+        private void CastMagicSkill(ILivingEntity caster, ILivingEntity target, Skill skill, SkillUseType skillUseType)
         {
             int skillCastingTime = GetSkillCastingTime(caster, skill);
 
@@ -471,7 +450,7 @@ namespace Rhisis.World.Systems.Skills
         /// <param name="target">Living target entity touched by the skill.</param>
         /// <param name="skill">Skill to be casted.</param>
         /// <param name="reduceCasterPoints">Value that indicates if it should reduce caster points or not.</param>
-        private void ExecuteSkill(ILivingEntity caster, ILivingEntity target, SkillInfo skill, bool reduceCasterPoints = true)
+        private void ExecuteSkill(ILivingEntity caster, ILivingEntity target, Skill skill, bool reduceCasterPoints = true)
         {
             ObjectMessageType skillMessageType = ObjectMessageType.OBJMSG_NONE;
             IAttackArbiter attackArbiter = null;
@@ -491,10 +470,7 @@ namespace Rhisis.World.Systems.Skills
 
             _battleSystem.DamageTarget(caster, target, attackArbiter, skillMessageType);
 
-            if (skill.LevelData.CooldownTime > 0)
-            {
-                skill.SetCoolTime(skill.LevelData.CooldownTime);
-            }
+            skill.SetCoolTime(skill.LevelData.CooldownTime);
 
             if (reduceCasterPoints)
             {
@@ -509,7 +485,7 @@ namespace Rhisis.World.Systems.Skills
         /// <param name="target">Target living entity.</param>
         /// <param name="skill">Skill to be casted as projectile.</param>
         /// <param name="skillUseType">Skill use type.</param>
-        private void CastMagicAttackShot(ILivingEntity caster, ILivingEntity target, SkillInfo skill, SkillUseType skillUseType)
+        private void CastMagicAttackShot(ILivingEntity caster, ILivingEntity target, Skill skill, SkillUseType skillUseType)
         {
             int skillCastingTime = GetSkillCastingTime(caster, skill);
             var projectile = new MagicSkillProjectileInfo(caster, target, skill, () =>
@@ -517,7 +493,6 @@ namespace Rhisis.World.Systems.Skills
                 ExecuteSkill(caster, target, skill, reduceCasterPoints: false);
             });
 
-            //_projectileSystem.CreateProjectile(projectile);
             _skillPacketFactory.SendUseSkill(caster, target, skill, skillCastingTime, skillUseType);
 
             caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.CastingTime), () =>
@@ -531,19 +506,154 @@ namespace Rhisis.World.Systems.Skills
         /// </summary>
         /// <param name="caster">Living entity casting the skill.</param>
         /// <param name="skill">Casted skill by the living entity.</param>
-        private void ReduceCasterPoints(ILivingEntity caster, SkillInfo skill)
+        private void ReduceCasterPoints(ILivingEntity caster, Skill skill)
         {
             if (skill.LevelData.RequiredFP > 0)
             {
                 caster.Attributes[DefineAttributes.FP] -= skill.LevelData.RequiredFP;
-                _moverPacketFactory.SendUpdateAttributes(caster, DefineAttributes.FP, caster.Attributes[DefineAttributes.FP]);
+                _moverPacketFactory.SendUpdatePoints(caster, DefineAttributes.FP, caster.Attributes[DefineAttributes.FP]);
             }
 
             if (skill.LevelData.RequiredMP > 0)
             {
                 caster.Attributes[DefineAttributes.MP] -= skill.LevelData.RequiredMP;
-                _moverPacketFactory.SendUpdateAttributes(caster, DefineAttributes.MP, caster.Attributes[DefineAttributes.MP]);
+                _moverPacketFactory.SendUpdatePoints(caster, DefineAttributes.MP, caster.Attributes[DefineAttributes.MP]);
             }
         }
+
+        /// <summary>
+        /// Casts a buff skill on the given target.
+        /// </summary>
+        /// <param name="caster">Living entity casting the skill.</param>
+        /// <param name="target">Target living entity.</param>
+        /// <param name="skill">Skill to be casted as projectile.</param>
+        /// <param name="skillUseType">Skill use type.</param>
+        private void CastBuffSkill(ILivingEntity caster, ILivingEntity target, Skill skill, SkillUseType skillUseType)
+        {
+            _logger.LogTrace($"{caster} is buffing {target} with skill {skill}");
+            int castingTime = GetSkillCastingTime(caster, skill);
+
+            if (target.Type == WorldEntityType.Monster)
+            {
+                _skillPacketFactory.SendSkillCancellation(caster as IPlayerEntity);
+                return;
+            }
+
+            if (skill.LevelData.DestParam1 > 0)
+            {
+                if (skill.LevelData.DestParam1 == DefineAttributes.HP)
+                {
+                    if (skill.LevelData.DestParam2 == DefineAttributes.RECOVERY_EXP)
+                    {
+                        // Resurection skill
+                        // TODO: process resurection
+                    }
+                    else
+                    {
+                        _logger.LogTrace($"{caster} is healing {target} in {castingTime}...");
+                        caster.Delayer.DelayActionMilliseconds(castingTime, () =>
+                        {
+                            _logger.LogTrace($"{target} healed by {caster} !");
+                            ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
+                        });
+                    }
+                }
+            }
+            if (skill.LevelData.DestParam2 > 0)
+            {
+                if (skill.LevelData.DestParam2 == DefineAttributes.HP)
+                {
+                    caster.Delayer.DelayActionMilliseconds(castingTime, () =>
+                    {
+                        ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
+                    });
+                }
+            }
+
+            var timeBonusValues = new int[]
+            {
+                skill.Data.ReferTarget1 == SkillReferTargetType.Time ? GetTimeBonus(caster, skill.Data.ReferStat1, skill.Data.ReferValue1, skill.Level) : default,
+                skill.Data.ReferTarget2 == SkillReferTargetType.Time ? GetTimeBonus(caster, skill.Data.ReferStat2, skill.Data.ReferValue2, skill.Level) : default
+            };
+
+            int buffTime = skill.LevelData.SkillTime + timeBonusValues.Sum();
+
+            if (buffTime > 0)
+            {
+                var attributes = new Dictionary<DefineAttributes, int>();
+
+                if (skill.LevelData.DestParam1 > 0)
+                {
+                    attributes.Add(skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
+                }
+                if (skill.LevelData.DestParam2 > 0)
+                {
+                    attributes.Add(skill.LevelData.DestParam2, skill.LevelData.DestParam2Value);
+                }
+
+                caster.Delayer.DelayActionMilliseconds(castingTime, () =>
+                {
+                    var buff = new BuffSkill(skill.SkillId, skill.Level, buffTime, attributes);
+                    bool isBuffAdded = _buffSystem.AddBuff(target, buff);
+
+                    if (isBuffAdded)
+                    {
+                        ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
+                        ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam2, skill.LevelData.DestParam2Value);
+
+                        _skillPacketFactory.SendSkillState(target, buff.SkillId, buff.SkillLevel, buff.RemainingTime);
+                    }
+                });
+            }
+
+            skill.SetCoolTime(skill.LevelData.CooldownTime);
+
+            _skillPacketFactory.SendUseSkill(caster, target, skill, castingTime, skillUseType);
+        }
+
+        public int GetTimeBonus(ILivingEntity entity, DefineAttributes attribute, int value, int skillLevel)
+            => GetReferBonus(entity, attribute, value, skillLevel);
+
+        public int GetReferBonus(ILivingEntity entity, DefineAttributes attribute, int value, int skillLevel)
+        {
+            int attributeValue = attribute switch
+            {
+                DefineAttributes.STA => _statisticsSystem.GetTotalStrength(entity),
+                DefineAttributes.DEX => _statisticsSystem.GetTotalDexterity(entity),
+                DefineAttributes.INT => _statisticsSystem.GetTotalIntelligence(entity),
+                _ => 1
+            };
+
+            return (int)(((value / 10f) * attributeValue) + (skillLevel * (attributeValue / 50f)));
+        }
+
+        private void ApplySkillParameters(ILivingEntity caster, ILivingEntity target, Skill skill, DefineAttributes attribute, int value)
+        {
+            switch (attribute)
+            {
+                case DefineAttributes.HP:
+                    if (skill.Data.ReferTarget1 == SkillReferTargetType.Heal || skill.Data.ReferTarget2 == SkillReferTargetType.Heal)
+                    {
+                        var hpValues = new int[]
+                        {
+                            skill.Data.ReferTarget1 == SkillReferTargetType.Heal ? GetReferBonus(caster, skill.Data.ReferStat1, skill.Data.ReferValue1, skill.Level) : 0,
+                            skill.Data.ReferTarget2 == SkillReferTargetType.Heal ? GetReferBonus(caster, skill.Data.ReferStat2, skill.Data.ReferValue2, skill.Level) : 0
+                        };
+
+                        int recoveredHp = skill.LevelData.DestParam1Value + hpValues.Sum();
+
+                        if (recoveredHp > 0)
+                        {
+                            _attributeSystem.SetAttribute(target, attribute, recoveredHp);
+                        }
+                    }
+                    break;
+                default:
+                    _attributeSystem.SetAttribute(target, attribute, value);
+                    break;
+            }
+        }
+
+
     }
 }

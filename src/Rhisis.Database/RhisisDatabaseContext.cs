@@ -50,6 +50,12 @@ namespace Rhisis.Database
         /// <inheritdoc />
         public DbSet<DbSkill> Skills { get; set; }
 
+        /// <inheritdoc />
+        public DbSet<DbSkillBuff> SkillBuffs { get; set; }
+
+        /// <inheritdoc />
+        public DbSet<DbSkillBuffAttribute> SkillBuffAttributes { get; set; }
+
         /// <summary>
         /// Create a new <see cref="RhisisDatabaseContext"/> instance.
         /// </summary>

@@ -1,12 +1,11 @@
-﻿using Rhisis.World.Game;
-using Rhisis.World.Game.Entities;
+﻿using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Systems.Trade
 {
     /// <summary>
     /// Provides a mechanism to manage the trade system.
     /// </summary>
-    public interface ITradeSystem : IGameSystemLifeCycle
+    public interface ITradeSystem
     {
         /// <summary>
         /// Requests a trade to the target player using his object id.

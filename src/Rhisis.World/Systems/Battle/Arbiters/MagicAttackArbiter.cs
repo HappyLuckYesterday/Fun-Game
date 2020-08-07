@@ -34,21 +34,16 @@ namespace Rhisis.World.Systems.Battle.Arbiters
                 Flags = AttackFlags.AF_MAGIC
             };
 
-            AttackResult weaponAttackResult = null;
-
             if (Attacker is IPlayerEntity player)
             {
                 Item wandWeapon = player.Inventory.GetEquipedItem(ItemPartType.RightWeapon) ?? player.Hand;
 
-                weaponAttackResult = BattleHelper.GetWeaponAttackPower(Attacker, wandWeapon);
+                AttackResult weaponAttackResult = BattleHelper.GetWeaponAttackPower(Attacker, wandWeapon);
                 var weaponAttackDamages = BattleHelper.GetWeaponAttackDamages(WeaponType.MAGIC_WAND, player);
 
                 weaponAttackResult.AttackMin += weaponAttackDamages;
                 weaponAttackResult.AttackMax += weaponAttackDamages;
-            }
 
-            if (weaponAttackResult != null)
-            {
                 attackResult.Damages = RandomHelper.Random(weaponAttackResult.AttackMin, weaponAttackResult.AttackMax);
                 attackResult.Damages += Math.Max(0, Attacker.Attributes[DefineAttributes.CHR_DMG]);
                 attackResult.Damages = (int)(attackResult.Damages * GetWandAttackMultiplier());

@@ -18,13 +18,13 @@ namespace Rhisis.World.Packets.Internal
 
             packet.StartNewMergedPacket(player.Id, SnapshotType.DOUSESKILLPOINT);
             player.SkillTree.Serialize(packet);
-            packet.Write((int)player.Statistics.SkillPoints);
+            packet.Write((int)player.SkillTree.SkillPoints);
 
             SendToPlayer(player, packet);
         }
 
         /// <inheritdoc />
-        public void SendUseSkill(ILivingEntity player, IWorldEntity target, SkillInfo skill, int castingTime, SkillUseType skillUseType)
+        public void SendUseSkill(ILivingEntity player, IWorldEntity target, Skill skill, int castingTime, SkillUseType skillUseType)
         {
             using var packet = new FFPacket();
 
@@ -55,6 +55,20 @@ namespace Rhisis.World.Packets.Internal
             packet.Write((int)skillPoints);
 
             SendToPlayer(player, packet);
+        }
+
+        public void SendSkillState(ILivingEntity entity, int skillId, int skillLevel, int time)
+        {
+            using var packet = new FFPacket();
+
+            packet.StartNewMergedPacket(entity.Id, SnapshotType.SETSKILLSTATE);
+            packet.Write(entity.Id);
+            packet.Write((short)BuffType.Skill);
+            packet.Write((short)skillId);
+            packet.Write(skillLevel);
+            packet.Write(time);
+
+            SendToVisible(packet, entity, sendToPlayer: true);
         }
     }
 }

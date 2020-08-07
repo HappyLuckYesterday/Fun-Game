@@ -50,18 +50,6 @@ namespace Rhisis.World.Systems.Trade
         }
 
         /// <inheritdoc />
-        public void Initialize(IPlayerEntity player)
-        {
-            player.Trade = new TradeComponent(MaxTrade);
-        }
-
-        /// <inheritdoc />
-        public void Save(IPlayerEntity player)
-        {
-            // Nothing to do.
-        }
-
-        /// <inheritdoc />
         public void RequestTrade(IPlayerEntity player, uint targetObjectId)
         {
             _logger.LogTrace($"Player '{player.Object.Name}' request trade to {targetObjectId}.");

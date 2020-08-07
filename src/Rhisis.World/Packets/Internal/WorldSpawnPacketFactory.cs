@@ -61,10 +61,10 @@ namespace Rhisis.World.Packets.Internal
                 packet.Write(player.PlayerData.Id);
                 packet.Write((byte)player.PlayerData.Job);
 
-                packet.Write((short)player.Attributes[DefineAttributes.STR]);
-                packet.Write((short)player.Attributes[DefineAttributes.STA]);
-                packet.Write((short)player.Attributes[DefineAttributes.DEX]);
-                packet.Write((short)player.Attributes[DefineAttributes.INT]);
+                packet.Write((short)player.Statistics.Strength);
+                packet.Write((short)player.Statistics.Stamina);
+                packet.Write((short)player.Statistics.Dexterity);
+                packet.Write((short)player.Statistics.Intelligence);
 
                 packet.Write((short)player.Object.Level); // Level
                 packet.Write(-1); // Fuel
@@ -111,7 +111,7 @@ namespace Rhisis.World.Packets.Internal
                 packet.Write(player.PlayerData.Gold); // Gold
                 packet.Write(player.PlayerData.Experience); // exp
                 packet.Write(0); // skill level
-                packet.Write((int)player.Statistics.SkillPoints); // skill points
+                packet.Write((int)player.SkillTree.SkillPoints); // skill points
                 packet.Write<long>(0); // death exp
                 packet.Write(0); // death level
 
@@ -129,7 +129,7 @@ namespace Rhisis.World.Packets.Internal
                 player.QuestDiary.Serialize(packet);
 
                 packet.Write(0); // murderer id
-                packet.Write((short)player.Statistics.StatPoints); // stat points
+                packet.Write((short)player.Statistics.AvailablePoints); // stat points
                 packet.Write<short>(0); // always 0
 
                 // item mask
@@ -171,24 +171,11 @@ namespace Rhisis.World.Packets.Internal
                         packet.Write(j);
                 }
 
-                packet.Write(int.MaxValue); // pet id
+                packet.Write(-1); // pet id
 
                 // Bag
-                packet.Write<byte>(1);
-                for (var i = 0; i < 6; i++)
-                    packet.Write(i);
-                packet.Write<byte>(0); // Base bag item count
-                for (var i = 0; i < 0; i++) // TODO
-                {
-                    packet.Write((byte)i); // Slot
-                    packet.Write(i); // Slot
-                }
-                for (var i = 0; i < 6; i++)
-                    packet.Write(i);
-                packet.Write(0);
-                packet.Write(0);
-
-                // premium bag
+                packet.Write<byte>(0);
+                packet.Write<byte>(0);
                 packet.Write<byte>(0);
 
                 packet.Write(0); // muted
@@ -201,7 +188,7 @@ namespace Rhisis.World.Packets.Internal
                 packet.Write(0); // campus points
 
                 // buffs
-                packet.Write(0); // count
+                player.Buffs.Serialize(packet);
 
                 SendToPlayer(player, packet);
             }
@@ -258,10 +245,10 @@ namespace Rhisis.World.Packets.Internal
                 packet.Write((byte)playerEntity.VisualAppearance.FaceId);
                 packet.Write(playerEntity.PlayerData.Id);
                 packet.Write((byte)1);
-                packet.Write((short)playerEntity.Attributes[DefineAttributes.STR]); // STR
-                packet.Write((short)playerEntity.Attributes[DefineAttributes.STA]); // STA
-                packet.Write((short)playerEntity.Attributes[DefineAttributes.DEX]); // DEX
-                packet.Write((short)playerEntity.Attributes[DefineAttributes.INT]); // INT
+                packet.Write((short)playerEntity.Statistics.Strength); // STR
+                packet.Write((short)playerEntity.Statistics.Stamina); // STA
+                packet.Write((short)playerEntity.Statistics.Dexterity); // DEX
+                packet.Write((short)playerEntity.Statistics.Intelligence); // INT
                 packet.Write((short)playerEntity.Object.Level); // Level
 
                 packet.Write(-1);
@@ -311,7 +298,7 @@ namespace Rhisis.World.Packets.Internal
                 }
 
                 packet.Write(-1); // pet ?
-                packet.Write(0); // buffs ?
+                player.Buffs.Serialize(packet);
             }
             else if (entityToSpawn.Type == WorldEntityType.Monster)
             {

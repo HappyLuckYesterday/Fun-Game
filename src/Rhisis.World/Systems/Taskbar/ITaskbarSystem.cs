@@ -4,7 +4,7 @@ using Rhisis.World.Game.Structures;
 
 namespace Rhisis.World.Systems.Taskbar
 {
-    public interface ITaskbarSystem : IGameSystemLifeCycle
+    public interface ITaskbarSystem
     {
         /// <summary>
         /// Adds a new applet to the player's applet taskbar.

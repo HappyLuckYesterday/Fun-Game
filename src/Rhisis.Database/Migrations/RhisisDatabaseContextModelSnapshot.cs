@@ -784,9 +784,13 @@ namespace Rhisis.Database.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Updated")
-                        .HasColumnType("DATETIME");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DATETIME")
+                        .HasDefaultValueSql("NOW()");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CharacterId");
 
                     b.HasIndex("ItemId");
 
@@ -1007,6 +1011,52 @@ namespace Rhisis.Database.Migrations
                     b.ToTable("Skills");
                 });
 
+            modelBuilder.Entity("Rhisis.Database.Entities.DbSkillBuff", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("CharacterId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RemainingTime")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SkillId")
+                        .HasColumnType("int");
+
+                    b.Property<sbyte>("SkillLevel")
+                        .HasColumnType("TINYINT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CharacterId", "SkillId")
+                        .IsUnique();
+
+                    b.ToTable("SkillBuffs");
+                });
+
+            modelBuilder.Entity("Rhisis.Database.Entities.DbSkillBuffAttribute", b =>
+                {
+                    b.Property<int>("SkillBuffId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AttributeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("SkillBuffId", "AttributeId");
+
+                    b.HasIndex("AttributeId");
+
+                    b.HasIndex("SkillBuffId", "AttributeId");
+
+                    b.ToTable("SkillBuffAttributes");
+                });
+
             modelBuilder.Entity("Rhisis.Database.Entities.DbUser", b =>
                 {
                     b.Property<int>("Id")
@@ -1138,8 +1188,32 @@ namespace Rhisis.Database.Migrations
             modelBuilder.Entity("Rhisis.Database.Entities.DbSkill", b =>
                 {
                     b.HasOne("Rhisis.Database.Entities.DbCharacter", "Character")
-                        .WithMany()
+                        .WithMany("Skills")
                         .HasForeignKey("CharacterId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Rhisis.Database.Entities.DbSkillBuff", b =>
+                {
+                    b.HasOne("Rhisis.Database.Entities.DbCharacter", "Character")
+                        .WithMany("SkillBuffs")
+                        .HasForeignKey("CharacterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Rhisis.Database.Entities.DbSkillBuffAttribute", b =>
+                {
+                    b.HasOne("Rhisis.Database.Entities.DbAttribute", "Attribute")
+                        .WithMany()
+                        .HasForeignKey("AttributeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Rhisis.Database.Entities.DbSkillBuff", "SkillBuff")
+                        .WithMany("Attributes")
+                        .HasForeignKey("SkillBuffId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });

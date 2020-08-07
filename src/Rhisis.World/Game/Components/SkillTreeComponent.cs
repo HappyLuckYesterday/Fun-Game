@@ -12,21 +12,26 @@ namespace Rhisis.World.Game.Components
         /// <summary>
         /// Gets the skills information.
         /// </summary>
-        public IEnumerable<SkillInfo> Skills { get; set; }
+        public IEnumerable<Skill> Skills { get; set; }
+
+        /// <summary>
+        /// Gets or sets the available skill points.
+        /// </summary>
+        public ushort SkillPoints { get; set; }
 
         /// <summary>
         /// Gets the skill based on the given id.
         /// </summary>
         /// <param name="skillId">Skill id.</param>
         /// <returns></returns>
-        public SkillInfo GetSkill(int skillId) => Skills.FirstOrDefault(x => x.SkillId == skillId);
+        public Skill GetSkill(int skillId) => Skills.FirstOrDefault(x => x.SkillId == skillId);
 
         /// <summary>
         /// Gets the skill based on the given skill index.
         /// </summary>
         /// <param name="skillIndex">Skill index.</param>
         /// <returns></returns>
-        public SkillInfo GetSkillByIndex(int skillIndex) => Skills.ElementAt(skillIndex);
+        public Skill GetSkillByIndex(int skillIndex) => Skills.ElementAt(skillIndex);
 
         /// <summary>
         /// Sets the skill level of the given skill id.
@@ -35,7 +40,7 @@ namespace Rhisis.World.Game.Components
         /// <param name="level">Skill level.</param>
         public void SetSkillLevel(int skillId, int level)
         {
-            SkillInfo skill = GetSkill(skillId);
+            Skill skill = GetSkill(skillId);
 
             if (skill != null)
             {

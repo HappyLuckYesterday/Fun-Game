@@ -4,7 +4,7 @@ using Rhisis.World.Game.Structures;
 
 namespace Rhisis.World.Systems.Inventory
 {
-    public interface IInventorySystem : IGameSystemLifeCycle
+    public interface IInventorySystem
     {
         /// <summary>
         /// Creates an item in player's inventory.

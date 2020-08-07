@@ -95,9 +95,18 @@ namespace Rhisis.World.Game.Common
         /// </summary>
         /// <param name="delaySeconds">Delay time in seconds before executing action.</param>
         /// <param name="delayedAction">Action to execute after delay has passed.</param>
-        /// <returns>Delayed action unique Id.</returns>
-        public Guid DelayAction(int delaySeconds, Action delayedAction) 
+        /// <returns>Delayed action Id.</returns>
+        public Guid DelayAction(double delaySeconds, Action delayedAction) 
             => DelayAction(TimeSpan.FromSeconds(delaySeconds), delayedAction);
+
+        /// <summary>
+        /// Delay an action using milliseconds as time unit.
+        /// </summary>
+        /// <param name="delayMilliseconds">Delay time in milliseconds before executing the action.</param>
+        /// <param name="delayedAction">Action to execute after the delay has passed.</param>
+        /// <returns>elayed action Id.</returns>
+        public Guid DelayActionMilliseconds(double delayMilliseconds, Action delayedAction)
+            => DelayAction(TimeSpan.FromMilliseconds(delayMilliseconds), delayedAction);
 
         /// <summary>
         /// Cancels an action.

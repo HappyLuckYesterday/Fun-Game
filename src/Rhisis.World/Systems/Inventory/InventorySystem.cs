@@ -1,12 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Structures.Game;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Structures;
@@ -33,7 +28,6 @@ namespace Rhisis.World.Systems.Inventory
         public const int MaxHumanParts = MaxItems - EquipOffset;
 
         private readonly ILogger<InventorySystem> _logger;
-        private readonly IRhisisDatabase _database;
         private readonly IItemFactory _itemFactory;
         private readonly IInventoryPacketFactory _inventoryPacketFactory;
         private readonly IInventoryItemUsage _inventoryItemUsage;
@@ -49,105 +43,19 @@ namespace Rhisis.World.Systems.Inventory
         /// Creates a new <see cref="InventorySystem"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        /// <param name="database">Rhisis database.</param>
         /// <param name="itemFactory">Item factory.</param>
         /// <param name="inventoryPacketFactory">Inventory packet factory.</param>
         /// <param name="inventoryItemUsage">Inventory item usage system.</param>
         /// <param name="dropSystem">Drop system.</param>
         /// <param name="textPacketFactory">Text packet factory.</param>
-        public InventorySystem(ILogger<InventorySystem> logger, IRhisisDatabase database, IItemFactory itemFactory, IInventoryPacketFactory inventoryPacketFactory, IInventoryItemUsage inventoryItemUsage, IDropSystem dropSystem, ITextPacketFactory textPacketFactory)
+        public InventorySystem(ILogger<InventorySystem> logger, IItemFactory itemFactory, IInventoryPacketFactory inventoryPacketFactory, IInventoryItemUsage inventoryItemUsage, IDropSystem dropSystem, ITextPacketFactory textPacketFactory)
         {
             _logger = logger;
-            _database = database;
             _itemFactory = itemFactory;
             _inventoryPacketFactory = inventoryPacketFactory;
             _inventoryItemUsage = inventoryItemUsage;
             _dropSystem = dropSystem;
             _textPacketFactory = textPacketFactory;
-        }
-
-        /// <inheritdoc />
-        public void Initialize(IPlayerEntity player)
-        {
-            IEnumerable<InventoryItem> items = _database.ItemStorage
-                .Include(x => x.Item)
-                .Where(x => x.CharacterId == player.PlayerData.Id && x.StorageTypeId == (int)ItemStorageType.Inventory && !x.IsDeleted)
-                .OrderBy(x => x.Slot)
-                .Select(x => _itemFactory.CreateInventoryItem(x));
-
-            player.Inventory.Initialize(items);
-        }
-
-        /// <inheritdoc />
-        public void Save(IPlayerEntity player)
-        {
-            IEnumerable<DbItemStorage> dbInventoryItems = _database.ItemStorage
-                .Include(x => x.Item)
-                    .ThenInclude(x => x.ItemAttributes)
-                .Where(x => x.CharacterId == player.PlayerData.Id && x.StorageTypeId == (int)ItemStorageType.Inventory);
-
-            IEnumerable<DbItemStorage> itemsToDelete = (from dbItem in dbInventoryItems
-                                                        let inventoryItem = player.Inventory.GetItem(x => x.DatabaseStorageItemId == dbItem.Id)
-                                                        where !dbItem.IsDeleted && inventoryItem == null
-                                                        select dbItem).ToList();
-
-            foreach (DbItemStorage storedItem in itemsToDelete)
-            {
-                storedItem.IsDeleted = true;
-                storedItem.Item.IsDeleted = true;
-
-                _database.ItemStorage.Update(storedItem);
-            }
-
-            // Add or update items
-            foreach (InventoryItem item in player.Inventory)
-            {
-                if (item == null || item.Id == Item.Empty)
-                {
-                    continue;
-                }
-
-                DbItemStorage dbItem = dbInventoryItems.FirstOrDefault(x => x.Id == item.DatabaseStorageItemId && !x.IsDeleted);
-
-                if (dbItem != null && dbItem.Id != 0)
-                {
-                    dbItem.CharacterId = player.PlayerData.Id;
-                    dbItem.Quantity = item.Quantity;
-                    dbItem.Slot = item.Slot;
-                    dbItem.Item.Refine = item.Refine;
-                    dbItem.Item.Element = (byte)item.Element;
-                    dbItem.Item.ElementRefine = item.ElementRefine;
-                    dbItem.Updated = DateTime.UtcNow;
-
-                    // TODO: update item attributes
-
-                    _database.ItemStorage.Update(dbItem);
-                }
-                else
-                {
-                    dbItem = new DbItemStorage
-                    {
-                        CharacterId = player.PlayerData.Id,
-                        StorageTypeId = (int)ItemStorageType.Inventory,
-                        Quantity = item.Quantity,
-                        Slot = item.Slot,
-                        Updated = DateTime.UtcNow,
-                        Item = new DbItem
-                        {
-                            CreatorId = item.CreatorId,
-                            GameItemId = item.Id,
-                            Refine = item.Refine,
-                            Element = (byte)item.Element,
-                            ElementRefine = item.ElementRefine
-                            // TODO: Add item attributes
-                        }
-                    };
-
-                    _database.ItemStorage.Add(dbItem);
-                }
-            }
-
-            _database.SaveChanges();
         }
 
         /// <inheritdoc />

@@ -6,6 +6,7 @@ using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Game.Structures;
+using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Entities.Internal
 {
@@ -53,6 +54,9 @@ namespace Rhisis.World.Game.Entities.Internal
         /// <inheritdoc />
         public Item Hand { get; set; }
 
+        /// <inheritdoc />
+        public BuffComponent Buffs { get; }
+
         /// <summary>
         /// Creates a new <see cref="MonsterEntity"/> instance.
         /// </summary>
@@ -65,6 +69,7 @@ namespace Rhisis.World.Game.Entities.Internal
             Interaction = new InteractionComponent();
             Battle = new BattleComponent();
             Attributes = new AttributeComponent();
+            Buffs = new BuffComponent();
         }
 
         public override string ToString() => Object.Name;

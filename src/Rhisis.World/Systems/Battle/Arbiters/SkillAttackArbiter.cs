@@ -13,7 +13,7 @@ namespace Rhisis.World.Systems.Battle.Arbiters
         /// <summary>
         /// Gets the attacker skill.
         /// </summary>
-        protected SkillInfo Skill { get; }
+        protected Skill Skill { get; }
 
         /// <summary>
         /// Creates a new <see cref="SkillAttackArbiter"/> instance.
@@ -21,7 +21,7 @@ namespace Rhisis.World.Systems.Battle.Arbiters
         /// <param name="attacker">Attacker living entity.</param>
         /// <param name="defender">Defender living entity.</param>
         /// <param name="skill">Skill.</param>
-        protected SkillAttackArbiter(ILivingEntity attacker, ILivingEntity defender, SkillInfo skill)
+        protected SkillAttackArbiter(ILivingEntity attacker, ILivingEntity defender, Skill skill)
             : base(attacker, defender)
         {
             Skill = skill;

@@ -8,8 +8,8 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Rhisis.World.Game.Structures
 {
-    [DebuggerDisplay("{Data.Name} Lv. {Level}")]
-    public class SkillInfo : IEquatable<SkillInfo>, IPacketSerializer
+    [DebuggerDisplay("{Name} Lv. {Level}")]
+    public class Skill : IEquatable<Skill>, IPacketSerializer
     {
         private long _nextSkillUsageTime;
 
@@ -29,6 +29,11 @@ namespace Rhisis.World.Game.Structures
         public int? DatabaseId { get; }
 
         /// <summary>
+        /// Gets the skill name.
+        /// </summary>
+        public string Name => Data?.Name ?? "[undefined]";
+
+        /// <summary>
         /// Gets the skill data.
         /// </summary>
         public SkillData Data { get; }
@@ -44,14 +49,14 @@ namespace Rhisis.World.Game.Structures
         public SkillLevelData LevelData => Data.SkillLevels[Level];
 
         /// <summary>
-        /// Creates a new <see cref="SkillInfo"/> instance.
+        /// Creates a new <see cref="Skill"/> instance.
         /// </summary>
         /// <param name="skillId">Skill id.</param>
         /// <param name="characterId">Character Id.</param>
         /// <param name="skillData">Skill data.</param>
         /// <param name="level">Skill level.</param>
         /// <param name="databaseId">Database id.</param>
-        public SkillInfo(int skillId, int characterId, SkillData skillData, int level = default, int? databaseId = default)
+        public Skill(int skillId, int characterId, SkillData skillData, int level = default, int? databaseId = default)
         {
             SkillId = skillId;
             CharacterId = characterId;
@@ -64,7 +69,13 @@ namespace Rhisis.World.Game.Structures
         /// Sets the skill cool time before it can be used again.
         /// </summary>
         /// <param name="coolTime">Cool time.</param>
-        public void SetCoolTime(long coolTime) => _nextSkillUsageTime = Time.GetElapsedTime() + coolTime;
+        public void SetCoolTime(long coolTime)
+        {
+            if (coolTime > 0)
+            {
+                _nextSkillUsageTime = Time.GetElapsedTime() + coolTime;
+            }
+        }
 
         /// <summary>
         /// Check if the current skill cool time is over.
@@ -73,11 +84,11 @@ namespace Rhisis.World.Game.Structures
         public bool IsCoolTimeElapsed() => _nextSkillUsageTime < Time.GetElapsedTime();
 
         /// <summary>
-        /// Compares two <see cref="SkillInfo"/> instances.
+        /// Compares two <see cref="Skill"/> instances.
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Equals([AllowNull] SkillInfo other) => SkillId == other?.SkillId && CharacterId == other?.CharacterId;
+        public bool Equals([AllowNull] Skill other) => SkillId == other?.SkillId && CharacterId == other?.CharacterId;
 
         /// <inheritdoc />
         public void Serialize(INetPacketStream packet)
@@ -85,5 +96,7 @@ namespace Rhisis.World.Game.Structures
             packet.Write(SkillId);
             packet.Write(Level);
         }
+
+        public override string ToString() => Name;
     }
 }

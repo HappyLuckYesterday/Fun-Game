@@ -15,7 +15,7 @@ namespace Rhisis.Database.Entities.Configuration
             builder.Property(x => x.Level).IsRequired().HasColumnType("TINYINT");
             builder.Property(x => x.CharacterId).IsRequired();
             builder.HasOne(x => x.Character)
-                .WithMany()
+                .WithMany(x => x.Skills)
                 .HasForeignKey(x => x.CharacterId)
                 .OnDelete(DeleteBehavior.NoAction);
         }

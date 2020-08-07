@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Cluster.Client;
 using Rhisis.Cluster.Packets;
 using Rhisis.Cluster.Structures;
-using Rhisis.Core.Common.Formulas;
+using Rhisis.Core.Data;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Game;
@@ -138,12 +138,12 @@ namespace Rhisis.Cluster.Handlers
                 BankCode = packet.BankPassword,
                 Gender = packet.Gender,
                 JobId = (int)packet.Job,
-                Hp = HealthFormulas.GetMaxOriginHp(defaultCharacter.Level, defaultCharacter.Stamina,
-                    jobData.MaxHpFactor),
-                Mp = HealthFormulas.GetMaxOriginMp(defaultCharacter.Level, defaultCharacter.Intelligence,
-                    jobData.MaxMpFactor, true),
-                Fp = HealthFormulas.GetMaxOriginFp(defaultCharacter.Level, defaultCharacter.Stamina,
-                    defaultCharacter.Dexterity, defaultCharacter.Strength, jobData.MaxFpFactor, true),
+                // Not the best of solutions.
+                // Need to store these values in a configuration file of isolate the health calculation
+                // in a shared injectable service in both cluster and world server.
+                Hp = 100,
+                Mp = 50,
+                Fp = 50,
                 Strength = defaultCharacter.Strength,
                 Stamina = defaultCharacter.Stamina,
                 Dexterity = defaultCharacter.Dexterity,
@@ -163,6 +163,8 @@ namespace Rhisis.Cluster.Handlers
             //TODO: create game constants for slot.
             newCharacter.Items.Add(new DbItemStorage
             {
+                StorageTypeId = (int)ItemStorageType.Inventory,
+                Quantity = 1,
                 Item = new DbItem
                 {
                     GameItemId = defaultEquipment.StartSuit
@@ -171,6 +173,8 @@ namespace Rhisis.Cluster.Handlers
             });
             newCharacter.Items.Add(new DbItemStorage
             {
+                StorageTypeId = (int)ItemStorageType.Inventory,
+                Quantity = 1,
                 Item = new DbItem
                 {
                     GameItemId = defaultEquipment.StartHand
@@ -179,6 +183,8 @@ namespace Rhisis.Cluster.Handlers
             });
             newCharacter.Items.Add(new DbItemStorage
             {
+                StorageTypeId = (int)ItemStorageType.Inventory,
+                Quantity = 1,
                 Item = new DbItem
                 {
                     GameItemId = defaultEquipment.StartShoes
@@ -187,6 +193,8 @@ namespace Rhisis.Cluster.Handlers
             });
             newCharacter.Items.Add(new DbItemStorage
             {
+                StorageTypeId = (int)ItemStorageType.Inventory,
+                Quantity = 1,
                 Item = new DbItem
                 {
                     GameItemId = defaultEquipment.StartWeapon

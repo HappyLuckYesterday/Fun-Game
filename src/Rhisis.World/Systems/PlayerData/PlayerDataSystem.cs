@@ -40,7 +40,7 @@ namespace Rhisis.World.Systems.PlayerData
             else
             {
                 player.PlayerData.Gold = (int)gold;
-                _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
+                _moverPacketFactory.SendUpdatePoints(player, DefineAttributes.GOLD, player.PlayerData.Gold);
             }
 
             return true;
@@ -51,7 +51,7 @@ namespace Rhisis.World.Systems.PlayerData
         {
             player.PlayerData.Gold = Math.Max(player.PlayerData.Gold - goldAmount, 0);
 
-            _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.GOLD, player.PlayerData.Gold);
+            _moverPacketFactory.SendUpdatePoints(player, DefineAttributes.GOLD, player.PlayerData.Gold);
 
             return true;
         }

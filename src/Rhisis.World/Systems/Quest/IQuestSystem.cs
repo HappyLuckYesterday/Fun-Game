@@ -7,7 +7,7 @@ namespace Rhisis.World.Systems.Quest
     /// <summary>
     /// Provides a mechansim to manage player quests.
     /// </summary>
-    public interface IQuestSystem : IGameSystemLifeCycle
+    public interface IQuestSystem
     {
         /// <summary>
         /// Check if the player can start the given quest script.

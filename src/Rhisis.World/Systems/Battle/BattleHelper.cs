@@ -72,12 +72,6 @@ namespace Rhisis.World.Systems.Battle
             return (int)(attribute * jobFactor + levelFactor);
         }
 
-        // TODO: move this to utility
-        public static int MulDiv(int number, int numerator, int denominator)
-        {
-            return (int)(((long)number * numerator) / denominator);
-        }
-
         /// <summary>
         /// Knocks back an entity by calculating his destination position.
         /// </summary>

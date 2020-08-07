@@ -1,10 +1,10 @@
-﻿using Rhisis.Core.Common.Formulas;
-using Rhisis.Core.Data;
+﻿using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Game;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
+using Rhisis.World.Systems.Health;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Systems.Experience
@@ -22,6 +22,7 @@ namespace Rhisis.World.Systems.Experience
         };
 
         private readonly IGameResources _gameResources;
+        private readonly IHealthSystem _healthSystem;
         private readonly IMoverPacketFactory _moverPacketFactory;
         private readonly IPlayerPacketFactory _playerPacketFactory;
 
@@ -30,9 +31,10 @@ namespace Rhisis.World.Systems.Experience
         /// </summary>
         /// <param name="gameResources">Game resources.</param>
         /// <param name="playerPacketFactory">Player packet factory.</param>
-        public ExperienceSystem(IGameResources gameResources, IMoverPacketFactory moverPacketFactory, IPlayerPacketFactory playerPacketFactory)
+        public ExperienceSystem(IGameResources gameResources, IHealthSystem healthSystem, IMoverPacketFactory moverPacketFactory, IPlayerPacketFactory playerPacketFactory)
         {
             _gameResources = gameResources;
+            _healthSystem = healthSystem;
             _moverPacketFactory = moverPacketFactory;
             _playerPacketFactory = playerPacketFactory;
         }
@@ -51,9 +53,13 @@ namespace Rhisis.World.Systems.Experience
 
             if (GiveExperienceToPlayer(player, exp))
             {
-                _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.HP, player.Attributes[DefineAttributes.HP]);
-                _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.MP, player.Attributes[DefineAttributes.MP]);
-                _moverPacketFactory.SendUpdateAttributes(player, DefineAttributes.FP, player.Attributes[DefineAttributes.FP]);
+                player.Attributes[DefineAttributes.HP] = _healthSystem.GetMaxHp(player);
+                player.Attributes[DefineAttributes.MP] = _healthSystem.GetMaxMp(player);
+                player.Attributes[DefineAttributes.FP] = _healthSystem.GetMaxFp(player);
+                
+                _moverPacketFactory.SendUpdatePoints(player, DefineAttributes.HP, player.Attributes[DefineAttributes.HP]);
+                _moverPacketFactory.SendUpdatePoints(player, DefineAttributes.MP, player.Attributes[DefineAttributes.MP]);
+                _moverPacketFactory.SendUpdatePoints(player, DefineAttributes.FP, player.Attributes[DefineAttributes.FP]);
                 _playerPacketFactory.SendPlayerSetLevel(player, player.Object.Level);
                 _playerPacketFactory.SendPlayerStatsPoints(player);
             }
@@ -122,19 +128,11 @@ namespace Rhisis.World.Systems.Experience
 
             if (player.Object.Level != player.PlayerData.DeathLevel)
             {
-                player.Statistics.SkillPoints += (ushort)((player.Object.Level - 1) / 20 + 2);
-                player.Statistics.StatPoints += statPoints;
+                player.SkillTree.SkillPoints += (ushort)((player.Object.Level - 1) / 20 + 2);
+                player.Statistics.AvailablePoints += statPoints;
             }
 
-            var strength = player.Attributes[DefineAttributes.STR];
-            var stamina = player.Attributes[DefineAttributes.STA];
-            var dexterity = player.Attributes[DefineAttributes.DEX];
-            var intelligence = player.Attributes[DefineAttributes.INT];
-
             player.PlayerData.Experience = 0;
-            player.Attributes[DefineAttributes.HP] = HealthFormulas.GetMaxOriginHp(player.Object.Level, stamina, player.PlayerData.JobData.MaxHpFactor);
-            player.Attributes[DefineAttributes.MP] = HealthFormulas.GetMaxOriginMp(player.Object.Level, intelligence, player.PlayerData.JobData.MaxMpFactor, true);
-            player.Attributes[DefineAttributes.FP] = HealthFormulas.GetMaxOriginFp(player.Object.Level, stamina, dexterity, strength, player.PlayerData.JobData.MaxFpFactor, true);
         }
 
         /// <summary>

@@ -96,7 +96,7 @@ namespace Rhisis.World.Game.Behaviors
                 {
                     _monster.Moves.ReturningToOriginalPosition = false;
                     _monster.Attributes[DefineAttributes.HP] = _monster.Data.AddHp;
-                    _moverPacketFactory.SendUpdateAttributes(_monster, DefineAttributes.HP, _monster.Attributes[DefineAttributes.HP]);
+                    _moverPacketFactory.SendUpdatePoints(_monster, DefineAttributes.HP, _monster.Attributes[DefineAttributes.HP]);
                 }
                 if (_monster.Moves.SpeedFactor >= 2f)
                 {
