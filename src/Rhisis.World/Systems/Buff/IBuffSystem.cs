@@ -3,7 +3,7 @@ using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Systems.Buff
 {
-    public interface IBuffSystem : IGameSystemLifeCycle
+    public interface IBuffSystem
     {
         bool AddBuff(ILivingEntity entity, Game.Structures.Buff buff);
 

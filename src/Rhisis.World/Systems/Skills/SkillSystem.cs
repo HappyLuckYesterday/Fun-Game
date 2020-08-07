@@ -38,7 +38,6 @@ namespace Rhisis.World.Systems.Skills
         };
 
         private readonly ILogger<SkillSystem> _logger;
-        private readonly IRhisisDatabase _database;
         private readonly IGameResources _gameResources;
         private readonly IBattleSystem _battleSystem;
         private readonly IAttributeSystem _attributeSystem;
@@ -47,19 +46,14 @@ namespace Rhisis.World.Systems.Skills
         private readonly ISkillPacketFactory _skillPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
         private readonly IPlayerPacketFactory _playerPacketFactory;
-        private readonly ISpecialEffectPacketFactory _specialEffectPacketFactory;
         private readonly IMoverPacketFactory _moverPacketFactory;
 
-        /// <inheritdoc />
-        public int Order => 1;
-
-        public SkillSystem(ILogger<SkillSystem> logger, IRhisisDatabase database, IGameResources gameResources,
+        public SkillSystem(ILogger<SkillSystem> logger, IGameResources gameResources,
             IBattleSystem battleSystem, IAttributeSystem attributeSystem, IBuffSystem buffSystem, IStatisticsSystem statisticsSystem,
-            ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, IPlayerPacketFactory playerPacketFactory,
-            ISpecialEffectPacketFactory specialEffectPacketFactory, IMoverPacketFactory moverPacketFactory)
+            ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, 
+            IPlayerPacketFactory playerPacketFactory, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;
-            _database = database;
             _gameResources = gameResources;
             _battleSystem = battleSystem;
             _attributeSystem = attributeSystem;
@@ -68,55 +62,7 @@ namespace Rhisis.World.Systems.Skills
             _skillPacketFactory = skillPacketFactory;
             _textPacketFactory = textPacketFactory;
             _playerPacketFactory = playerPacketFactory;
-            _specialEffectPacketFactory = specialEffectPacketFactory;
             _moverPacketFactory = moverPacketFactory;
-        }
-
-        /// <inheritdoc />
-        public void Initialize(IPlayerEntity player)
-        {
-            IEnumerable<Skill> jobSkills = GetSkillsByJob(player.PlayerData.Job);
-            IEnumerable<DbSkill> playerSkills = _database.Skills.Where(x => x.CharacterId == player.PlayerData.Id).AsNoTracking().AsEnumerable();
-
-            player.SkillTree.Skills = (from x in jobSkills
-                                       join s in playerSkills on x.SkillId equals s.SkillId into dbSkills
-                                       from dbSkill in dbSkills.DefaultIfEmpty()
-                                       select new Skill(x.SkillId, player.PlayerData.Id, _gameResources.Skills[x.SkillId], dbSkill?.Level ?? default, dbSkill?.Id)).ToList();
-        }
-
-        /// <inheritdoc />
-        public void Save(IPlayerEntity player)
-        {
-            var skillsSet = from x in _database.Skills.Where(x => x.CharacterId == player.PlayerData.Id).AsNoTracking().ToList()
-                            join s in player.SkillTree.Skills on
-                             new { x.SkillId, x.CharacterId }
-                             equals
-                             new { s.SkillId, s.CharacterId }
-                            select new { DbSkill = x, PlayerSkill = s };
-
-            foreach (var skillToUpdate in skillsSet)
-            {
-                skillToUpdate.DbSkill.Level = (byte)skillToUpdate.PlayerSkill.Level;
-
-                _database.Skills.Update(skillToUpdate.DbSkill);
-            }
-
-            foreach (Skill skill in player.SkillTree.Skills)
-            {
-                if (!skill.DatabaseId.HasValue && skill.Level > 0)
-                {
-                    var newSkill = new DbSkill
-                    {
-                        SkillId = skill.SkillId,
-                        Level = (byte)skill.Level,
-                        CharacterId = player.PlayerData.Id
-                    };
-
-                    _database.Skills.Add(newSkill);
-                }
-            }
-
-            _database.SaveChanges();
         }
 
         public IEnumerable<Skill> GetSkillsByJob(DefineJob.Job job)
@@ -140,7 +86,7 @@ namespace Rhisis.World.Systems.Skills
         }
 
         /// <inheritdoc />
-        public void UpdateSkills(IPlayerEntity player, IReadOnlyDictionary<int, int> skillsToUpdate)
+        public bool UpdateSkills(IPlayerEntity player, IReadOnlyDictionary<int, int> skillsToUpdate)
         {
             int requiredSkillPoints = 0;
 
@@ -154,7 +100,7 @@ namespace Rhisis.World.Systems.Skills
                 {
                     _textPacketFactory.SendDefinedText(player, DefineText.TID_RESKILLPOINT_ERROR);
                     _logger.LogError($"Cannot find skill with id '{skillId}' for player '{player}'.");
-                    return;
+                    return false;
                 }
 
                 if (playerSkill.Level == skillLevel)
@@ -167,7 +113,7 @@ namespace Rhisis.World.Systems.Skills
                 {
                     _textPacketFactory.SendDefinedText(player, DefineText.TID_RESKILLPOINT_ERROR);
                     _logger.LogError($"Cannot update skill with '{skillId}' for player '{player}'. Player need to be level '{playerSkill.Data.RequiredLevel}' to learn this skill.");
-                    return;
+                    return false;
                 }
 
                 if (!CheckRequiredSkill(playerSkill.Data.RequiredSkillId1, playerSkill.Data.RequiredSkillLevel1, skillsToUpdate))
@@ -176,7 +122,7 @@ namespace Rhisis.World.Systems.Skills
 
                     _textPacketFactory.SendDefinedText(player, DefineText.TID_RESKILLPOINT_ERROR);
                     _logger.LogError($"Cannot update skill with '{skillId}' for player '{player}'. Skill '{requiredSkill1.Name}' must be at least Lv.{requiredSkill1.RequiredSkillLevel1}");
-                    return;
+                    return false;
                 }
 
                 if (!CheckRequiredSkill(playerSkill.Data.RequiredSkillId2, playerSkill.Data.RequiredSkillLevel2, skillsToUpdate))
@@ -185,21 +131,21 @@ namespace Rhisis.World.Systems.Skills
 
                     _textPacketFactory.SendDefinedText(player, DefineText.TID_RESKILLPOINT_ERROR);
                     _logger.LogError($"Cannot update skill with '{skillId}' for player '{player}'. Skill '{requiredSkill2.Name}' must be at least Lv.{requiredSkill2.RequiredSkillLevel1}");
-                    return;
+                    return false;
                 }
 
                 if (skillLevel < 0 || skillLevel < playerSkill.Level || skillLevel > playerSkill.Data.MaxLevel)
                 {
                     _textPacketFactory.SendDefinedText(player, DefineText.TID_RESKILLPOINT_ERROR);
                     _logger.LogError($"Cannot update skill with '{skillId}' for player '{player}'. The skill level is out of bounds.");
-                    return;
+                    return false;
                 }
 
                 if (!SkillPointUsage.TryGetValue(playerSkill.Data.JobType, out int requiredSkillPointAmount))
                 {
                     _textPacketFactory.SendDefinedText(player, DefineText.TID_RESKILLPOINT_ERROR);
                     _logger.LogError($"Cannot update skill with '{skillId}' for player '{player}'. Cannot find required skill point for job type '{playerSkill.Data.JobType}'.");
-                    return;
+                    return false;
                 }
 
                 requiredSkillPoints += (skillLevel - playerSkill.Level) * requiredSkillPointAmount;
@@ -209,7 +155,7 @@ namespace Rhisis.World.Systems.Skills
             {
                 _logger.LogError($"Cannot update skills for player '{player}'. Not enough skill points.");
                 _textPacketFactory.SendDefinedText(player, DefineText.TID_RESKILLPOINT_ERROR);
-                return;
+                return false;
             }
 
             player.SkillTree.SkillPoints -= (ushort)requiredSkillPoints;
@@ -222,8 +168,9 @@ namespace Rhisis.World.Systems.Skills
                 player.SkillTree.SetSkillLevel(skillId, skillLevel);
             }
 
-            _specialEffectPacketFactory.SendSpecialEffect(player, DefineSpecialEffects.XI_SYS_EXCHAN01, false);
             _skillPacketFactory.SendSkillTreeUpdate(player);
+
+            return true;
         }
 
         /// <inheritdoc />
@@ -546,7 +493,6 @@ namespace Rhisis.World.Systems.Skills
                 ExecuteSkill(caster, target, skill, reduceCasterPoints: false);
             });
 
-            //_projectileSystem.CreateProjectile(projectile);
             _skillPacketFactory.SendUseSkill(caster, target, skill, skillCastingTime, skillUseType);
 
             caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.CastingTime), () =>
@@ -605,7 +551,7 @@ namespace Rhisis.World.Systems.Skills
                     else
                     {
                         _logger.LogTrace($"{caster} is healing {target} in {castingTime}...");
-                        caster.Delayer.DelayAction(castingTime / 1000f, () =>
+                        caster.Delayer.DelayActionMilliseconds(castingTime, () =>
                         {
                             _logger.LogTrace($"{target} healed by {caster} !");
                             ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
@@ -617,7 +563,7 @@ namespace Rhisis.World.Systems.Skills
             {
                 if (skill.LevelData.DestParam2 == DefineAttributes.HP)
                 {
-                    caster.Delayer.DelayAction(castingTime / 1000f, () =>
+                    caster.Delayer.DelayActionMilliseconds(castingTime, () =>
                     {
                         ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
                     });
@@ -645,7 +591,7 @@ namespace Rhisis.World.Systems.Skills
                     attributes.Add(skill.LevelData.DestParam2, skill.LevelData.DestParam2Value);
                 }
 
-                caster.Delayer.DelayAction(castingTime / 1000f, () =>
+                caster.Delayer.DelayActionMilliseconds(castingTime, () =>
                 {
                     var buff = new BuffSkill(skill.SkillId, skill.Level, buffTime, attributes);
                     bool isBuffAdded = _buffSystem.AddBuff(target, buff);

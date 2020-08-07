@@ -1,12 +1,11 @@
 ﻿using Rhisis.Core.Data;
-using Rhisis.World.Game;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Systems.Skills
 {
-    public interface ISkillSystem : IGameSystemLifeCycle
+    public interface ISkillSystem
     {
         /// <summary>
         /// Gets the skills for a given job.
@@ -20,7 +19,8 @@ namespace Rhisis.World.Systems.Skills
         /// </summary>
         /// <param name="player">Current player.</param>
         /// <param name="skillsToUpdate">Dictionary of skill tree, with skill id as key and skill level as value.</param>
-        void UpdateSkills(IPlayerEntity player, IReadOnlyDictionary<int, int> skillsToUpdate);
+        /// <returns>True if the skills have been updated; false in case of any error.</returns>
+        bool UpdateSkills(IPlayerEntity player, IReadOnlyDictionary<int, int> skillsToUpdate);
 
         /// <summary>
         /// Use a skill.

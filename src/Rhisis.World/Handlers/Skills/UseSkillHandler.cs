@@ -7,39 +7,21 @@ using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Skills;
 using Sylver.HandlerInvoker.Attributes;
-using System.Linq;
 
 namespace Rhisis.World.Handlers
 {
     [Handler]
-    public class SkillHandler
+    public class UseSkillHandler
     {
-        private readonly ILogger<SkillHandler> _logger;
+        private readonly ILogger<UseSkillHandler> _logger;
         private readonly ISkillSystem _skillSystem;
         private readonly ISkillPacketFactory _skillPacketFactory;
 
-        public SkillHandler(ILogger<SkillHandler> logger, ISkillSystem skillSystem, ISkillPacketFactory skillPacketFactory)
+        public UseSkillHandler(ILogger<UseSkillHandler> logger, ISkillSystem skillSystem, ISkillPacketFactory skillPacketFactory)
         {
             _logger = logger;
             _skillSystem = skillSystem;
             _skillPacketFactory = skillPacketFactory;
-        }
-
-        /// <summary>
-        /// Updates the player's skill levels.
-        /// </summary>
-        /// <param name="serverClient">Current client.</param>
-        /// <param name="packet">Incoming packet.</param>
-        [HandlerAction(PacketType.DOUSESKILLPOINT)]
-        public void OnDoUseSkillPoints(IWorldServerClient serverClient, DoUseSkillPointsPacket packet)
-        {
-            if (!packet.Skills.Any())
-            {
-                _logger.LogWarning($"Player {serverClient.Player} tried to update skills, but no skills were sent.");
-                return;
-            }
-
-            _skillSystem.UpdateSkills(serverClient.Player, packet.Skills);
         }
 
         /// <summary>
