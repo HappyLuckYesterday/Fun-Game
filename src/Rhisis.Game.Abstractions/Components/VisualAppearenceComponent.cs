@@ -1,6 +1,6 @@
 ﻿using Rhisis.Core.Common;
 
-namespace Rhisis.Game.Components
+namespace Rhisis.Game.Abstractions.Components
 {
     public class VisualAppearenceComponent
     {

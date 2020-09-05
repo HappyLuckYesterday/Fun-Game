@@ -1,6 +1,6 @@
-﻿using Rhisis.Game.Components;
+﻿using Rhisis.Game.Abstractions.Components;
 
-namespace Rhisis.Game.Entities
+namespace Rhisis.Game.Abstractions.Entities
 {
     public interface IPlayer : IHuman
     {

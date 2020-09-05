@@ -87,7 +87,7 @@ namespace Rhisis.World.Game.Factories.Internal
                 Level = character.Level,
                 MovingFlags = ObjectState.OBJSTA_STAND
             };
-            player.VisualAppearance = new VisualAppearenceComponent
+            player.VisualAppearance = new Components.VisualAppearenceComponent
             {
                 Gender = character.Gender,
                 SkinSetId = character.SkinSetId,
@@ -118,7 +118,7 @@ namespace Rhisis.World.Game.Factories.Internal
             player.Attributes[DefineAttributes.MP] = character.Mp;
             player.Attributes[DefineAttributes.FP] = character.Fp;
 
-            player.Statistics = new StatisticsComponent
+            player.Statistics = new Components.StatisticsComponent
             {
                 AvailablePoints = (ushort)character.StatPoints,
                 Strength = character.Strength,

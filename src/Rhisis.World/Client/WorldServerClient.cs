@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Helpers;
+using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Entities;
 using Rhisis.Network.Packets;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
@@ -23,6 +25,8 @@ namespace Rhisis.World.Client
         /// <inheritdoc />
         public IPlayerEntity Player { get; set; }
 
+        public IPlayer NewPlayer { get; }
+
         /// <summary>
         /// Creates a new <see cref="WorldServerClient"/> instance.
         /// </summary>
@@ -31,6 +35,7 @@ namespace Rhisis.World.Client
             : base(socketConnection)
         {
             SessionId = RandomHelper.GenerateSessionKey();
+            NewPlayer = new Player();
         }
 
         /// <summary>
@@ -65,7 +70,7 @@ namespace Rhisis.World.Client
 #if DEBUG
                 _logger.LogTrace("Received {0} packet from {1}.", packetType, Socket.RemoteEndPoint);
 #endif
-                _handlerInvoker.Invoke(packetType, this, packet);
+                _handlerInvoker.Invoke(packetType, NewPlayer, packet);
             }
             catch (HandlerActionNotFoundException)
             {

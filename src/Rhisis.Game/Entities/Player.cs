@@ -1,0 +1,56 @@
+﻿using Rhisis.Core.Common;
+using Rhisis.Core.Data;
+using Rhisis.Core.Structures;
+using Rhisis.Core.Structures.Game;
+using Rhisis.Game.Abstractions;
+using Rhisis.Game.Abstractions.Components;
+using Rhisis.Game.Abstractions.Entities;
+using System;
+
+namespace Rhisis.Game.Entities
+{
+    public class Player : IPlayer, IHuman, IMover, IWorldObject
+    {
+        public int Id { get; set; }
+
+        public WorldObjectType Type { get; set; }
+
+        public ObjectState ObjectState { get; set; }
+
+        public int ModelId { get; set; }
+
+        public IMap Map { get; set; }
+
+        public IMapLayer MapLayer { get; set; }
+
+        public Vector3 Position { get; set; }
+
+        public float Angle { get; set; }
+
+        public float Size { get; set; }
+
+        public string Name { get; set; }
+
+        public int Level { get; set; }
+
+        public bool Spawned { get; set; }
+
+        public long Experience { get; set; }
+
+        public Vector3 DestinationPosition { get; set; }
+
+        public float Speed { get; }
+
+        public float SpeedFactor { get; set; }
+
+        public bool IsMoving { get; set; }
+
+        public MoverData Data { get; set; }
+
+        public StatisticsComponent Statistics { get; set; }
+
+        public VisualAppearenceComponent Appearence { get; set; }
+
+        public IServiceProvider Systems { get; set; }
+    }
+}

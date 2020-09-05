@@ -1,4 +1,5 @@
 ﻿using Rhisis.Database.Entities;
+using Rhisis.Game.Abstractions.Entities;
 using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Game.Factories

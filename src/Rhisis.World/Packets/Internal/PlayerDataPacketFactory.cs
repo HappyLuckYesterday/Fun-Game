@@ -14,7 +14,7 @@ namespace Rhisis.World.Packets.Internal
         {
             using var packet = new FFPacket();
 
-            packet.StartNewMergedPacket(FFPacket.NullId, SnapshotType.QUERY_PLAYER_DATA);
+            packet.StartNewMergedPacket(uint.MaxValue, SnapshotType.QUERY_PLAYER_DATA);
 
             packet.Write(playerId);
             packet.Write(name);

@@ -1,4 +1,4 @@
-﻿namespace Rhisis.Game.Entities
+﻿namespace Rhisis.Game.Abstractions.Entities
 {
     public interface INpc : IMover
     {
