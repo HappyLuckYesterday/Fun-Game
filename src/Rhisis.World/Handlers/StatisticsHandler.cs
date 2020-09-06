@@ -1,4 +1,5 @@
-﻿using Rhisis.Network.Packets;
+﻿using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Network;
 using Rhisis.Network.Packets.World;
 using Rhisis.World.Client;
 using Rhisis.World.Systems.Statistics;
@@ -26,10 +27,14 @@ namespace Rhisis.World.Handlers
         /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(PacketType.MODIFY_STATUS)]
-        public void OnModifyStatus(IWorldServerClient serverClient, ModifyStatusPacket packet)
+        public void OnModifyStatus(IPlayer player, ModifyStatusPacket packet)
         {
-            _statisticsSystem.UpdateStatistics(serverClient.Player, 
-                packet.Strength, packet.Stamina, packet.Dexterity, packet.Intelligence);
+            player.Statistics.SetStatistics(packet.Strength, packet.Stamina, packet.Dexterity, packet.Intelligence);
+
+            // TODO: send packet ?
+
+            //_statisticsSystem.UpdateStatistics(serverClient.Player, 
+            //    packet.Strength, packet.Stamina, packet.Dexterity, packet.Intelligence);
         }
     }
 }

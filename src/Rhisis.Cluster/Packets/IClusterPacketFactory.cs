@@ -1,7 +1,7 @@
 ﻿using Rhisis.Cluster.Client;
 using Rhisis.Cluster.Structures;
 using Rhisis.Database.Entities;
-using Rhisis.Network.Packets;
+using Rhisis.Network;
 using System.Collections.Generic;
 
 namespace Rhisis.Cluster.Packets

@@ -3,7 +3,6 @@ using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Structures.Game.Dialogs;
 using Rhisis.Network;
-using Rhisis.Network.Packets;
 using Rhisis.World.Game.Entities;
 using System.Collections.Generic;
 using System.Linq;

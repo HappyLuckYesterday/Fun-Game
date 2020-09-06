@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Core.Data;
+using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Game;
 using Rhisis.Game.Abstractions;
@@ -11,7 +12,7 @@ namespace Rhisis.Game.Entities
 {
     public class Player : IPlayer, IHuman, IMover, IWorldObject
     {
-        public int Id { get; set; }
+        public uint Id { get; }
 
         public WorldObjectType Type { get; set; }
 
@@ -37,6 +38,8 @@ namespace Rhisis.Game.Entities
 
         public long Experience { get; set; }
 
+        public int Gold { get; set; }
+
         public Vector3 DestinationPosition { get; set; }
 
         public float Speed { get; }
@@ -47,10 +50,19 @@ namespace Rhisis.Game.Entities
 
         public MoverData Data { get; set; }
 
-        public StatisticsComponent Statistics { get; set; }
+        public HealthComponent Health { get; set; }
+
+        public StatisticsComponent Statistics { get; }
 
         public VisualAppearenceComponent Appearence { get; set; }
 
         public IServiceProvider Systems { get; set; }
+
+        public Player()
+        {
+            Id = RandomHelper.GenerateUniqueId();
+            Health = new HealthComponent(this);
+            Statistics = new StatisticsComponent(this);
+        }
     }
 }

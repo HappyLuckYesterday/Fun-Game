@@ -1,4 +1,4 @@
-﻿using Rhisis.Network.Packets;
+﻿using Rhisis.Network;
 using Rhisis.Network.Packets.World;
 using Rhisis.World.Client;
 using Rhisis.World.Systems.Dialog;

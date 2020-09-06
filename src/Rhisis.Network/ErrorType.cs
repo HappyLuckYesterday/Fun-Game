@@ -1,4 +1,4 @@
-﻿namespace Rhisis.Network.Packets
+﻿namespace Rhisis.Network
 {
     public enum ErrorType
     {

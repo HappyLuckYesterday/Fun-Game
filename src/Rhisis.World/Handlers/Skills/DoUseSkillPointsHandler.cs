@@ -29,7 +29,7 @@ namespace Rhisis.World.Handlers
         /// </summary>
         /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Incoming packet.</param>
-        [HandlerAction(PacketType.DOUSESKILLPOINT)]
+        //[HandlerAction(PacketType.DOUSESKILLPOINT)]
         public void OnDoUseSkillPoints(IWorldServerClient serverClient, DoUseSkillPointsPacket packet)
         {
             if (!packet.Skills.Any())

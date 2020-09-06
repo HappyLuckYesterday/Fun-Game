@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Game;
+using Rhisis.Game.Abstractions.Components;
 
 namespace Rhisis.Game.Abstractions.Entities
 {
@@ -16,5 +17,7 @@ namespace Rhisis.Game.Abstractions.Entities
         bool IsMoving { get; }
 
         MoverData Data { get; }
+
+        HealthComponent Health { get; }
     }
 }

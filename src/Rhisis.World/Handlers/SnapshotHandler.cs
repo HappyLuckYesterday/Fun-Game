@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.Network.Packets;
+using Rhisis.Network;
 using Rhisis.World.Client;
 using Sylver.HandlerInvoker;
 using Sylver.HandlerInvoker.Attributes;

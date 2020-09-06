@@ -33,7 +33,7 @@ namespace Rhisis.World.Handlers
         /// </summary>
         /// <param name="serverClient">Client.</param>
         /// <param name="packet">Incoming packet.</param>
-        [HandlerAction(PacketType.MELEE_ATTACK)]
+        //[HandlerAction(PacketType.MELEE_ATTACK)]
         public void OnMeleeAttack(IWorldServerClient serverClient, MeleeAttackPacket packet)
         {
             var target = serverClient.Player.FindEntity<IMonsterEntity>(packet.ObjectId);
@@ -60,7 +60,7 @@ namespace Rhisis.World.Handlers
         /// </summary>
         /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Magic attack incoming packet.</param>
-        [HandlerAction(PacketType.MAGIC_ATTACK)]
+        //[HandlerAction(PacketType.MAGIC_ATTACK)]
         public void OnMagicAttack(IWorldServerClient serverClient, MagicAttackPacket packet)
         {
             var target = serverClient.Player.FindEntity<IMonsterEntity>(packet.TargetObjectId);
@@ -90,7 +90,7 @@ namespace Rhisis.World.Handlers
         /// </summary>
         /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Range attack incoming packet.</param>
-        [HandlerAction(PacketType.RANGE_ATTACK)]
+        //[HandlerAction(PacketType.RANGE_ATTACK)]
         public void OnRangeAttack(IWorldServerClient serverClient, RangeAttackPacket packet)
         {
             var target = serverClient.Player.FindEntity<IMonsterEntity>(packet.ObjectId);

@@ -7,7 +7,7 @@ namespace Rhisis.Game.Abstractions.Entities
 {
     public interface IWorldObject
     {
-        int Id { get; }
+        uint Id { get; }
 
         WorldObjectType Type { get; }
 

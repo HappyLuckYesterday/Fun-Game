@@ -29,7 +29,7 @@ namespace Rhisis.World.Handlers
         /// </summary>
         /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Incoming packet.</param>
-        [HandlerAction(PacketType.USESKILL)]
+        //[HandlerAction(PacketType.USESKILL)]
         public void OnUseSkill(IWorldServerClient serverClient, UseSkillPacket packet)
         {
             if (packet.SkillIndex < 0 || packet.SkillIndex > (int)DefineJob.JobMax.MAX_SKILLS)

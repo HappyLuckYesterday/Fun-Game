@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Helpers;
 using Rhisis.Login.Packets;
-using Rhisis.Network.Packets;
+using Rhisis.Network;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
 using Sylver.Network.Server;

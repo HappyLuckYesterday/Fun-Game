@@ -6,6 +6,8 @@ namespace Rhisis.Game.Abstractions.Entities
     {
         long Experience { get; set; }
 
+        int Gold { get; set; }
+
         StatisticsComponent Statistics { get; }
     }
 }

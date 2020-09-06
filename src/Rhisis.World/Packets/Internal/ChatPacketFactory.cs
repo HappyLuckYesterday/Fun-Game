@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Network;
-using Rhisis.Network.Packets;
 using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Packets.Internal

@@ -34,7 +34,7 @@ namespace Rhisis.World.Handlers
             _deathSystem = deathSystem;
         }
 
-        [HandlerAction(PacketType.STATEMODE)]
+        //[HandlerAction(PacketType.STATEMODE)]
         public void OnStateMode(IWorldServerClient serverClient, StateModePacket packet)
         {
             if (serverClient.Player.Object.StateMode == packet.StateMode)
@@ -48,13 +48,13 @@ namespace Rhisis.World.Handlers
             }
         }
 
-        [HandlerAction(PacketType.SETTARGET)]
+        //[HandlerAction(PacketType.SETTARGET)]
         public void OnSetTarget(IWorldServerClient serverClient, SetTargetPacket packet)
         {
             _interationSystem.SetTarget(serverClient.Player, packet.TargetId, packet.TargetMode);
         }
 
-        [HandlerAction(PacketType.PLAYERSETDESTOBJ)]
+        //[HandlerAction(PacketType.PLAYERSETDESTOBJ)]
         public void OnPlayerSetDestObject(IWorldServerClient serverClient, PlayerDestObjectPacket packet)
         {
             if (serverClient.Player.Id == packet.TargetObjectId)
@@ -65,17 +65,17 @@ namespace Rhisis.World.Handlers
             _followSystem.Follow(serverClient.Player, packet.TargetObjectId, packet.Distance);
         }
 
-        [HandlerAction(PacketType.QUERY_PLAYER_DATA)]
+        //[HandlerAction(PacketType.QUERY_PLAYER_DATA)]
         public void OnQueryPlayerData(IWorldServerClient serverClient, INetPacketStream packet)
         {
         }
 
-        [HandlerAction(PacketType.QUERY_PLAYER_DATA2)]
+        //[HandlerAction(PacketType.QUERY_PLAYER_DATA2)]
         public void OnQueryPlayerData2(IWorldServerClient serverClient, INetPacketStream packet)
         {
         }
 
-        [HandlerAction(PacketType.PLAYERMOVED)]
+        //[HandlerAction(PacketType.PLAYERMOVED)]
         public void OnPlayerMoved(IWorldServerClient serverClient, PlayerMovedPacket packet)
         {
             if (serverClient.Player.IsDead)
@@ -107,7 +107,7 @@ namespace Rhisis.World.Handlers
                 packet.TickCount);
         }
 
-        [HandlerAction(PacketType.PLAYERBEHAVIOR)]
+        //[HandlerAction(PacketType.PLAYERBEHAVIOR)]
         public void OnPlayerBehavior(IWorldServerClient serverClient, PlayerBehaviorPacket packet)
         {
             if (serverClient.Player.IsDead)
@@ -137,7 +137,7 @@ namespace Rhisis.World.Handlers
                 packet.TickCount);
         }
 
-        [HandlerAction(PacketType.REVIVAL_TO_LODESTAR)]
+        //[HandlerAction(PacketType.REVIVAL_TO_LODESTAR)]
         public void OnRevivalToLodestar(IWorldServerClient serverClient, INetPacketStream _)
         {
             if (!serverClient.Player.IsDead)

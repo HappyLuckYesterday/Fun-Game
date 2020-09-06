@@ -31,7 +31,7 @@ namespace Rhisis.World.Handlers
         /// </summary>
         /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Projectile packet.</param>
-        [HandlerAction(PacketType.SFX_ID)]
+        //[HandlerAction(PacketType.SFX_ID)]
         public void OnProjectileLaunched(IWorldServerClient serverClient, SfxIdPacket packet)
         {
             var projectile = _projectileSystem.GetProjectile<ProjectileInfo>(serverClient.Player, packet.IdSfxHit);
@@ -64,7 +64,7 @@ namespace Rhisis.World.Handlers
         /// </summary>
         /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Projectile hit packet.</param>
-        [HandlerAction(PacketType.SFX_HIT)]
+        //[HandlerAction(PacketType.SFX_HIT)]
         public void OnProjectileArrived(IWorldServerClient serverClient, SfxHitPacket packet)
         {
             var projectile = _projectileSystem.GetProjectile<ProjectileInfo>(serverClient.Player, packet.Id);
