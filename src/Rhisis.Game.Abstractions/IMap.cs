@@ -4,6 +4,10 @@ namespace Rhisis.Game.Abstractions
 {
     public interface IMap
     {
+        int Width { get; }
+
+        int Length { get; }
+
         IEnumerable<IMapLayer> Layers { get; }
 
         IMapLayer GenerateNewLayer();
