@@ -36,5 +36,13 @@ namespace Rhisis.Game.Abstractions.Entities
         /// This property holds the "moving flag" values.
         /// </remarks>
         ObjectState ObjectState { get; set; }
+
+        /// <summary>
+        /// Gets or sets the current object state flags.
+        /// </summary>
+        /// <remarks>
+        /// This property holds the "motion flags" values.
+        /// </remarks>
+        StateFlags ObjectStateFlags { get; set; }
     }
 }

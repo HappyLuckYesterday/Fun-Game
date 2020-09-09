@@ -2,7 +2,7 @@
 
 namespace Rhisis.Game.Abstractions.Components
 {
-    public class HealthComponent
+    public class HealthComponent : IHealth
     {
         private readonly IMover _mover;
 

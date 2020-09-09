@@ -14,9 +14,13 @@ namespace Rhisis.Game.Entities
     {
         public uint Id { get; }
 
+        public int CharacterId { get; set; }
+
         public WorldObjectType Type { get; set; }
 
         public ObjectState ObjectState { get; set; }
+
+        public StateFlags ObjectStateFlags { get; set; }
 
         public int ModelId { get; set; }
 
@@ -40,6 +44,12 @@ namespace Rhisis.Game.Entities
 
         public int Gold { get; set; }
 
+        public int Slot { get; set; }
+
+        public AuthorityType Authority { get; set; }
+
+        public ModeType Mode { get; set; }
+
         public Vector3 DestinationPosition { get; set; }
 
         public float Speed { get; }
@@ -50,9 +60,11 @@ namespace Rhisis.Game.Entities
 
         public MoverData Data { get; set; }
 
-        public HealthComponent Health { get; set; }
+        public JobData Job { get; set; }
 
-        public StatisticsComponent Statistics { get; }
+        public IHealth Health { get; set; }
+
+        public IPlayerStatistics Statistics { get; }
 
         public VisualAppearenceComponent Appearence { get; set; }
 

@@ -14,6 +14,16 @@ namespace Rhisis.Network
         /// </summary>
         public const byte Header = 0x5E;
 
+        /// <summary>
+        /// Gets the FlyFF packet size offset in packet stream.
+        /// </summary>
+        public static readonly int PacketSizeOffset = sizeof(byte);
+
+        /// <summary>
+        /// Gets the FlyFF packet offset where the data starts.
+        /// </summary>
+        public static readonly int PacketDataStartOffset = sizeof(byte) + sizeof(int);
+
         private short _mergedPacketCount;
 
         /// <inheritdoc />
@@ -69,8 +79,8 @@ namespace Rhisis.Network
         {
             long oldPointer = Position;
 
-            Seek(1, SeekOrigin.Begin);
-            base.Write((int)Length - 5);
+            Seek(PacketSizeOffset, SeekOrigin.Begin);
+            base.Write((int)Length - PacketDataStartOffset);
             Seek(oldPointer, SeekOrigin.Begin);
 
             return base.Buffer;

@@ -8,6 +8,9 @@ namespace Rhisis.Core.Structures.Game
     [DebuggerDisplay("{Name}")]
     public class JobData
     {
+        /// <summary>
+        /// Gets or sets the job Id.
+        /// </summary>
         [DataMember(Order = 0)]
         public DefineJob.Job Id { get; set; }
 

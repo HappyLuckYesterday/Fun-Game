@@ -18,6 +18,6 @@ namespace Rhisis.Game.Abstractions.Entities
 
         MoverData Data { get; }
 
-        HealthComponent Health { get; }
+        IHealth Health { get; }
     }
 }

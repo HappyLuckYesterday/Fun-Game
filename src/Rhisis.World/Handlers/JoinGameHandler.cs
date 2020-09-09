@@ -11,6 +11,7 @@ using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Entities;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World;
+using Rhisis.Network.Snapshots;
 using Rhisis.World.Client;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Factories;
@@ -33,6 +34,7 @@ namespace Rhisis.World.Handlers
         private readonly ILogger<JoinGameHandler> _logger;
         private readonly IRhisisDatabase _database;
         private readonly IGameResources _gameResources;
+        private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
         /// Creates a new <see cref="JoinGameHandler"/> instance.
@@ -40,11 +42,13 @@ namespace Rhisis.World.Handlers
         /// <param name="logger">Logger.</param>
         /// <param name="database">Database access layer.</param>
         /// <param name="gameResources">Game resources.</param>
-        public JoinGameHandler(ILogger<JoinGameHandler> logger, IRhisisDatabase database, IGameResources gameResources)
+        /// <param name="serviceProvider">Service provider.</param>
+        public JoinGameHandler(ILogger<JoinGameHandler> logger, IRhisisDatabase database, IGameResources gameResources, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _database = database;
             _gameResources = gameResources;
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -76,6 +80,7 @@ namespace Rhisis.World.Handlers
 
             if (player is Player realPlayer)
             {
+                realPlayer.CharacterId = character.Id;
                 realPlayer.ModelId = character.Gender == 0 ? 11 : 12;
                 realPlayer.Type = WorldObjectType.Mover;
                 // TODO: get map and layer
@@ -85,7 +90,11 @@ namespace Rhisis.World.Handlers
                 realPlayer.Name = character.Name;
                 realPlayer.Level = character.Level;
                 realPlayer.ObjectState = ObjectState.OBJSTA_STAND;
+                realPlayer.ObjectStateFlags = 0;
                 realPlayer.Experience = character.Experience;
+                realPlayer.Authority = (AuthorityType)character.User.Authority;
+                realPlayer.Mode = ModeType.NONE;
+                realPlayer.Slot = character.Slot;
                 realPlayer.Appearence = new Rhisis.Game.Abstractions.Components.VisualAppearenceComponent((GenderType)character.Gender)
                 {
                     SkinSetId = character.SkinSetId,
@@ -108,13 +117,26 @@ namespace Rhisis.World.Handlers
                     throw new ArgumentException($"Cannot find mover with id '{realPlayer.ModelId}' in game resources.", nameof(realPlayer.ModelId));
                 }
 
+                if (!_gameResources.Jobs.TryGetValue((DefineJob.Job)character.JobId, out JobData jobData))
+                {
+                    throw new ArgumentException($"Cannot find job data with id: '{character.JobId}' in game resources.", nameof(character.JobId));
+                }
+
                 realPlayer.Data = moverData;
+                realPlayer.Job = jobData;
+                realPlayer.Systems = _serviceProvider;
 
                 if (realPlayer.Health.IsDead)
                 {
                     // TODO: resurect to lodelight
                 }
             }
+
+            var addObjectSnapshot = new AddObjectSnapshot(player);
+            // TODO: send
+
+            player.Spawned = true;
+            // -----------------------
 
             //IPlayerEntity player = _playerFactory.CreatePlayer(character);
 

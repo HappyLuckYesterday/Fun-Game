@@ -25,22 +25,28 @@ namespace Rhisis.Game
 
         public void AddMonster(IMonster monster)
         {
-            lock (_monsters)
+            if (!_monsters.Contains(monster))
             {
-                if (!_monsters.Contains(monster))
+                lock (_monsters)
                 {
-                    _monsters.Add(monster);
+                    if (!_monsters.Contains(monster))
+                    {
+                        _monsters.Add(monster);
+                    }
                 }
             }
         }
 
         public void AddPlayer(IPlayer player)
         {
-            lock (_players)
+            if (!_players.Contains(player))
             {
-                if (!_players.Contains(player))
+                lock (_players)
                 {
-                    _players.Add(player);
+                    if (!_players.Contains(player))
+                    {
+                        _players.Add(player);
+                    }
                 }
             }
         }
