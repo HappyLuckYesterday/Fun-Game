@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Rhisis.Core\Rhisis.Core.csproj" />
+    <ProjectReference Include="..\..\src\Rhisis.Game\Rhisis.Game.csproj" />
   </ItemGroup>
 
   <ItemGroup>

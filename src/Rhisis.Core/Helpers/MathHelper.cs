@@ -25,16 +25,5 @@ namespace Rhisis.Core.Helpers
         /// <param name="percents">Percentage wanted</param>
         /// <returns></returns>
         public static int Percentage(int value, int percents) => (value * percents) / 100;
-
-        /// <summary>
-        /// Clamps a number.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="min"></param>
-        /// <param name="max"></param>
-        /// <returns></returns>
-        public static int Clamp(int value, int min, int max) => Math.Max(Math.Min(value, min), max);
-
-        public static float Clamp(float value, float min, float max) => Math.Max(Math.Min(value, min), max);
     }
 }

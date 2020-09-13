@@ -70,10 +70,10 @@ namespace Rhisis.Core.Structures
 
         [DataMember]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
-        public DefaultStartItems Man { get; set; } = new DefaultStartItems(GenderType.Male);
+        public DefaultStartItems Man { get; set; } = new DefaultStartItems(0);
 
         [DataMember]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
-        public DefaultStartItems Woman { get; set; } = new DefaultStartItems(GenderType.Female);
+        public DefaultStartItems Woman { get; set; } = new DefaultStartItems(0);
     }
 }

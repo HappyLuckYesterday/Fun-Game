@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
+using Rhisis.Game.Common;
 using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Systems

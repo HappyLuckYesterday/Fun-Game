@@ -36,7 +36,7 @@ namespace Rhisis.World.Handlers
         /// </summary>
         /// <param name="serverClient"></param>
         /// <param name="packet"></param>
-        [HandlerAction(PacketType.MOVEITEM)]
+        //[HandlerAction(PacketType.MOVEITEM)]
         public void OnMoveItem(IWorldServerClient serverClient, MoveItemPacket packet)
         {
             _inventorySystem.MoveItem(serverClient.Player, packet.SourceSlot, packet.DestinationSlot);

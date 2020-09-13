@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Resources;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
+using Rhisis.Game.Abstractions.Resources;
 using Rhisis.World.Game;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;

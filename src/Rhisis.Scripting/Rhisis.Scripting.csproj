@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
@@ -10,6 +10,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
+    <ProjectReference Include="..\Rhisis.Game.Abstractions\Rhisis.Game.Abstractions.csproj" />
+    <ProjectReference Include="..\Rhisis.Game\Rhisis.Game.csproj" />
   </ItemGroup>
 
 </Project>

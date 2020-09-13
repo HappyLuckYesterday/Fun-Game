@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Structures.Game.Dialogs;
+using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources.Dialogs;
 using Rhisis.Network;
 using Rhisis.World.Game.Entities;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Rhisis.World.Packets.Internal
 {

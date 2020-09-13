@@ -6,6 +6,7 @@ using Rhisis.World.Game.Maps;
 using System;
 using Rhisis.Core.Structures;
 using Rhisis.World.Game.Maps.Regions;
+using Rhisis.Game.Common;
 
 namespace Rhisis.World.Game.Chat
 {

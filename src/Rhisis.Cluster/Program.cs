@@ -7,10 +7,8 @@ using Rhisis.Cluster.CoreClient;
 using Rhisis.Cluster.CoreClient.Packets;
 using Rhisis.Cluster.Packets;
 using Rhisis.Core.Extensions;
-using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
-using Rhisis.Network.Packets;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
 using System.IO;
@@ -19,6 +17,10 @@ using Rhisis.Cluster.WorldCluster;
 using Rhisis.Cluster.WorldCluster.Packets;
 using Rhisis.Cluster.WorldCluster.Server;
 using Rhisis.Network.Core;
+using Rhisis.Game.Abstractions.Caching;
+using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Game.Resources;
+using Rhisis.Game.Abstractions.Protocol;
 
 namespace Rhisis.Cluster
 {
@@ -46,8 +48,9 @@ namespace Rhisis.Cluster
 
                     services.AddDatabase(hostContext.Configuration);
                     services.AddHandlers();
-                    services.AddGameResources();
-                    
+                    services.AddSingleton<IGameResources, GameResources>();
+                    //services.AddGameResources();
+
                     // World cluster server configuration
                     services.AddSingleton<IWorldClusterServer, WorldClusterServer>();
                     services.AddSingleton<IWorldPacketFactory, WorldPacketFactory>();

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using Rhisis.World.Systems.Experience;
 using Rhisis.Network;
+using Rhisis.Game.Common;
 
 namespace Rhisis.World.Handlers
 {

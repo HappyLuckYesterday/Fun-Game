@@ -1,6 +1,6 @@
-﻿using Rhisis.Core.Data;
-using Rhisis.Core.Extensions;
-using Rhisis.Core.Structures.Game;
+﻿using Rhisis.Core.Extensions;
+using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources;
 using Sylver.Network.Data;
 using System;
 using System.Diagnostics;

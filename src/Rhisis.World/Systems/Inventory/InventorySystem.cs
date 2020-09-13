@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Game.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Structures;

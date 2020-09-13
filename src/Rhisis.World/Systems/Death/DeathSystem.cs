@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Core.Structures.Game;
+using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Maps.Regions;

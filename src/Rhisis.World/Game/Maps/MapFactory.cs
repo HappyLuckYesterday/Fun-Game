@@ -2,8 +2,10 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Resources;
-using Rhisis.Core.Resources.Dyo;
+using Rhisis.Game.Common;
+using Rhisis.Game.IO.Dyo;
+using Rhisis.Game.IO.Rgn;
+using Rhisis.Game.IO.World;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Maps.Regions;
@@ -136,12 +138,12 @@ namespace Rhisis.World.Game.Maps
                 {
                     switch (region.Index)
                     {
-                        case RegionInfo.RI_REVIVAL:
+                        case (int)RegionInfoType.Revival:
                             int revivalMapId = map.MapInformation.RevivalMapId == 0 ? map.Id : map.MapInformation.RevivalMapId;
                             var newRevivalRegion = MapRevivalRegion.FromRgnElement(region, revivalMapId);
                             regions.Add(newRevivalRegion);
                             break;
-                        case RegionInfo.RI_TRIGGER:
+                        case (int)RegionInfoType.Trigger:
                             regions.Add(MapTriggerRegion.FromRgnElement(region));
                             break;
 

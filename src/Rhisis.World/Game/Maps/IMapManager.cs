@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.Resources;
+﻿using Rhisis.Game.Abstractions.Resources;
 using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Maps

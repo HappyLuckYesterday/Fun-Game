@@ -1,6 +1,5 @@
-﻿using Rhisis.Core.Data;
+﻿using Rhisis.Game.Common;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Structures;
 
 namespace Rhisis.World.Systems.Health
 {

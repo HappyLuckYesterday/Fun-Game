@@ -4,8 +4,7 @@ using Rhisis.Network.Core;
 using Sylver.HandlerInvoker.Attributes;
 using Sylver.Network.Data;
 using System;
-using Rhisis.Cluster.WorldCluster.Server;
-using Rhisis.Core.Resources;
+using Rhisis.Game.Abstractions.Caching;
 
 namespace Rhisis.Cluster.CoreClient.Handlers
 {

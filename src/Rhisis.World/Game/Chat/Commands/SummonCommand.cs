@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
+using Rhisis.Game.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Systems.Teleport;
 using System;

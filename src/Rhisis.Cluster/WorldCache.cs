@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Memory;
-using Rhisis.Core.Resources;
+using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Network.Core;
 
 namespace Rhisis.Cluster

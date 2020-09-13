@@ -1,5 +1,5 @@
 ﻿using Rhisis.Core.Extensions;
-using Rhisis.Network.Packets;
+using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.World.Game.Structures;
 using Sylver.Network.Data;
 using System;
@@ -238,6 +238,7 @@ namespace Rhisis.World.Game.Components
         /// Get an available slot number.
         /// </summary>
         /// <returns>Slot number if available; <see cref="Empty"/> otherwise.</returns>
+        [Obsolete]
         public int GetAvailableSlot()
         {
             for (int i = 0; i < MaxStorageCapacity; i++)
@@ -256,6 +257,7 @@ namespace Rhisis.World.Game.Components
         /// </summary>
         /// <param name="slot">Slot.</param>
         /// <returns>True if the slot is available; false otherwise.</returns>
+        [Obsolete]
         public bool IsSlotAvailable(int slot) => GetItemAtSlot(slot) == null;
 
         /// <summary>

@@ -1,6 +1,5 @@
-using Rhisis.Core.Data;
-using Rhisis.Core.Structures.Game;
 using Rhisis.Database.Entities;
+using Rhisis.Game.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Structures;

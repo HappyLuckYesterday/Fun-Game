@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.Common;
+using Rhisis.Game.Common;
 
 namespace Rhisis.World.Game.Chat
 {

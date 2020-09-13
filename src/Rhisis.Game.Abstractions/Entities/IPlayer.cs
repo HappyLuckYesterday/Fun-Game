@@ -1,12 +1,14 @@
-﻿using Rhisis.Core.Common;
-using Rhisis.Core.Data;
-using Rhisis.Core.Structures.Game;
-using Rhisis.Game.Abstractions.Components;
+﻿using Rhisis.Game.Abstractions.Components;
+using Rhisis.Game.Abstractions.Protocol;
+using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources;
 
 namespace Rhisis.Game.Abstractions.Entities
 {
     public interface IPlayer : IHuman
     {
+        IGameConnection Connection { get; }
+
         int CharacterId { get; }
 
         long Experience { get; set; }
@@ -22,5 +24,7 @@ namespace Rhisis.Game.Abstractions.Entities
         JobData Job { get; set; }
 
         IPlayerStatistics Statistics { get; }
+
+        IInventory Inventory { get; }
     }
 }

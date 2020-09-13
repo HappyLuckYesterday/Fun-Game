@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.Core.Data;
-using Rhisis.Network.Packets;
+using Rhisis.Game.Common;
 using Rhisis.Network.Packets.World;
 using Rhisis.World.Client;
 using Rhisis.World.Packets;

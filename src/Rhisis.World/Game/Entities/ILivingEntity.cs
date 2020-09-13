@@ -1,8 +1,7 @@
-﻿using Rhisis.Core.Structures.Game;
+﻿using Rhisis.Game.Common.Resources;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Structures;
-using System.Collections.Generic;
 
 namespace Rhisis.World.Game.Entities
 {

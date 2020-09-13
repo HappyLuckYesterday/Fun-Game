@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Game.Common;
 using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Systems.Interaction

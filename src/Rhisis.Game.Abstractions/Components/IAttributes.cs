@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.Data;
+﻿using Rhisis.Game.Common;
 
 namespace Rhisis.Game.Abstractions.Components
 {

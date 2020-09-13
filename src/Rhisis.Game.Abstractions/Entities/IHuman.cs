@@ -4,6 +4,6 @@ namespace Rhisis.Game.Abstractions.Entities
 {
     public interface IHuman : IMover
     {
-        VisualAppearenceComponent Appearence { get; }
+        IHumanVisualAppearance Appearence { get; }
     }
 }

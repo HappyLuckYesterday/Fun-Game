@@ -1,14 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.Common;
-using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.IO;
-using Rhisis.Core.Resources;
 using Rhisis.Core.Structures;
-using Rhisis.Core.Structures.Game;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
+using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources;
 using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Entities;

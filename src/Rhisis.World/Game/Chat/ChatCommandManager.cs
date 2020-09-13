@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
+using Rhisis.Game.Common;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

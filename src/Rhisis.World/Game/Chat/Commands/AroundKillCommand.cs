@@ -1,8 +1,8 @@
 using Rhisis.Core.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Systems.Battle;
-using Rhisis.Core.Data;
 using Rhisis.World.Systems.Follow;
+using Rhisis.Game.Common;
 
 namespace Rhisis.World.Game.Chat
 {

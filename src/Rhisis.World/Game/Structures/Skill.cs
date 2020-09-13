@@ -1,6 +1,6 @@
 ﻿using Rhisis.Core.IO;
-using Rhisis.Core.Structures.Game;
-using Rhisis.Network.Packets;
+using Rhisis.Game.Abstractions.Protocol;
+using Rhisis.Game.Common.Resources;
 using Sylver.Network.Data;
 using System;
 using System.Diagnostics;

@@ -61,9 +61,9 @@ namespace Rhisis.Core.Structures
         /// Creates a new default start items based on the gender type.
         /// </summary>
         /// <param name="gender">Character gender.</param>
-        public DefaultStartItems(GenderType gender)
+        public DefaultStartItems(int gender)
         {
-            if (gender == GenderType.Male)
+            if (gender == 0)
             {
                 StartWeapon = 21;
                 StartSuit = 502;

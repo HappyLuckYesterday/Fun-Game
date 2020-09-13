@@ -1,5 +1,4 @@
-﻿using Rhisis.Core.Common;
-using Rhisis.Core.Data;
+﻿using Rhisis.Game.Common;
 using Rhisis.Core.Structures;
 using System;
 
@@ -21,7 +20,7 @@ namespace Rhisis.Game.Abstractions.Entities
 
         float Angle { get; }
 
-        float Size { get; }
+        short Size { get; }
 
         string Name { get; }
 

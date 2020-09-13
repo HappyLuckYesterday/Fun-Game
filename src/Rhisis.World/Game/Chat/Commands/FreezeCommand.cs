@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
 using Rhisis.World.Game.Entities;
-using Rhisis.Core.Data;
 using System;
 using Rhisis.World.Packets;
+using Rhisis.Game.Common;
 
 namespace Rhisis.World.Game.Chat
 {

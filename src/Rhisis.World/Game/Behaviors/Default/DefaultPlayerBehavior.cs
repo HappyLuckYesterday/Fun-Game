@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Options;
 using Rhisis.Core.Common;
-using Rhisis.Core.Data;
 using Rhisis.Core.IO;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Core.Structures.Game.Quests;
+using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems;

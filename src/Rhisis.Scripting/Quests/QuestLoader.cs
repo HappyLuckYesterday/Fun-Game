@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using NLua;
-using Rhisis.Core.Data;
 using Rhisis.Core.Extensions;
-using Rhisis.Core.Resources;
-using Rhisis.Core.Structures.Game.Quests;
+using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources.Quests;
+using Rhisis.Game.Resources;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.Common;
+﻿using Rhisis.Game.Common;
 using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Systems.Interaction

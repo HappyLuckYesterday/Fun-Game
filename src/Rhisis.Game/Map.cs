@@ -9,14 +9,17 @@ namespace Rhisis.Game
         private readonly List<IMapLayer> _layers;
         private readonly float[] _heights;
 
+        public int Id { get; }
+
         public int Width { get; }
 
         public int Length { get; }
 
         public IEnumerable<IMapLayer> Layers => _layers;
 
-        public Map()
+        public Map(int id)
         {
+            Id = id;
             _layers = new List<IMapLayer>();
         }
 

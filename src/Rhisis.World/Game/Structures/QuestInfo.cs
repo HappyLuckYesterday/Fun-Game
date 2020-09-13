@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.Structures.Game.Quests;
+﻿using Rhisis.Game.Common.Resources.Quests;
 using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;

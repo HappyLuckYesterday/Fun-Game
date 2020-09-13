@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Rhisis.Core.Data;
+using Rhisis.Game.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;

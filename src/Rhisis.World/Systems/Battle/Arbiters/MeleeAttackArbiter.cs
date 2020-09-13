@@ -1,9 +1,10 @@
 ﻿using Rhisis.Core.Common;
-using Rhisis.Core.Data;
 using Rhisis.Core.Helpers;
+using Rhisis.Game.Common;
 using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
+using System;
 
 namespace Rhisis.World.Systems.Battle.Arbiters
 {
@@ -128,7 +129,7 @@ namespace Rhisis.World.Systems.Battle.Arbiters
                           (Attacker.Object.Level * 1.2f / (Attacker.Object.Level + Defender.Object.Level)) * 100.0f);
             }
 
-            hitRate = MathHelper.Clamp(hitRate, MinimalHitRate, MaximalHitRate);
+            hitRate = Math.Clamp(hitRate, MinimalHitRate, MaximalHitRate);
 
             return RandomHelper.Random(0, 100) < hitRate ? _attackFlags : AttackFlags.AF_MISS;
         }

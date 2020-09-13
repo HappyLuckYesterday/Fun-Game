@@ -1,5 +1,4 @@
-﻿using Rhisis.Core.Structures.Game.Quests;
-using Rhisis.World.Game;
+﻿using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Systems.Quest

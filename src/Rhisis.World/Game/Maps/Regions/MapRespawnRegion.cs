@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Common;
-using Rhisis.Core.Resources;
+using Rhisis.Game.Common;
+using Rhisis.Game.IO.Rgn;
 using Rhisis.World.Game.Entities;
 using System.Collections.Generic;
 

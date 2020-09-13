@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.Resources.Dyo;
+﻿using Rhisis.Game.IO.Dyo;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 

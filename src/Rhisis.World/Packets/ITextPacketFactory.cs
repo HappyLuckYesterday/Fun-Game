@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.Data;
+﻿using Rhisis.Game.Common;
 using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Packets

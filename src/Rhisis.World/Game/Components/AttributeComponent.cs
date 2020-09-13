@@ -1,6 +1,5 @@
-﻿using Rhisis.Core.Data;
+﻿using Rhisis.Game.Common;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Rhisis.World.Game.Components
 {

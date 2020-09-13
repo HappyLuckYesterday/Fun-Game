@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Rhisis.Game.Common.Resources.Dialogs;
 using Rhisis.World.Game.Entities;
-using Rhisis.Core.Structures.Game.Dialogs;
 
 namespace Rhisis.World.Packets
 {

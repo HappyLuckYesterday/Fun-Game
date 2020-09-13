@@ -1,17 +1,19 @@
-﻿using Rhisis.Core.Common;
-using Rhisis.Core.Data;
-using Rhisis.Core.Helpers;
+﻿using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
-using Rhisis.Core.Structures.Game;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Protocol;
+using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources;
 using System;
 
 namespace Rhisis.Game.Entities
 {
     public class Player : IPlayer, IHuman, IMover, IWorldObject
     {
+        public IGameConnection Connection { get; set; }
+
         public uint Id { get; }
 
         public int CharacterId { get; set; }
@@ -32,7 +34,7 @@ namespace Rhisis.Game.Entities
 
         public float Angle { get; set; }
 
-        public float Size { get; set; }
+        public short Size { get; set; }
 
         public string Name { get; set; }
 
@@ -66,7 +68,9 @@ namespace Rhisis.Game.Entities
 
         public IPlayerStatistics Statistics { get; }
 
-        public VisualAppearenceComponent Appearence { get; set; }
+        public IInventory Inventory { get; }
+
+        public IHumanVisualAppearance Appearence { get; set; }
 
         public IServiceProvider Systems { get; set; }
 
@@ -75,6 +79,7 @@ namespace Rhisis.Game.Entities
             Id = RandomHelper.GenerateUniqueId();
             Health = new HealthComponent(this);
             Statistics = new StatisticsComponent(this);
+            Inventory = new InventoryComponent(this);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.Data;
+﻿using Rhisis.Game.Common;
 using Sylver.Network.Data;
 using System.Collections.Generic;
 

@@ -1,5 +1,5 @@
-﻿using Rhisis.Core.Resources;
-using Rhisis.Core.Structures;
+﻿using Rhisis.Core.Structures;
+using Rhisis.Game.IO.Rgn;
 
 namespace Rhisis.World.Game.Maps.Regions
 {

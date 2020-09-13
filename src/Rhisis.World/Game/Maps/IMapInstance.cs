@@ -1,5 +1,5 @@
-﻿using Rhisis.Core.Resources;
-using Rhisis.Core.Structures;
+﻿using Rhisis.Core.Structures;
+using Rhisis.Game.IO.World;
 using Rhisis.World.Game.Maps.Regions;
 using System;
 using System.Collections.Generic;

@@ -9,6 +9,7 @@ using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
+using Rhisis.Game.Common;
 
 namespace Rhisis.CLI.Commands.User
 {

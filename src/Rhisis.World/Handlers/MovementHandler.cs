@@ -1,5 +1,5 @@
-﻿using Rhisis.Core.Data;
-using Rhisis.Core.Structures;
+﻿using Rhisis.Core.Structures;
+using Rhisis.Game.Common;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World;
 using Rhisis.World.Client;

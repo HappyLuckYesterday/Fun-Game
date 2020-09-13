@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Common;
+using Rhisis.Game.Common;
 
 namespace Rhisis.World.Game.Chat
 {

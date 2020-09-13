@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.Structures.Game;
+﻿using Rhisis.Game.Common.Resources;
 
 namespace Rhisis.World.Game.Structures
 {

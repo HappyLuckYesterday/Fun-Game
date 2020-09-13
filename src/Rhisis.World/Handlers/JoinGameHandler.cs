@@ -1,26 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Rhisis.Core.Common;
-using Rhisis.Core.Data;
-using Rhisis.Core.Resources;
 using Rhisis.Core.Structures;
-using Rhisis.Core.Structures.Game;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
+using Rhisis.Game;
+using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources;
+using Rhisis.Game.Components;
 using Rhisis.Game.Entities;
+using Rhisis.Game.Protocol.Packets;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World;
 using Rhisis.Network.Snapshots;
-using Rhisis.World.Client;
-using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Factories;
-using Rhisis.World.Game.Maps;
-using Rhisis.World.Game.Maps.Regions;
-using Rhisis.World.Packets;
-using Rhisis.World.Systems.Death;
-using Rhisis.World.Systems.PlayerData;
-using Rhisis.World.Systems.Teleport;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Collections.Generic;
@@ -84,6 +79,8 @@ namespace Rhisis.World.Handlers
                 realPlayer.ModelId = character.Gender == 0 ? 11 : 12;
                 realPlayer.Type = WorldObjectType.Mover;
                 // TODO: get map and layer
+                realPlayer.Map = new Map(character.Id);
+                //--------
                 realPlayer.Position = new Vector3(character.PosX, character.PosY, character.PosZ);
                 realPlayer.Angle = character.Angle;
                 realPlayer.Size = 100; // TODO: move to constant
@@ -91,11 +88,12 @@ namespace Rhisis.World.Handlers
                 realPlayer.Level = character.Level;
                 realPlayer.ObjectState = ObjectState.OBJSTA_STAND;
                 realPlayer.ObjectStateFlags = 0;
+                realPlayer.Gold = character.Gold;
                 realPlayer.Experience = character.Experience;
                 realPlayer.Authority = (AuthorityType)character.User.Authority;
                 realPlayer.Mode = ModeType.NONE;
                 realPlayer.Slot = character.Slot;
-                realPlayer.Appearence = new Rhisis.Game.Abstractions.Components.VisualAppearenceComponent((GenderType)character.Gender)
+                realPlayer.Appearence = new HumanVisualAppearenceComponent((GenderType)character.Gender)
                 {
                     SkinSetId = character.SkinSetId,
                     FaceId = character.FaceId,
@@ -109,8 +107,8 @@ namespace Rhisis.World.Handlers
                 realPlayer.Statistics.Intelligence = character.Intelligence;
 
                 realPlayer.Health.Hp = character.Hp;
-                realPlayer.Health.Mp = Math.Min(0, character.Mp);
-                realPlayer.Health.Fp = Math.Min(0, character.Fp);
+                realPlayer.Health.Mp = Math.Max(0, character.Mp);
+                realPlayer.Health.Fp = Math.Max(0, character.Fp);
 
                 if (!_gameResources.Movers.TryGetValue(realPlayer.ModelId, out MoverData moverData))
                 {
@@ -126,15 +124,28 @@ namespace Rhisis.World.Handlers
                 realPlayer.Job = jobData;
                 realPlayer.Systems = _serviceProvider;
 
+                IEnumerable<IPlayerInitializer> playerInitializers = _serviceProvider.GetRequiredService<IEnumerable<IPlayerInitializer>>();
+
+                foreach (IPlayerInitializer initializer in playerInitializers)
+                {
+                    initializer.Load(realPlayer);
+                }
+
                 if (realPlayer.Health.IsDead)
                 {
                     // TODO: resurect to lodelight
                 }
             }
 
-            var addObjectSnapshot = new AddObjectSnapshot(player);
-            // TODO: send
+            var joinPacket = new JoinCompletePacket();
+            joinPacket.AddSnapshots(new FFSnapshot[]
+            {
+                new EnvironmentAllSnapshot(player, SeasonType.None), // TODO: get the season id using current weather time.
+                new WorldReadInfoSnapshot(player),
+                new AddObjectSnapshot(player)
+            });
 
+            player.Connection.Send(joinPacket);
             player.Spawned = true;
             // -----------------------
 

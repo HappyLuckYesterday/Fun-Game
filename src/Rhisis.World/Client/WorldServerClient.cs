@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Helpers;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Entities;
 using Rhisis.Network;
 using Rhisis.World.Game.Entities;
@@ -14,7 +15,7 @@ using System.Net.Sockets;
 
 namespace Rhisis.World.Client
 {
-    public sealed class WorldServerClient : NetServerClient, IWorldServerClient
+    public sealed class WorldServerClient : NetServerClient, IWorldServerClient, IGameConnection
     {
         private ILogger<WorldServerClient> _logger;
         private IHandlerInvoker _handlerInvoker;
@@ -35,7 +36,10 @@ namespace Rhisis.World.Client
             : base(socketConnection)
         {
             SessionId = RandomHelper.GenerateSessionKey();
-            NewPlayer = new Player();
+            NewPlayer = new Player
+            {
+                Connection = this
+            };
         }
 
         /// <summary>

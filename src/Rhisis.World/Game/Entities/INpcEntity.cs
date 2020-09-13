@@ -1,5 +1,5 @@
-﻿using Rhisis.Core.Structures.Game;
-using Rhisis.Core.Structures.Game.Quests;
+﻿using Rhisis.Game.Common.Resources;
+using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.World.Game.Components;
 using System.Collections.Generic;
 

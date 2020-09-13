@@ -1,4 +1,4 @@
-﻿using Rhisis.Network.Packets;
+﻿using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.World.Game.Structures;
 using Sylver.Network.Data;
 using System.Collections;

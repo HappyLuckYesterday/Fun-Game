@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Extensions;
-using Rhisis.Core.Structures.Game.Dialogs;
-using Rhisis.Core.Structures.Game.Quests;
+using Rhisis.Game.Common.Resources.Dialogs;
+using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Quest;
 using System;

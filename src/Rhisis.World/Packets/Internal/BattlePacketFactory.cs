@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Rhisis.Core.Data;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Game.Common;
 using Rhisis.Network;
 using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;

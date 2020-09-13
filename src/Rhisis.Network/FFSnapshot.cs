@@ -1,4 +1,8 @@
-﻿namespace Rhisis.Network
+﻿using Rhisis.Core.Extensions;
+using System.IO;
+using System.Linq;
+
+namespace Rhisis.Network
 {
     /// <summary>
     /// Represents a FlyFF snapshot packet.
@@ -22,17 +26,57 @@
         public static readonly int SnapshotAmountOffset = SnapshotHeaderOffset + sizeof(int) + sizeof(int);
 
         /// <summary>
+        /// Gets the FlyFF snapshot content value offset in the packet stream.
+        /// </summary>
+        public static readonly int SnapshotContentOffset = SnapshotAmountOffset + sizeof(short);
+
+        /// <summary>
+        /// Gets the amount of snapshots.
+        /// </summary>
+        public short Count { get; private set; } = 1;
+
+        /// <summary>
         /// Creates a new <see cref="FFSnapshot"/> instance.
         /// </summary>
         /// <param name="snapshot">Snapshot type.</param>
         /// <param name="objectId">Target object id.</param>
-        public FFSnapshot(SnapshotType snapshot, int objectId)
+        public FFSnapshot(SnapshotType snapshot, uint objectId)
             : base(PacketType.SNAPSHOT)
         {
+            //var mainPacket = (uint)PacketType.SNAPSHOT;
+
+            //Write((int)mainPacket);
             Write(0); // Not used.
-            Write(1); // Snapshot amount.
+            Write(Count); // Snapshot amount.
             Write(objectId);
-            Write((short)snapshot);
+            Write((short)((uint)snapshot));
+        }
+
+        public byte[] GetContent()
+        {
+            byte[] snapshotBuffer = Buffer;
+            
+            return snapshotBuffer.GetRange(SnapshotContentOffset, snapshotBuffer.Length - SnapshotContentOffset).ToArray();
+        }
+
+        /// <summary>
+        /// Merge the given snapshot into the current one.
+        /// </summary>
+        /// <param name="snapshot"></param>
+        /// <returns></returns>
+        public FFSnapshot Merge(FFSnapshot snapshot)
+        {
+            Count += snapshot.Count;
+
+            Seek(SnapshotAmountOffset, SeekOrigin.Begin);
+            Write(Count);
+            Seek(0, SeekOrigin.End);
+
+            byte[] snapshotData = snapshot.GetContent();
+
+            Write(snapshotData, 0, snapshotData.Length);
+
+            return this;
         }
     }
 }

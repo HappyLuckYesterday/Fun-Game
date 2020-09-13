@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Options;
-using Rhisis.Core.Data;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
-using Rhisis.Core.Resources;
 using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Core.Structures.Game;
+using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Structures;
@@ -14,7 +14,6 @@ using Rhisis.World.Systems.Battle;
 using Rhisis.World.Systems.Drop;
 using Rhisis.World.Systems.Follow;
 using Rhisis.World.Systems.Mobility;
-using System;
 using System.Linq;
 
 namespace Rhisis.World.Game.Behaviors

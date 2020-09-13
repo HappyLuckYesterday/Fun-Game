@@ -1,7 +1,7 @@
 ﻿using Rhisis.Core.Common;
-using Rhisis.Core.Data;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.Structures.Game;
+using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources;
 using System;
 
 namespace Rhisis.World.Game.Components

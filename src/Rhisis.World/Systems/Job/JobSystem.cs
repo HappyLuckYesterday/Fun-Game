@@ -1,13 +1,13 @@
-﻿using Rhisis.Core.Data;
-using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Resources;
-using Rhisis.Core.Structures.Game;
+﻿using Rhisis.Core.DependencyInjection;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Systems.Skills;
 using System.Collections.Generic;
 using System.Linq;
 using Rhisis.World.Packets;
+using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources;
 
 namespace Rhisis.World.Systems.Job
 {
