@@ -1,9 +1,9 @@
-﻿using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Map;
 using System;
 using System.Collections.Generic;
 
-namespace Rhisis.Game
+namespace Rhisis.Game.Map
 {
     public class MapLayer : IMapLayer
     {

@@ -4,14 +4,15 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Core.Structures;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
-using Rhisis.Game;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Components;
 using Rhisis.Game.Entities;
+using Rhisis.Game.Map;
 using Rhisis.Game.Protocol.Packets;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World;
@@ -29,6 +30,7 @@ namespace Rhisis.World.Handlers
         private readonly ILogger<JoinGameHandler> _logger;
         private readonly IRhisisDatabase _database;
         private readonly IGameResources _gameResources;
+        private readonly IMapManager _mapManager;
         private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
@@ -37,12 +39,14 @@ namespace Rhisis.World.Handlers
         /// <param name="logger">Logger.</param>
         /// <param name="database">Database access layer.</param>
         /// <param name="gameResources">Game resources.</param>
+        /// <param name="mapManager">Map manager.</param>
         /// <param name="serviceProvider">Service provider.</param>
-        public JoinGameHandler(ILogger<JoinGameHandler> logger, IRhisisDatabase database, IGameResources gameResources, IServiceProvider serviceProvider)
+        public JoinGameHandler(ILogger<JoinGameHandler> logger, IRhisisDatabase database, IGameResources gameResources, IMapManager mapManager, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _database = database;
             _gameResources = gameResources;
+            _mapManager = mapManager;
             _serviceProvider = serviceProvider;
         }
 
@@ -138,12 +142,11 @@ namespace Rhisis.World.Handlers
             }
 
             var joinPacket = new JoinCompletePacket();
-            joinPacket.AddSnapshots(new FFSnapshot[]
-            {
+            joinPacket.AddSnapshots(
                 new EnvironmentAllSnapshot(player, SeasonType.None), // TODO: get the season id using current weather time.
                 new WorldReadInfoSnapshot(player),
                 new AddObjectSnapshot(player)
-            });
+            );
 
             player.Connection.Send(joinPacket);
             player.Spawned = true;

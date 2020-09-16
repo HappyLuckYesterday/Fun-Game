@@ -1,6 +1,7 @@
 ﻿using Rhisis.Game.Common;
 using Rhisis.Core.Structures;
 using System;
+using Rhisis.Game.Abstractions.Map;
 
 namespace Rhisis.Game.Abstractions.Entities
 {

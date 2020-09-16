@@ -25,5 +25,7 @@ namespace Rhisis.Game.Protocol.Packets
                 Write(snapshotData, 0, snapshotData.Length);
             }
         }
+
+        public void AddSnapshots(params FFSnapshot[] snapshots) => AddSnapshots(snapshots.AsEnumerable());
     }
 }

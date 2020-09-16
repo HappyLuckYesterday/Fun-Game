@@ -1,7 +1,7 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
 using System.Collections.Generic;
 
-namespace Rhisis.Game.Abstractions
+namespace Rhisis.Game.Abstractions.Map
 {
     public interface IMapLayer
     {

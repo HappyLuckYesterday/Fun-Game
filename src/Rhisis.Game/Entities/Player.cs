@@ -1,8 +1,8 @@
 ﻿using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
-using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
