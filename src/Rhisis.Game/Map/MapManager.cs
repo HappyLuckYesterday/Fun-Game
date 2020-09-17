@@ -75,6 +75,7 @@ namespace Rhisis.Game.Map
 
                 LoadObjects(map);
                 LoadRegions(map);
+                LoadHeightMap(map);
                 map.GenerateNewLayer();
 
                 _maps.Add(mapId, map);
@@ -138,7 +139,7 @@ namespace Rhisis.Game.Map
 
         private void LoadHeightMap(Map map)
         {
-
+            // TODO: load lnd files
         }
     }
 }

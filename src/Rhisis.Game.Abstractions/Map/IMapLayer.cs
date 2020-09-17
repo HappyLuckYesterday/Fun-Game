@@ -6,6 +6,11 @@ namespace Rhisis.Game.Abstractions.Map
     public interface IMapLayer
     {
         /// <summary>
+        /// Gets the map layer id.
+        /// </summary>
+        int Id { get; }
+
+        /// <summary>
         /// Gets the list of all players of the current layer.
         /// </summary>
         IEnumerable<IPlayer> Players { get; }

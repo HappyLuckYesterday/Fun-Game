@@ -82,9 +82,8 @@ namespace Rhisis.World.Handlers
                 realPlayer.CharacterId = character.Id;
                 realPlayer.ModelId = character.Gender == 0 ? 11 : 12;
                 realPlayer.Type = WorldObjectType.Mover;
-                // TODO: get map and layer
-                realPlayer.Map = new Map(character.Id);
-                //--------
+                realPlayer.Map = _mapManager.GetMap(character.MapId);
+                realPlayer.MapLayer = realPlayer.Map.GetMapLayer(character.MapLayerId);
                 realPlayer.Position = new Vector3(character.PosX, character.PosY, character.PosZ);
                 realPlayer.Angle = character.Angle;
                 realPlayer.Size = 100; // TODO: move to constant
@@ -149,6 +148,7 @@ namespace Rhisis.World.Handlers
             );
 
             player.Connection.Send(joinPacket);
+            player.MapLayer.AddPlayer(player);
             player.Spawned = true;
             // -----------------------
 

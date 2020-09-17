@@ -20,6 +20,8 @@ namespace Rhisis.Game.Abstractions.Map
 
         IMapLayer GenerateNewLayer();
 
+        IMapLayer GetMapLayer(int layerId);
+
         void Process();
 
         float GetHeight(float positionX, float positionZ);

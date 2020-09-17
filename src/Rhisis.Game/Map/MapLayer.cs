@@ -2,6 +2,7 @@
 using Rhisis.Game.Abstractions.Map;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.Game.Map
 {
@@ -9,16 +10,19 @@ namespace Rhisis.Game.Map
     {
         private readonly List<IPlayer> _players;
         private readonly List<IMonster> _monsters;
+        
+        public int Id { get; }
+
+        public IMap ParentMap { get; }
 
         public IEnumerable<IPlayer> Players => _players;
 
         public IEnumerable<IMonster> Monsters => _monsters;
 
-        public IMap ParentMap { get; }
-
-        public MapLayer(IMap map)
+        public MapLayer(IMap map, int id)
         {
             ParentMap = map;
+            Id = id;
             _players = new List<IPlayer>();
             _monsters = new List<IMonster>();
         }
@@ -63,7 +67,25 @@ namespace Rhisis.Game.Map
 
         public void Process()
         {
-            throw new NotImplementedException();
+            if (_players.Any())
+            {
+                UpdateObjects(_players);
+                UpdateObjects(_monsters);
+            }
+        }
+
+        private void UpdateObjects(IEnumerable<IWorldObject> objects)
+        {
+            lock (objects)
+            {
+                if (objects.Any())
+                {
+                    foreach (IWorldObject worldObject in objects)
+                    {
+                        // TODO: update objects
+                    }
+                }
+            }
         }
     }
 }

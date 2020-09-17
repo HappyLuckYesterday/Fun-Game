@@ -1,8 +1,10 @@
-﻿using Rhisis.Game.Abstractions.Map;
+﻿using Microsoft.EntityFrameworkCore.Query;
+using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.IO.World;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http.Headers;
 
 namespace Rhisis.Game.Map
@@ -10,10 +12,14 @@ namespace Rhisis.Game.Map
     [DebuggerDisplay("{Name} ({Id} | {Width}x{Lenght})")]
     public class Map : IMap
     {
+        private const int DefaultMapLayerId = 1;
         private readonly WldFileInformations _worldInformations;
         private readonly List<IMapLayer> _layers;
         private readonly List<IMapRegion> _regions;
         private readonly float[] _heights;
+
+        private int _mapLayerIdGenerator;
+        private IMapLayer _defaultMapLayer;
 
         public int Id { get; }
 
@@ -37,11 +43,31 @@ namespace Rhisis.Game.Map
             _layers = new List<IMapLayer>();
             _regions = new List<IMapRegion>();
             _heights = new float[Width * Length + 1];
+            _mapLayerIdGenerator = DefaultMapLayerId;
         }
+
+        public IMapLayer GetMapLayer(int layerId) => _layers.FirstOrDefault(x => x.Id == layerId) ?? _defaultMapLayer;
 
         public IMapLayer GenerateNewLayer()
         {
-            throw new NotImplementedException();
+            lock (_layers)
+            {
+                IMapLayer newMapLayer;
+
+                if (_defaultMapLayer == null)
+                {
+                    _defaultMapLayer = new MapLayer(this, DefaultMapLayerId);
+                    newMapLayer = _defaultMapLayer;
+                }
+                else
+                {
+                    newMapLayer = new MapLayer(this, ++_mapLayerIdGenerator);
+                }
+
+                _layers.Add(newMapLayer);
+
+                return newMapLayer;
+            }
         }
 
         public float GetHeight(float positionX, float positionZ)
