@@ -10,7 +10,7 @@ using System;
 
 namespace Rhisis.World.Systems.Mobility
 {
-    [Injectable]
+    //[Injectable]
     public sealed class MobilitySystem : IMobilitySystem
     {
         private const float ArrivalRangeRadius = 1f;

@@ -2,12 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Rhisis.Core.Extensions
+namespace Rhisis.Core.Threading
 {
     /// <summary>
     /// Provides helpers to the <see cref="Task"/> object.
     /// </summary>
-    public static class TaskHelper
+    public static class TaskUtilities
     {
         /// <summary>
         /// Creates a new long running task repeated every X times on the default task scheduler.

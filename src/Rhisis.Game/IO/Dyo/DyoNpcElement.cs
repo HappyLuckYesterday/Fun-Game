@@ -6,7 +6,7 @@ namespace Rhisis.Game.IO.Dyo
     /// <summary>
     /// Represents a NPC in a dyo file.
     /// </summary>
-    public class NpcDyoElement : DyoElement
+    public class DyoNpcElement : DyoElement
     {
         /// <summary>
         /// Gets the Npc Korean name.

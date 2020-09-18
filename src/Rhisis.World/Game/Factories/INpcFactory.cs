@@ -12,6 +12,6 @@ namespace Rhisis.World.Game.Factories
         /// <param name="context">NPC map context.</param>
         /// <param name="element">Npc DYO element.</param>
         /// <returns>New NPC.</returns>
-        INpcEntity CreateNpc(IMapContext context, NpcDyoElement element);
+        INpcEntity CreateNpc(IMapContext context, DyoNpcElement element);
     }
 }

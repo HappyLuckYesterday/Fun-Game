@@ -19,7 +19,7 @@ namespace Rhisis.Game.Abstractions.Entities
 
         Vector3 Position { get; }
 
-        float Angle { get; }
+        float Angle { get; set; }
 
         short Size { get; }
 

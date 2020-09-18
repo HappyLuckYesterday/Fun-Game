@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Rhisis.Game.Abstractions.Map
 {
-    public interface IMap
+    public interface IMap : IDisposable
     {
         int Id { get; }
 
@@ -22,8 +23,10 @@ namespace Rhisis.Game.Abstractions.Map
 
         IMapLayer GetMapLayer(int layerId);
 
-        void Process();
-
         float GetHeight(float positionX, float positionZ);
+
+        void StartUpdate();
+
+        void StopUpdate();
     }
 }

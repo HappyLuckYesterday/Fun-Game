@@ -39,7 +39,7 @@ namespace Rhisis.World.Game.Factories.Internal
         }
 
         /// <inheritdoc />
-        public INpcEntity CreateNpc(IMapContext mapContext, NpcDyoElement element)
+        public INpcEntity CreateNpc(IMapContext mapContext, DyoNpcElement element)
         {
             int npcModelId = element.Index;
 

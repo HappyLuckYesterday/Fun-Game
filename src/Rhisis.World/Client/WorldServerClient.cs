@@ -11,6 +11,8 @@ using Sylver.HandlerInvoker.Exceptions;
 using Sylver.Network.Data;
 using Sylver.Network.Server;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
 
 namespace Rhisis.World.Client
@@ -118,6 +120,21 @@ namespace Rhisis.World.Client
             }
 
             base.Dispose(disposing);
+        }
+
+        public void SendToVisible(INetPacketStream packet, bool sendToPlayer = false)
+        {
+            IEnumerable<IPlayer> visiblePlayers = Enumerable.Empty<IPlayer>();
+
+            foreach (IPlayerEntity visiblePlayer in visiblePlayers)
+            {
+                visiblePlayer.Connection.Send(packet);
+            }
+
+            if (sendToPlayer)
+            {
+                Send(packet);
+            }
         }
     }
 }

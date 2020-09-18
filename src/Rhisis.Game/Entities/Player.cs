@@ -52,11 +52,18 @@ namespace Rhisis.Game.Entities
 
         public ModeType Mode { get; set; }
 
-        public Vector3 DestinationPosition { get; set; }
+        public Vector3 DestinationPosition { get; set; } = new Vector3();
 
-        public float Speed { get; }
+        public float Speed
+        {
+            get
+            {
+                // TODO: add attribute speed
+                return Data.Speed * SpeedFactor;
+            }
+        }
 
-        public float SpeedFactor { get; set; }
+        public float SpeedFactor { get; set; } = 1;
 
         public bool IsMoving { get; set; }
 

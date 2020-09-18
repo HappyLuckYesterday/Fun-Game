@@ -1,4 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Entities;
 using System.Collections.Generic;
 
 namespace Rhisis.Game.Abstractions.Map
@@ -11,25 +12,46 @@ namespace Rhisis.Game.Abstractions.Map
         int Id { get; }
 
         /// <summary>
-        /// Gets the list of all players of the current layer.
+        /// Gets the parent map.
         /// </summary>
-        IEnumerable<IPlayer> Players { get; }
+        IMap ParentMap { get; }
+
+        /// <summary>
+        /// Gets the list of all items of the current layer.
+        /// </summary>
+        IEnumerable<IMapItem> Items { get; }
 
         /// <summary>
         /// Gets the list of all monsters of the current layer.
         /// </summary>
         IEnumerable<IMonster> Monsters { get; }
 
-        IMap ParentMap { get; }
+        /// <summary>
+        /// Gets the list of all NPCs of the current layer.
+        /// </summary>
+        IEnumerable<INpc> Npcs { get; }
 
-        void Process();
+        /// <summary>
+        /// Gets the list of all players of the current layer.
+        /// </summary>
+        IEnumerable<IPlayer> Players { get; }
 
-        void AddPlayer(IPlayer player);
-
-        void RemovePlayer(IPlayer player);
+        void AddItem(IMapItem mapItem);
 
         void AddMonster(IMonster monster);
 
+        void AddNpc(INpc npc);
+
+        void AddPlayer(IPlayer player);
+
+        void RemoveItem(IMapItem mapItem);
+
         void RemoveMonster(IMonster monster);
+
+        void RemoveNpc(INpc npc);
+
+        void RemovePlayer(IPlayer player);
+
+        void Process();
     }
 }

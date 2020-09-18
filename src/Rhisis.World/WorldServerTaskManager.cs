@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Core.Extensions;
+using Rhisis.Core.Threading;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Maps;
 using Rhisis.World.Systems;
@@ -45,8 +45,8 @@ namespace Rhisis.World
         /// <inheritdoc />
         public void Start()
         {
-            TaskHelper.CreateLongRunningTask(UpdateServerHeartbeat, TimeSpan.FromSeconds(1), _cancellationToken);
-            TaskHelper.CreateLongRunningTask(UpdateServerObjects, TimeSpan.FromMilliseconds(67), _cancellationToken);
+            TaskUtilities.CreateLongRunningTask(UpdateServerHeartbeat, TimeSpan.FromSeconds(1), _cancellationToken);
+            TaskUtilities.CreateLongRunningTask(UpdateServerObjects, TimeSpan.FromMilliseconds(67), _cancellationToken);
         }
 
         /// <inheritdoc />

@@ -36,7 +36,7 @@ namespace Rhisis.Game.IO.Dyo
                         rgnElement = new DyoCommonControlElement();
                         break;
                     case (int)WorldObjectType.Mover:
-                        rgnElement = new NpcDyoElement();
+                        rgnElement = new DyoNpcElement();
                         break;
                     case (int)WorldObjectType.Object:
                     case (int)WorldObjectType.Item:

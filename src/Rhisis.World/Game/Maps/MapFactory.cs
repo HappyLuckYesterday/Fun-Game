@@ -111,9 +111,9 @@ namespace Rhisis.World.Game.Maps
         {
             string dyo = Path.Combine(mapPath, $"{map.Name}.dyo");
             using var dyoFile = new DyoFile(dyo);
-            IEnumerable<NpcDyoElement> npcElements = dyoFile.GetElements<NpcDyoElement>();
+            IEnumerable<DyoNpcElement> npcElements = dyoFile.GetElements<DyoNpcElement>();
 
-            foreach (NpcDyoElement element in npcElements)
+            foreach (DyoNpcElement element in npcElements)
             {
                 map.AddEntity(_npcFactory.CreateNpc(map, element));
             }

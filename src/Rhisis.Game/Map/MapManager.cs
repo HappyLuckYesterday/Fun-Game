@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Game.Abstractions.Map;
@@ -20,13 +21,15 @@ namespace Rhisis.Game.Map
     {
         private readonly ILogger<MapManager> _logger;
         private readonly IGameResources _gameResources;
+        private readonly IServiceProvider _serviceProvider;
         private readonly WorldConfiguration _worldConfiguration;
         private readonly IDictionary<int, IMap> _maps;
 
-        public MapManager(ILogger<MapManager> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources)
+        public MapManager(ILogger<MapManager> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _gameResources = gameResources;
+            _serviceProvider = serviceProvider;
             _worldConfiguration = worldConfiguration.Value;
             _maps = new ConcurrentDictionary<int, IMap>();
         }
@@ -71,12 +74,13 @@ namespace Rhisis.Game.Map
 
                 WldFileInformations worldInformation = LoadWorldInformation(mapName);
 
-                var map = new Map(mapId, mapName, worldInformation);
+                var map = ActivatorUtilities.CreateInstance<Map>(_serviceProvider, mapId, mapName, worldInformation);
 
                 LoadObjects(map);
                 LoadRegions(map);
                 LoadHeightMap(map);
                 map.GenerateNewLayer();
+                map.StartUpdate();
 
                 _maps.Add(mapId, map);
             }
@@ -92,13 +96,13 @@ namespace Rhisis.Game.Map
             return wldFile.WorldInformations;
         }
 
-        private void LoadObjects(IMap map)
+        private void LoadObjects(Map map)
         {
             var dyo = Path.Combine(GameResourcesConstants.Paths.MapsPath, map.Name, $"{map.Name}.dyo");
             using var dyoFile = new DyoFile(dyo);
-            IEnumerable<NpcDyoElement> npcElements = dyoFile.GetElements<NpcDyoElement>();
+            IEnumerable<DyoNpcElement> npcElements = dyoFile.GetElements<DyoNpcElement>();
 
-            foreach (NpcDyoElement element in npcElements)
+            foreach (DyoNpcElement element in npcElements)
             {
                 // TODO: create NPC on map
                 //map.AddEntity(_npcFactory.CreateNpc(map, element));
