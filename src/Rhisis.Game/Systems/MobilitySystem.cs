@@ -51,10 +51,11 @@ namespace Rhisis.Game.Systems
         {
             if (entity.Position.IsInCircle(entity.DestinationPosition, ArrivalRangeRadius))
             {
+                entity.ObjectState &= ~ObjectState.OBJSTA_FMOVE;
+                entity.ObjectState |= ObjectState.OBJSTA_STAND;
                 entity.Position.Copy(entity.DestinationPosition);
                 entity.DestinationPosition.Reset();
-
-                Console.WriteLine("Arrived");
+                entity.Behavior.OnArrived();
 
                 //if (!entity.Battle.IsFighting)
                 //{
@@ -62,12 +63,9 @@ namespace Rhisis.Game.Systems
                 //    entity.Object.MovingFlags |= ObjectState.OBJSTA_STAND;
                 //    _moverPacketFactory.SendMotion(entity, ObjectMessageType.OBJMSG_STAND);
                 //}
-
-                //entity.Behavior.OnArrived();
             }
             else
             {
-                Console.WriteLine("Walking");
                 entity.Angle = Vector3.AngleBetween(entity.Position, entity.DestinationPosition);
                 var entitySpeed = entity.Speed;
 

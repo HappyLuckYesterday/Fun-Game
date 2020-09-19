@@ -117,6 +117,12 @@ namespace Rhisis.World.Client
                     Player.Delete();
                     Player.Dispose();
                 }
+
+                if (NewPlayer != null)
+                {
+                    NewPlayer.MapLayer.RemovePlayer(NewPlayer);
+                    // TODO: dispose
+                }
             }
 
             base.Dispose(disposing);
@@ -124,9 +130,9 @@ namespace Rhisis.World.Client
 
         public void SendToVisible(INetPacketStream packet, bool sendToPlayer = false)
         {
-            IEnumerable<IPlayer> visiblePlayers = Enumerable.Empty<IPlayer>();
+            IEnumerable<IPlayer> visiblePlayers = NewPlayer.VisibleObjects.OfType<IPlayer>();
 
-            foreach (IPlayerEntity visiblePlayer in visiblePlayers)
+            foreach (IPlayer visiblePlayer in visiblePlayers)
             {
                 visiblePlayer.Connection.Send(packet);
             }

@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Structures;
+using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Common.Resources;
 
@@ -19,5 +20,7 @@ namespace Rhisis.Game.Abstractions.Entities
         MoverData Data { get; }
 
         IHealth Health { get; }
+
+        IBehavior Behavior { get; }
     }
 }

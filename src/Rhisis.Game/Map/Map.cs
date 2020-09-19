@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Rhisis.Game.Map
 {
-    [DebuggerDisplay("{Name} ({Id} | {Width}x{Lenght})")]
+    [DebuggerDisplay("{Name} ({Id} | {Width}x{Length})")]
     public class Map : IMap
     {
         private const int DefaultMapLayerId = 1;
@@ -94,7 +94,7 @@ namespace Rhisis.Game.Map
                         {
                             for (int i = 0; i < respawnRegion.Count; i++)
                             {
-                                IMonster monster = _entityFactory.CreateMonster();
+                                IMonster monster = _entityFactory.CreateMonster(respawnRegion.ModelId, Id, newMapLayer.Id, respawnRegion.GetRandomPosition(), respawnRegion);
                                 newMapLayer.AddMonster(monster);
                             }
                         }

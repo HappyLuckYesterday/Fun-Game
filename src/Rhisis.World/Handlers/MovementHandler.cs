@@ -22,9 +22,7 @@ namespace Rhisis.World.Handlers
             player.ObjectState = ObjectState.OBJSTA_FMOVE;
             player.DestinationPosition = new Vector3(packet.X, packet.Y, packet.Z);
 
-            var destPositionSnapshot = new DestPositionSnapshot(player);
-
-            player.Connection.SendToVisible(destPositionSnapshot);
+            player.Connection.SendToVisible(new DestPositionSnapshot(player));
         }
     }
 }

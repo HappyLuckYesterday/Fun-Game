@@ -53,5 +53,12 @@ namespace Rhisis.Game.Abstractions.Map
         void RemovePlayer(IPlayer player);
 
         void Process();
+
+        /// <summary>
+        /// Gets a collection of visible objects for the given world object.
+        /// </summary>
+        /// <param name="worldObject">World object.</param>
+        /// <returns>Collection of visible objects.</returns>
+        IEnumerable<IWorldObject> GetVisibleObjects(IWorldObject worldObject);
     }
 }

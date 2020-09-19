@@ -4,7 +4,6 @@ using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Map;
-using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using System;
@@ -14,21 +13,13 @@ using System.Diagnostics;
 namespace Rhisis.Game.Entities
 {
     [DebuggerDisplay("{Name} Lv.{Level}")]
-    public class Player : IPlayer, IHuman, IMover, IWorldObject
+    public class Monster : IMonster
     {
-        public IGameConnection Connection { get; set; }
-
         public uint Id { get; }
 
-        public int CharacterId { get; set; }
+        public WorldObjectType Type => WorldObjectType.Mover;
 
-        public WorldObjectType Type { get; set; }
-
-        public ObjectState ObjectState { get; set; }
-
-        public StateFlags ObjectStateFlags { get; set; }
-
-        public int ModelId { get; set; }
+        public int ModelId => Data.Id;
 
         public IMap Map { get; set; }
 
@@ -40,21 +31,19 @@ namespace Rhisis.Game.Entities
 
         public short Size { get; set; }
 
-        public string Name { get; set; }
+        public string Name => Data.Name;
 
-        public int Level { get; set; }
+        public IServiceProvider Systems { get; set; }
 
-        public bool Spawned { get; set; }
+        public bool IsAggresive { get; set; }
 
-        public long Experience { get; set; }
+        public bool IsFlying => Data.IsFlying;
 
-        public int Gold { get; set; }
-
-        public int Slot { get; set; }
-
-        public AuthorityType Authority { get; set; }
-
-        public ModeType Mode { get; set; }
+        public int Level
+        {
+            get => Data.Level;
+            set => throw new InvalidOperationException();
+        }
 
         public Vector3 DestinationPosition { get; set; } = new Vector3();
 
@@ -62,40 +51,44 @@ namespace Rhisis.Game.Entities
         {
             get
             {
-                // TODO: add attribute speed
+                // TODO: add bonus attributes
                 return Data.Speed * SpeedFactor;
             }
         }
 
         public float SpeedFactor { get; set; } = 1;
 
-        public bool IsMoving { get; set; }
+        public bool IsMoving => ObjectState.HasFlag(ObjectState.OBJSTA_MOVE_ALL) && !DestinationPosition.IsZero();
 
         public MoverData Data { get; set; }
 
-        public JobData Job { get; set; }
+        public bool Spawned { get; set; }
 
-        public IHealth Health { get; set; }
+        public ObjectState ObjectState { get; set; }
 
-        public IPlayerStatistics Statistics { get; }
+        public StateFlags ObjectStateFlags { get; set; }
 
-        public IInventory Inventory { get; }
+        public IHealth Health { get; }
 
-        public IHumanVisualAppearance Appearence { get; set; }
+        public IStatistics Statistics { get; }
 
-        public IServiceProvider Systems { get; set; }
-        
         public IList<IWorldObject> VisibleObjects { get; set; }
+
+        public bool CanRespawn => RespawnRegion != null;
+
+        public IMapRespawnRegion RespawnRegion { get; set; }
 
         public IBehavior Behavior { get; set; }
 
-        public Player()
+        public IMonsterTimers Timers { get; }
+
+        public Monster()
         {
             Id = RandomHelper.GenerateUniqueId();
             Health = new HealthComponent(this);
-            Statistics = new PlayerStatisticsComponent(this);
-            Inventory = new InventoryComponent(this);
+            Statistics = new StatisticsComponent();
             VisibleObjects = new List<IWorldObject>();
+            Timers = new MonsterTimersComponent();
         }
 
         public bool Equals(IWorldObject other) => Id == other.Id;

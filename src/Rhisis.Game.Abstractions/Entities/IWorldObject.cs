@@ -2,10 +2,11 @@
 using Rhisis.Core.Structures;
 using System;
 using Rhisis.Game.Abstractions.Map;
+using System.Collections.Generic;
 
 namespace Rhisis.Game.Abstractions.Entities
 {
-    public interface IWorldObject
+    public interface IWorldObject : IEquatable<IWorldObject>
     {
         uint Id { get; }
 
@@ -44,5 +45,7 @@ namespace Rhisis.Game.Abstractions.Entities
         /// This property holds the "motion flags" values.
         /// </remarks>
         StateFlags ObjectStateFlags { get; set; }
+
+        IList<IWorldObject> VisibleObjects { get; set; }
     }
 }

@@ -76,13 +76,13 @@ namespace Rhisis.Game.Map
 
                 var map = ActivatorUtilities.CreateInstance<Map>(_serviceProvider, mapId, mapName, worldInformation);
 
+                _maps.Add(mapId, map);
+
                 LoadObjects(map);
                 LoadRegions(map);
                 LoadHeightMap(map);
                 map.GenerateNewLayer();
                 map.StartUpdate();
-
-                _maps.Add(mapId, map);
             }
 
             _logger.LogInformation("-> {0} maps loaded.", _maps.Count);

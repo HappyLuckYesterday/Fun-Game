@@ -5,6 +5,7 @@ using Rhisis.Core.Structures;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.Game.Abstractions;
+using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Resources;
@@ -31,6 +32,7 @@ namespace Rhisis.World.Handlers
         private readonly IRhisisDatabase _database;
         private readonly IGameResources _gameResources;
         private readonly IMapManager _mapManager;
+        private readonly IBehaviorManager _behaviorManager;
         private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
@@ -40,13 +42,17 @@ namespace Rhisis.World.Handlers
         /// <param name="database">Database access layer.</param>
         /// <param name="gameResources">Game resources.</param>
         /// <param name="mapManager">Map manager.</param>
+        /// <param name="behaviorManager">Behavior manager.</param>
         /// <param name="serviceProvider">Service provider.</param>
-        public JoinGameHandler(ILogger<JoinGameHandler> logger, IRhisisDatabase database, IGameResources gameResources, IMapManager mapManager, IServiceProvider serviceProvider)
+        public JoinGameHandler(ILogger<JoinGameHandler> logger, IRhisisDatabase database, 
+            IGameResources gameResources, IMapManager mapManager, 
+            IBehaviorManager behaviorManager, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _database = database;
             _gameResources = gameResources;
             _mapManager = mapManager;
+            _behaviorManager = behaviorManager;
             _serviceProvider = serviceProvider;
         }
 
@@ -126,6 +132,7 @@ namespace Rhisis.World.Handlers
                 realPlayer.Data = moverData;
                 realPlayer.Job = jobData;
                 realPlayer.Systems = _serviceProvider;
+                realPlayer.Behavior = _behaviorManager.GetDefaultBehavior(BehaviorType.Player, realPlayer);
 
                 IEnumerable<IPlayerInitializer> playerInitializers = _serviceProvider.GetRequiredService<IEnumerable<IPlayerInitializer>>();
 

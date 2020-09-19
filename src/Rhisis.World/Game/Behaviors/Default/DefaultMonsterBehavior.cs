@@ -21,7 +21,7 @@ namespace Rhisis.World.Game.Behaviors
     /// <summary>
     /// Default behavior for all monsters.
     /// </summary>
-    [Behavior(BehaviorType.Monster, isDefault: true)]
+    //[Behavior(BehaviorType.Monster, isDefault: true)]
     public class DefaultMonsterBehavior : IBehavior
     {
         private const float MovingRange = 40f;

@@ -33,7 +33,30 @@ namespace Rhisis.Network
         /// <summary>
         /// Gets the amount of snapshots.
         /// </summary>
-        public short Count { get; private set; } = 1;
+        public short Count { get; private set; } = 0;
+
+        /// <summary>
+        /// Creates a new empty <see cref="FFSnapshot"/> instance.
+        /// </summary>
+        public FFSnapshot()
+            : base(PacketType.SNAPSHOT)
+        {
+            Write(0);
+            Write(Count);
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="FFSnapshot"/> instance and merges the given snapshots into it.
+        /// </summary>
+        /// <param name="snapshots">Snapshots to merge.</param>
+        public FFSnapshot(params FFSnapshot[] snapshots)
+            : this()
+        {
+            foreach (FFSnapshot snapshot in snapshots)
+            {
+                Merge(snapshot);
+            }
+        }
 
         /// <summary>
         /// Creates a new <see cref="FFSnapshot"/> instance.
@@ -43,11 +66,8 @@ namespace Rhisis.Network
         public FFSnapshot(SnapshotType snapshot, uint objectId)
             : base(PacketType.SNAPSHOT)
         {
-            //var mainPacket = (uint)PacketType.SNAPSHOT;
-
-            //Write((int)mainPacket);
             Write(0); // Not used.
-            Write(Count); // Snapshot amount.
+            Write(++Count); // Snapshot amount.
             Write(objectId);
             Write((short)((uint)snapshot));
         }
