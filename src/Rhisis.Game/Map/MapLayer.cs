@@ -184,6 +184,23 @@ namespace Rhisis.Game.Map
                     }
                 }
             }
+
+            if (_npcs.Any())
+            {
+                lock (_npcs)
+                {
+                    if (_npcs.Any())
+                    {
+                        foreach (INpc npc in _npcs)
+                        {
+                            if (npc.VisibleObjects.Any())
+                            {
+                                npc.Behavior.Update();
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public IEnumerable<IWorldObject> GetVisibleObjects(IWorldObject worldObject)
@@ -216,7 +233,7 @@ namespace Rhisis.Game.Map
         private IEnumerable<TObjects> GetVisibleObjects<TObjects>(IWorldObject worldObject, IEnumerable<TObjects> objects)
             where TObjects : IWorldObject
         {
-            return objects.Where(x => x.Id != worldObject.Id && x.Position.IsInRange(worldObject.Position, VisibilityRange));
+            return objects.Where(x => x.Id != worldObject.Id && x.Spawned && x.Position.IsInRange(worldObject.Position, VisibilityRange));
         }
     }
 }

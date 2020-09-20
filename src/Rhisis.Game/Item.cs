@@ -109,7 +109,7 @@ namespace Rhisis.Game
 
         public Item(ItemData itemData, int? databaseStorageId = null)
         {
-            Data = itemData;
+            Data = itemData ?? throw new ArgumentNullException(nameof(itemData));
             DatabaseStorageItemId = databaseStorageId;
             Index = -1;
             Slot = -1;

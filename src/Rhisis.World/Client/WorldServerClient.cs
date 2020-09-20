@@ -112,14 +112,9 @@ namespace Rhisis.World.Client
         {
             if (disposing)
             {
-                if (Player != null)
-                {
-                    Player.Delete();
-                    Player.Dispose();
-                }
-
                 if (NewPlayer != null)
                 {
+                    NewPlayer.Spawned = false;
                     NewPlayer.MapLayer.RemovePlayer(NewPlayer);
                     // TODO: dispose
                 }

@@ -46,7 +46,9 @@ namespace Rhisis.Game.IO.Dyo
                 }
 
                 if (rgnElement == null)
+                {
                     break;
+                }
 
                 rgnElement.ElementType = (int)type;
                 rgnElement.Read(memoryReader);
@@ -59,7 +61,8 @@ namespace Rhisis.Game.IO.Dyo
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public IEnumerable<T> GetElements<T>() where T : DyoElement => _elements.Where(x => x is T).Select(x => x as T);
+        [Obsolete]
+        public IEnumerable<T> GetElements<T>() where T : DyoElement => _elements.OfType<T>();
 
         /// <summary>
         /// Dispose the <see cref="DyoFile"/> resources.

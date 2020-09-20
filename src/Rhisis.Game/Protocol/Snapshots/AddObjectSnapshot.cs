@@ -245,7 +245,7 @@ namespace Rhisis.Network.Snapshots
                         Write<byte>(0); // Npc hair id
                         Write(0); // Npc hair color
                         Write<byte>(0); // Npc Face Id
-                        Write(npc.Name.TakeCharacters(31));
+                        Write(npc.Key.TakeCharacters(31));
                         Write<byte>(0); // item equiped count
                         Write<byte>(0);
                         Write<byte>(0);

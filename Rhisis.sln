@@ -52,7 +52,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Game.Abstractions", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Game", "src\Rhisis.Game\Rhisis.Game.csproj", "{E789E90D-60AA-4816-A58D-4135E68BBD70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rhisis.Game.Common", "src\Rhisis.Game.Common\Rhisis.Game.Common.csproj", "{82B3B54C-B52F-4A46-B0DE-6F9323BC39ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Game.Common", "src\Rhisis.Game.Common\Rhisis.Game.Common.csproj", "{82B3B54C-B52F-4A46-B0DE-6F9323BC39ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

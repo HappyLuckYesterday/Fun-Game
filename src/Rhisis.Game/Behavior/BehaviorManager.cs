@@ -109,7 +109,7 @@ namespace Rhisis.Game.Behavior
         }
 
         /// <inheritdoc />
-        public IBehavior GetBehavior(BehaviorType type, IMover entity, int moverId)
+        public IBehavior GetBehavior(BehaviorType type, IInteligentEntity entity, int moverId)
         {
             BehaviorEntryCache behaviorEntry = GetBehaviorEntry(type, x => x.MoverId == moverId);
 
@@ -117,7 +117,7 @@ namespace Rhisis.Game.Behavior
         }
 
         /// <inheritdoc />
-        public IBehavior GetDefaultBehavior(BehaviorType type, IMover entity)
+        public IBehavior GetDefaultBehavior(BehaviorType type, IInteligentEntity entity)
         {
             BehaviorEntryCache behaviorEntry = GetBehaviorEntry(type, x => x.IsDefault);
 
@@ -151,7 +151,7 @@ namespace Rhisis.Game.Behavior
         /// <param name="behaviorEntry">Behavior entry informations.</param>
         /// <param name="entity">Entity.</param>
         /// <returns>Behavior.</returns>
-        private IBehavior CreateBehaviorInstance(BehaviorEntryCache behaviorEntry, IMover entity)
+        private IBehavior CreateBehaviorInstance(BehaviorEntryCache behaviorEntry, IInteligentEntity entity)
             => ActivatorUtilities.CreateInstance(_serviceProvider, behaviorEntry.BehaviorTypeInfo, entity) as IBehavior;
     }
 }

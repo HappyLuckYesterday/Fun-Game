@@ -11,7 +11,6 @@ namespace Rhisis.Game.Abstractions.Factories
 
         IMonster CreateMonster(int moverId, int mapId, int mapLayerId, Vector3 position, IMapRespawnRegion respawnRegion);
 
-        INpc CreateNpc();
-
+        INpc CreateNpc(IMapNpcObject npcObject, int mapId, int mapLayerId);
     }
 }

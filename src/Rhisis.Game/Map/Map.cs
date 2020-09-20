@@ -27,6 +27,7 @@ namespace Rhisis.Game.Map
         private readonly ILogger<Map> _logger;
         private readonly List<IMapLayer> _layers;
         private readonly List<IMapRegion> _regions;
+        private readonly List<IMapObject> _mapObjects;
         private readonly float[] _heights;
 
         private readonly CancellationToken _mainProcessTaskCancelToken;
@@ -49,6 +50,8 @@ namespace Rhisis.Game.Map
 
         public IEnumerable<IMapRegion> Regions => _regions;
 
+        public IEnumerable<IMapObject> Objects => _mapObjects;
+
         public Map(int id, string name, WldFileInformations worldInformation, IServiceProvider serviceProvider, IEntityFactory entityFactory, ILogger<Map> logger)
         {
             Id = id;
@@ -59,6 +62,7 @@ namespace Rhisis.Game.Map
             _logger = logger;
             _layers = new List<IMapLayer>();
             _regions = new List<IMapRegion>();
+            _mapObjects = new List<IMapObject>();
             _heights = new float[Width * Length + 1];
             _mapLayerIdGenerator = DefaultMapLayerId;
 
@@ -84,8 +88,6 @@ namespace Rhisis.Game.Map
                     newMapLayer = new MapLayer(this, ++_mapLayerIdGenerator, _serviceProvider);
                 }
 
-                // TODO: add static objects
-
                 foreach (IMapRegion region in Regions)
                 {
                     if (region is IMapRespawnRegion respawnRegion)
@@ -105,6 +107,19 @@ namespace Rhisis.Game.Map
                                 IMapItem mapItem = _entityFactory.CreateMapItem();
                                 newMapLayer.AddItem(mapItem);
                             }
+                        }
+                    }
+                }
+
+                if (_mapObjects.Any())
+                {
+                    foreach (IMapObject mapObject in _mapObjects)
+                    {
+                        switch (mapObject)
+                        {
+                            case IMapNpcObject npcObject:
+                                newMapLayer.AddNpc(_entityFactory.CreateNpc(npcObject, Id, newMapLayer.Id));
+                                break;
                         }
                     }
                 }
@@ -142,6 +157,11 @@ namespace Rhisis.Game.Map
         public void SetRegions(IEnumerable<IMapRegion> regions)
         {
             _regions.AddRange(regions);
+        }
+
+        public void SetObjects(IEnumerable<IMapObject> mapObjects)
+        {
+            _mapObjects.AddRange(mapObjects);
         }
 
         public void StartUpdate()

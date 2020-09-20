@@ -37,7 +37,7 @@ namespace Rhisis.Game.Systems
                             snapshot.Merge(new DestPositionSnapshot(appearingMover));
                         }
 
-                        if (!appearingObject.VisibleObjects.Contains(player))
+                        if (!(appearingObject is IPlayer) && !appearingObject.VisibleObjects.Contains(player))
                         {
                             appearingObject.VisibleObjects.Add(player);
                         }

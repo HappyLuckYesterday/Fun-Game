@@ -100,13 +100,15 @@ namespace Rhisis.Game.Map
         {
             var dyo = Path.Combine(GameResourcesConstants.Paths.MapsPath, map.Name, $"{map.Name}.dyo");
             using var dyoFile = new DyoFile(dyo);
-            IEnumerable<DyoNpcElement> npcElements = dyoFile.GetElements<DyoNpcElement>();
-
-            foreach (DyoNpcElement element in npcElements)
+            IEnumerable<IMapObject> npcObjects = dyoFile.Elements.OfType<DyoNpcElement>().Select(x => new MapNpcObject
             {
-                // TODO: create NPC on map
-                //map.AddEntity(_npcFactory.CreateNpc(map, element));
-            }
+                ModelId = x.Index,
+                Position = x.Position.Clone(),
+                Angle = x.Angle,
+                Name = x.CharacterKey
+            });
+
+            map.SetObjects(npcObjects);
         }
 
         private void LoadRegions(Map map)
@@ -143,7 +145,15 @@ namespace Rhisis.Game.Map
 
         private void LoadHeightMap(Map map)
         {
-            // TODO: load lnd files
+            for (int x = 0; x < map.Width; x++)
+            {
+                for (int z = 0; z < map.Length; z++)
+                {
+                    var lndFile = $"{map.Name}{x:00}-{z:00}.lnd";
+
+                    // TODO: load lnd file
+                }
+            }
         }
     }
 }

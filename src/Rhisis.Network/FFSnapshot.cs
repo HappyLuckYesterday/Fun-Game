@@ -72,6 +72,10 @@ namespace Rhisis.Network
             Write((short)((uint)snapshot));
         }
 
+        /// <summary>
+        /// Gets the snapshot content.
+        /// </summary>
+        /// <returns></returns>
         public byte[] GetContent()
         {
             byte[] snapshotBuffer = Buffer;
@@ -95,6 +99,8 @@ namespace Rhisis.Network
             byte[] snapshotData = snapshot.GetContent();
 
             Write(snapshotData, 0, snapshotData.Length);
+
+            snapshot.Dispose();
 
             return this;
         }

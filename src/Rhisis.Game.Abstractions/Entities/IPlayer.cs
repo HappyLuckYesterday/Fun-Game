@@ -26,5 +26,9 @@ namespace Rhisis.Game.Abstractions.Entities
         IPlayerStatistics Statistics { get; }
 
         IInventory Inventory { get; }
+
+        void Speak(string text);
+
+        void Shout(string text);
     }
 }

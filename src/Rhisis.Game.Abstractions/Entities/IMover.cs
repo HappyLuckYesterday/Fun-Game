@@ -1,11 +1,10 @@
 ﻿using Rhisis.Core.Structures;
-using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Common.Resources;
 
 namespace Rhisis.Game.Abstractions.Entities
 {
-    public interface IMover : IWorldObject
+    public interface IMover : IWorldObject, IInteligentEntity
     {
         int Level { get; set; }
 
@@ -20,7 +19,5 @@ namespace Rhisis.Game.Abstractions.Entities
         MoverData Data { get; }
 
         IHealth Health { get; }
-
-        IBehavior Behavior { get; }
     }
 }

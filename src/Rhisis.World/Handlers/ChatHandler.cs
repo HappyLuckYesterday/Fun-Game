@@ -1,8 +1,12 @@
-﻿using Rhisis.Network;
+﻿using Rhisis.Game;
+using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Network;
 using Rhisis.Network.Packets.World;
-using Rhisis.World.Client;
-using Rhisis.World.Systems.Chat;
+using Rhisis.World.Game.Chat;
 using Sylver.HandlerInvoker.Attributes;
+using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Rhisis.World.Handlers
 {
@@ -12,15 +16,11 @@ namespace Rhisis.World.Handlers
     [Handler]
     public sealed class ChatHandler
     {
-        private readonly IChatSystem _chatSystem;
+        private readonly IChatCommandManager _chatCommandManager;
 
-        /// <summary>
-        /// Creates a new <see cref="ChatHandler"/> instance.
-        /// </summary>
-        /// <param name="chatSystem">Chat system.</param>
-        public ChatHandler(IChatSystem chatSystem)
+        public ChatHandler(IChatCommandManager chatCommandManager)
         {
-            _chatSystem = chatSystem;
+            _chatCommandManager = chatCommandManager;
         }
 
         /// <summary>
@@ -29,9 +29,48 @@ namespace Rhisis.World.Handlers
         /// <param name="serverClient"></param>
         /// <param name="packet"></param>
         [HandlerAction(PacketType.CHAT)]
-        public void OnChat(IWorldServerClient serverClient, ChatPacket packet)
+        public void OnChat(IPlayer player, ChatPacket packet)
         {
-            _chatSystem.Chat(serverClient.Player, packet.Message);
+            if (!string.IsNullOrEmpty(packet.Message))
+            {
+                if (packet.Message.StartsWith(GameConstants.ChatCommandPrefix))
+                {
+                    (string, string[]) commandInfo = GetCommandParameters(packet.Message);
+                    IChatCommand chatCommand = _chatCommandManager.GetChatCommand(commandInfo.Item1, player.Authority);
+
+                    if (chatCommand == null)
+                    {
+                        throw new ArgumentException($"Cannot find chat command: '/{commandInfo.Item1}'", nameof(chatCommand));
+                    }
+
+                    // TODO: process migration of commands
+                    //chatCommand.Execute(player, commandInfo.Item2);
+                }
+                else
+                {
+                    player.Speak(packet.Message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the command parameters.
+        /// </summary>
+        /// <param name="command">Command line</param>
+        /// <param name="commandName">Command name</param>
+        /// <returns></returns>
+        private (string, string[]) GetCommandParameters(string command)
+        {
+            string commandName = command.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+
+            if (string.IsNullOrEmpty(commandName))
+            {
+                return (command, Enumerable.Empty<string>().ToArray());
+            }
+
+            string commandParameters = command.Remove(0, commandName.Length);
+
+            return (commandName, Regex.Matches(commandParameters, @"[\""].+?[\""]|[^ ]+").Select(m => m.Value.Trim('"')).ToArray());
         }
     }
 }

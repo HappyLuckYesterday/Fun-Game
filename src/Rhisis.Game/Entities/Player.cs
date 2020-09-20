@@ -1,10 +1,12 @@
-﻿using Rhisis.Core.Helpers;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Protocol;
+using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using System;
@@ -16,6 +18,8 @@ namespace Rhisis.Game.Entities
     [DebuggerDisplay("{Name} Lv.{Level}")]
     public class Player : IPlayer, IHuman, IMover, IWorldObject
     {
+        private readonly Lazy<IChatSystem> _chatSystem;
+
         public IGameConnection Connection { get; set; }
 
         public uint Id { get; }
@@ -96,7 +100,12 @@ namespace Rhisis.Game.Entities
             Statistics = new PlayerStatisticsComponent(this);
             Inventory = new InventoryComponent(this);
             VisibleObjects = new List<IWorldObject>();
+            _chatSystem = new Lazy<IChatSystem>(() => Systems.GetService<IChatSystem>());
         }
+
+        public void Speak(string text) => _chatSystem.Value.Speak(this, text);
+
+        public void Shout(string text) => _chatSystem.Value.Shout(this, text);
 
         public bool Equals(IWorldObject other) => Id == other.Id;
     }

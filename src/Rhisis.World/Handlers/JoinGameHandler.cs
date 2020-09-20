@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Core.Structures;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
+using Rhisis.Game;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Entities;
@@ -13,7 +14,6 @@ using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Components;
 using Rhisis.Game.Entities;
-using Rhisis.Game.Map;
 using Rhisis.Game.Protocol.Packets;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World;
@@ -92,7 +92,7 @@ namespace Rhisis.World.Handlers
                 realPlayer.MapLayer = realPlayer.Map.GetMapLayer(character.MapLayerId);
                 realPlayer.Position = new Vector3(character.PosX, character.PosY, character.PosZ);
                 realPlayer.Angle = character.Angle;
-                realPlayer.Size = 100; // TODO: move to constant
+                realPlayer.Size = GameConstants.DefaultObjectSize;
                 realPlayer.Name = character.Name;
                 realPlayer.Level = character.Level;
                 realPlayer.ObjectState = ObjectState.OBJSTA_STAND;
@@ -147,14 +147,17 @@ namespace Rhisis.World.Handlers
                 }
             }
 
-            var joinPacket = new JoinCompletePacket();
-            joinPacket.AddSnapshots(
-                new EnvironmentAllSnapshot(player, SeasonType.None), // TODO: get the season id using current weather time.
-                new WorldReadInfoSnapshot(player),
-                new AddObjectSnapshot(player)
-            );
+            using (var joinPacket = new JoinCompletePacket())
+            {
+                joinPacket.AddSnapshots(
+                    new EnvironmentAllSnapshot(player, SeasonType.None), // TODO: get the season id using current weather time.
+                    new WorldReadInfoSnapshot(player),
+                    new AddObjectSnapshot(player)
+                );
 
-            player.Connection.Send(joinPacket);
+                player.Connection.Send(joinPacket);
+            }
+
             player.MapLayer.AddPlayer(player);
             player.Spawned = true;
             // -----------------------

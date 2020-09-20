@@ -1,5 +1,4 @@
-﻿using Rhisis.Core.Extensions;
-using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Game.Abstractions.Entities;
 using Sylver.Network.Data;
 using System;
 using System.Collections;
@@ -8,31 +7,9 @@ using System.Linq;
 
 namespace Rhisis.Game.Abstractions.Components
 {
-    public class InventoryComponent : ItemContainerComponent<Item>, IInventory
-    {
-        public const int InventorySize = 42;
-        public const int InventoryEquipParts = 31;
-
-        public InventoryComponent(IPlayer player)
-            : base(player, InventorySize, InventoryEquipParts)
-        {
-        }
-
-        public IEnumerable<IItem> GetEquipedItems()
-        {
-            return _itemsMask.GetRange(InventorySize, InventoryEquipParts).Select(x => _items.ElementAtOrDefault(x));
-        }
-
-        public void Move(int sourceSlot, int destinationSlot)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public class ItemContainerComponent<TItem> : IItemContainer
         where TItem : class, IItem
     {
-        private readonly IPlayer _player;
         protected readonly List<IItem> _items;
         protected readonly int[] _itemsMask;
 
@@ -46,9 +23,8 @@ namespace Rhisis.Game.Abstractions.Components
 
         public int MaxCapacity => Capacity + ExtraCapacity;
 
-        public ItemContainerComponent(IPlayer player, int capacity, int extraCapacity = 0)
+        public ItemContainerComponent(int capacity, int extraCapacity = 0)
         {
-            _player = player;
             Capacity = capacity;
             ExtraCapacity = extraCapacity;
             _itemsMask = new int[MaxCapacity];

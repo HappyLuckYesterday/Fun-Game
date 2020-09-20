@@ -19,6 +19,8 @@ namespace Rhisis.Game.Abstractions.Map
 
         IEnumerable<IMapRegion> Regions { get; }
 
+        IEnumerable<IMapObject> Objects { get; }
+
         IMapLayer GenerateNewLayer();
 
         IMapLayer GetMapLayer(int layerId);

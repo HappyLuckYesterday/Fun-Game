@@ -23,6 +23,8 @@ namespace Rhisis.Game.Protocol.Packets
                 byte[] snapshotData = snapshot.GetContent();
 
                 Write(snapshotData, 0, snapshotData.Length);
+
+                snapshot.Dispose();
             }
         }
 

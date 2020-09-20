@@ -24,7 +24,7 @@ namespace Rhisis.Game.Abstractions.Behavior
         /// <param name="entity">Entity that will receive the behavior.</param>
         /// <param name="moverId">Mover Id.</param>
         /// <returns>Entity behavior.</returns>
-        IBehavior GetBehavior(BehaviorType type, IMover entity, int moverId);
+        IBehavior GetBehavior(BehaviorType type, IInteligentEntity entity, int moverId);
 
         /// <summary>
         /// Gets the default behavior of an entity.
@@ -32,6 +32,6 @@ namespace Rhisis.Game.Abstractions.Behavior
         /// <param name="type">Behavior type.</param>
         /// <param name="entity">Entity that will receive the default behavior.</param>
         /// <returns>Default entity behavior.</returns>
-        IBehavior GetDefaultBehavior(BehaviorType type, IMover entity);
+        IBehavior GetDefaultBehavior(BehaviorType type, IInteligentEntity entity);
     }
 }
