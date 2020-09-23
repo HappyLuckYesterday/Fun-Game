@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Factories;
 using Rhisis.Game.Abstractions.Map;
@@ -20,6 +21,7 @@ namespace Rhisis.Game.Map
         private const int DefaultMapLayerId = 1;
         private const int FrameRate = 67;
         private const float UpdateRate = 1000f / FrameRate;
+        private const int RegionSize = 128;
 
         private readonly WldFileInformations _worldInformations;
         private readonly IServiceProvider _serviceProvider;
@@ -29,6 +31,7 @@ namespace Rhisis.Game.Map
         private readonly List<IMapRegion> _regions;
         private readonly List<IMapObject> _mapObjects;
         private readonly float[] _heights;
+        private readonly Rectangle _bounds;
 
         private readonly CancellationToken _mainProcessTaskCancelToken;
         private readonly CancellationTokenSource _mainProcessTaskCancelTokenSource;
@@ -65,6 +68,7 @@ namespace Rhisis.Game.Map
             _mapObjects = new List<IMapObject>();
             _heights = new float[Width * Length + 1];
             _mapLayerIdGenerator = DefaultMapLayerId;
+            _bounds = new Rectangle(0, 0, Width * _worldInformations.MPU * RegionSize, Length * _worldInformations.MPU * RegionSize);
 
             _mainProcessTaskCancelTokenSource = new CancellationTokenSource();
             _mainProcessTaskCancelToken = _mainProcessTaskCancelTokenSource.Token;
@@ -214,5 +218,9 @@ namespace Rhisis.Game.Map
                 }
             }
         }
+
+        public bool IsInBounds(float x, float y, float z) => _bounds.Contains(x, y, z);
+
+        public bool IsInBounds(Vector3 position) => IsInBounds(position.X, position.Y, position.Z);
     }
 }

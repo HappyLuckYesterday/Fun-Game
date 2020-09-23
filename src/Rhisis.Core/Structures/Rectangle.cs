@@ -66,7 +66,15 @@ namespace Rhisis.Core.Structures
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        public bool Contains(Vector3 position) => position.X >= X && position.X <= X + Width &&
-                                                  position.Z >= Z && position.Z <= Z + Length;
+        public bool Contains(Vector3 position) => Contains(position.X, position.Y, position.Z);
+
+        /// <summary>
+        /// Check if the possition passed as parameter is inside the rectangle.
+        /// </summary>
+        /// <param name="x">X coordinate.</param>
+        /// <param name="y">Y coordinate.</param>
+        /// <param name="z">Z coordinate.</param>
+        /// <returns></returns>
+        public bool Contains(float x, float y, float z) => x >= X && x <= X + Width && z >= Z && z <= Z + Length;
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Common;
+using Rhisis.Network;
 using Rhisis.Network.Packets.World;
 using Rhisis.World.Client;
 using Rhisis.World.Packets;
@@ -10,6 +12,7 @@ using Rhisis.World.Systems.SpecialEffect;
 using Sylver.HandlerInvoker.Attributes;
 using Sylver.Network.Data;
 using System;
+using System.Linq;
 
 namespace Rhisis.World.Handlers
 {
@@ -53,15 +56,17 @@ namespace Rhisis.World.Handlers
             _interationSystem.SetTarget(serverClient.Player, packet.TargetId, packet.TargetMode);
         }
 
-        //[HandlerAction(PacketType.PLAYERSETDESTOBJ)]
-        public void OnPlayerSetDestObject(IWorldServerClient serverClient, PlayerDestObjectPacket packet)
+        [HandlerAction(PacketType.PLAYERSETDESTOBJ)]
+        public void OnPlayerSetDestObject(IPlayer player, PlayerDestObjectPacket packet)
         {
-            if (serverClient.Player.Id == packet.TargetObjectId)
+            if (player.Id == packet.TargetObjectId)
             {
                 return;
             }
 
-            _followSystem.Follow(serverClient.Player, packet.TargetObjectId, packet.Distance);
+            IWorldObject targetObject = player.VisibleObjects.Single(x => x.Id == packet.TargetObjectId);
+
+            player.Follow(targetObject);
         }
 
         //[HandlerAction(PacketType.QUERY_PLAYER_DATA)]
@@ -136,16 +141,17 @@ namespace Rhisis.World.Handlers
                 packet.TickCount);
         }
 
-        //[HandlerAction(PacketType.REVIVAL_TO_LODESTAR)]
-        public void OnRevivalToLodestar(IWorldServerClient serverClient, INetPacketStream _)
+        [HandlerAction(PacketType.REVIVAL_TO_LODESTAR)]
+        public void OnRevivalToLodestar(IPlayer player, INetPacketStream _)
         {
-            if (!serverClient.Player.IsDead)
+            if (!player.Health.IsDead)
             {
-                _logger.LogWarning($"Player '{serverClient.Player.Object.Name}' tried to revival to lodestar without being dead.");
+                _logger.LogWarning($"Player '{player.Name}' tried to revival to lodestar without being dead.");
                 return;
             }
 
-            _deathSystem.ResurectToLodelight(serverClient.Player);
+            // TODO: resurect to lodestar
+            //_deathSystem.ResurectToLodelight(serverClient.Player);
         }
     }
 }

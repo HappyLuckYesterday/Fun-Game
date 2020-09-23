@@ -13,7 +13,7 @@ namespace Rhisis.Game.Systems
         private const float ArrivalRangeRadius = 1f;
 
         /// <inheritdoc />
-        public void CalculatePosition(IMover movingEntity)
+        public void Execute(IMover movingEntity)
         {
             if (!movingEntity.Spawned)
             {
@@ -25,21 +25,6 @@ namespace Rhisis.Game.Systems
                 return;
             }
 
-            //if (movingEntity.Follow.IsFollowing)
-            //{
-            //    if (movingEntity.Object.Position.IsInCircle(movingEntity.Follow.Target.Object.Position, movingEntity.Follow.FollowDistance))
-            //    {
-            //        movingEntity.Moves.DestinationPosition.Reset();
-            //        movingEntity.Object.MovingFlags &= ~ObjectState.OBJSTA_FMOVE;
-            //        movingEntity.Object.MovingFlags |= ObjectState.OBJSTA_STAND;
-            //        movingEntity.Behavior?.OnArrived();
-            //    }
-            //    else
-            //    {
-            //        _followSystem.Follow(movingEntity, movingEntity.Follow.Target, movingEntity.Follow.FollowDistance);
-            //    }
-            //}
-
             Walk(movingEntity);
         }
 
@@ -49,7 +34,9 @@ namespace Rhisis.Game.Systems
         /// <param name="entity">Current entity</param>
         private void Walk(IMover entity)
         {
-            if (entity.Position.IsInCircle(entity.DestinationPosition, ArrivalRangeRadius))
+            float arrivalRange = entity.IsFollowing ? entity.FollowDistance : ArrivalRangeRadius;
+
+            if (entity.Position.IsInCircle(entity.DestinationPosition, arrivalRange))
             {
                 entity.ObjectState &= ~ObjectState.OBJSTA_FMOVE;
                 entity.ObjectState |= ObjectState.OBJSTA_STAND;
@@ -96,14 +83,9 @@ namespace Rhisis.Game.Systems
                     offsetZ = distanceZ;
                 }
 
-                UpdatePosition(entity, (float)offsetX, (float)offsetZ);
+                entity.Position.X += (float)offsetX;
+                entity.Position.Z += (float)offsetZ;
             }
-        }
-
-        private void UpdatePosition(IMover entity, float x, float z)
-        {
-            entity.Position.X += x;
-            entity.Position.Z += z;
         }
     }
 }

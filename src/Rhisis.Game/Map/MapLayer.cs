@@ -164,7 +164,7 @@ namespace Rhisis.Game.Map
                     foreach (IPlayer player in _players)
                     {
                         player.Behavior.Update();
-                        _mobilitySystem.CalculatePosition(player);
+                        _mobilitySystem.Execute(player);
                         _visibilitySystem.Execute(player);
                     }
                 }
@@ -179,7 +179,7 @@ namespace Rhisis.Game.Map
                         foreach (IMonster monster in _monsters)
                         {
                             monster.Behavior.Update();
-                            _mobilitySystem.CalculatePosition(monster);
+                            _mobilitySystem.Execute(monster);
                         }
                     }
                 }

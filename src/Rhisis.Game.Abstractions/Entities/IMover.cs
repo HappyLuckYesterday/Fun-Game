@@ -19,5 +19,15 @@ namespace Rhisis.Game.Abstractions.Entities
         MoverData Data { get; }
 
         IHealth Health { get; }
+
+        IWorldObject FollowTarget { get; set; }
+
+        float FollowDistance { get; set; }
+
+        bool IsFollowing => FollowTarget != null;
+
+        void Follow(IWorldObject worldObject);
+
+        void Unfollow();
     }
 }

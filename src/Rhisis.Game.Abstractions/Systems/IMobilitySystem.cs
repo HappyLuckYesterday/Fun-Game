@@ -11,6 +11,6 @@ namespace Rhisis.Game.Abstractions.Systems
         /// Calculates the movable entities positions in real-time.
         /// </summary>
         /// <param name="moverEntity">Moving entity.</param>
-        void CalculatePosition(IMover moverEntity);
+        void Execute(IMover moverEntity);
     }
 }

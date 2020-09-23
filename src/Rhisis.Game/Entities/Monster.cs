@@ -1,9 +1,11 @@
-﻿using Rhisis.Core.Helpers;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Map;
+using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using System;
@@ -15,6 +17,8 @@ namespace Rhisis.Game.Entities
     [DebuggerDisplay("{Name} Lv.{Level}")]
     public class Monster : IMonster
     {
+        private readonly Lazy<IFollowSystem> _followSystem;
+
         public uint Id { get; }
 
         public WorldObjectType Type => WorldObjectType.Mover;
@@ -82,6 +86,10 @@ namespace Rhisis.Game.Entities
 
         public IMonsterTimers Timers { get; }
 
+        public IWorldObject FollowTarget { get; set; }
+
+        public float FollowDistance { get; set; }
+
         public Monster()
         {
             Id = RandomHelper.GenerateUniqueId();
@@ -89,7 +97,12 @@ namespace Rhisis.Game.Entities
             Statistics = new StatisticsComponent();
             VisibleObjects = new List<IWorldObject>();
             Timers = new MonsterTimersComponent();
+            _followSystem = new Lazy<IFollowSystem>(() => Systems.GetService<IFollowSystem>());
         }
+
+        public void Follow(IWorldObject worldObject) => _followSystem.Value.Follow(this, worldObject);
+
+        public void Unfollow() => _followSystem.Value.Unfollow(this);
 
         public bool Equals(IWorldObject other) => Id == other.Id;
     }

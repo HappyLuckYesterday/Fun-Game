@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rhisis.Core.Structures;
+using System;
 using System.Collections.Generic;
 
 namespace Rhisis.Game.Abstractions.Map
@@ -30,5 +31,9 @@ namespace Rhisis.Game.Abstractions.Map
         void StartUpdate();
 
         void StopUpdate();
+
+        bool IsInBounds(float x, float y, float z);
+
+        bool IsInBounds(Vector3 position);
     }
 }

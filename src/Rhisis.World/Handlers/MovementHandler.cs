@@ -5,6 +5,7 @@ using Rhisis.Network;
 using Rhisis.Network.Packets.World;
 using Rhisis.Network.Snapshots;
 using Sylver.HandlerInvoker.Attributes;
+using System;
 
 namespace Rhisis.World.Handlers
 {
@@ -19,9 +20,14 @@ namespace Rhisis.World.Handlers
         [HandlerAction(SnapshotType.DESTPOS)]
         public void OnSnapshotSetDestPosition(IPlayer player, SetDestPositionPacket packet)
         {
+            if (!player.Map.IsInBounds(packet.X, packet.Y, packet.Z))
+            {
+                throw new InvalidOperationException("Destination position is out of map bounds.");
+            }
+
             player.ObjectState = ObjectState.OBJSTA_FMOVE;
             player.DestinationPosition = new Vector3(packet.X, packet.Y, packet.Z);
-
+            player.Unfollow();
             player.Connection.SendToVisible(new DestPositionSnapshot(player));
         }
     }

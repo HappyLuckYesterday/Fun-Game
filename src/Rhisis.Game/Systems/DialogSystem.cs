@@ -33,12 +33,15 @@ namespace Rhisis.Game.Systems
                     throw new InvalidOperationException($"NPC '{npc.Key}' doesn't have a dialog.");
                 }
 
+                // TODO: quest
+
                 SendNpcDialog(player, npc.Dialog.IntroText, npc.Dialog.Links);
             }
             else
             {
                 if (questId != 0)
                 {
+                    // TODO: quest
                 }
                 else
                 {

@@ -19,6 +19,7 @@ namespace Rhisis.Game.Entities
     public class Player : IPlayer, IHuman, IMover, IWorldObject
     {
         private readonly Lazy<IChatSystem> _chatSystem;
+        private readonly Lazy<IFollowSystem> _followSystem;
 
         public IGameConnection Connection { get; set; }
 
@@ -93,6 +94,10 @@ namespace Rhisis.Game.Entities
 
         public IBehavior Behavior { get; set; }
 
+        public IWorldObject FollowTarget { get; set; }
+
+        public float FollowDistance { get; set; }
+
         public Player()
         {
             Id = RandomHelper.GenerateUniqueId();
@@ -101,11 +106,16 @@ namespace Rhisis.Game.Entities
             Inventory = new InventoryComponent(this);
             VisibleObjects = new List<IWorldObject>();
             _chatSystem = new Lazy<IChatSystem>(() => Systems.GetService<IChatSystem>());
+            _followSystem = new Lazy<IFollowSystem>(() => Systems.GetService<IFollowSystem>());
         }
 
         public void Speak(string text) => _chatSystem.Value.Speak(this, text);
 
         public void Shout(string text) => _chatSystem.Value.Shout(this, text);
+
+        public void Follow(IWorldObject worldObject) => _followSystem.Value.Follow(this, worldObject);
+
+        public void Unfollow() => _followSystem.Value.Unfollow(this);
 
         public bool Equals(IWorldObject other) => Id == other.Id;
     }
