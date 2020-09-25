@@ -2,31 +2,21 @@
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Network.Snapshots;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Rhisis.Game.Systems
 {
     [Injectable]
-    public class ChatSystem : IChatSystem
+    public class ChatSystem : GameFeature, IChatSystem
     {
         public void Speak(IWorldObject worldObject, string text)
         {
             if (!string.IsNullOrEmpty(text))
             {
+                // TODO: maybe check for banned words before sending the packet back to the client.
+                // Replace the banned words with stars (*)
                 using (var chatSnapshot = new ChatSnapshot(worldObject, text))
                 {
-                    IEnumerable<IPlayer> visiblePlayers = worldObject.VisibleObjects.OfType<IPlayer>();
-
-                    foreach (IPlayer player in visiblePlayers)
-                    {
-                        player.Connection.Send(chatSnapshot);
-                    }
-
-                    if (worldObject is IPlayer currentPlayer)
-                    {
-                        currentPlayer.Connection.Send(chatSnapshot);
-                    }
+                    SendPacketToVisible(worldObject, chatSnapshot, sendToPlayer: true);
                 }
             }
         }

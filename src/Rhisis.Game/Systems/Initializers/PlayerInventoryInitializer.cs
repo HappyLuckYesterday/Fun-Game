@@ -33,7 +33,7 @@ namespace Rhisis.Game.Systems.Initializers
                 .OrderBy(x => x.Slot)
                 .Select(x => CreateInventoryItem(x, _gameResources));
 
-            player.Inventory.Initialize(items);
+            player.Inventory.SetItems(items);
         }
 
         public void Save(IPlayer player)

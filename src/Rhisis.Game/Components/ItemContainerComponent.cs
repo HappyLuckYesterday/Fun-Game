@@ -1,4 +1,5 @@
-﻿using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Core.Extensions;
+using Rhisis.Game.Abstractions.Entities;
 using Sylver.Network.Data;
 using System;
 using System.Collections;
@@ -13,8 +14,6 @@ namespace Rhisis.Game.Abstractions.Components
         protected readonly List<IItem> _items;
         protected readonly int[] _itemsMask;
 
-        public int[] Masks => _itemsMask;
-
         public int Count => _items.Count(x => x != null && x.Id != -1);
 
         public int Capacity { get; }
@@ -22,6 +21,10 @@ namespace Rhisis.Game.Abstractions.Components
         public int ExtraCapacity { get; }
 
         public int MaxCapacity => Capacity + ExtraCapacity;
+
+        public int[] Masks => _itemsMask;
+
+        public IItem this[int index] => _items[index];
 
         public ItemContainerComponent(int capacity, int extraCapacity = 0)
         {
@@ -72,27 +75,82 @@ namespace Rhisis.Game.Abstractions.Components
 
         public void DeleteItem(IItem item)
         {
-            throw new NotImplementedException();
+            if (item == null || item.Slot >= MaxCapacity)
+            {
+                return;
+            }
+
+            item.Reset();
+
+            if (item.Slot >= Capacity)
+            {
+                _itemsMask[item.Slot] = -1;
+                item.Slot = -1;
+            }
         }
 
         public IItem GetItem(Func<IItem, bool> predicate)
         {
-            throw new NotImplementedException();
+            IItem item = _items.FirstOrDefault(predicate);
+
+            if (item == null)
+            {
+                return null;
+            }
+
+            return item.Id != -1 ? item : null;
         }
 
-        public IItem GetItem(int itemId)
-        {
-            throw new NotImplementedException();
-        }
+        public IItem GetItem(int itemId) => GetItem(x => x.Id == itemId);
 
         public IItem GetItemAtIndex(int index)
         {
-            throw new NotImplementedException();
+            if (index < 0 || index >= MaxCapacity)
+            {
+                return null;
+            }
+
+            IItem item = _items[index];
+
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item), $"No item found at index {index}.");
+            }
+
+            return item.Id != -1 ? item : null;
         }
 
         public IItem GetItemAtSlot(int slot)
         {
-            throw new NotImplementedException();
+            if (slot < 0 || slot >= MaxCapacity)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            return GetItemAtIndex(_itemsMask[slot]);
+        }
+
+        public IEnumerable<IItem> GetRange(int start, int count)
+        {
+            return _itemsMask.GetRange(start, count).Select(index => GetItemAtIndex(index));
+        }
+
+        public void SwapItem(int sourceSlot, int destinationSlot)
+        {
+            _itemsMask.Swap(sourceSlot, destinationSlot);
+
+            int itemSourceIndex = _itemsMask[sourceSlot];
+            int itemDestinationIndex = _itemsMask[destinationSlot];
+
+            if (itemSourceIndex != -1)
+            {
+                _items[itemSourceIndex].Slot = sourceSlot;
+            }
+
+            if (itemDestinationIndex != -1)
+            {
+                _items[itemDestinationIndex].Slot = destinationSlot;
+            }
         }
 
         public void Serialize(INetPacketStream packet)

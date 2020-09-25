@@ -3,7 +3,7 @@ using Sylver.Network.Data;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.Game.Systems
+namespace Rhisis.Game.Features
 {
     public class GameFeature
     {

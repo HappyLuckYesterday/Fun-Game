@@ -3,8 +3,6 @@ using Rhisis.Network;
 using Rhisis.Network.Packets.World;
 using Sylver.HandlerInvoker.Attributes;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Rhisis.World.Handlers.Inventory
 {
@@ -12,8 +10,24 @@ namespace Rhisis.World.Handlers.Inventory
     public class MoveItemHandler
     {
         [HandlerAction(PacketType.MOVEITEM)]
-        public void OnMoveItem(IPlayer player, MoveItemPacket packet)
+        public void Execute(IPlayer player, MoveItemPacket packet)
         {
+            if (packet.SourceSlot < 0 || packet.SourceSlot >= player.Inventory.MaxCapacity)
+            {
+                throw new InvalidOperationException("Source slot is out of inventory range.");
+            }
+
+            if (packet.DestinationSlot < 0 || packet.DestinationSlot >= player.Inventory.MaxCapacity)
+            {
+                throw new InvalidOperationException("Destination slot is out of inventory range.");
+            }
+
+            if (packet.SourceSlot == packet.DestinationSlot)
+            {
+                return;
+            }
+
+            player.Inventory.Move(packet.SourceSlot, packet.DestinationSlot);
         }
     }
 }

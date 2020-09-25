@@ -1,4 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Components;
+using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;

@@ -32,29 +32,6 @@ namespace Rhisis.World.Handlers
         }
 
         /// <summary>
-        /// Handles the move item request.
-        /// </summary>
-        /// <param name="serverClient"></param>
-        /// <param name="packet"></param>
-        //[HandlerAction(PacketType.MOVEITEM)]
-        public void OnMoveItem(IWorldServerClient serverClient, MoveItemPacket packet)
-        {
-            _inventorySystem.MoveItem(serverClient.Player, packet.SourceSlot, packet.DestinationSlot);
-        }
-
-        /// <summary>
-        /// Handles the equip/unequip request.
-        /// </summary>
-        /// <param name="serverClient"></param>
-        /// <param name="packet"></param>
-        [HandlerAction(PacketType.DOEQUIP)]
-        public void OnDoEquip(IWorldServerClient serverClient, EquipItemPacket packet)
-        {
-            _inventorySystem.EquipItem(serverClient.Player, packet.UniqueId, packet.Part);
-            _playerDataSystem.CalculateDefense(serverClient.Player);
-        }
-
-        /// <summary>
         /// Handles the drop item request.
         /// </summary>
         /// <param name="serverClient"></param>
@@ -74,24 +51,6 @@ namespace Rhisis.World.Handlers
         public void OnDeleteItem(IWorldServerClient serverClient, RemoveInventoryItemPacket packet)
         {
             _inventorySystem.DeleteItem(serverClient.Player, packet.ItemUniqueId, packet.ItemQuantity);
-        }
-
-        /// <summary>
-        /// Handles the use item request.
-        /// </summary>
-        /// <param name="serverClient"></param>
-        /// <param name="packet"></param>
-        [HandlerAction(PacketType.DOUSEITEM)]
-        public void OnUseItem(IWorldServerClient serverClient, DoUseItemPacket packet)
-        {
-            if (!string.IsNullOrWhiteSpace(serverClient.Player.PlayerData.CurrentShopName))
-            {
-                _logger.LogTrace($"Player {serverClient.Player} tried to use an item while visiting a NPC shop.");
-                return;
-            }
-
-            _inventorySystem.UseItem(serverClient.Player, packet.UniqueItemId, packet.Part);
-            _playerDataSystem.CalculateDefense(serverClient.Player);
         }
     }
 }

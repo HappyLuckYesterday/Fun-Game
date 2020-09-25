@@ -6,9 +6,9 @@ namespace Rhisis.Network.Packets.World
     public class EquipItemPacket : IPacketDeserializer
     {
         /// <summary>
-        /// Gets the item unique id.
+        /// Gets the item index in the inventory.
         /// </summary>
-        public int UniqueId { get; private set; }
+        public int ItemIndex { get; private set; }
 
         /// <summary>
         /// Gets the equip item destination part.
@@ -18,7 +18,7 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            UniqueId = packet.Read<int>();
+            ItemIndex = packet.Read<int>();
             Part = packet.Read<int>();
         }
     }

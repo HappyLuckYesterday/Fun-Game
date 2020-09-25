@@ -4,7 +4,7 @@ namespace Rhisis.Game.Abstractions.Components
 {
     public interface IAttributes
     {
-        int Get(DefineAttributes attribute);
+        int Get(DefineAttributes attribute, int defaultValue = 0);
 
         void Set(DefineAttributes attribute, int value);
 

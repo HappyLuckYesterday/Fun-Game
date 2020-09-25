@@ -28,33 +28,6 @@ namespace Rhisis.World.Handlers
         }
 
         /// <summary>
-        /// On melee attack.
-        /// </summary>
-        /// <param name="serverClient">Client.</param>
-        /// <param name="packet">Incoming packet.</param>
-        //[HandlerAction(PacketType.MELEE_ATTACK)]
-        public void OnMeleeAttack(IWorldServerClient serverClient, MeleeAttackPacket packet)
-        {
-            var target = serverClient.Player.FindEntity<IMonsterEntity>(packet.ObjectId);
-
-            if (target == null)
-            {
-                _logger.LogError($"Cannot find target with object id {packet.ObjectId}");
-                return;
-            }
-
-            Item weaponItem = serverClient.Player.Inventory.GetEquipedItem(ItemPartType.RightWeapon) ?? serverClient.Player.Hand;
-
-            if (weaponItem != null && weaponItem.Data?.AttackSpeed != packet.WeaponAttackSpeed)
-            {
-                _logger.LogCritical($"Player {serverClient.Player.Object.Name} has changed his weapon speed.");
-                return;
-            }
-
-            _battleSystem.MeleeAttack(serverClient.Player, target, packet.AttackMessage, packet.WeaponAttackSpeed);
-        }
-
-        /// <summary>
         /// On magic attack.
         /// </summary>
         /// <param name="serverClient">Current client.</param>

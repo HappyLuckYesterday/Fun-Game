@@ -68,6 +68,11 @@ namespace Rhisis.Game.Abstractions
         int Refines { get; }
 
         /// <summary>
+        /// Resets the item informations.
+        /// </summary>
+        void Reset();
+
+        /// <summary>
         /// Copy the given item information in to the current one.
         /// </summary>
         /// <param name="item">Item to copy.</param>

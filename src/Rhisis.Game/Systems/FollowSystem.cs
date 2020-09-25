@@ -9,7 +9,7 @@ using System.Linq;
 namespace Rhisis.Game.Systems
 {
     [Injectable]
-    public sealed class FollowSystem : GameSystem, IFollowSystem
+    public sealed class FollowSystem : GameFeature, IFollowSystem
     {
         /// <inheritdoc />
         public void Follow(IMover moverEntity, IWorldObject targetMoverEntity, float distance = 1f)

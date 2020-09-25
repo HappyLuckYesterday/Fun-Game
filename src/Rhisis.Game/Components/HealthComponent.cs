@@ -1,7 +1,46 @@
-﻿using Rhisis.Game.Abstractions.Entities;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Systems;
+using Rhisis.Game.Common;
+using System;
+using System.Collections.Generic;
 
 namespace Rhisis.Game.Abstractions.Components
 {
+    public class AttributesComponent : IAttributes
+    {
+        private readonly IMover _mover;
+        private readonly IDictionary<DefineAttributes, int> _attributes;
+        private readonly Lazy<IAttributeSystem> _attributeSystem;
+
+        public AttributesComponent(IMover mover)
+        {
+            _mover = mover;
+            _attributes = new Dictionary<DefineAttributes, int>();
+            _attributeSystem = new Lazy<IAttributeSystem>(() => mover.Systems.GetService<IAttributeSystem>());
+        }
+
+        public int Get(DefineAttributes attribute, int defaultValue = 0)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Set(DefineAttributes attribute, int value)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void IncreaseAttribute(DefineAttributes attribute, int value)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void DecreaseAttribute(DefineAttributes attribute, int value)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
+
     public class HealthComponent : IHealth
     {
         private readonly IMover _mover;

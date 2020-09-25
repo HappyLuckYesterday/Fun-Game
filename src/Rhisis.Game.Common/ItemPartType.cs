@@ -33,5 +33,6 @@
         Glove,
         Boots,
         Cloak2,
+        Maximum
     }
 }
