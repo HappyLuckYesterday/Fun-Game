@@ -4,6 +4,8 @@ using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Database;
 using Rhisis.Game.Abstractions.Behavior;
+using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Resources.Loaders;
@@ -113,15 +115,15 @@ namespace Rhisis.World
         }
 
         /// <inheritdoc />
-        public IPlayerEntity GetPlayerEntity(uint id) => Clients.FirstOrDefault(x => x.Player.Id == id)?.Player;
+        public IPlayer GetPlayerEntity(uint id) => Clients.FirstOrDefault(x => x.Player.Id == id)?.NewPlayer;
 
         /// <inheritdoc />
-        public IPlayerEntity GetPlayerEntity(string name) 
-            => Clients.FirstOrDefault(x => x.Player.Object.Name.Equals(name, StringComparison.OrdinalIgnoreCase))?.Player;
+        public IPlayer GetPlayerEntity(string name) 
+            => Clients.FirstOrDefault(x => x.Player.Object.Name.Equals(name, StringComparison.OrdinalIgnoreCase))?.NewPlayer;
 
         /// <inheritdoc />
-        public IPlayerEntity GetPlayerEntityByCharacterId(uint id) 
-            => Clients.FirstOrDefault(x => x.Player.PlayerData.Id == id)?.Player;
+        public IPlayer GetPlayerEntityByCharacterId(uint id) 
+            => Clients.FirstOrDefault(x => x.Player.PlayerData.Id == id)?.NewPlayer;
 
         /// <inheritdoc />
         public uint GetOnlineConnectedPlayerNumber() 

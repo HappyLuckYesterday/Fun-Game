@@ -7,6 +7,8 @@ using System;
 using Rhisis.Core.Structures;
 using Rhisis.World.Game.Maps.Regions;
 using Rhisis.Game.Common;
+using Rhisis.Game.Abstractions.Features.Chat;
+using Rhisis.Game.Abstractions.Entities;
 
 namespace Rhisis.World.Game.Chat
 {
@@ -31,7 +33,7 @@ namespace Rhisis.World.Game.Chat
         }
 
         /// <inheritdoc />
-        public void Execute(IPlayerEntity player, object[] parameters)
+        public void Execute(IPlayer player, object[] parameters)
         {
             if (parameters.Length <= 0 || parameters.Length > 2)
             {
@@ -52,20 +54,24 @@ namespace Rhisis.World.Game.Chat
                     throw new ArgumentException($"Cannot convert the second parameter in int.", nameof(parameters));
                 }
             }
-            _logger.LogTrace($"{player.Object.Name} want to spawn {quantityToSpawn} mmonster");
+            _logger.LogTrace($"{player.Name} want to spawn {quantityToSpawn} mmonster");
 
-            const int sizeOfSpawnArea = 13;
-            const int respawnTime = 65535;
-            IMapInstance currentMap = player.Object.CurrentMap;
-            IMapLayer currentMapLayer = currentMap.GetMapLayer(player.Object.LayerId);
-            Vector3 currentPosition = player.Object.Position.Clone();
-            var respawnRegion = new MapRespawnRegion((int)currentPosition.X - sizeOfSpawnArea / 2, (int)currentPosition.Z - sizeOfSpawnArea / 2, sizeOfSpawnArea, sizeOfSpawnArea, respawnTime, 0, WorldObjectType.Mover, monsterId, quantityToSpawn);
-            for (int i = 0; i < quantityToSpawn; i++)
-            {
-                IMonsterEntity monsterToCreate = _monsterFactory.CreateMonster(currentMap, currentMapLayer, monsterId, respawnRegion, true);
-                monsterToCreate.Object.Position = player.Object.Position.Clone();
-                currentMapLayer.AddEntity(monsterToCreate);
-            }
+            throw new NotImplementedException();
+            //const int sizeOfSpawnArea = 13;
+            //const int respawnTime = 65535;
+
+            //IMapInstance currentMap = player.CurrentMap;
+            //IMapLayer currentMapLayer = currentMap.GetMapLayer(player.Object.LayerId);
+            //Vector3 currentPosition = player.Object.Position.Clone();
+            //var respawnRegion = new MapRespawnRegion((int)currentPosition.X - sizeOfSpawnArea / 2, (int)currentPosition.Z - sizeOfSpawnArea / 2, sizeOfSpawnArea, sizeOfSpawnArea, respawnTime, 0, WorldObjectType.Mover, monsterId, quantityToSpawn);
+            
+            //for (int i = 0; i < quantityToSpawn; i++)
+            //{
+            //    IMonsterEntity monsterToCreate = _monsterFactory.CreateMonster(currentMap, currentMapLayer, monsterId, respawnRegion, true);
+            //    monsterToCreate.Object.Position = player.Position.Clone();
+
+            //    currentMapLayer.AddEntity(monsterToCreate);
+            //}
         }
     }
 }

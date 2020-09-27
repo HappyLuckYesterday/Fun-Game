@@ -4,6 +4,11 @@ using Rhisis.World.Game.Entities;
 using System;
 using Rhisis.World.Packets;
 using Rhisis.Game.Common;
+using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features.Chat;
+using System.Collections.Generic;
+using System.Linq;
+using Rhisis.Network.Snapshots;
 
 namespace Rhisis.World.Game.Chat
 {
@@ -29,20 +34,27 @@ namespace Rhisis.World.Game.Chat
         }
 
         /// <inheritdoc />
-        public void Execute(IPlayerEntity player, object[] parameters)
+        public void Execute(IPlayer player, object[] parameters)
         {
             if (parameters.Length == 1) 
             {
-                IPlayerEntity playerToUnfreeze = _worldServer.GetPlayerEntity(parameters[0].ToString());
-                if (playerToUnfreeze.PlayerData.Mode.HasFlag(ModeType.DONMOVE_MODE))
+                IPlayer playerToUnfreeze = _worldServer.GetPlayerEntity(parameters[0].ToString());
+                
+                if (playerToUnfreeze.Mode.HasFlag(ModeType.DONMOVE_MODE))
                 {
-                    playerToUnfreeze.PlayerData.Mode &= ~ ModeType.DONMOVE_MODE;
-                    _playerDataPacketFactory.SendModifyMode(playerToUnfreeze);
-                    _logger.LogTrace($"Player '{playerToUnfreeze.Object.Name}' is not freezed anymore.");
+                    playerToUnfreeze.Mode &= ~ ModeType.DONMOVE_MODE;
+
+                    using (var snapshot = new ModifyModeSnapshot(player, player.Mode))
+                    {
+                        player.Send(snapshot);
+                        player.SendToVisible(snapshot);
+                    }
+
+                    _logger.LogTrace($"Player '{playerToUnfreeze.Name}' is not freezed anymore.");
                 }
                 else 
                 {
-                    _logger.LogTrace($"Player '{playerToUnfreeze.Object.Name}' is currently not freezed.");
+                    _logger.LogTrace($"Player '{playerToUnfreeze.Name}' is currently not freezed.");
                 }
             }
             else

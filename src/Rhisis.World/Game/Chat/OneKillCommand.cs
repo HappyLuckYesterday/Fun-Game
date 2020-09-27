@@ -3,6 +3,9 @@ using Rhisis.Core.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Packets;
 using Rhisis.Game.Common;
+using Rhisis.Game.Abstractions.Features.Chat;
+using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Network.Snapshots;
 
 namespace Rhisis.World.Game.Chat
 {
@@ -25,16 +28,22 @@ namespace Rhisis.World.Game.Chat
         }
 
         /// <inheritdoc />
-        public void Execute(IPlayerEntity player, object[] parameters)
+        public void Execute(IPlayer player, object[] parameters)
         {
-            if (!player.PlayerData.Mode.HasFlag(ModeType.ONEKILL_MODE))
+            if (!player.Mode.HasFlag(ModeType.ONEKILL_MODE))
             {
-                player.PlayerData.Mode |= ModeType.ONEKILL_MODE;
-                _playerDataPacketFactory.SendModifyMode(player);
-                _logger.LogTrace($"Player '{player.Object.Name}' is now in OneKill mode.");
+                player.Mode |= ModeType.ONEKILL_MODE;
+
+                using (var snapshot = new ModifyModeSnapshot(player, player.Mode))
+                {
+                    player.Send(snapshot);
+                    player.SendToVisible(snapshot);
+                }
+
+                _logger.LogTrace($"Player '{player.Name}' is now in OneKill mode.");
             }
             else {
-                _logger.LogTrace($"Player '{player.Object.Name}' is already in OneKill mode.");
+                _logger.LogTrace($"Player '{player.Name}' is already in OneKill mode.");
             }
         }
     }

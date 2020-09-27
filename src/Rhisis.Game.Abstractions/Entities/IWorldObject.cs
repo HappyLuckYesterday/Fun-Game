@@ -3,6 +3,7 @@ using Rhisis.Core.Structures;
 using System;
 using Rhisis.Game.Abstractions.Map;
 using System.Collections.Generic;
+using Sylver.Network.Data;
 
 namespace Rhisis.Game.Abstractions.Entities
 {
@@ -46,6 +47,21 @@ namespace Rhisis.Game.Abstractions.Entities
         /// </remarks>
         StateFlags ObjectStateFlags { get; set; }
 
+        /// <summary>
+        /// Gets or sets a collection of visible objects for the current entity.
+        /// </summary>
         IList<IWorldObject> VisibleObjects { get; set; }
+
+        /// <summary>
+        /// Sends a packet to the current object.
+        /// </summary>
+        /// <param name="packet"></param>
+        void Send(INetPacketStream packet);
+
+        /// <summary>
+        /// Sends a packet to every visible objects.
+        /// </summary>
+        /// <param name="packet"></param>
+        void SendToVisible(INetPacketStream packet);
     }
 }

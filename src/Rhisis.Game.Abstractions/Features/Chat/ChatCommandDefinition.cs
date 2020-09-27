@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Rhisis.Core.Common;
 using Rhisis.Game.Common;
 
-namespace Rhisis.World.Game.Chat
+namespace Rhisis.Game.Abstractions.Features.Chat
 {
     /// <summary>
     /// Defines a chat command.
     /// </summary>
-    internal sealed class ChatCommandDefinition
+    public sealed class ChatCommandDefinition
     {
         /// <summary>
         /// Gets the command.

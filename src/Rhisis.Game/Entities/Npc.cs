@@ -10,9 +10,11 @@ using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Common.Resources.Dialogs;
 using Rhisis.Game.Common.Resources.Quests;
+using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Rhisis.Game.Entities
 {
@@ -77,5 +79,23 @@ namespace Rhisis.Game.Entities
         public void Speak(string text) => _chatSystem.Value.Speak(this, text);
 
         public bool Equals(IWorldObject other) => Id == other.Id;
+
+        public void Send(INetPacketStream packet)
+        {
+            throw new InvalidOperationException("A NPC cannot send a packet to itself.");
+        }
+
+        public void SendToVisible(INetPacketStream packet)
+        {
+            IEnumerable<IPlayer> visiblePlayers = VisibleObjects.OfType<IPlayer>();
+
+            if (visiblePlayers.Any())
+            {
+                foreach (IPlayer player in visiblePlayers)
+                {
+                    player.Send(packet);
+                }
+            }
+        }
     }
 }

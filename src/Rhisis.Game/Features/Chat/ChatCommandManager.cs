@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
+using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Common;
 using System;
 using System.Collections.Concurrent;
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Rhisis.World.Game.Chat
+namespace Rhisis.Game.Features.Chat
 {
     [Injectable(ServiceLifetime.Singleton)]
     public sealed class ChatCommandManager : IChatCommandManager

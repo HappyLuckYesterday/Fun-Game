@@ -10,9 +10,11 @@ using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Features;
+using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Rhisis.Game.Entities
 {
@@ -110,5 +112,20 @@ namespace Rhisis.Game.Entities
         public void Unfollow() => _followSystem.Value.Unfollow(this);
 
         public bool Equals(IWorldObject other) => Id == other.Id;
+
+        public void Send(INetPacketStream packet) => throw new InvalidOperationException("A monster cannot send a packet to itself.");
+
+        public void SendToVisible(INetPacketStream packet)
+        {
+            IEnumerable<IPlayer> visiblePlayers = VisibleObjects.OfType<IPlayer>();
+
+            if (visiblePlayers.Any())
+            {
+                foreach (IPlayer player in visiblePlayers)
+                {
+                    player.Send(packet);
+                }
+            }
+        }
     }
 }

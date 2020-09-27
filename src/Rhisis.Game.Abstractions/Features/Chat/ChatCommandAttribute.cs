@@ -1,11 +1,10 @@
-﻿using Rhisis.Core.Common;
-using Rhisis.Game.Common;
+﻿using Rhisis.Game.Common;
 using System;
 
-namespace Rhisis.World.Game.Chat
+namespace Rhisis.Game.Abstractions.Features.Chat
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    internal class ChatCommandAttribute : Attribute
+    public class ChatCommandAttribute : Attribute
     {
         /// <summary>
         /// Gets the chat command.

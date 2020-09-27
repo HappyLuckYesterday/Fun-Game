@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Common;
+using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Common;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Systems.Teleport;
@@ -29,24 +31,25 @@ namespace Rhisis.World.Game.Chat
         }
 
         /// <inheritdoc />
-        public void Execute(IPlayerEntity player, object[] parameters)
+        public void Execute(IPlayer player, object[] parameters)
         {
-            if (parameters.Length == 1) 
-            {
-                IPlayerEntity playerToSummon = _worldServer.GetPlayerEntity(parameters[0].ToString());
+            throw new NotImplementedException();
+            //if (parameters.Length == 1) 
+            //{
+            //    IPlayerEntity playerToSummon = _worldServer.GetPlayerEntity(parameters[0].ToString());
 
-                if (playerToSummon == null)
-                {
-                    throw new ArgumentException($"The player doesn't exist or is not connected.", nameof(parameters));
-                }
+            //    if (playerToSummon == null)
+            //    {
+            //        throw new ArgumentException($"The player doesn't exist or is not connected.", nameof(parameters));
+            //    }
                 
-                _teleportSystem.Teleport(playerToSummon, player.Object.MapId, player.Object.Position.X, player.Object.Position.Y, player.Object.Position.Z);
-                _logger.LogTrace($"{playerToSummon.Object.Name} is summoned by {player.Object.Name}.");
-            }
-            else 
-            {
-                throw new ArgumentException("Too many or not enough arguments.");
-            }
+            //    _teleportSystem.Teleport(playerToSummon, player.Object.MapId, player.Object.Position.X, player.Object.Position.Y, player.Object.Position.Z);
+            //    _logger.LogTrace($"{playerToSummon.Object.Name} is summoned by {player.Object.Name}.");
+            //}
+            //else 
+            //{
+            //    throw new ArgumentException("Too many or not enough arguments.");
+            //}
         }
     }
 }

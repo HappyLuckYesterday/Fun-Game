@@ -1,7 +1,6 @@
-﻿using Rhisis.Core.Common;
-using Rhisis.Game.Common;
+﻿using Rhisis.Game.Common;
 
-namespace Rhisis.World.Game.Chat
+namespace Rhisis.Game.Abstractions.Features.Chat
 {
     public interface IChatCommandManager
     {

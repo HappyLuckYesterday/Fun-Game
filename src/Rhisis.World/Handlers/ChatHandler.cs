@@ -1,8 +1,8 @@
 ﻿using Rhisis.Game;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World;
-using Rhisis.World.Game.Chat;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Linq;
@@ -43,8 +43,7 @@ namespace Rhisis.World.Handlers
                         throw new ArgumentException($"Cannot find chat command: '/{commandInfo.Item1}'", nameof(chatCommand));
                     }
 
-                    // TODO: process migration of commands
-                    //chatCommand.Execute(player, commandInfo.Item2);
+                    chatCommand.Execute(player, commandInfo.Item2);
                 }
                 else
                 {

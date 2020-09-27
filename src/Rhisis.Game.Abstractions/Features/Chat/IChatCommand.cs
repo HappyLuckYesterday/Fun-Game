@@ -1,6 +1,6 @@
-﻿using Rhisis.World.Game.Entities;
+﻿using Rhisis.Game.Abstractions.Entities;
 
-namespace Rhisis.World.Game.Chat
+namespace Rhisis.Game.Abstractions.Features.Chat
 {
     /// <summary>
     /// Provides a mechanism to create chat commands.
@@ -11,6 +11,6 @@ namespace Rhisis.World.Game.Chat
         /// Executes the chat command.
         /// </summary>
         /// <param name="parameters">Chat commands parameters.</param>
-        void Execute(IPlayerEntity player, object[] parameters);
+        void Execute(IPlayer player, object[] parameters);
     }
 }

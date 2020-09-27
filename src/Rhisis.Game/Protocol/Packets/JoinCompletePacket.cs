@@ -1,4 +1,5 @@
-﻿using Rhisis.Network;
+﻿using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Network;
 using System.Collections.Generic;
 using System.Linq;
 

@@ -1,8 +1,9 @@
 using Microsoft.Extensions.Logging;
-using Rhisis.Core.Common;
-using Rhisis.World.Game.Entities;
-using Rhisis.World.Packets;
+using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Common;
+using Rhisis.Network.Snapshots;
+using Rhisis.World.Packets;
 
 namespace Rhisis.World.Game.Chat
 {
@@ -25,16 +26,23 @@ namespace Rhisis.World.Game.Chat
         }
 
         /// <inheritdoc />
-        public void Execute(IPlayerEntity player, object[] parameters)
+        public void Execute(IPlayer player, object[] parameters)
         {
-            if (player.PlayerData.Mode.HasFlag(ModeType.ONEKILL_MODE))
+            if (player.Mode.HasFlag(ModeType.ONEKILL_MODE))
             {
-                player.PlayerData.Mode &= ~ ModeType.ONEKILL_MODE;
-                _playerDataPacketFactory.SendModifyMode(player);
-                _logger.LogTrace($"Player '{player.Object.Name}' is not anymore in OneKill mode.");
+                player.Mode &= ~ModeType.ONEKILL_MODE;
+
+                using (var snapshot = new ModifyModeSnapshot(player, player.Mode))
+                {
+                    player.Send(snapshot);
+                    player.SendToVisible(snapshot);
+                }
+
+                _logger.LogTrace($"Player '{player.Name}' is not anymore in OneKill mode.");
             }
-            else {
-                _logger.LogTrace($"Player '{player.Object.Name}' is currently not in OneKill mode.");
+            else
+            {
+                _logger.LogTrace($"Player '{player.Name}' is currently not in OneKill mode.");
             }
         }
     }
