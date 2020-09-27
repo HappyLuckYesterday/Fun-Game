@@ -84,6 +84,16 @@ namespace Rhisis.Game.Abstractions.Features
         void MoveItem(int sourceSlot, int destinationSlot);
 
         /// <summary>
+        /// Creates an item in player's inventory.
+        /// </summary>
+        /// <param name="item">Item model to create.</param>
+        /// <param name="quantity">Quantity to create.</param>
+        /// <param name="creatorId">Id of the character that created the item. Used for GMs and admins.</param>
+        /// <param name="sendToPlayer">Sends the packet to the current player.</param>
+        /// <returns>Number of items created.</returns>
+        int CreateItem(IItem item, int quantity, int creatorId = -1, bool sendToPlayer = true);
+
+        /// <summary>
         /// Deletes an item in player's inventory.
         /// </summary>
         /// <param name="itemIndex">Item index to delete.</param>

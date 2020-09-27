@@ -102,7 +102,7 @@ namespace Rhisis.Network.Snapshots
                             Write((short)player.Health.Fp);
                             Write(0); // tutorial state
                             Write(0); // fly experience
-                            Write(player.Gold); // Gold
+                            Write(player.Gold.Amount); // Gold
                             Write(player.Experience); // exp
                             Write(0); // skill level
                             Write(0/*(int)player.SkillTree.SkillPoints*/); // skill points

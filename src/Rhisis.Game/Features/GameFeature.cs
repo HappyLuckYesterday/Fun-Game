@@ -1,4 +1,6 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Common;
+using Rhisis.Network.Snapshots;
 using Sylver.Network.Data;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +32,19 @@ namespace Rhisis.Game.Features
             {
                 player.Connection.Send(packet);
             }
+        }
+
+        /// <summary>
+        /// Sends a defined text message to the given player.
+        /// </summary>
+        /// <param name="player">Current player.</param>
+        /// <param name="text">Defined text id.</param>
+        /// <param name="parameters">Additionnal parameters.</param>
+        public void SendDefinedText(IPlayer player, DefineText text, params object[] parameters)
+        {
+            using var definedTextSnapshot = new DefinedTextSnapshot(player, text, parameters);
+
+            player.Connection.Send(definedTextSnapshot);
         }
     }
 }

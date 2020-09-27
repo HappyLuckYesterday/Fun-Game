@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Extensions;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Common;
 using Sylver.Network.Data;
 using System;
 using System.Collections;
@@ -68,26 +69,7 @@ namespace Rhisis.Game.Abstractions.Components
             }
         }
 
-        public void CreateItem(IItem item)
-        {
-            throw new NotImplementedException();
-        }
 
-        public void DeleteItem(IItem item)
-        {
-            if (item == null || item.Slot >= MaxCapacity)
-            {
-                return;
-            }
-
-            item.Reset();
-
-            if (item.Slot >= Capacity)
-            {
-                _itemsMask[item.Slot] = -1;
-                item.Slot = -1;
-            }
-        }
 
         public IItem GetItem(Func<IItem, bool> predicate)
         {
@@ -133,6 +115,152 @@ namespace Rhisis.Game.Abstractions.Components
         public IEnumerable<IItem> GetRange(int start, int count)
         {
             return _itemsMask.GetRange(start, count).Select(index => GetItemAtIndex(index));
+        }
+
+        public bool CanStoreItem(IItem itemToStore)
+        {
+            if (itemToStore == null)
+            {
+                return false;
+            }
+
+            int quantityToStore = itemToStore.Quantity;
+            int itemToStoreMaxQuantity = itemToStore.Data.PackMax;
+
+            for (int i = 0; i < Capacity; i++)
+            {
+                IItem item = GetItemAtSlot(i);
+
+                if (item == null)
+                {
+                    if (quantityToStore > itemToStoreMaxQuantity)
+                    {
+                        quantityToStore -= itemToStoreMaxQuantity;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                else if (item.Id == itemToStore.Id)
+                {
+                    if (item.Quantity + quantityToStore > itemToStoreMaxQuantity)
+                    {
+                        quantityToStore -= itemToStoreMaxQuantity - item.Quantity;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public IEnumerable<ItemCreationResult> CreateItem(IItem item)
+        {
+            int quantity = item.Quantity;
+            var result = new List<ItemCreationResult>();
+
+            if (!CanStoreItem(item))
+            {
+                return result;
+            }
+
+            if (item.Data.IsStackable)
+            {
+                for (int i = 0; i < Capacity; i++)
+                {
+                    int itemIndex = _itemsMask[i];
+
+                    if (itemIndex < 0 || itemIndex >= MaxCapacity)
+                    {
+                        continue;
+                    }
+
+                    IItem inventoryItem = _items[itemIndex];
+
+                    if (inventoryItem.Id == item.Id && inventoryItem.Quantity < inventoryItem.Data.PackMax)
+                    {
+                        if (inventoryItem.Quantity + quantity > inventoryItem.Data.PackMax)
+                        {
+                            quantity -= inventoryItem.Data.PackMax - inventoryItem.Quantity;
+                            inventoryItem.Quantity = inventoryItem.Data.PackMax;
+                        }
+                        else
+                        {
+                            inventoryItem.Quantity += quantity;
+                            quantity = 0;
+                        }
+
+                        result.Add(new ItemCreationResult(ItemCreationActionType.Update, inventoryItem));
+
+                        if (quantity == 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (quantity > 0)
+            {
+                for (int i = 0; i < Capacity; i++)
+                {
+                    int itemIndex = _itemsMask[i];
+
+                    if (itemIndex < 0 || itemIndex >= MaxCapacity)
+                    {
+                        continue;
+                    }
+
+                    IItem inventoryItem = _items[itemIndex];
+
+                    if (inventoryItem.Id == -1)
+                    {
+                        inventoryItem.CopyFrom(item);
+                        inventoryItem.Index = itemIndex;
+                        inventoryItem.Slot = i;
+
+                        if (quantity > inventoryItem.Data.PackMax)
+                        {
+                            inventoryItem.Quantity = inventoryItem.Data.PackMax;
+                            quantity -= inventoryItem.Quantity;
+                        }
+                        else
+                        {
+                            inventoryItem.Quantity = quantity;
+                            quantity = 0;
+                        }
+
+                        result.Add(new ItemCreationResult(ItemCreationActionType.Add, inventoryItem));
+
+                        if (quantity == 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public void DeleteItem(IItem item)
+        {
+            if (item == null || item.Slot >= MaxCapacity)
+            {
+                return;
+            }
+
+            item.Reset();
+
+            if (item.Slot >= Capacity)
+            {
+                _itemsMask[item.Slot] = -1;
+                item.Slot = -1;
+            }
         }
 
         public void SwapItem(int sourceSlot, int destinationSlot)

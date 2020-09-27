@@ -10,6 +10,7 @@ using Sylver.Network.Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Rhisis.Game.Features
@@ -103,6 +104,42 @@ namespace Rhisis.Game.Features
                 using var moveItemSnapshot = new MoveItemSnapshot(_player, sourceSlot, destinationSlot);
                 _player.Connection.Send(moveItemSnapshot);
             }
+        }
+
+        public int CreateItem(IItem item, int quantity, int creatorId = -1, bool sendToPlayer = true)
+        {
+            item.Quantity = quantity;
+
+            IEnumerable<ItemCreationResult> creationResult = _container.CreateItem(item);
+
+            if (creationResult.Any())
+            {
+                if (sendToPlayer)
+                {
+                    using var snapshot = new FFSnapshot();
+
+                    foreach (ItemCreationResult itemResult in creationResult)
+                    {
+                        if (itemResult.ActionType == ItemCreationActionType.Add)
+                        {
+                            snapshot.Merge(new CreateItemSnapshot(_player, itemResult.Item));
+                        }
+                        else if (itemResult.ActionType == ItemCreationActionType.Update)
+                        {
+                            snapshot.Merge(new UpdateItemSnapshot(_player, UpdateItemType.UI_NUM, itemResult.Item.Index, itemResult.Item.Quantity));
+                        }
+                    }
+
+                    _player.Connection.Send(snapshot);
+                }
+            }
+            else
+            {
+                using var textSnapshot = new DefinedTextSnapshot(_player, DefineText.TID_GAME_LACKSPACE);
+                _player.Connection.Send(textSnapshot);
+            }
+
+            return creationResult.Sum(x => x.Item.Quantity);
         }
 
         public int DeleteItem(int itemIndex, int quantity, bool sendToPlayer = true)

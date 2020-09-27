@@ -14,6 +14,7 @@ using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Components;
 using Rhisis.Game.Entities;
+using Rhisis.Game.Features;
 using Rhisis.Game.Protocol.Packets;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World;
@@ -97,7 +98,7 @@ namespace Rhisis.World.Handlers
                 realPlayer.Level = character.Level;
                 realPlayer.ObjectState = ObjectState.OBJSTA_STAND;
                 realPlayer.ObjectStateFlags = 0;
-                realPlayer.Gold = character.Gold;
+                realPlayer.Gold = new Gold(realPlayer, character.Gold);
                 realPlayer.Experience = character.Experience;
                 realPlayer.Authority = (AuthorityType)character.User.Authority;
                 realPlayer.Mode = ModeType.NONE;

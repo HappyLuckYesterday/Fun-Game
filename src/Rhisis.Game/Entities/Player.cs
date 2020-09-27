@@ -55,7 +55,7 @@ namespace Rhisis.Game.Entities
 
         public long Experience { get; set; }
 
-        public int Gold { get; set; }
+        public IGold Gold { get; set; }
 
         public int Slot { get; set; }
 
@@ -76,7 +76,9 @@ namespace Rhisis.Game.Entities
 
         public float SpeedFactor { get; set; } = 1;
 
-        public bool IsMoving { get; set; }
+        public bool IsMoving => ObjectState.HasFlag(ObjectState.OBJSTA_MOVE_ALL) && !DestinationPosition.IsZero();
+
+        public string CurrentNpcShopName { get; set; }
 
         public MoverData Data { get; set; }
 

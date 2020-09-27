@@ -80,11 +80,11 @@ namespace Rhisis.World.Systems.Inventory
                 {
                     foreach (ItemCreationResult itemResult in creationResult)
                     {
-                        if (itemResult.ActionType == ItemCreationActionType.Add)
+                        if (itemResult.ActionType == Game.Structures.ItemCreationActionType.Add)
                         {
                             _inventoryPacketFactory.SendItemCreation(player, itemResult.Item);
                         }
-                        else if (itemResult.ActionType == ItemCreationActionType.Update)
+                        else if (itemResult.ActionType == Game.Structures.ItemCreationActionType.Update)
                         {
                             _inventoryPacketFactory.SendItemUpdate(player, UpdateItemType.UI_NUM, itemResult.Item.Index, itemResult.Item.Quantity);
                         }

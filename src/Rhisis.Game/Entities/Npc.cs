@@ -38,7 +38,7 @@ namespace Rhisis.Game.Entities
 
         public short Size { get; set; }
 
-        public string Name => Data.Name;
+        public string Name => Key;
 
         public IServiceProvider Systems { get; set; }
 

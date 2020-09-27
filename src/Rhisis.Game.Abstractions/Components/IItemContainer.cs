@@ -30,7 +30,18 @@ namespace Rhisis.Game.Abstractions.Components
 
         IEnumerable<IItem> GetRange(int start, int count);
 
-        void CreateItem(IItem item);
+        /// <summary>
+        /// Check if the item container can store the given item.
+        /// </summary>
+        /// <param name="itemToStore">Item to store.</param>
+        /// <returns>True if the item container can store the item; false otherwise.</returns>
+        bool CanStoreItem(IItem itemToStore);
+
+        /// <summary>
+        /// Creates an item to the item container.
+        /// </summary>
+        /// <param name="item">Item to add.</param>
+        IEnumerable<ItemCreationResult> CreateItem(IItem item);
 
         void DeleteItem(IItem item);
 

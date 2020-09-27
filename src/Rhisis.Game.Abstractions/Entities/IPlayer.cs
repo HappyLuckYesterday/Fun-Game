@@ -14,7 +14,7 @@ namespace Rhisis.Game.Abstractions.Entities
 
         long Experience { get; set; }
 
-        int Gold { get; set; }
+        IGold Gold { get; }
 
         int Slot { get; }
 
@@ -27,6 +27,8 @@ namespace Rhisis.Game.Abstractions.Entities
         IPlayerStatistics Statistics { get; }
 
         IInventory Inventory { get; }
+
+        string CurrentNpcShopName { get; set; }
 
         void Speak(string text);
 
