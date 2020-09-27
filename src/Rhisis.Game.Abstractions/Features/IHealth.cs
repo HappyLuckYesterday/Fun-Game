@@ -1,4 +1,4 @@
-﻿namespace Rhisis.Game.Abstractions.Components
+﻿namespace Rhisis.Game.Abstractions.Features
 {
     public interface IHealth
     {
@@ -21,5 +21,20 @@
         /// Gets or sets the Fatigue points.
         /// </summary>
         int Fp { get; set; }
+
+        /// <summary>
+        /// Gets the maximum hit points.
+        /// </summary>
+        int MaxHp { get; }
+
+        /// <summary>
+        /// Gets the maximum Mana poitns.
+        /// </summary>
+        int MaxMp { get; }
+
+        /// <summary>
+        /// Gets the maxium Fatigue points.
+        /// </summary>
+        int MaxFp { get; }
     }
 }

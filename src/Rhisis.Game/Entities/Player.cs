@@ -86,6 +86,8 @@ namespace Rhisis.Game.Entities
 
         public IHealth Health { get; set; }
 
+        public IAttributes Attributes { get; set; }
+
         public IPlayerStatistics Statistics { get; }
 
         public IInventory Inventory { get; }
@@ -105,7 +107,8 @@ namespace Rhisis.Game.Entities
         public Player()
         {
             Id = RandomHelper.GenerateUniqueId();
-            Health = new HealthComponent(this);
+            Health = new Health(this);
+            Attributes = new Attributes(this);
             Statistics = new PlayerStatisticsComponent(this);
             Inventory = new Inventory(this);
             VisibleObjects = new List<IWorldObject>();

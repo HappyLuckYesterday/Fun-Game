@@ -4,10 +4,12 @@ using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
+using Rhisis.Game.Features;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -74,6 +76,8 @@ namespace Rhisis.Game.Entities
 
         public IHealth Health { get; }
 
+        public IAttributes Attributes { get; set; }
+
         public IStatistics Statistics { get; }
 
         public IList<IWorldObject> VisibleObjects { get; set; }
@@ -93,7 +97,8 @@ namespace Rhisis.Game.Entities
         public Monster()
         {
             Id = RandomHelper.GenerateUniqueId();
-            Health = new HealthComponent(this);
+            Health = new Health(this);
+            Attributes = new Attributes(this);
             Statistics = new StatisticsComponent();
             VisibleObjects = new List<IWorldObject>();
             Timers = new MonsterTimersComponent();
