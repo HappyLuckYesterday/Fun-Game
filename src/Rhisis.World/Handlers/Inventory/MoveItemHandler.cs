@@ -27,7 +27,7 @@ namespace Rhisis.World.Handlers.Inventory
                 return;
             }
 
-            player.Inventory.Move(packet.SourceSlot, packet.DestinationSlot);
+            player.Inventory.MoveItem(packet.SourceSlot, packet.DestinationSlot);
         }
     }
 }

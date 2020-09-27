@@ -81,7 +81,7 @@ namespace Rhisis.Game.Abstractions.Features
         /// </summary>
         /// <param name="sourceSlot"></param>
         /// <param name="destinationSlot"></param>
-        void Move(int sourceSlot, int destinationSlot);
+        void MoveItem(int sourceSlot, int destinationSlot);
 
         /// <summary>
         /// Deletes an item in player's inventory.
@@ -100,5 +100,26 @@ namespace Rhisis.Game.Abstractions.Features
         /// <param name="sendToPlayer">Sends the packet to the current player.</param>
         /// <returns>Deleted quantity.</returns>
         int DeleteItem(IItem item, int quantity, bool sendToPlayer = true);
+
+        /// <summary>
+        /// Checks if the item has a cooltime.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        bool ItemHasCoolTime(IItem item);
+
+        /// <summary>
+        /// Check if the given item is a cooltime item and can be used.
+        /// </summary>
+        /// <param name="item">Item.</param>
+        /// <returns>Returns true if the item with cooltime can be used; false otherwise.</returns>
+        bool CanUseItemWithCoolTime(IItem item);
+
+        /// <summary>
+        /// Sets item cool time.
+        /// </summary>
+        /// <param name="item">Item.</param>
+        /// <param name="cooltime">Cooltime.</param>
+        void SetCoolTime(IItem item, int cooltime);
     }
 }

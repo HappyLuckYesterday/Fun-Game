@@ -1,4 +1,5 @@
-﻿using Rhisis.Game.Abstractions;
+﻿using Rhisis.Core.IO;
+using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
@@ -21,6 +22,7 @@ namespace Rhisis.Game.Features
 
         private readonly IPlayer _player;
         private readonly IItemContainer _container;
+        private readonly IDictionary<CoolTimeType, long> _itemsCoolTimes;
 
         public int MaxCapacity => _container.MaxCapacity;
 
@@ -28,6 +30,13 @@ namespace Rhisis.Game.Features
         {
             _player = player;
             _container = new ItemContainerComponent<Item>(InventorySize, InventoryEquipParts);
+            _itemsCoolTimes = new Dictionary<CoolTimeType, long>()
+            {
+                { CoolTimeType.None, 0 },
+                { CoolTimeType.Food, 0 },
+                { CoolTimeType.Pills, 0 },
+                { CoolTimeType.Skill, 0 }
+            };
         }
 
         public void SetItems(IEnumerable<IItem> items) => _container.Initialize(items);
@@ -38,7 +47,7 @@ namespace Rhisis.Game.Features
 
         public IItem GetItem(int itemIndex) => _container.GetItemAtIndex(itemIndex);
 
-        public void Move(int sourceSlot, int destinationSlot)
+        public void MoveItem(int sourceSlot, int destinationSlot)
         {
             if (sourceSlot < 0 || sourceSlot >= _container.MaxCapacity)
             {
@@ -193,6 +202,45 @@ namespace Rhisis.Game.Features
             }
 
             return _container.GetItemAtSlot(equipedItemSlot);
+        }
+
+        public bool ItemHasCoolTime(IItem item) => GetItemCoolTimeGroup(item) != CoolTimeType.None;
+
+        public bool CanUseItemWithCoolTime(IItem item)
+        {
+            CoolTimeType group = GetItemCoolTimeGroup(item);
+
+            return group != CoolTimeType.None && _itemsCoolTimes[group] < Time.GetElapsedTime();
+        }
+
+        public void SetCoolTime(IItem item, int cooltime)
+        {
+            CoolTimeType group = GetItemCoolTimeGroup(item);
+
+            if (group != CoolTimeType.None)
+            {
+                _itemsCoolTimes[group] = Time.GetElapsedTime() + cooltime;
+            }
+        }
+
+        /// <summary>
+        /// Gets the item cool time group.
+        /// </summary>
+        /// <param name="item">Item.</param>
+        /// <returns>Returns the item cool time group.</returns>
+        private CoolTimeType GetItemCoolTimeGroup(IItem item)
+        {
+            if (item.Data.CoolTime <= 0)
+            {
+                return CoolTimeType.None;
+            }
+
+            return item.Data.ItemKind2 switch
+            {
+                ItemKind2.FOOD => item.Data.ItemKind3 == ItemKind3.PILL ? CoolTimeType.Pills : CoolTimeType.Food,
+                ItemKind2.SKILL => CoolTimeType.Skill,
+                _ => CoolTimeType.None,
+            };
         }
 
         public bool Equip(IItem itemToEquip)
