@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Rhisis.Core.DependencyInjection.Extensions;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Behavior;
@@ -53,9 +54,11 @@ namespace Rhisis.Game.Entities
 
         public int Level { get; set; }
 
+        public int DeathLevel { get; set; }
+
         public bool Spawned { get; set; }
 
-        public long Experience { get; set; }
+        public IExperience Experience { get; set; }
 
         public IGold Gold { get; set; }
 
@@ -112,7 +115,7 @@ namespace Rhisis.Game.Entities
             Health = new Health(this);
             Attributes = new Attributes(this);
             Statistics = new PlayerStatisticsComponent(this);
-            Inventory = new Inventory(this);
+            Inventory = Systems.CreateInstance<Inventory>(this);
             VisibleObjects = new List<IWorldObject>();
             _chatSystem = new Lazy<IChatSystem>(() => Systems.GetService<IChatSystem>());
             _followSystem = new Lazy<IFollowSystem>(() => Systems.GetService<IFollowSystem>());

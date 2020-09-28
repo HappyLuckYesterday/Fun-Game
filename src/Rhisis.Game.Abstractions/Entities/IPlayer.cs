@@ -12,11 +12,13 @@ namespace Rhisis.Game.Abstractions.Entities
 
         int CharacterId { get; }
 
-        long Experience { get; set; }
+        IExperience Experience { get; }
 
         IGold Gold { get; }
 
         int Slot { get; }
+
+        int DeathLevel { get; set; }
 
         AuthorityType Authority { get; }
 

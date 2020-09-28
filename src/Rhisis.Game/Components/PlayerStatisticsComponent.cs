@@ -38,6 +38,7 @@ namespace Rhisis.Game.Abstractions.Components
             Intelligence += intelligence;
             AvailablePoints -= (ushort)total;
 
+            _player.Health.RegenerateAll();
             SendState();
         }
 
@@ -51,6 +52,7 @@ namespace Rhisis.Game.Abstractions.Components
             Intelligence = DefaultAttributePoints;
             AvailablePoints = (ushort)((_player.Level - 1) * 2);
 
+            _player.Health.RegenerateAll();
             SendState();
         }
 

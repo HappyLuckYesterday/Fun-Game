@@ -36,5 +36,10 @@
         /// Gets the maxium Fatigue points.
         /// </summary>
         int MaxFp { get; }
+
+        /// <summary>
+        /// Regenerates all points.
+        /// </summary>
+        void RegenerateAll();
     }
 }

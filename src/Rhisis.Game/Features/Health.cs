@@ -2,6 +2,9 @@
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Systems;
+using Rhisis.Game.Common;
+using Rhisis.Network;
+using Rhisis.Network.Snapshots;
 using System;
 
 namespace Rhisis.Game.Abstractions.Components
@@ -33,6 +36,26 @@ namespace Rhisis.Game.Abstractions.Components
         {
             _mover = mover;
             _healthFormulas = new Lazy<IHealthFormulas>(() => mover.Systems.GetService<IHealthFormulas>());
+        }
+
+        public void RegenerateAll()
+        {
+            Hp = MaxHp;
+            Mp = MaxMp;
+            Fp = MaxFp;
+
+            using var healthSnapshot = new FFSnapshot();
+            healthSnapshot.Merge(new UpdateParamPointSnapshot(_mover, DefineAttributes.HP, Hp));
+            healthSnapshot.Merge(new UpdateParamPointSnapshot(_mover, DefineAttributes.MP, Mp));
+            healthSnapshot.Merge(new UpdateParamPointSnapshot(_mover, DefineAttributes.FP, Fp));
+
+            _mover.SendToVisible(healthSnapshot);
+
+            if (_mover is IPlayer)
+            {
+                _mover.Send(healthSnapshot);
+            }
+
         }
     }
 }

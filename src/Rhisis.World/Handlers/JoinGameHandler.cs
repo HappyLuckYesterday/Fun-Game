@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Rhisis.Core.DependencyInjection.Extensions;
 using Rhisis.Core.Structures;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
@@ -96,10 +97,9 @@ namespace Rhisis.World.Handlers
                 realPlayer.Size = GameConstants.DefaultObjectSize;
                 realPlayer.Name = character.Name;
                 realPlayer.Level = character.Level;
+                realPlayer.DeathLevel = character.Level;
                 realPlayer.ObjectState = ObjectState.OBJSTA_STAND;
                 realPlayer.ObjectStateFlags = 0;
-                realPlayer.Gold = new Gold(realPlayer, character.Gold);
-                realPlayer.Experience = character.Experience;
                 realPlayer.Authority = (AuthorityType)character.User.Authority;
                 realPlayer.Mode = ModeType.NONE;
                 realPlayer.Slot = character.Slot;
@@ -119,6 +119,9 @@ namespace Rhisis.World.Handlers
                 realPlayer.Health.Hp = character.Hp;
                 realPlayer.Health.Mp = Math.Max(0, character.Mp);
                 realPlayer.Health.Fp = Math.Max(0, character.Fp);
+
+                realPlayer.Gold = _serviceProvider.CreateInstance<Gold>(realPlayer, character.Gold);
+                realPlayer.Experience = _serviceProvider.CreateInstance<Experience>(realPlayer, character.Experience);
 
                 if (!_gameResources.Movers.TryGetValue(realPlayer.ModelId, out MoverData moverData))
                 {
