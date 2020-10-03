@@ -47,7 +47,7 @@ namespace Rhisis.World.Handlers
                 }
                 else
                 {
-                    player.Speak(packet.Message);
+                    player.Chat.Speak(packet.Message);
                 }
             }
         }

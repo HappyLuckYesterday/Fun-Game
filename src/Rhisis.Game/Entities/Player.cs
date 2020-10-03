@@ -6,12 +6,14 @@ using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
+using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Features;
+using Rhisis.Game.Features.Chat;
 using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;
@@ -23,7 +25,6 @@ namespace Rhisis.Game.Entities
     [DebuggerDisplay("{Name} Lv.{Level}")]
     public class Player : IPlayer, IHuman, IMover, IWorldObject
     {
-        private readonly Lazy<IChatSystem> _chatSystem;
         private readonly Lazy<IFollowSystem> _followSystem;
 
         public IGameConnection Connection { get; set; }
@@ -93,9 +94,11 @@ namespace Rhisis.Game.Entities
 
         public IAttributes Attributes { get; set; }
 
-        public IPlayerStatistics Statistics { get; }
+        public IPlayerStatistics Statistics { get; set; }
 
-        public IInventory Inventory { get; }
+        public IInventory Inventory { get; set; }
+
+        public IChat Chat { get; set; }
 
         public IHumanVisualAppearance Appearence { get; set; }
 
@@ -112,18 +115,9 @@ namespace Rhisis.Game.Entities
         public Player()
         {
             Id = RandomHelper.GenerateUniqueId();
-            Health = new Health(this);
-            Attributes = new Attributes(this);
-            Statistics = new PlayerStatisticsComponent(this);
-            Inventory = Systems.CreateInstance<Inventory>(this);
             VisibleObjects = new List<IWorldObject>();
-            _chatSystem = new Lazy<IChatSystem>(() => Systems.GetService<IChatSystem>());
             _followSystem = new Lazy<IFollowSystem>(() => Systems.GetService<IFollowSystem>());
         }
-
-        public void Speak(string text) => _chatSystem.Value.Speak(this, text);
-
-        public void Shout(string text) => _chatSystem.Value.Shout(this, text);
 
         public void Follow(IWorldObject worldObject) => _followSystem.Value.Follow(this, worldObject);
 

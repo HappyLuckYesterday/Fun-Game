@@ -1,4 +1,4 @@
-﻿using Rhisis.World.Game.Common;
+﻿using Rhisis.Game.Common;
 using Rhisis.World.Game.Entities;
 using System;
 

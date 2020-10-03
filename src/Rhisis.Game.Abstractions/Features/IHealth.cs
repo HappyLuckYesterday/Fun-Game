@@ -1,4 +1,7 @@
-﻿namespace Rhisis.Game.Abstractions.Features
+﻿using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Common;
+
+namespace Rhisis.Game.Abstractions.Features
 {
     public interface IHealth
     {
@@ -41,5 +44,22 @@
         /// Regenerates all points.
         /// </summary>
         void RegenerateAll();
+
+        /// <summary>
+        /// Kills the current mover and makes it die.
+        /// </summary>
+        /// <param name="killer">Mover that killed the current mover.</param>
+        /// <param name="objectMessageType">Object message type.</param>
+        /// <param name="sendHitPoints">Boolean value that indiciates if the system should send the current hit points.</param>
+        void Die(IMover killer, ObjectMessageType objectMessageType = ObjectMessageType.OBJMSG_ATK1, bool sendHitPoints = false);
+
+        /// <summary>
+        /// Inflict a given amount of damages to the current mover.
+        /// </summary>
+        /// <param name="attacker">Mover that attacked the current mover.</param>
+        /// <param name="damages">Amount of damages to inflict.</param>
+        /// <param name="attackFlags">Attack flags.</param>
+        /// <param name="objectMessageType">Attack message type.</param>
+        void SufferDamages(IMover attacker, int damages, AttackFlags attackFlags = AttackFlags.AF_GENERIC, ObjectMessageType objectMessageType = ObjectMessageType.OBJMSG_ATK1);
     }
 }

@@ -1,4 +1,4 @@
-﻿using Rhisis.World.Game.Common;
+﻿using Rhisis.Game.Common;
 
 namespace Rhisis.World.Systems.Battle
 {

@@ -8,6 +8,7 @@ using Rhisis.Database.Entities;
 using Rhisis.Game;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Behavior;
+using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Resources;
@@ -103,6 +104,7 @@ namespace Rhisis.World.Handlers
                 realPlayer.Authority = (AuthorityType)character.User.Authority;
                 realPlayer.Mode = ModeType.NONE;
                 realPlayer.Slot = character.Slot;
+                
                 realPlayer.Appearence = new HumanVisualAppearenceComponent((GenderType)character.Gender)
                 {
                     SkinSetId = character.SkinSetId,
@@ -110,18 +112,24 @@ namespace Rhisis.World.Handlers
                     HairId = character.HairId,
                     HairColor = character.HairColor
                 };
+
+                realPlayer.Statistics = _serviceProvider.CreateInstance<PlayerStatisticsComponent>(realPlayer);
                 realPlayer.Statistics.AvailablePoints = (ushort)character.StatPoints;
                 realPlayer.Statistics.Strength = character.Strength;
                 realPlayer.Statistics.Stamina = character.Stamina;
                 realPlayer.Statistics.Dexterity = character.Dexterity;
                 realPlayer.Statistics.Intelligence = character.Intelligence;
 
+                realPlayer.Health = _serviceProvider.CreateInstance<Health>(realPlayer);
                 realPlayer.Health.Hp = character.Hp;
                 realPlayer.Health.Mp = Math.Max(0, character.Mp);
                 realPlayer.Health.Fp = Math.Max(0, character.Fp);
 
                 realPlayer.Gold = _serviceProvider.CreateInstance<Gold>(realPlayer, character.Gold);
                 realPlayer.Experience = _serviceProvider.CreateInstance<Experience>(realPlayer, character.Experience);
+                realPlayer.Inventory = _serviceProvider.CreateInstance<Rhisis.Game.Features.Inventory>(realPlayer);
+                realPlayer.Chat = _serviceProvider.CreateInstance<Rhisis.Game.Features.Chat.Chat>(realPlayer);
+                realPlayer.Attributes = _serviceProvider.CreateInstance<Attributes>(realPlayer);
 
                 if (!_gameResources.Movers.TryGetValue(realPlayer.ModelId, out MoverData moverData))
                 {

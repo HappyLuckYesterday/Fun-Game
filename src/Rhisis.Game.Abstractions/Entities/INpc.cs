@@ -1,4 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Components;
+using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Common.Resources.Dialogs;
 using Rhisis.Game.Common.Resources.Quests;
@@ -52,8 +53,11 @@ namespace Rhisis.Game.Abstractions.Entities
         /// </summary>
         bool HasQuests => Quests.Any();
 
-        void OpenDialog(IPlayer player, string dialogKey, int questId);
+        /// <summary>
+        /// Gets the NPC chat feature.
+        /// </summary>
+        IChat Chat { get; }
 
-        void Speak(string text);
+        void OpenDialog(IPlayer player, string dialogKey, int questId);
     }
 }

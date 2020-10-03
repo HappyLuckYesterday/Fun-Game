@@ -1,15 +1,18 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Rhisis.Core.DependencyInjection.Extensions;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Common.Resources.Dialogs;
 using Rhisis.Game.Common.Resources.Quests;
+using Rhisis.Game.Features.Chat;
 using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;
@@ -22,7 +25,6 @@ namespace Rhisis.Game.Entities
     public class Npc : INpc
     {
         private readonly Lazy<IDialogSystem> _dialogSystem;
-        private readonly Lazy<IChatSystem> _chatSystem;
 
         public uint Id { get; }
 
@@ -64,19 +66,19 @@ namespace Rhisis.Game.Entities
 
         public IEnumerable<IQuestScript> Quests { get; set; }
 
+        public IChat Chat { get; set; }
+
         public Npc()
         {
             Id = RandomHelper.GenerateUniqueId();
             _dialogSystem = new Lazy<IDialogSystem>(() => Systems.GetService<IDialogSystem>());
-            _chatSystem = new Lazy<IChatSystem>(() => Systems.GetService<IChatSystem>());
+            Chat = Systems.CreateInstance<Chat>(this);
         }
 
         public void OpenDialog(IPlayer player, string dialogKey, int questId)
         {
             _dialogSystem.Value.OpenNpcDialog(this, player, dialogKey, questId);
         }
-
-        public void Speak(string text) => _chatSystem.Value.Speak(this, text);
 
         public bool Equals(IWorldObject other) => Id == other.Id;
 

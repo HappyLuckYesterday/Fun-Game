@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using Rhisis.Game.Common;
 using Rhisis.Network.Packets.World;
 using Rhisis.World.Client;
-using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Systems.Projectile;
 using Sylver.HandlerInvoker.Attributes;

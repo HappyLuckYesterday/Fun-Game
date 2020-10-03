@@ -60,7 +60,7 @@ namespace Rhisis.Game.Systems
                     if (dialogKey == DialogConstants.Bye)
                     {
                         CloseDialog(player);
-                        npc.Speak(npc.Dialog.ByeText);
+                        npc.Chat.Speak(npc.Dialog.ByeText);
                     }
                     else
                     {

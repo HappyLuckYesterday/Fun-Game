@@ -2,7 +2,6 @@
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Game.Common;
 using Rhisis.Network;
-using Rhisis.World.Game.Common;
 using Rhisis.World.Game.Entities;
 
 namespace Rhisis.World.Packets.Internal

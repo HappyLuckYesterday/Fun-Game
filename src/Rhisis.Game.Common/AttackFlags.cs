@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rhisis.World.Game.Common
+namespace Rhisis.Game.Common
 {
     [Flags]
     public enum AttackFlags : uint
