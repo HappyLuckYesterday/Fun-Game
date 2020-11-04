@@ -116,7 +116,7 @@ namespace Rhisis.Game.Systems.Initializers
                 throw new KeyNotFoundException($"Cannot find item data with id: '{itemId}'.");
             }
 
-            return new Item(itemData, dbItemStorage.Id)
+            return new Item(itemData, databaseStorageId: dbItemStorage.Id)
             {
                 CreatorId = dbItemStorage.Item.CreatorId,
                 Refine = dbItemStorage.Item.Refine.GetValueOrDefault(),

@@ -1,5 +1,6 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Entities;
+using System;
 using System.Collections.Generic;
 
 namespace Rhisis.Game.Abstractions.Map
@@ -36,22 +37,65 @@ namespace Rhisis.Game.Abstractions.Map
         /// </summary>
         IEnumerable<IPlayer> Players { get; }
 
+        /// <summary>
+        /// Adds an item to the current map layer.
+        /// </summary>
+        /// <param name="mapItem">Map item to add.</param>
+        /// <exception cref="ArgumentNullException"></exception>
         void AddItem(IMapItem mapItem);
 
+        /// <summary>
+        /// Adds a monster to the current map layer.
+        /// </summary>
+        /// <param name="monster">Monster entity to add.</param>
+        /// <exception cref="ArgumentNullException"></exception>
         void AddMonster(IMonster monster);
 
+        /// <summary>
+        /// Adds a NPC to the current map layer.
+        /// </summary>
+        /// <param name="npc">Npc to add.</param>
+        /// <exception cref="ArgumentNullException"></exception>
         void AddNpc(INpc npc);
 
+        /// <summary>
+        /// Adds a player to the current map layer.
+        /// </summary>
+        /// <param name="player">Player to add.</param>
+        /// <exception cref="ArgumentNullException"></exception>
         void AddPlayer(IPlayer player);
 
+        /// <summary>
+        /// Removes a map item from the current map layer.
+        /// </summary>
+        /// <param name="mapItem">Map item to remove.</param>
+        /// <exception cref="ArgumentNullException"></exception>
         void RemoveItem(IMapItem mapItem);
 
+        /// <summary>
+        /// Removes an existing monster from the current map layer.
+        /// </summary>
+        /// <param name="monster">Monster to remove.</param>
+        /// <exception cref="ArgumentNullException"></exception>
         void RemoveMonster(IMonster monster);
 
+        /// <summary>
+        /// Removes an existing NPC from the current map layer.
+        /// </summary>
+        /// <param name="npc">NPC to remove.</param>
+        /// <exception cref="ArgumentNullException"></exception>
         void RemoveNpc(INpc npc);
 
+        /// <summary>
+        /// Removes an existing player from the current map layer.
+        /// </summary>
+        /// <param name="player">Player to remove.</param>
+        /// <exception cref="ArgumentNullException"></exception>
         void RemovePlayer(IPlayer player);
 
+        /// <summary>
+        /// Process the map layer logic.
+        /// </summary>
         void Process();
 
         /// <summary>

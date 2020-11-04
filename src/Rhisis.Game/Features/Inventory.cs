@@ -2,6 +2,7 @@
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Factories;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Common;
 using Rhisis.Network;
@@ -22,14 +23,18 @@ namespace Rhisis.Game.Features
         public const int EquipOffset = InventorySize;
 
         private readonly IPlayer _player;
+        private readonly IEntityFactory _entityFactory;
         private readonly IItemContainer _container;
         private readonly IDictionary<CoolTimeType, long> _itemsCoolTimes;
 
         public int MaxCapacity => _container.MaxCapacity;
 
-        public Inventory(IPlayer player)
+        public IItem Hand { get; }
+
+        public Inventory(IPlayer player, IEntityFactory entityFactory)
         {
             _player = player;
+            _entityFactory = entityFactory;
             _container = new ItemContainerComponent<Item>(InventorySize, InventoryEquipParts);
             _itemsCoolTimes = new Dictionary<CoolTimeType, long>()
             {
@@ -38,6 +43,7 @@ namespace Rhisis.Game.Features
                 { CoolTimeType.Pills, 0 },
                 { CoolTimeType.Skill, 0 }
             };
+            Hand = _entityFactory.CreateItem(DefineItem.II_WEA_HAN_HAND, 0, ElementType.None, 0);
         }
 
         public void SetItems(IEnumerable<IItem> items) => _container.Initialize(items);
@@ -235,7 +241,7 @@ namespace Rhisis.Game.Features
 
             if (equipedItemSlot > _container.MaxCapacity || equipedItemSlot < EquipOffset)
             {
-                return null;
+                return Hand;
             }
 
             return _container.GetItemAtSlot(equipedItemSlot);

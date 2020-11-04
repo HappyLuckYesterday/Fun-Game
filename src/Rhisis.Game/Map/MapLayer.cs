@@ -49,7 +49,7 @@ namespace Rhisis.Game.Map
         {
             if (mapItem == null)
             {
-                return;
+                throw new ArgumentNullException(nameof(mapItem), "Cannot add an undefined map item.");
             }
 
             if (!_items.Contains(mapItem))
@@ -68,7 +68,7 @@ namespace Rhisis.Game.Map
         {
             if (monster == null)
             {
-                return;
+                throw new ArgumentNullException(nameof(monster), "Cannot add an undefined monster.");
             }
 
             if (!_monsters.Contains(monster))
@@ -87,7 +87,7 @@ namespace Rhisis.Game.Map
         {
             if (npc == null)
             {
-                return;
+                throw new ArgumentNullException(nameof(npc), "Cannot add an undefined npc.");
             }
 
             if (!_npcs.Contains(npc))
@@ -106,7 +106,7 @@ namespace Rhisis.Game.Map
         {
             if (player == null)
             {
-                return;
+                throw new ArgumentNullException(nameof(player), "Cannot add an undefined player.");
             }
 
             if (!_players.Contains(player))
@@ -123,7 +123,21 @@ namespace Rhisis.Game.Map
 
         public void RemoveItem(IMapItem mapItem)
         {
-            throw new NotImplementedException();
+            if (mapItem == null)
+            {
+                throw new ArgumentNullException(nameof(mapItem), "Cannot remove an undefined map item.");
+            }
+
+            if (_items.Contains(mapItem))
+            {
+                lock (_items)
+                {
+                    if (_items.Contains(mapItem))
+                    {
+                        _items.Remove(mapItem);
+                    }
+                }
+            }
         }
 
         public void RemoveMonster(IMonster monster)
@@ -138,6 +152,11 @@ namespace Rhisis.Game.Map
 
         public void RemovePlayer(IPlayer player)
         {
+            if (player == null)
+            {
+                throw new ArgumentNullException(nameof(player), "Cannot remove an undefined player.");
+            }
+
             if (_players.Contains(player))
             {
                 lock (_players)

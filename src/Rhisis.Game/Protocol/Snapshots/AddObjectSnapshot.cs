@@ -2,6 +2,7 @@
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Common;
+using Rhisis.Game.Entities;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -254,6 +255,9 @@ namespace Rhisis.Network.Snapshots
                         Write<float>(1); // speed factor
                         Write(0); // Buff count
                     }
+                    break;
+                case IMapItem mapItem:
+                    mapItem.Item.Serialize(this, -1);
                     break;
             }
         }

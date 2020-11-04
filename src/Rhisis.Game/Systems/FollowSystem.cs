@@ -11,7 +11,6 @@ namespace Rhisis.Game.Systems
     [Injectable]
     public sealed class FollowSystem : GameFeature, IFollowSystem
     {
-        /// <inheritdoc />
         public void Follow(IMover moverEntity, IWorldObject targetMoverEntity, float distance = 1f)
         {
             moverEntity.FollowTarget = targetMoverEntity;
@@ -24,7 +23,6 @@ namespace Rhisis.Game.Systems
             SendPacketToVisible(moverEntity, snapshot);
         }
 
-        /// <inheritdoc />
         public void Follow(IMover moverEntity, uint targetId, float distance = 1f)
         {
             var entityToFollow = moverEntity.VisibleObjects.FirstOrDefault(x => x.Id == targetId);

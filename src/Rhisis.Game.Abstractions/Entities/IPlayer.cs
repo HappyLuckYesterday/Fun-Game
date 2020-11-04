@@ -33,6 +33,8 @@ namespace Rhisis.Game.Abstractions.Entities
 
         IChat Chat { get; }
 
+        IBattle Battle { get; }
+
         string CurrentNpcShopName { get; set; }
     }
 }

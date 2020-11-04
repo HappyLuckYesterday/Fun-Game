@@ -108,8 +108,9 @@ namespace Rhisis.Game.Map
                         {
                             for (int i = 0; i < respawnRegion.Count; ++i)
                             {
-                                IMapItem mapItem = _entityFactory.CreateMapItem();
-                                newMapLayer.AddItem(mapItem);
+                                // TODO
+                                //IMapItem mapItem = _entityFactory.CreateMapItem();
+                                //newMapLayer.AddItem(mapItem);
                             }
                         }
                     }
@@ -122,7 +123,12 @@ namespace Rhisis.Game.Map
                         switch (mapObject)
                         {
                             case IMapNpcObject npcObject:
-                                newMapLayer.AddNpc(_entityFactory.CreateNpc(npcObject, Id, newMapLayer.Id));
+                                INpc npc = _entityFactory.CreateNpc(npcObject, Id, newMapLayer.Id);
+
+                                if (npc != null)
+                                {
+                                    newMapLayer.AddNpc(npc);
+                                }
                                 break;
                         }
                     }

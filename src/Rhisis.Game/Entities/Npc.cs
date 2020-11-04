@@ -99,5 +99,7 @@ namespace Rhisis.Game.Entities
                 }
             }
         }
+
+        public override string ToString() => $"{Name}";
     }
 }

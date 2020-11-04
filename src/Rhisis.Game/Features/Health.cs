@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Rhisis.Core.IO;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Systems;
@@ -15,13 +16,54 @@ namespace Rhisis.Game.Abstractions.Components
         private readonly IMover _mover;
         private readonly Lazy<IHealthFormulas> _healthFormulas;
 
-        public bool IsDead => Hp < 0;
+        private int _hp;
+        private int _mp;
+        private int _fp;
+        private long _nextHealTime;
 
-        public int Hp { get; set; }
+        public bool IsDead => Hp <= 0;
 
-        public int Mp { get; set; }
+        public int Hp
+        {
+            get => _hp;
+            set
+            {
+                if (_hp == value)
+                {
+                    return;
+                }
 
-        public int Fp { get; set; }
+                _hp = Math.Clamp(value, 0, MaxHp);
+            }
+        }
+
+        public int Mp
+        {
+            get => _mp;
+            set
+            {
+                if (_mp == value)
+                {
+                    return;
+                }
+
+                _mp = Math.Clamp(value, 0, MaxMp);
+            }
+        }
+
+        public int Fp
+        {
+            get => _fp;
+            set
+            {
+                if (_fp == value)
+                {
+                    return;
+                }
+
+                _fp = Math.Clamp(value, 0, MaxFp);
+            }
+        }
 
         public int MaxHp => _healthFormulas.Value.GetMaxHp(_mover);
 
@@ -36,6 +78,7 @@ namespace Rhisis.Game.Abstractions.Components
         public Health(IMover mover)
         {
             _mover = mover;
+            _nextHealTime = Time.TimeInSeconds();
             _healthFormulas = new Lazy<IHealthFormulas>(() => mover.Systems.GetService<IHealthFormulas>());
         }
 
@@ -84,13 +127,13 @@ namespace Rhisis.Game.Abstractions.Components
 
             using var damageSnapshots = new FFSnapshot();
 
+            damageSnapshots.Merge(new AddDamageSnapshot(_mover, attacker, attackFlags, damagesToInflict));
+
             if (damagesToInflict > 0)
             {
                 Hp -= damagesToInflict;
                 damageSnapshots.Merge(new UpdateParamPointSnapshot(_mover, DefineAttributes.HP, Hp));
             }
-
-            damageSnapshots.Merge(new AddDamageSnapshot(_mover, attacker, attackFlags, damagesToInflict));
 
             SendPacketToVisible(_mover, damageSnapshots, sendToPlayer: true);
 
@@ -98,6 +141,30 @@ namespace Rhisis.Game.Abstractions.Components
             {
                 Die(attacker, objectMessageType, sendHitPoints: true);
             }
+        }
+
+        public void IdleHeal()
+        {
+            if (IsDead || _nextHealTime > Time.TimeInSeconds())
+            {
+                return;
+            }
+
+            // TODO: next heal time to configuration file?
+            const int NextIdleHealSit = 2;
+            const int NextIdleHealStand = 3;
+            _nextHealTime = Time.TimeInSeconds() + (_mover.ObjectState == ObjectState.OBJSTA_SIT ? NextIdleHealSit : NextIdleHealStand);
+
+            Hp += _healthFormulas.Value.GetHpRecovery(_mover);
+            Mp += _healthFormulas.Value.GetMpRecovery(_mover);
+            Fp += _healthFormulas.Value.GetFpRecovery(_mover);
+
+            using var healthSnapshot = new FFSnapshot();
+            healthSnapshot.Merge(new UpdateParamPointSnapshot(_mover, DefineAttributes.HP, Hp));
+            healthSnapshot.Merge(new UpdateParamPointSnapshot(_mover, DefineAttributes.MP, Mp));
+            healthSnapshot.Merge(new UpdateParamPointSnapshot(_mover, DefineAttributes.FP, Fp));
+
+            SendPacketToVisible(_mover, healthSnapshot, sendToPlayer: true);
         }
     }
 }

@@ -61,5 +61,10 @@ namespace Rhisis.Game.Abstractions.Features
         /// <param name="attackFlags">Attack flags.</param>
         /// <param name="objectMessageType">Attack message type.</param>
         void SufferDamages(IMover attacker, int damages, AttackFlags attackFlags = AttackFlags.AF_GENERIC, ObjectMessageType objectMessageType = ObjectMessageType.OBJMSG_ATK1);
+
+        /// <summary>
+        /// Regenerates a small amount of the current mover health.
+        /// </summary>
+        void IdleHeal();
     }
 }

@@ -16,6 +16,11 @@ namespace Rhisis.Game.Abstractions.Features
         int MaxCapacity { get; }
 
         /// <summary>
+        /// Gets the player's hand item.
+        /// </summary>
+        IItem Hand { get; }
+
+        /// <summary>
         /// Sets the given collection of items into the inventory.
         /// </summary>
         /// <param name="items">Items to inject inside the inventory.</param>

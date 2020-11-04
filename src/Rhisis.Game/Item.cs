@@ -107,12 +107,13 @@ namespace Rhisis.Game
             Slot = -1;
         }
 
-        public Item(ItemData itemData, int? databaseStorageId = null)
+        public Item(ItemData itemData, int? quantity = null, int? databaseStorageId = null)
         {
             Data = itemData ?? throw new ArgumentNullException(nameof(itemData));
             DatabaseStorageItemId = databaseStorageId;
             Index = -1;
             Slot = -1;
+            _quantity = quantity.GetValueOrDefault();
         }
 
         public virtual void CopyFrom(IItem itemToCopy)

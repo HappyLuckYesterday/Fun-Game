@@ -55,12 +55,16 @@ namespace Rhisis.Game.Entities
 
         public Vector3 DestinationPosition { get; set; } = new Vector3();
 
+        public Vector3 BeginPosition { get; set; } = new Vector3();
+
+        public bool IsReturningToBeginPosition { get; set; } = false;
+
         public float Speed
         {
             get
             {
                 // TODO: add bonus attributes
-                return Data.Speed * SpeedFactor;
+                return (Data.Speed * 0.5f) * SpeedFactor;
             }
         }
 
@@ -76,11 +80,11 @@ namespace Rhisis.Game.Entities
 
         public StateFlags ObjectStateFlags { get; set; }
 
-        public IHealth Health { get; }
+        public IHealth Health { get; set; }
 
         public IAttributes Attributes { get; set; }
 
-        public IStatistics Statistics { get; }
+        public IStatistics Statistics { get; set; }
 
         public IList<IWorldObject> VisibleObjects { get; set; }
 
@@ -96,12 +100,12 @@ namespace Rhisis.Game.Entities
 
         public float FollowDistance { get; set; }
 
+        public IBattle Battle { get; set; }
+
         public Monster()
         {
             Id = RandomHelper.GenerateUniqueId();
-            Health = new Health(this);
-            Attributes = new Attributes(this);
-            Statistics = new StatisticsComponent();
+            
             VisibleObjects = new List<IWorldObject>();
             Timers = new MonsterTimersComponent();
             _followSystem = new Lazy<IFollowSystem>(() => Systems.GetService<IFollowSystem>());
@@ -127,5 +131,7 @@ namespace Rhisis.Game.Entities
                 }
             }
         }
+
+        public override string ToString() => $"{Name} Lv.{Level}";
     }
 }

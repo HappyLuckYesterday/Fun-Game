@@ -88,8 +88,25 @@ namespace Rhisis.World.Handlers
 
             if (player is Player realPlayer)
             {
+                // TODO: move this to constants somewhere
+                int playerModelId = character.Gender == 0 ? 11 : 12;
+
+                if (!_gameResources.Movers.TryGetValue(playerModelId, out MoverData moverData))
+                {
+                    throw new ArgumentException($"Cannot find mover with id '{realPlayer.ModelId}' in game resources.", nameof(realPlayer.ModelId));
+                }
+
+                if (!_gameResources.Jobs.TryGetValue((DefineJob.Job)character.JobId, out JobData jobData))
+                {
+                    throw new ArgumentException($"Cannot find job data with id: '{character.JobId}' in game resources.", nameof(character.JobId));
+                }
+
+                realPlayer.Systems = _serviceProvider;
+                realPlayer.Data = moverData;
+                realPlayer.Job = jobData;
+                realPlayer.Behavior = _behaviorManager.GetDefaultBehavior(BehaviorType.Player, realPlayer);
                 realPlayer.CharacterId = character.Id;
-                realPlayer.ModelId = character.Gender == 0 ? 11 : 12;
+                realPlayer.ModelId = playerModelId;
                 realPlayer.Type = WorldObjectType.Mover;
                 realPlayer.Map = _mapManager.GetMap(character.MapId);
                 realPlayer.MapLayer = realPlayer.Map.GetMapLayer(character.MapLayerId);
@@ -113,6 +130,13 @@ namespace Rhisis.World.Handlers
                     HairColor = character.HairColor
                 };
 
+                realPlayer.Gold = _serviceProvider.CreateInstance<Gold>(realPlayer, character.Gold);
+                realPlayer.Experience = _serviceProvider.CreateInstance<Experience>(realPlayer, character.Experience);
+                realPlayer.Inventory = _serviceProvider.CreateInstance<Rhisis.Game.Features.Inventory>(realPlayer);
+                realPlayer.Chat = _serviceProvider.CreateInstance<Rhisis.Game.Features.Chat.Chat>(realPlayer);
+                realPlayer.Attributes = _serviceProvider.CreateInstance<Attributes>(realPlayer);
+                realPlayer.Battle = _serviceProvider.CreateInstance<Rhisis.Game.Features.Battle>(realPlayer);
+
                 realPlayer.Statistics = _serviceProvider.CreateInstance<PlayerStatisticsComponent>(realPlayer);
                 realPlayer.Statistics.AvailablePoints = (ushort)character.StatPoints;
                 realPlayer.Statistics.Strength = character.Strength;
@@ -122,29 +146,8 @@ namespace Rhisis.World.Handlers
 
                 realPlayer.Health = _serviceProvider.CreateInstance<Health>(realPlayer);
                 realPlayer.Health.Hp = character.Hp;
-                realPlayer.Health.Mp = Math.Max(0, character.Mp);
-                realPlayer.Health.Fp = Math.Max(0, character.Fp);
-
-                realPlayer.Gold = _serviceProvider.CreateInstance<Gold>(realPlayer, character.Gold);
-                realPlayer.Experience = _serviceProvider.CreateInstance<Experience>(realPlayer, character.Experience);
-                realPlayer.Inventory = _serviceProvider.CreateInstance<Rhisis.Game.Features.Inventory>(realPlayer);
-                realPlayer.Chat = _serviceProvider.CreateInstance<Rhisis.Game.Features.Chat.Chat>(realPlayer);
-                realPlayer.Attributes = _serviceProvider.CreateInstance<Attributes>(realPlayer);
-
-                if (!_gameResources.Movers.TryGetValue(realPlayer.ModelId, out MoverData moverData))
-                {
-                    throw new ArgumentException($"Cannot find mover with id '{realPlayer.ModelId}' in game resources.", nameof(realPlayer.ModelId));
-                }
-
-                if (!_gameResources.Jobs.TryGetValue((DefineJob.Job)character.JobId, out JobData jobData))
-                {
-                    throw new ArgumentException($"Cannot find job data with id: '{character.JobId}' in game resources.", nameof(character.JobId));
-                }
-
-                realPlayer.Data = moverData;
-                realPlayer.Job = jobData;
-                realPlayer.Systems = _serviceProvider;
-                realPlayer.Behavior = _behaviorManager.GetDefaultBehavior(BehaviorType.Player, realPlayer);
+                realPlayer.Health.Mp = character.Mp;
+                realPlayer.Health.Fp = character.Fp;
 
                 IEnumerable<IPlayerInitializer> playerInitializers = _serviceProvider.GetRequiredService<IEnumerable<IPlayerInitializer>>();
 

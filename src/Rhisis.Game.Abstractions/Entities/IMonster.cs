@@ -1,4 +1,6 @@
-﻿using Rhisis.Game.Abstractions.Components;
+﻿using Rhisis.Core.Structures;
+using Rhisis.Game.Abstractions.Components;
+using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Map;
 
 namespace Rhisis.Game.Abstractions.Entities
@@ -9,12 +11,18 @@ namespace Rhisis.Game.Abstractions.Entities
 
         bool IsFlying { get; }
 
-        IStatistics Statistics { get; }
-
         bool CanRespawn { get; }
+
+        bool IsReturningToBeginPosition { get; set; }
+
+        Vector3 BeginPosition { get; }
+
+        IStatistics Statistics { get; }
 
         IMapRespawnRegion RespawnRegion { get; }
 
         IMonsterTimers Timers { get; }
+
+        IBattle Battle { get; }
     }
 }

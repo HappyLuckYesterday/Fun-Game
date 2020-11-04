@@ -100,6 +100,8 @@ namespace Rhisis.Game.Entities
 
         public IChat Chat { get; set; }
 
+        public IBattle Battle { get; set; }
+
         public IHumanVisualAppearance Appearence { get; set; }
 
         public IServiceProvider Systems { get; set; }
@@ -139,5 +141,7 @@ namespace Rhisis.Game.Entities
                 }
             }
         }
+
+        public override string ToString() => $"{Name} (Id: {CharacterId}";
     }
 }
