@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Structures;
+using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Common.Resources;
 
@@ -19,6 +20,10 @@ namespace Rhisis.Game.Abstractions.Entities
         MoverData Data { get; }
 
         IHealth Health { get; }
+
+        IDefense Defense { get; }
+
+        IStatistics Statistics { get; }
 
         IAttributes Attributes { get; }
 

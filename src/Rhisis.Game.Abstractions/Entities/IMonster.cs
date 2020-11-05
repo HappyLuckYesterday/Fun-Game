@@ -17,8 +17,6 @@ namespace Rhisis.Game.Abstractions.Entities
 
         Vector3 BeginPosition { get; }
 
-        IStatistics Statistics { get; }
-
         IMapRespawnRegion RespawnRegion { get; }
 
         IMonsterTimers Timers { get; }

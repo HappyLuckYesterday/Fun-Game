@@ -3,6 +3,7 @@ using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Common;
 using Rhisis.Game.Features.AttackArbiters;
+using Rhisis.Game.Features.AttackArbiters.Reducers;
 using Rhisis.Game.Protocol.Snapshots.Battle;
 using System;
 
@@ -57,10 +58,9 @@ namespace Rhisis.Game.Features
 
             if (!attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
             {
-                // TODO: reduce damages with defense
-                int damages = Math.Max(0, attackResult.Damages);
+                attackResult = new MeleeAttackReducer(_mover, target).ReduceDamages(attackResult);
 
-                target.Health.SufferDamages(_mover, damages, attackResult.Flags, objectMessageType);
+                target.Health.SufferDamages(_mover, Math.Max(0, attackResult.Damages), attackResult.Flags, objectMessageType);
 
                 if (target is IMonster monster)
                 {

@@ -99,6 +99,9 @@ namespace Rhisis.Game.Factories
             monster.Statistics.Dexterity = moverData.Dexterity;
             monster.Statistics.Intelligence = moverData.Intelligence;
 
+            monster.Defense = _serviceProvider.CreateInstance<Defense>(monster);
+            monster.Defense.Update();
+
             monster.Behavior = _behaviorManager.GetDefaultBehavior(BehaviorType.Monster, monster);
 
             if (monster.Data.Class == MoverClassType.RANK_BOSS)

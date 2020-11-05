@@ -92,7 +92,11 @@ namespace Rhisis.Game.Entities
 
         public IHealth Health { get; set; }
 
+        public IDefense Defense { get; set; }
+
         public IAttributes Attributes { get; set; }
+
+        IStatistics IMover.Statistics => Statistics;
 
         public IPlayerStatistics Statistics { get; set; }
 

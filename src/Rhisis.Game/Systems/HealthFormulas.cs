@@ -138,23 +138,12 @@ namespace Rhisis.Game.Systems
 
         private int GetOriginalPoints(IMover mover, DefineAttributes attribute)
         {
-            IStatistics statistics = null;
-
-            if (mover is IPlayer player)
-            {
-                statistics = player.Statistics;
-            }
-            else if (mover is IMonster monster)
-            {
-                statistics = monster.Statistics;
-            }
-
             return attribute switch
             {
-                DefineAttributes.STR => statistics?.Strength ?? default,
-                DefineAttributes.STA => statistics?.Stamina ?? default,
-                DefineAttributes.DEX => statistics?.Dexterity ?? default,
-                DefineAttributes.INT => statistics?.Intelligence ?? default,
+                DefineAttributes.STR => mover.Statistics?.Strength ?? default,
+                DefineAttributes.STA => mover.Statistics?.Stamina ?? default,
+                DefineAttributes.DEX => mover.Statistics?.Dexterity ?? default,
+                DefineAttributes.INT => mover.Statistics?.Intelligence ?? default,
                 _ => default
             };
         }

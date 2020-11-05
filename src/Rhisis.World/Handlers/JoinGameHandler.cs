@@ -137,6 +137,13 @@ namespace Rhisis.World.Handlers
                 realPlayer.Attributes = _serviceProvider.CreateInstance<Attributes>(realPlayer);
                 realPlayer.Battle = _serviceProvider.CreateInstance<Rhisis.Game.Features.Battle>(realPlayer);
 
+                IEnumerable<IPlayerInitializer> playerInitializers = _serviceProvider.GetRequiredService<IEnumerable<IPlayerInitializer>>();
+
+                foreach (IPlayerInitializer initializer in playerInitializers)
+                {
+                    initializer.Load(realPlayer);
+                }
+
                 realPlayer.Statistics = _serviceProvider.CreateInstance<PlayerStatisticsComponent>(realPlayer);
                 realPlayer.Statistics.AvailablePoints = (ushort)character.StatPoints;
                 realPlayer.Statistics.Strength = character.Strength;
@@ -149,12 +156,8 @@ namespace Rhisis.World.Handlers
                 realPlayer.Health.Mp = character.Mp;
                 realPlayer.Health.Fp = character.Fp;
 
-                IEnumerable<IPlayerInitializer> playerInitializers = _serviceProvider.GetRequiredService<IEnumerable<IPlayerInitializer>>();
-
-                foreach (IPlayerInitializer initializer in playerInitializers)
-                {
-                    initializer.Load(realPlayer);
-                }
+                realPlayer.Defense = _serviceProvider.CreateInstance<Defense>(realPlayer);
+                realPlayer.Defense.Update();
 
                 if (realPlayer.Health.IsDead)
                 {
