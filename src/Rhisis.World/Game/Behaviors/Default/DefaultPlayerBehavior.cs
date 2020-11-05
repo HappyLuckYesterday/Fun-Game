@@ -25,7 +25,6 @@ namespace Rhisis.World.Game.Behaviors
         private readonly IInventorySystem _inventorySystem;
         private readonly IPlayerDataSystem _playerDataSystem;
         private readonly IHealthSystem _healthSystem;
-        private readonly IRegionTriggerSystem _regionTriggerSystem;
         private readonly IQuestSystem _questSystem;
         private readonly IExperienceSystem _experienceSystem;
         private readonly IMoverPacketFactory _moverPacketFactory;
@@ -40,7 +39,6 @@ namespace Rhisis.World.Game.Behaviors
         /// <param name="inventorySystem">Inventory system.</param>
         /// <param name="playerDataSystem">Player data system.</param>
         /// <param name="healthSystem">Recovery system.</param>
-        /// <param name="regionTriggerSystem">Region trigger system.</param>
         /// <param name="questSystem">Quest system.</param>
         /// <param name="experienceSystem">Experience system.</param>
         /// <param name="moverPacketFactory">Mover packet factory.</param>
@@ -51,7 +49,6 @@ namespace Rhisis.World.Game.Behaviors
             IInventorySystem inventorySystem, 
             IPlayerDataSystem playerDataSystem, 
             IHealthSystem healthSystem, 
-            IRegionTriggerSystem regionTriggerSystem,
             IQuestSystem questSystem,
             IExperienceSystem experienceSystem,
             IMoverPacketFactory moverPacketFactory, 
@@ -63,7 +60,6 @@ namespace Rhisis.World.Game.Behaviors
             _inventorySystem = inventorySystem;
             _playerDataSystem = playerDataSystem;
             _healthSystem = healthSystem;
-            _regionTriggerSystem = regionTriggerSystem;
             _questSystem = questSystem;
             _experienceSystem = experienceSystem;
             _moverPacketFactory = moverPacketFactory;
@@ -79,7 +75,6 @@ namespace Rhisis.World.Game.Behaviors
             }
 
             ProcessIdleHeal();
-            _regionTriggerSystem.CheckWrapzones(_player);
             _mobilitySystem.CalculatePosition(_player);
         }
 

@@ -19,6 +19,7 @@ namespace Rhisis.Game.Map
         private readonly IServiceProvider _serviceProvider;
         private readonly IMobilitySystem _mobilitySystem;
         private readonly IVisibilitySystem _visibilitySystem;
+        private readonly IRegionTriggerSystem _regionTriggerSystem;
 
         public int Id { get; }
 
@@ -43,6 +44,7 @@ namespace Rhisis.Game.Map
             _items = new List<IMapItem>();
             _mobilitySystem = _serviceProvider.GetService<IMobilitySystem>();
             _visibilitySystem = _serviceProvider.GetService<IVisibilitySystem>();
+            _regionTriggerSystem = _serviceProvider.GetService<IRegionTriggerSystem>();
         }
 
         public void AddItem(IMapItem mapItem)
@@ -185,6 +187,7 @@ namespace Rhisis.Game.Map
                         player.Behavior.Update();
                         _mobilitySystem.Execute(player);
                         _visibilitySystem.Execute(player);
+                        _regionTriggerSystem.CheckWrapzones(player);
                     }
                 }
             }

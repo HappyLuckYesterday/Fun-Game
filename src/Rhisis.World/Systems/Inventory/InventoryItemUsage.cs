@@ -11,7 +11,6 @@ using Rhisis.World.Packets;
 using Rhisis.World.Systems.Health;
 using Rhisis.World.Systems.PlayerData;
 using Rhisis.World.Systems.SpecialEffect;
-using Rhisis.World.Systems.Teleport;
 using System;
 using System.Collections.Generic;
 
@@ -25,7 +24,6 @@ namespace Rhisis.World.Systems.Inventory
         private readonly IInventoryPacketFactory _inventoryPacketFactory;
         private readonly IMapManager _mapManager;
         private readonly ISpecialEffectSystem _specialEffectSystem;
-        private readonly ITeleportSystem _teleportSystem;
         private readonly IMoverPacketFactory _moverPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
         private readonly IPlayerDataSystem _playerDataSystem;
@@ -34,14 +32,13 @@ namespace Rhisis.World.Systems.Inventory
         /// <summary>
         /// Creates a new <see cref="InventoryItemUsage"/> instance.
         /// </summary>
-        public InventoryItemUsage(ILogger<InventoryItemUsage> logger, IHealthSystem healthSystem, IInventoryPacketFactory inventoryPacketFactory, IMapManager mapManager, ISpecialEffectSystem specialEffectSystem, ITeleportSystem teleportSystem, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory, IPlayerDataSystem playerDataSystem, IOptions<WorldConfiguration> worldServerConfiguration)
+        public InventoryItemUsage(ILogger<InventoryItemUsage> logger, IHealthSystem healthSystem, IInventoryPacketFactory inventoryPacketFactory, IMapManager mapManager, ISpecialEffectSystem specialEffectSystem, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory, IPlayerDataSystem playerDataSystem, IOptions<WorldConfiguration> worldServerConfiguration)
         {
             _logger = logger;
             _healthSystem = healthSystem;
             _inventoryPacketFactory = inventoryPacketFactory;
             _mapManager = mapManager;
             _specialEffectSystem = specialEffectSystem;
-            _teleportSystem = teleportSystem;
             _moverPacketFactory = moverPacketFactory;
             _textPacketFactory = textPacketFactory;
             _playerDataSystem = playerDataSystem;
@@ -113,7 +110,7 @@ namespace Rhisis.World.Systems.Inventory
             // TODO: Check if player is on Kebaras island
             // TODO: Check if player is in guild war map
 
-            TeleportEventArgs teleportEvent;
+            //TeleportEventArgs teleportEvent;
 
             if (blinkwing.Data.ItemKind3 == ItemKind3.TOWNBLINKWING)
             {
@@ -139,24 +136,24 @@ namespace Rhisis.World.Systems.Inventory
                     revivalRegion = revivalMap.GetRevivalRegion(revivalRegion.Key);
                 }
 
-                teleportEvent = new TeleportEventArgs(revivalRegion.MapId,
-                    revivalRegion.RevivalPosition.X,
-                    revivalRegion.RevivalPosition.Z,
-                    revivalRegion.RevivalPosition.Y);
+                //teleportEvent = new TeleportEventArgs(revivalRegion.MapId,
+                //    revivalRegion.RevivalPosition.X,
+                //    revivalRegion.RevivalPosition.Z,
+                //    revivalRegion.RevivalPosition.Y);
             }
             else
             {
-                teleportEvent = new TeleportEventArgs(blinkwing.Data.WeaponTypeId, // Map Id
-                    blinkwing.Data.ItemAtkOrder1, // X
-                    blinkwing.Data.ItemAtkOrder3, // Z
-                    blinkwing.Data.ItemAtkOrder2, // Y
-                    blinkwing.Data.ItemAtkOrder4); // Angle
+                //teleportEvent = new TeleportEventArgs(blinkwing.Data.WeaponTypeId, // Map Id
+                //    blinkwing.Data.ItemAtkOrder1, // X
+                //    blinkwing.Data.ItemAtkOrder3, // Z
+                //    blinkwing.Data.ItemAtkOrder2, // Y
+                //    blinkwing.Data.ItemAtkOrder4); // Angle
             }
 
             player.Inventory.ItemInUseActionId = player.Delayer.DelayAction(TimeSpan.FromMilliseconds(blinkwing.Data.SkillReadyType), () =>
             {
-                player.Object.Angle = teleportEvent.Angle;
-                _teleportSystem.Teleport(player, teleportEvent.MapId, teleportEvent.PositionX, teleportEvent.PositionY, teleportEvent.PositionZ);
+                //player.Object.Angle = teleportEvent.Angle;
+                //_teleportSystem.Teleport(player, teleportEvent.MapId, teleportEvent.PositionX, teleportEvent.PositionY, teleportEvent.PositionZ);
                 _specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_OFF);
                 player.Inventory.ItemInUseActionId = Guid.Empty;
                 DecreaseItem(player, blinkwing);

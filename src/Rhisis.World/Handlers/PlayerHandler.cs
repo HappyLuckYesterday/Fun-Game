@@ -5,7 +5,6 @@ using Rhisis.Network;
 using Rhisis.Network.Packets.World;
 using Rhisis.World.Client;
 using Rhisis.World.Packets;
-using Rhisis.World.Systems.Death;
 using Rhisis.World.Systems.Follow;
 using Rhisis.World.Systems.Interaction;
 using Rhisis.World.Systems.SpecialEffect;
@@ -24,16 +23,14 @@ namespace Rhisis.World.Handlers
         private readonly IInteractionSystem _interationSystem;
         private readonly IFollowSystem _followSystem;
         private readonly IMoverPacketFactory _moverPacketFactory;
-        private readonly IDeathSystem _deathSystem;
 
-        public PlayerHandler(ILogger<PlayerHandler> logger, ISpecialEffectSystem specialEffectSystem, IInteractionSystem interationSystem, IFollowSystem followSystem, IMoverPacketFactory moverPacketFactory, IDeathSystem deathSystem)
+        public PlayerHandler(ILogger<PlayerHandler> logger, ISpecialEffectSystem specialEffectSystem, IInteractionSystem interationSystem, IFollowSystem followSystem, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;
             _specialEffectSystem = specialEffectSystem;
             _interationSystem = interationSystem;
             _followSystem = followSystem;
             _moverPacketFactory = moverPacketFactory;
-            _deathSystem = deathSystem;
         }
 
         //[HandlerAction(PacketType.STATEMODE)]

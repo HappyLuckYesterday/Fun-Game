@@ -1,6 +1,6 @@
-﻿using Rhisis.World.Game.Entities;
+﻿using Rhisis.Game.Abstractions.Entities;
 
-namespace Rhisis.World.Systems
+namespace Rhisis.Game.Abstractions.Systems
 {
     public interface IRegionTriggerSystem
     {
@@ -9,6 +9,6 @@ namespace Rhisis.World.Systems
         /// If it intersects then we teleport the player to the destination map.
         /// </summary>
         /// <param name="player">Current player.</param>
-        void CheckWrapzones(IPlayerEntity player);
+        void CheckWrapzones(IPlayer player);
     }
 }
