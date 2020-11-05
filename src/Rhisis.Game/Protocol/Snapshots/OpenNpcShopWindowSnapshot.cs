@@ -1,5 +1,5 @@
-﻿using Rhisis.Game.Abstractions.Components;
-using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features;
 using System.Collections.Generic;
 
 namespace Rhisis.Network.Snapshots

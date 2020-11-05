@@ -93,7 +93,7 @@ namespace Rhisis.Game.Factories
             monster.Health.Hp = moverData.AddHp;
             monster.Health.Mp = moverData.AddMp;
 
-            monster.Statistics = _serviceProvider.CreateInstance<StatisticsComponent>();
+            monster.Statistics = _serviceProvider.CreateInstance<Statistics>();
             monster.Statistics.Strength = moverData.Strength;
             monster.Statistics.Stamina = moverData.Stamina;
             monster.Statistics.Dexterity = moverData.Dexterity;
@@ -151,11 +151,11 @@ namespace Rhisis.Game.Factories
             {
                 const int NpcShopItemsPerTab = 100;
                 ShopData npcShopData = npcData.Shop;
-                npc.Shop = new ItemContainerComponent<Item>[npcShopData.Items.Length];
+                npc.Shop = new ItemContainer<Item>[npcShopData.Items.Length];
 
                 for (var i = 0; i < npcShopData.Items.Length; i++)
                 {
-                    npc.Shop[i] = new ItemContainerComponent<Item>(NpcShopItemsPerTab);
+                    npc.Shop[i] = new ItemContainer<Item>(NpcShopItemsPerTab);
 
                     IEnumerable<Item> shopTabItems = npcShopData.Items[i].Select((item, index) =>
                     {

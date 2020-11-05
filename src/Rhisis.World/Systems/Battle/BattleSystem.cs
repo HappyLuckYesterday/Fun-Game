@@ -218,8 +218,8 @@ namespace Rhisis.World.Systems.Battle
                     _battlePacketFactory.SendDie(deadPlayer, defender, attacker, attackType);
                 }
 
-                attacker.Behavior.OnTargetKilled(defender);
-                defender.Behavior.OnKilled(attacker);
+                //attacker.Behavior.OnTargetKilled(defender);
+                //defender.Behavior.OnKilled(attacker);
             }
         }
 

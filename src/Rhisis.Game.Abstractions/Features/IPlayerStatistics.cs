@@ -1,4 +1,4 @@
-﻿namespace Rhisis.Game.Abstractions.Components
+﻿namespace Rhisis.Game.Abstractions.Features
 {
     public interface IPlayerStatistics : IStatistics
     {

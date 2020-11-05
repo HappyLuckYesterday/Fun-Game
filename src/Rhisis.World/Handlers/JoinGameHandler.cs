@@ -143,7 +143,7 @@ namespace Rhisis.World.Handlers
                     initializer.Load(realPlayer);
                 }
 
-                realPlayer.Statistics = _serviceProvider.CreateInstance<PlayerStatisticsComponent>(realPlayer);
+                realPlayer.Statistics = _serviceProvider.CreateInstance<PlayerStatistics>(realPlayer);
                 realPlayer.Statistics.AvailablePoints = (ushort)character.StatPoints;
                 realPlayer.Statistics.Strength = character.Strength;
                 realPlayer.Statistics.Stamina = character.Stamina;

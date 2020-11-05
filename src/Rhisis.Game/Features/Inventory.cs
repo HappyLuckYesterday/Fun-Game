@@ -35,7 +35,7 @@ namespace Rhisis.Game.Features
         {
             _player = player;
             _entityFactory = entityFactory;
-            _container = new ItemContainerComponent<Item>(InventorySize, InventoryEquipParts);
+            _container = new ItemContainer<Item>(InventorySize, InventoryEquipParts);
             _itemsCoolTimes = new Dictionary<CoolTimeType, long>()
             {
                 { CoolTimeType.None, 0 },

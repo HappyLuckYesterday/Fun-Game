@@ -10,7 +10,6 @@ using Rhisis.World.Systems.Attributes;
 using Rhisis.World.Systems.Battle;
 using Rhisis.World.Systems.Battle.Arbiters;
 using Rhisis.World.Systems.Buff;
-using Rhisis.World.Systems.Statistics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,14 +36,13 @@ namespace Rhisis.World.Systems.Skills
         private readonly IBattleSystem _battleSystem;
         private readonly IAttributeSystem _attributeSystem;
         private readonly IBuffSystem _buffSystem;
-        private readonly IStatisticsSystem _statisticsSystem;
         private readonly ISkillPacketFactory _skillPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
         private readonly IPlayerPacketFactory _playerPacketFactory;
         private readonly IMoverPacketFactory _moverPacketFactory;
 
         public SkillSystem(ILogger<SkillSystem> logger, IGameResources gameResources,
-            IBattleSystem battleSystem, IAttributeSystem attributeSystem, IBuffSystem buffSystem, IStatisticsSystem statisticsSystem,
+            IBattleSystem battleSystem, IAttributeSystem attributeSystem, IBuffSystem buffSystem,
             ISkillPacketFactory skillPacketFactory, ITextPacketFactory textPacketFactory, 
             IPlayerPacketFactory playerPacketFactory, IMoverPacketFactory moverPacketFactory)
         {
@@ -53,7 +51,6 @@ namespace Rhisis.World.Systems.Skills
             _battleSystem = battleSystem;
             _attributeSystem = attributeSystem;
             _buffSystem = buffSystem;
-            _statisticsSystem = statisticsSystem;
             _skillPacketFactory = skillPacketFactory;
             _textPacketFactory = textPacketFactory;
             _playerPacketFactory = playerPacketFactory;
@@ -613,9 +610,9 @@ namespace Rhisis.World.Systems.Skills
         {
             int attributeValue = attribute switch
             {
-                DefineAttributes.STA => _statisticsSystem.GetTotalStrength(entity),
-                DefineAttributes.DEX => _statisticsSystem.GetTotalDexterity(entity),
-                DefineAttributes.INT => _statisticsSystem.GetTotalIntelligence(entity),
+                //DefineAttributes.STA => _statisticsSystem.GetTotalStrength(entity),
+                //DefineAttributes.DEX => _statisticsSystem.GetTotalDexterity(entity),
+                //DefineAttributes.INT => _statisticsSystem.GetTotalIntelligence(entity),
                 _ => 1
             };
 

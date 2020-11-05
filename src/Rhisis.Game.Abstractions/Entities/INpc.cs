@@ -1,4 +1,4 @@
-﻿using Rhisis.Game.Abstractions.Components;
+﻿using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Common.Resources.Dialogs;

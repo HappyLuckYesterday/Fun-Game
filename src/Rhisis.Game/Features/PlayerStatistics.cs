@@ -1,16 +1,18 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features;
+using Rhisis.Game.Features;
 using Rhisis.Network.Snapshots;
 using System;
 
 namespace Rhisis.Game.Abstractions.Components
 {
-    public class PlayerStatisticsComponent : StatisticsComponent, IPlayerStatistics
+    public class PlayerStatistics : Statistics, IPlayerStatistics
     {
         private readonly IPlayer _player;
 
         public ushort AvailablePoints { get; set; }
 
-        public PlayerStatisticsComponent(IPlayer player)
+        public PlayerStatistics(IPlayer player)
         {
             _player = player;
         }

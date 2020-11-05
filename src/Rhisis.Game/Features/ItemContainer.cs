@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Extensions;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Common;
 using Sylver.Network.Data;
 using System;
@@ -9,7 +10,7 @@ using System.Linq;
 
 namespace Rhisis.Game.Abstractions.Components
 {
-    public class ItemContainerComponent<TItem> : IItemContainer
+    public class ItemContainer<TItem> : IItemContainer
         where TItem : class, IItem
     {
         protected readonly List<IItem> _items;
@@ -27,7 +28,7 @@ namespace Rhisis.Game.Abstractions.Components
 
         public IItem this[int index] => _items[index];
 
-        public ItemContainerComponent(int capacity, int extraCapacity = 0)
+        public ItemContainer(int capacity, int extraCapacity = 0)
         {
             Capacity = capacity;
             ExtraCapacity = extraCapacity;

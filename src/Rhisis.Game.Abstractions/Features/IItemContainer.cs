@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Rhisis.Game.Abstractions.Components
+namespace Rhisis.Game.Abstractions.Features
 {
     public interface IItemContainer : IPacketSerializer, IEnumerable<IItem>
     {
@@ -13,7 +13,7 @@ namespace Rhisis.Game.Abstractions.Components
         int ExtraCapacity { get; }
 
         int MaxCapacity { get; }
-        
+
         int[] Masks { get; }
 
         IItem this[int index] { get; }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration.World;
@@ -19,7 +18,6 @@ using Rhisis.World.Systems.Inventory;
 using Rhisis.World.Systems.Job;
 using Rhisis.World.Systems.PlayerData;
 using Rhisis.World.Systems.Skills;
-using Rhisis.World.Systems.Statistics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +48,7 @@ namespace Rhisis.World.Systems.Quest
         private readonly IInventorySystem _inventorySystem;
         private readonly IExperienceSystem _experienceSystem;
         private readonly IJobSystem _jobSystem;
-        private readonly IStatisticsSystem _statisticsSystem;
+        //private readonly IStatisticsSystem _statisticsSystem;
         private readonly ISkillSystem _skillSystem;
         private readonly IDropSystem _dropSystem;
         private readonly IQuestPacketFactory _questPacketFactory;
@@ -63,7 +61,7 @@ namespace Rhisis.World.Systems.Quest
 
         public QuestSystem(ILogger<QuestSystem> logger, IGameResources gameResources, IOptions<WorldConfiguration> worldServerConfiguration,
             IPlayerDataSystem playerDataSystem, IInventorySystem inventorySystem, IExperienceSystem experienceSystem, IJobSystem jobSystem,
-            IStatisticsSystem statisticsSystem, ISkillSystem skillSystem, IDropSystem dropSystem,
+             ISkillSystem skillSystem, IDropSystem dropSystem,
             IQuestPacketFactory questPacketFactory, INpcDialogPacketFactory npcDialogPacketFactory, ITextPacketFactory textPacketFactory, IItemFactory itemFactory)
         {
             _logger = logger;
@@ -73,7 +71,7 @@ namespace Rhisis.World.Systems.Quest
             _inventorySystem = inventorySystem;
             _experienceSystem = experienceSystem;
             _jobSystem = jobSystem;
-            _statisticsSystem = statisticsSystem;
+            //_statisticsSystem = statisticsSystem;
             _skillSystem = skillSystem;
             _dropSystem = dropSystem;
             _questPacketFactory = questPacketFactory;
@@ -455,7 +453,7 @@ namespace Rhisis.World.Systems.Quest
 
             if (quest.Rewards.Restat)
             {
-                _statisticsSystem.Restat(player);
+                //_statisticsSystem.Restat(player);
             }
 
             if (quest.Rewards.Reskill)

@@ -1,6 +1,8 @@
-﻿namespace Rhisis.Game.Abstractions.Components
+﻿using Rhisis.Game.Abstractions.Features;
+
+namespace Rhisis.Game.Features
 {
-    public class StatisticsComponent : IStatistics
+    public class Statistics : IStatistics
     {
         public int Strength { get; set; }
 

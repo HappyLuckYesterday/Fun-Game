@@ -1,5 +1,4 @@
 ﻿using Rhisis.Game.Common.Resources;
-using Rhisis.World.Game.Behaviors;
 using Rhisis.World.Game.Components;
 using Rhisis.World.Game.Structures;
 
@@ -35,7 +34,7 @@ namespace Rhisis.World.Game.Entities
         /// <summary>
         /// Gets or sets the living entity behavior.
         /// </summary>
-        IBehavior Behavior { get; set; }
+        //IBehavior Behavior { get; set; }
 
         /// <summary>
         /// Gets the default living entity hand item.
