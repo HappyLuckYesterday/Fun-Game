@@ -1,4 +1,5 @@
-﻿using Rhisis.Game.Abstractions.Components;
+﻿using Rhisis.Core.Structures;
+using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Abstractions.Protocol;
@@ -27,7 +28,7 @@ namespace Rhisis.Game.Abstractions.Entities
 
         JobData Job { get; set; }
 
-        IPlayerStatistics Statistics { get; }
+        new IPlayerStatistics Statistics { get; }
 
         IInventory Inventory { get; }
 
@@ -36,5 +37,9 @@ namespace Rhisis.Game.Abstractions.Entities
         IBattle Battle { get; }
 
         string CurrentNpcShopName { get; set; }
+
+        void Teleport(Vector3 position, bool sendToPlayer = true);
+
+        void Teleport(Vector3 position, int mapId, bool sendToPlayer = true);
     }
 }

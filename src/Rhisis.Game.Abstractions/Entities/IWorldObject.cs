@@ -17,7 +17,7 @@ namespace Rhisis.Game.Abstractions.Entities
 
         IMap Map { get; }
 
-        IMapLayer MapLayer { get; }
+        IMapLayer MapLayer { get; set; }
 
         Vector3 Position { get; }
 

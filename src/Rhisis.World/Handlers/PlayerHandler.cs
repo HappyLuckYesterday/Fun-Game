@@ -141,17 +141,6 @@ namespace Rhisis.World.Handlers
                 packet.TickCount);
         }
 
-        [HandlerAction(PacketType.REVIVAL_TO_LODESTAR)]
-        public void OnRevivalToLodestar(IPlayer player, INetPacketStream _)
-        {
-            if (!player.Health.IsDead)
-            {
-                _logger.LogWarning($"Player '{player.Name}' tried to revival to lodestar without being dead.");
-                return;
-            }
 
-            // TODO: resurect to lodestar
-            //_deathSystem.ResurectToLodelight(serverClient.Player);
-        }
     }
 }

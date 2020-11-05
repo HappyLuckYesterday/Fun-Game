@@ -4,7 +4,7 @@ using Rhisis.World.Client;
 using Rhisis.World.Systems.Trade;
 using Sylver.HandlerInvoker.Attributes;
 
-namespace Rhisis.World.Handlers
+namespace Rhisis.World.Handlers.Trade
 {
     [Handler]
     public class TradeHandler

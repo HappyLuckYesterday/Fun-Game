@@ -26,6 +26,7 @@ namespace Rhisis.Game.Entities
     public class Player : IPlayer, IHuman, IMover, IWorldObject
     {
         private readonly Lazy<IFollowSystem> _followSystem;
+        private readonly Lazy<ITeleportSystem> _teleportSystem;
 
         public IGameConnection Connection { get; set; }
 
@@ -41,7 +42,7 @@ namespace Rhisis.Game.Entities
 
         public int ModelId { get; set; }
 
-        public IMap Map { get; set; }
+        public IMap Map => MapLayer.ParentMap;
 
         public IMapLayer MapLayer { get; set; }
 
@@ -123,11 +124,16 @@ namespace Rhisis.Game.Entities
             Id = RandomHelper.GenerateUniqueId();
             VisibleObjects = new List<IWorldObject>();
             _followSystem = new Lazy<IFollowSystem>(() => Systems.GetService<IFollowSystem>());
+            _teleportSystem = new Lazy<ITeleportSystem>(() => Systems.GetService<ITeleportSystem>());
         }
 
         public void Follow(IWorldObject worldObject) => _followSystem.Value.Follow(this, worldObject);
 
         public void Unfollow() => _followSystem.Value.Unfollow(this);
+
+        public void Teleport(Vector3 position, bool sendToPlayer = true) => _teleportSystem.Value.Teleport(this, position, sendToPlayer);
+
+        public void Teleport(Vector3 position, int mapId, bool sendToPlayer = true) => _teleportSystem.Value.Teleport(this, position, mapId, sendToPlayer);
 
         public bool Equals(IWorldObject other) => Id == other.Id;
 

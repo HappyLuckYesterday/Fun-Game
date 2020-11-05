@@ -37,6 +37,8 @@ namespace Rhisis.World.Handlers.Inventory
             {
                 player.Inventory.Equip(item);
             }
+
+            player.Defense.Update();
         }
     }
 }

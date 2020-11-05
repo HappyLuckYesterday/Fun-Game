@@ -54,6 +54,8 @@ namespace Rhisis.World.Handlers.Inventory
                     // TODO: item usage
                 }
             }
+
+            player.Defense.Update();
         }
     }
 }

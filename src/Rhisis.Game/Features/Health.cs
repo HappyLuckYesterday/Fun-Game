@@ -2,6 +2,7 @@
 using Rhisis.Core.IO;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
+using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Features;
@@ -14,6 +15,7 @@ namespace Rhisis.Game.Abstractions.Components
     public class Health : GameFeature, IHealth
     {
         private readonly IMover _mover;
+        private readonly IGameResources _gameResources;
         private readonly Lazy<IHealthFormulas> _healthFormulas;
 
         private int _hp;
@@ -74,10 +76,12 @@ namespace Rhisis.Game.Abstractions.Components
         /// <summary>
         /// Creates a new <see cref="Health"/> instance.
         /// </summary>
-        /// <param name="player">Current player.</param>
-        public Health(IMover mover)
+        /// <param name="mover">Current mover.</param>
+        /// <param name="gameResources">Game resources.</param>
+        public Health(IMover mover, IGameResources gameResources)
         {
             _mover = mover;
+            _gameResources = gameResources;
             _nextHealTime = Time.TimeInSeconds();
             _healthFormulas = new Lazy<IHealthFormulas>(() => mover.Systems.GetService<IHealthFormulas>());
         }
@@ -88,12 +92,7 @@ namespace Rhisis.Game.Abstractions.Components
             Mp = MaxMp;
             Fp = MaxFp;
 
-            using var healthSnapshot = new FFSnapshot();
-            healthSnapshot.Merge(new UpdateParamPointSnapshot(_mover, DefineAttributes.HP, Hp));
-            healthSnapshot.Merge(new UpdateParamPointSnapshot(_mover, DefineAttributes.MP, Mp));
-            healthSnapshot.Merge(new UpdateParamPointSnapshot(_mover, DefineAttributes.FP, Fp));
-
-            SendPacketToVisible(_mover, healthSnapshot, sendToPlayer: true);
+            SendHealth();
         }
 
         public void Die(IMover killer, ObjectMessageType objectMessageType = ObjectMessageType.OBJMSG_ATK1, bool sendHitPoints = false)
@@ -159,6 +158,30 @@ namespace Rhisis.Game.Abstractions.Components
             Mp += _healthFormulas.Value.GetMpRecovery(_mover);
             Fp += _healthFormulas.Value.GetFpRecovery(_mover);
 
+            SendHealth();
+        }
+
+        public void ApplyDeathRecovery(bool send = false)
+        {
+            if (!IsDead || !(_mover is IPlayer))
+            {
+                return;
+            }
+
+            decimal recoveryRate = _gameResources.Penalities.GetRevivalPenality(_mover.Level) / 100;
+
+            Hp = (int)(MaxHp * recoveryRate);
+            Mp = (int)(MaxMp * recoveryRate);
+            Fp = (int)(MaxFp * recoveryRate);
+
+            if (send)
+            {
+                SendHealth();
+            }
+        }
+
+        private void SendHealth()
+        {
             using var healthSnapshot = new FFSnapshot();
             healthSnapshot.Merge(new UpdateParamPointSnapshot(_mover, DefineAttributes.HP, Hp));
             healthSnapshot.Merge(new UpdateParamPointSnapshot(_mover, DefineAttributes.MP, Mp));

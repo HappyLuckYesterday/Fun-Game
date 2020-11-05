@@ -108,8 +108,7 @@ namespace Rhisis.World.Handlers
                 realPlayer.CharacterId = character.Id;
                 realPlayer.ModelId = playerModelId;
                 realPlayer.Type = WorldObjectType.Mover;
-                realPlayer.Map = _mapManager.GetMap(character.MapId);
-                realPlayer.MapLayer = realPlayer.Map.GetMapLayer(character.MapLayerId);
+                realPlayer.MapLayer = _mapManager.GetMap(character.MapId)?.GetMapLayer(character.MapLayerId) ?? throw new InvalidOperationException($"Cannot create player on map with id: {character.Id}.");
                 realPlayer.Position = new Vector3(character.PosX, character.PosY, character.PosZ);
                 realPlayer.Angle = character.Angle;
                 realPlayer.Size = GameConstants.DefaultObjectSize;
@@ -161,7 +160,30 @@ namespace Rhisis.World.Handlers
 
                 if (realPlayer.Health.IsDead)
                 {
-                    // TODO: resurect to lodelight
+                    realPlayer.Experience.ApplyDeathPenality(true);
+                    realPlayer.Health.ApplyDeathRecovery(true);
+
+                    IMapRevivalRegion revivalRegion = realPlayer.Map.GetNearRevivalRegion(realPlayer.Position);
+
+                    if (revivalRegion == null)
+                    {
+                        throw new InvalidOperationException("Cannot find nearest revival region.");
+                    }
+
+                    if (realPlayer.Map.Id != revivalRegion.MapId)
+                    {
+                        IMap revivalMap = _mapManager.GetMap(revivalRegion.MapId);
+
+                        if (revivalMap == null)
+                        {
+                            throw new InvalidOperationException($"Failed to find map with id: {revivalMap.Id}'.");
+                        }
+
+                        revivalRegion = revivalMap.GetRevivalRegion(revivalRegion.Key);
+                    }
+
+                    realPlayer.MapLayer = _mapManager.GetMap(revivalRegion.MapId).GetDefaultMapLayer();
+                    realPlayer.Position.Copy(revivalRegion.RevivalPosition);
                 }
             }
 

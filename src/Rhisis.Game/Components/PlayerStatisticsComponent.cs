@@ -39,6 +39,7 @@ namespace Rhisis.Game.Abstractions.Components
             AvailablePoints -= (ushort)total;
 
             _player.Health.RegenerateAll();
+            _player.Defense.Update();
             SendState();
         }
 
@@ -53,6 +54,7 @@ namespace Rhisis.Game.Abstractions.Components
             AvailablePoints = (ushort)((_player.Level - 1) * 2);
 
             _player.Health.RegenerateAll();
+            _player.Defense.Update();
             SendState();
         }
 

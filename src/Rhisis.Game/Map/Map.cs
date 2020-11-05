@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Structures;
+using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Factories;
 using Rhisis.Game.Abstractions.Map;
@@ -49,6 +50,8 @@ namespace Rhisis.Game.Map
 
         public int RevivalMapId => _worldInformations.RevivalMapId == 0 ? Id : _worldInformations.RevivalMapId;
 
+        public IMapRevivalRegion DefaultRevivalRegion { get; private set; }
+
         public IEnumerable<IMapLayer> Layers => _layers;
 
         public IEnumerable<IMapRegion> Regions => _regions;
@@ -75,6 +78,8 @@ namespace Rhisis.Game.Map
         }
 
         public IMapLayer GetMapLayer(int layerId) => _layers.FirstOrDefault(x => x.Id == layerId) ?? _defaultMapLayer;
+
+        public IMapLayer GetDefaultMapLayer() => _defaultMapLayer; 
 
         public IMapLayer GenerateNewLayer()
         {
@@ -106,11 +111,15 @@ namespace Rhisis.Game.Map
                         }
                         else if (respawnRegion.ObjectType == WorldObjectType.Item)
                         {
+                            IItem item = _entityFactory.CreateItem(respawnRegion.ModelId, 0, ElementType.None, 0);
+
                             for (int i = 0; i < respawnRegion.Count; ++i)
                             {
-                                // TODO
-                                //IMapItem mapItem = _entityFactory.CreateMapItem();
-                                //newMapLayer.AddItem(mapItem);
+                                IMapItem mapItem = _entityFactory.CreateMapItem(item, newMapLayer, null, respawnRegion.GetRandomPosition());
+                                mapItem.Spawned = true;
+                                // TODO: add respawn region
+
+                                newMapLayer.AddItem(mapItem);
                             }
                         }
                     }
@@ -166,6 +175,13 @@ namespace Rhisis.Game.Map
 
         public void SetRegions(IEnumerable<IMapRegion> regions)
         {
+            if (!regions.Any(x => x is IMapRevivalRegion))
+            {
+                // Loads the default revival region if no revival region is loaded.
+                DefaultRevivalRegion = new MapRevivalRegion(0, 0, 0, 0,
+                    _worldInformations.RevivalMapId, _worldInformations.RevivalKey, null, false, false);
+            }
+
             _regions.AddRange(regions);
         }
 
@@ -228,5 +244,37 @@ namespace Rhisis.Game.Map
         public bool IsInBounds(float x, float y, float z) => _bounds.Contains(x, y, z);
 
         public bool IsInBounds(Vector3 position) => IsInBounds(position.X, position.Y, position.Z);
+
+        public IMapRevivalRegion GetNearRevivalRegion(Vector3 position) => GetNearRevivalRegion(position, false);
+
+        public IMapRevivalRegion GetNearRevivalRegion(Vector3 position, bool isChaoMode)
+        {
+            IEnumerable<IMapRevivalRegion> revivalRegions = Regions.Where(x => x is IMapRevivalRegion).Cast<IMapRevivalRegion>();
+            var nearestRevivalRegion = revivalRegions.FirstOrDefault(x => x.MapId == Id && x.IsChaoRegion == isChaoMode && x.Contains(position) && x.TargetRevivalKey);
+
+            if (nearestRevivalRegion != null)
+                return GetRevivalRegion(nearestRevivalRegion.Key, isChaoMode);
+
+            revivalRegions = from x in Regions
+                             where x is IMapRevivalRegion y && y.IsChaoRegion == isChaoMode && !y.TargetRevivalKey
+                             let region = x as IMapRevivalRegion
+                             let distance = position.GetDistance3D(region.RevivalPosition)
+                             orderby distance ascending
+                             select region;
+
+            return revivalRegions.FirstOrDefault() ?? DefaultRevivalRegion;
+        }
+
+        public IMapRevivalRegion GetRevivalRegion(string revivalKey) => GetRevivalRegion(revivalKey, false);
+
+        public IMapRevivalRegion GetRevivalRegion(string revivalKey, bool isChaoMode)
+        {
+            IEnumerable<IMapRevivalRegion> revivalRegions = Regions.Where(x => x is IMapRevivalRegion).Cast<IMapRevivalRegion>();
+            IEnumerable<IMapRevivalRegion> revivalRegion = from x in revivalRegions
+                                                           where x.Key.Equals(revivalKey, StringComparison.OrdinalIgnoreCase) && x.IsChaoRegion == isChaoMode && !x.TargetRevivalKey
+                                                           select x;
+
+            return revivalRegion.FirstOrDefault() ?? DefaultRevivalRegion;
+        }
     }
 }

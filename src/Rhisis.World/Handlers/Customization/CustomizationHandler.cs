@@ -4,7 +4,7 @@ using Rhisis.World.Client;
 using Rhisis.World.Systems.Customization;
 using Sylver.HandlerInvoker.Attributes;
 
-namespace Rhisis.World.Handlers
+namespace Rhisis.World.Handlers.Customization
 {
     /// <summary>
     /// Handles requests related to the player customization system.

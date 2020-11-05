@@ -23,5 +23,11 @@
         /// <param name="amount">Amount of experience to decrease.</param>
         /// <returns>True if the player's experience has decreased; false otherwise.</returns>
         bool Decrease(long amount);
+
+        /// <summary>
+        /// Applies death penality if enabled.
+        /// </summary>
+        /// <param name="sendToPlayer">Optionnal parameter indicating if the experience should be sent to the player.</param>
+        void ApplyDeathPenality( bool sendToPlayer = true);
     }
 }

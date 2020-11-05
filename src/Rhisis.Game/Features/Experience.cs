@@ -1,4 +1,6 @@
-﻿using Rhisis.Game.Abstractions.Entities;
+﻿using Microsoft.Extensions.Options;
+using Rhisis.Core.Structures.Configuration.World;
+using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Common;
@@ -22,14 +24,16 @@ namespace Rhisis.Game.Features
 
         private readonly IPlayer _player;
         private readonly IGameResources _gameResources;
+        private readonly WorldConfiguration _worldServerConfiguration;
 
         public long Amount { get; private set; }
 
-        public Experience(IPlayer player, long initialExperience, IGameResources gameResources)
+        public Experience(IPlayer player, long initialExperience, IGameResources gameResources, IOptions<WorldConfiguration> worldServerConfiguration)
         {
             _player = player;
             Amount = initialExperience;
             _gameResources = gameResources;
+            _worldServerConfiguration = worldServerConfiguration.Value;
         }
 
         public bool Increase(long amount)
@@ -63,6 +67,42 @@ namespace Rhisis.Game.Features
             }
 
             throw new NotImplementedException();
+        }
+
+        public void ApplyDeathPenality(bool sendToPlayer = true)
+        {
+            if (_worldServerConfiguration.Death.DeathPenalityEnabled)
+            {
+                decimal expLossPercent = _gameResources.Penalities.GetDecExpPenality(_player.Level);
+
+                if (expLossPercent <= 0)
+                {
+                    return;
+                }
+
+                Amount -= Amount * (long)(expLossPercent / 100m);
+                _player.DeathLevel = _player.Level;
+
+                if (Amount < 0)
+                {
+                    if (_gameResources.Penalities.GetLevelDownPenality(_player.Level))
+                    {
+                        CharacterExpTableData previousLevelExp = _gameResources.ExpTables.GetCharacterExp(_player.Level - 1);
+
+                        _player.Level--;
+                        Amount = previousLevelExp.Exp + Amount;
+                    }
+                    else
+                    {
+                        Amount = 0;
+                    }
+                }
+
+                if (sendToPlayer)
+                {
+                    SendExperiencePacket(false);
+                }
+            }
         }
 
         /// <summary>

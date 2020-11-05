@@ -66,5 +66,11 @@ namespace Rhisis.Game.Abstractions.Features
         /// Regenerates a small amount of the current mover health.
         /// </summary>
         void IdleHeal();
+
+        /// <summary>
+        /// Applies revival health penality to the player.
+        /// </summary>
+        /// <param name="send">Sends the update to the visible movers of the current mover.</param>
+        void ApplyDeathRecovery(bool send = true);
     }
 }
