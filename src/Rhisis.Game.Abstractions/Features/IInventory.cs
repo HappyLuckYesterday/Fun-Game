@@ -11,6 +11,11 @@ namespace Rhisis.Game.Abstractions.Features
     public interface IInventory : IPacketSerializer, IEnumerable<IItem>
     {
         /// <summary>
+        /// Gets the inventory storage capacity.
+        /// </summary>
+        int StorageCapacity { get; }
+
+        /// <summary>
         /// Gets the inventory max capacity.
         /// </summary>
         int MaxCapacity { get; }
@@ -39,6 +44,12 @@ namespace Rhisis.Game.Abstractions.Features
         /// <param name="itemIndex">Item index.</param>
         /// <returns>Item at the given index; null otherwise.</returns>
         IItem GetItem(int itemIndex);
+
+        /// <summary>
+        /// Gets the number of items of the inventory.
+        /// </summary>
+        /// <returns></returns>
+        int GetItemCount();
 
         /// <summary>
         /// Checks if the given item is equiped.

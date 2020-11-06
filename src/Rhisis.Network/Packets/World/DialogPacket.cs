@@ -13,7 +13,7 @@ namespace Rhisis.Network.Packets.World
         /// <summary>
         /// Gets the dialog key.
         /// </summary>
-        public string Key { get; private set; }
+        public string DialogKey { get; private set; }
 
         /// <summary>
         /// Gets the first parameter.
@@ -42,7 +42,7 @@ namespace Rhisis.Network.Packets.World
         public void Deserialize(INetPacketStream packet)
         {
             ObjectId = packet.Read<uint>();
-            Key = packet.Read<string>();
+            DialogKey = packet.Read<string>();
             Param = packet.Read<int>();
             QuestId = packet.Read<int>();
             MoverId = packet.Read<uint>();

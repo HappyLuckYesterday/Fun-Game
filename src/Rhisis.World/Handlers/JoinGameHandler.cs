@@ -135,6 +135,7 @@ namespace Rhisis.World.Handlers
                 realPlayer.Chat = _serviceProvider.CreateInstance<Rhisis.Game.Features.Chat.Chat>(realPlayer);
                 realPlayer.Attributes = _serviceProvider.CreateInstance<Attributes>(realPlayer);
                 realPlayer.Battle = _serviceProvider.CreateInstance<Rhisis.Game.Features.Battle>(realPlayer);
+                realPlayer.Quests = _serviceProvider.CreateInstance<QuestDiary>(realPlayer);
 
                 IEnumerable<IPlayerInitializer> playerInitializers = _serviceProvider.GetRequiredService<IEnumerable<IPlayerInitializer>>();
 

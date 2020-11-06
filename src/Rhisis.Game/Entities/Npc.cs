@@ -24,8 +24,6 @@ namespace Rhisis.Game.Entities
     [DebuggerDisplay("{Name} ({Key})")]
     public class Npc : INpc
     {
-        private readonly Lazy<IDialogSystem> _dialogSystem;
-
         public uint Id { get; }
 
         public WorldObjectType Type => WorldObjectType.Mover;
@@ -71,13 +69,7 @@ namespace Rhisis.Game.Entities
         public Npc()
         {
             Id = RandomHelper.GenerateUniqueId();
-            _dialogSystem = new Lazy<IDialogSystem>(() => Systems.GetService<IDialogSystem>());
             Chat = Systems.CreateInstance<Chat>(this);
-        }
-
-        public void OpenDialog(IPlayer player, string dialogKey, int questId)
-        {
-            _dialogSystem.Value.OpenNpcDialog(this, player, dialogKey, questId);
         }
 
         public bool Equals(IWorldObject other) => Id == other.Id;

@@ -1,11 +1,12 @@
-﻿using Rhisis.Game.Abstractions.Protocol;
+﻿using Rhisis.Core;
+using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Sylver.Network.Data;
 
 namespace Rhisis.Game.Abstractions
 {
-    public interface IItem : IPacketSerializer
+    public interface IItem : IPacketSerializer, ICloneable<IItem>
     {
         /// <summary>
         /// Gets the item id.

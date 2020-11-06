@@ -35,6 +35,8 @@ namespace Rhisis.Game.Abstractions.Entities
 
         IBattle Battle { get; }
 
+        IQuestDiary Quests { get; }
+
         string CurrentNpcShopName { get; set; }
 
         void Teleport(Vector3 position, bool sendToPlayer = true);

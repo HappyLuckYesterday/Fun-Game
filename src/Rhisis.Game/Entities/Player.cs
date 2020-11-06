@@ -107,6 +107,8 @@ namespace Rhisis.Game.Entities
 
         public IBattle Battle { get; set; }
 
+        public IQuestDiary Quests { get; set; }
+
         public IHumanVisualAppearance Appearence { get; set; }
 
         public IServiceProvider Systems { get; set; }

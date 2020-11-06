@@ -3,6 +3,7 @@ using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.Game.Entities;
 using Rhisis.Network.Snapshots;
 
@@ -38,7 +39,7 @@ namespace Rhisis.Game.Behavior.Default
             if (killedEntity is IMonster deadMonster)
             {
                 _player.Experience.Increase(deadMonster.Data.Experience * _worldServerConfiguration.Rates.Experience);
-                // TODO: update player quest diary
+                _player.Quests.Update(QuestActionType.KillMonster, deadMonster.Id, 1);
             }
         }
 

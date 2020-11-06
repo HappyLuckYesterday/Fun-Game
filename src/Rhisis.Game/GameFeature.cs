@@ -5,7 +5,7 @@ using Sylver.Network.Data;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.Game.Features
+namespace Rhisis.Game
 {
     public class GameFeature
     {

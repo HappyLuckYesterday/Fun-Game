@@ -57,7 +57,5 @@ namespace Rhisis.Game.Abstractions.Entities
         /// Gets the NPC chat feature.
         /// </summary>
         IChat Chat { get; }
-
-        void OpenDialog(IPlayer player, string dialogKey, int questId);
     }
 }

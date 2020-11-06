@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Rhisis.Game.Abstractions;
+using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Protocol.Snapshots.Quests;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World;
-using Rhisis.World.Client;
-using Rhisis.World.Systems.Quest;
 using Sylver.HandlerInvoker.Attributes;
+using System;
 
 namespace Rhisis.World.Handlers
 {
@@ -13,25 +14,25 @@ namespace Rhisis.World.Handlers
     [Handler]
     public class QuestHandler
     {
-        private readonly ILogger<QuestHandler> _logger;
-        private readonly IQuestSystem _questSystem;
-
-        public QuestHandler(ILogger<QuestHandler> logger, IQuestSystem questSystem)
-        {
-            _logger = logger;
-            _questSystem = questSystem;
-        }
-
         [HandlerAction(PacketType.QUEST_CHECK)]
-        public void OnQuestCheck(IWorldServerClient serverClient, QuestCheckPacket questCheckPacket)
+        public void OnQuestCheck(IPlayer player, QuestCheckPacket questCheckPacket)
         {
             if (questCheckPacket.QuestId <= 0)
             {
-                _logger.LogError($"OnQuestCheck(): Invalid quest id.");
-                return;
+                throw new InvalidOperationException($"Invalid quest id: '{questCheckPacket.QuestId}'.");
             }
 
-            _questSystem.CheckQuest(serverClient.Player, questCheckPacket.QuestId, questCheckPacket.Checked);
+            IQuest quest = player.Quests.GetActiveQuest(questCheckPacket.QuestId);
+
+            if (quest == null)
+            {
+                throw new InvalidOperationException($"Failed to find quest with id: '{questCheckPacket.QuestId}'.");
+            }
+
+            quest.IsChecked = !quest.IsChecked;
+
+            using var questCheckedSnapshot = new QuestCheckedSnapshot(player, player.Quests.CheckedQuests);
+            player.Send(questCheckedSnapshot);
         }
     }
 }

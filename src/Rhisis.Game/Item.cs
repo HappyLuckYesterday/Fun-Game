@@ -165,5 +165,16 @@ namespace Rhisis.Game
         }
 
         public void Serialize(INetPacketStream packet) => Serialize(packet, Index);
+
+        public IItem Clone()
+        {
+            return new Item(Data)
+            {
+                Quantity = Quantity,
+                Element = Element,
+                ElementRefine = ElementRefine,
+                Refine = Refine
+            };
+        }
     }
 }

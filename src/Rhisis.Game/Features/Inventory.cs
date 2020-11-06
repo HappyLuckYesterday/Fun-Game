@@ -12,7 +12,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Rhisis.Game.Features
 {
@@ -26,6 +25,8 @@ namespace Rhisis.Game.Features
         private readonly IEntityFactory _entityFactory;
         private readonly IItemContainer _container;
         private readonly IDictionary<CoolTimeType, long> _itemsCoolTimes;
+
+        public int StorageCapacity => _container.Capacity;
 
         public int MaxCapacity => _container.MaxCapacity;
 
@@ -53,6 +54,8 @@ namespace Rhisis.Game.Features
         public IItem GetItem(Func<IItem, bool> predicate) => _container.GetItem(predicate);
 
         public IItem GetItem(int itemIndex) => _container.GetItemAtIndex(itemIndex);
+
+        public int GetItemCount() => _container.Count(x => x != null && x.Id != -1);
 
         public void MoveItem(int sourceSlot, int destinationSlot)
         {
