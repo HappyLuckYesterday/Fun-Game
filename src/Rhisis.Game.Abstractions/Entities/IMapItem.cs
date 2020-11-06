@@ -1,5 +1,6 @@
 ﻿using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Map;
 
 namespace Rhisis.Game.Entities
 {
@@ -8,6 +9,8 @@ namespace Rhisis.Game.Entities
         IItem Item { get; }
 
         IWorldObject Owner { get; set; }
+
+        IMapRespawnRegion RespawnRegion { get; }
 
         bool HasOwner { get; }
 

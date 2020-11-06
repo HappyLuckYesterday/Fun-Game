@@ -58,6 +58,28 @@ namespace Rhisis.Game.Factories
             };
         }
 
+        public IMapItem CreateTemporaryMapItem(IItem item, IMapLayer mapLayer, IWorldObject owner, Vector3 position, int despawnTime)
+        {
+            return new MapItem(item, mapLayer)
+            {
+                Owner = owner,
+                Position = position.Clone(),
+                Spawned = true,
+                DespawnTime = despawnTime
+            };
+        }
+
+        public IMapItem CreatePermanentMapItem(IItem item, IMapLayer mapLayer, IWorldObject owner, IMapRespawnRegion region)
+        {
+            return new MapItem(item, mapLayer)
+            {
+                Owner = owner,
+                Position = region.GetRandomPosition(),
+                Spawned = true,
+                RespawnRegion = region
+            };
+        }
+
         public IMonster CreateMonster(int moverId, int mapId, int mapLayerId, Vector3 position, IMapRespawnRegion respawnRegion)
         {
             if (!_gameResources.Movers.TryGetValue(moverId, out MoverData moverData))

@@ -115,9 +115,7 @@ namespace Rhisis.Game.Map
 
                             for (int i = 0; i < respawnRegion.Count; ++i)
                             {
-                                IMapItem mapItem = _entityFactory.CreateMapItem(item, newMapLayer, null, respawnRegion.GetRandomPosition());
-                                mapItem.Spawned = true;
-                                // TODO: add respawn region
+                                IMapItem mapItem = _entityFactory.CreatePermanentMapItem(item, newMapLayer, null, respawnRegion);
 
                                 newMapLayer.AddItem(mapItem);
                             }

@@ -20,6 +20,7 @@ namespace Rhisis.Game.Map
         private readonly IMobilitySystem _mobilitySystem;
         private readonly IVisibilitySystem _visibilitySystem;
         private readonly IRegionTriggerSystem _regionTriggerSystem;
+        private readonly IRespawnSystem _respawnSystem;
 
         public int Id { get; }
 
@@ -45,6 +46,7 @@ namespace Rhisis.Game.Map
             _mobilitySystem = _serviceProvider.GetService<IMobilitySystem>();
             _visibilitySystem = _serviceProvider.GetService<IVisibilitySystem>();
             _regionTriggerSystem = _serviceProvider.GetService<IRegionTriggerSystem>();
+            _respawnSystem = _serviceProvider.GetService<IRespawnSystem>();
         }
 
         public void AddItem(IMapItem mapItem)
@@ -202,6 +204,7 @@ namespace Rhisis.Game.Map
                         {
                             monster.Behavior.Update();
                             _mobilitySystem.Execute(monster);
+                            _respawnSystem.Execute(monster);
                         }
                     }
                 }
@@ -218,6 +221,23 @@ namespace Rhisis.Game.Map
                             if (npc.VisibleObjects.Any())
                             {
                                 npc.Behavior.Update();
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (_items.Any())
+            {
+                lock (_items)
+                {
+                    if (_items.Any())
+                    {
+                        foreach (IMapItem mapItem in _items)
+                        {
+                            if (mapItem.VisibleObjects.Any())
+                            {
+                                _respawnSystem.Execute(mapItem);
                             }
                         }
                     }

@@ -10,6 +10,10 @@ namespace Rhisis.Game.Abstractions.Factories
     {
         IMapItem CreateMapItem(IItem item, IMapLayer mapLayer, IWorldObject owner, Vector3 position);
 
+        IMapItem CreateTemporaryMapItem(IItem item, IMapLayer mapLayer, IWorldObject owner, Vector3 position, int despawnTime);
+
+        IMapItem CreatePermanentMapItem(IItem item, IMapLayer mapLayer, IWorldObject owner, IMapRespawnRegion region);
+
         IMonster CreateMonster(int moverId, int mapId, int mapLayerId, Vector3 position, IMapRespawnRegion respawnRegion);
 
         INpc CreateNpc(IMapNpcObject npcObject, int mapId, int mapLayerId);

@@ -61,6 +61,8 @@ namespace Rhisis.Game.Entities
             Item?.Id == DefineItem.II_GOLD_SEED3 ||
             Item?.Id == DefineItem.II_GOLD_SEED4;
 
+        public IMapRespawnRegion RespawnRegion { get; set; }
+
         public MapItem(IItem item, IMapLayer mapLayer)
         {
             Id = RandomHelper.GenerateUniqueId();
