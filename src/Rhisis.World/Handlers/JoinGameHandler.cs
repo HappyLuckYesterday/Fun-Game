@@ -136,6 +136,7 @@ namespace Rhisis.World.Handlers
                 realPlayer.Attributes = _serviceProvider.CreateInstance<Attributes>(realPlayer);
                 realPlayer.Battle = _serviceProvider.CreateInstance<Rhisis.Game.Features.Battle>(realPlayer);
                 realPlayer.Quests = _serviceProvider.CreateInstance<QuestDiary>(realPlayer);
+                realPlayer.SkillTree = _serviceProvider.CreateInstance<SkillTree>(realPlayer, (ushort)character.SkillPoints);
 
                 IEnumerable<IPlayerInitializer> playerInitializers = _serviceProvider.GetRequiredService<IEnumerable<IPlayerInitializer>>();
 

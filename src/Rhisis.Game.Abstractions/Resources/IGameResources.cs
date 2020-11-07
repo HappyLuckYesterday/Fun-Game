@@ -95,5 +95,12 @@ namespace Rhisis.Game.Abstractions.Resources
         /// <param name="defaultValue">Default value in case the defined value has not been found.</param>
         /// <returns>Defined value.</returns>
         int GetDefinedValue(string defineKey, int defaultValue = 0);
+
+        /// <summary>
+        /// Gets the skill data for a given job.
+        /// </summary>
+        /// <param name="job"></param>
+        /// <returns></returns>
+        IEnumerable<SkillData> GetSkillDataByJob(DefineJob.Job job);
     }
 }

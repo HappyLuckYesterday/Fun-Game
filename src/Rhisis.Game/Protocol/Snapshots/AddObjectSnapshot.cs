@@ -1,7 +1,6 @@
 ﻿using Rhisis.Core.Extensions;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -106,7 +105,7 @@ namespace Rhisis.Network.Snapshots
                             Write(player.Gold.Amount); // Gold
                             Write(player.Experience.Amount); // exp
                             Write(0); // skill level
-                            Write(0/*(int)player.SkillTree.SkillPoints*/); // skill points
+                            Write((int)player.SkillTree.SkillPoints); // skill points
                             Write<long>(0); // death exp
                             Write(0); // death level
 
@@ -121,9 +120,7 @@ namespace Rhisis.Network.Snapshots
                             Write(player.Position.Z);
 
                             // Quest diary
-                            Write((byte)0);
-                            Write((byte)0);
-                            Write((byte)0);
+                            player.Quests.Serialize(this);
 
                             Write(0); // murderer id
                             Write((short)player.Statistics.AvailablePoints); // stat points
@@ -135,11 +132,7 @@ namespace Rhisis.Network.Snapshots
                                 Write(item?.Id ?? -1);
                             }
 
-                            for (int i = 0; i < (int)DefineJob.JobMax.MAX_SKILLS; i++)
-                            {
-                                Write(-1);
-                                Write(0);
-                            }
+                            player.SkillTree.Serialize(this);
 
                             Write<byte>(0); // cheer point
                             Write(0); // next cheer point ?

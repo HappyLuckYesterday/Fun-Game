@@ -10,6 +10,7 @@ using Rhisis.Game.Common.Resources.Quests;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.Game.Resources
 {
@@ -136,6 +137,26 @@ namespace Rhisis.Game.Resources
             }
 
             return Defines.TryGetValue(defineKey, out var value) ? value : defaultValue;
+        }
+
+        public IEnumerable<SkillData> GetSkillDataByJob(DefineJob.Job job)
+        {
+            var skillsList = new List<SkillData>();
+
+            if (Jobs.TryGetValue(job, out JobData jobData) && jobData.Parent != null)
+            {
+                skillsList.AddRange(GetSkillDataByJob(jobData.Parent.Id));
+            }
+
+            IEnumerable<SkillData> jobSkills = from x in Skills.Values
+                                               where x.Job == jobData.Id &&
+                                                     x.JobType != DefineJob.JobType.JTYPE_COMMON &&
+                                                     x.JobType != DefineJob.JobType.JTYPE_TROUPE
+                                               select x;
+
+            skillsList.AddRange(jobSkills);
+
+            return skillsList;
         }
     }
 }

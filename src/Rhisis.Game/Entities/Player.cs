@@ -2,6 +2,7 @@
 using Rhisis.Core.DependencyInjection.Extensions;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
+using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
@@ -108,6 +109,8 @@ namespace Rhisis.Game.Entities
         public IBattle Battle { get; set; }
 
         public IQuestDiary Quests { get; set; }
+
+        public ISkillTree SkillTree { get; set; }
 
         public IHumanVisualAppearance Appearence { get; set; }
 
