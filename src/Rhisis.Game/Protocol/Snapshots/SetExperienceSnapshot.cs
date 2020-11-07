@@ -10,7 +10,7 @@ namespace Rhisis.Network.Snapshots
             Write(player.Experience.Amount);
             Write((short)player.Level);
             Write(0);
-            Write(0); //Write((int)player.SkillTree.SkillPoints);
+            Write((int)player.SkillTree.SkillPoints);
             Write(long.MaxValue); // death exp
             Write((short)player.DeathLevel);
         }

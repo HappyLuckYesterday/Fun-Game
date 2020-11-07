@@ -138,7 +138,7 @@ namespace Rhisis.Cluster.Handlers
                 HairId = packet.HairMeshId,
                 BankCode = packet.BankPassword,
                 Gender = packet.Gender,
-                JobId = (int)packet.Job,
+                JobId = 0,
                 // Not the best of solutions.
                 // Need to store these values in a configuration file of isolate the health calculation
                 // in a shared injectable service in both cluster and world server.

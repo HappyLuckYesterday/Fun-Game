@@ -40,6 +40,8 @@ namespace Rhisis.Game.Entities
 
         public StateFlags ObjectStateFlags { get; set; }
 
+        public StateMode StateMode { get; set; }
+
         public IList<IWorldObject> VisibleObjects { get; set; }
 
         public IItem Item { get; }

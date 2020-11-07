@@ -80,6 +80,8 @@ namespace Rhisis.Game.Entities
 
         public StateFlags ObjectStateFlags { get; set; }
 
+        public StateMode StateMode { get; set; }
+
         public IHealth Health { get; set; }
 
         public IDefense Defense { get; set; }

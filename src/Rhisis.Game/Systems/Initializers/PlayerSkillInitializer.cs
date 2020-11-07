@@ -35,7 +35,7 @@ namespace Rhisis.World.Systems.Initializers
             IEnumerable<ISkill> skills = (from x in jobSkills
                                           join s in playerSkills on x.Id equals s.SkillId into dbSkills
                                           from dbSkill in dbSkills.DefaultIfEmpty()
-                                          select new Skill(_gameResources.Skills[x.Id], player.CharacterId, dbSkill?.Id)).ToList();
+                                          select new Skill(_gameResources.Skills[x.Id], player, dbSkill?.Id)).ToList();
 
             player.SkillTree.SetSkills(skills);
         }
@@ -47,7 +47,7 @@ namespace Rhisis.World.Systems.Initializers
                             join s in player.SkillTree on
                              new { x.SkillId, x.CharacterId }
                              equals
-                             new { SkillId = s.Id, s.CharacterId }
+                             new { SkillId = s.Id, CharacterId = (s.Owner as IPlayer).CharacterId }
                             select new { DbSkill = x, PlayerSkill = s };
 
             foreach (var skillToUpdate in skillsSet)

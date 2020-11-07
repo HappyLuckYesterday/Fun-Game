@@ -1,31 +1,24 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Common;
-using Rhisis.Network;
 using Rhisis.Network.Packets.World;
 using Rhisis.World.Client;
 using Rhisis.World.Packets;
-using Rhisis.World.Systems.Follow;
 using Rhisis.World.Systems.Interaction;
-using Rhisis.World.Systems.SpecialEffect;
-using Sylver.HandlerInvoker.Attributes;
 using Sylver.Network.Data;
 using System;
-using System.Linq;
 
 namespace Rhisis.World.Handlers
 {
     public sealed class PlayerHandler
     {
         private readonly ILogger<PlayerHandler> _logger;
-        private readonly ISpecialEffectSystem _specialEffectSystem;
         private readonly IInteractionSystem _interationSystem;
         private readonly IMoverPacketFactory _moverPacketFactory;
 
-        public PlayerHandler(ILogger<PlayerHandler> logger, ISpecialEffectSystem specialEffectSystem, IInteractionSystem interationSystem, IMoverPacketFactory moverPacketFactory)
+        public PlayerHandler(ILogger<PlayerHandler> logger, IInteractionSystem interationSystem, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;
-            _specialEffectSystem = specialEffectSystem;
+            //_specialEffectSystem = specialEffectSystem;
             _interationSystem = interationSystem;
             _moverPacketFactory = moverPacketFactory;
         }
@@ -37,7 +30,7 @@ namespace Rhisis.World.Handlers
             {
                 if (packet.Flag == StateModeBaseMotion.BASEMOTION_CANCEL)
                 {
-                    _specialEffectSystem.SetStateModeBaseMotion(serverClient.Player, packet.Flag);
+                    //_specialEffectSystem.SetStateModeBaseMotion(serverClient.Player, packet.Flag);
                     serverClient.Player.Delayer.CancelAction(serverClient.Player.Inventory.ItemInUseActionId);
                     serverClient.Player.Inventory.ItemInUseActionId = Guid.Empty;
                 }

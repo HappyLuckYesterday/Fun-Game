@@ -6,7 +6,6 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Inventory;
-using Rhisis.World.Systems.PlayerData;
 using System;
 using System.Linq;
 
@@ -26,7 +25,7 @@ namespace Rhisis.World.Systems.Trade
         private readonly ILogger<TradeSystem> _logger;
         private readonly ITradePacketFactory _tradePacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
-        private readonly IPlayerDataSystem _playerDataSystem;
+        //private readonly IPlayerDataSystem _playerDataSystem;
         private readonly IInventorySystem _inventorySystem;
 
         /// <inheritdoc />
@@ -40,12 +39,12 @@ namespace Rhisis.World.Systems.Trade
         /// <param name="textPacketFactory">Text packet factory.</param>
         /// <param name="playerDataSystem">Player data system.</param>
         /// <param name="inventorySystem">Inventory system.</param>
-        public TradeSystem(ILogger<TradeSystem> logger, ITradePacketFactory tradePacketFactory, ITextPacketFactory textPacketFactory, IPlayerDataSystem playerDataSystem, IInventorySystem inventorySystem)
+        public TradeSystem(ILogger<TradeSystem> logger, ITradePacketFactory tradePacketFactory, ITextPacketFactory textPacketFactory, IInventorySystem inventorySystem)
         {
             _logger = logger;
             _tradePacketFactory = tradePacketFactory;
             _textPacketFactory = textPacketFactory;
-            _playerDataSystem = playerDataSystem;
+            //_playerDataSystem = playerDataSystem;
             _inventorySystem = inventorySystem;
         }
 
@@ -351,7 +350,7 @@ namespace Rhisis.World.Systems.Trade
         /// <param name="mode">Cancel mode.</param>
         private void CancelTradeAndRefund(IPlayerEntity player, int mode = 0)
         {
-            _playerDataSystem.IncreaseGold(player, player.Trade.Gold);
+            //_playerDataSystem.IncreaseGold(player, player.Trade.Gold);
             player.Trade.Reset();
 
             _tradePacketFactory.SendTradeCancel(player, mode);

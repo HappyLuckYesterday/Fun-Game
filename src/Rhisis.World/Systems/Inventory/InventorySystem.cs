@@ -2,12 +2,10 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Game.Common;
-using Rhisis.Network.Snapshots;
 using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Factories;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
-using Rhisis.World.Systems.Drop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +30,7 @@ namespace Rhisis.World.Systems.Inventory
         private readonly IItemFactory _itemFactory;
         private readonly IInventoryPacketFactory _inventoryPacketFactory;
         private readonly IInventoryItemUsage _inventoryItemUsage;
-        private readonly IDropSystem _dropSystem;
+        //private readonly IDropSystem _dropSystem;
         private readonly ITextPacketFactory _textPacketFactory;
 
         /// <summary>
@@ -49,13 +47,13 @@ namespace Rhisis.World.Systems.Inventory
         /// <param name="inventoryItemUsage">Inventory item usage system.</param>
         /// <param name="dropSystem">Drop system.</param>
         /// <param name="textPacketFactory">Text packet factory.</param>
-        public InventorySystem(ILogger<InventorySystem> logger, IItemFactory itemFactory, IInventoryPacketFactory inventoryPacketFactory, IInventoryItemUsage inventoryItemUsage, IDropSystem dropSystem, ITextPacketFactory textPacketFactory)
+        public InventorySystem(ILogger<InventorySystem> logger, IItemFactory itemFactory, IInventoryPacketFactory inventoryPacketFactory, IInventoryItemUsage inventoryItemUsage, ITextPacketFactory textPacketFactory)
         {
             _logger = logger;
             _itemFactory = itemFactory;
             _inventoryPacketFactory = inventoryPacketFactory;
             _inventoryItemUsage = inventoryItemUsage;
-            _dropSystem = dropSystem;
+            //_dropSystem = dropSystem;
             _textPacketFactory = textPacketFactory;
         }
 
@@ -399,7 +397,7 @@ namespace Rhisis.World.Systems.Inventory
                 throw new InvalidOperationException("Cannot drop a zero or negative quantit.");
             }
 
-            _dropSystem.DropItem(player, itemToDrop, owner: null, quantity: quantityToDrop);
+            //_dropSystem.DropItem(player, itemToDrop, owner: null, quantity: quantityToDrop);
             DeleteItem(player, itemUniqueId, quantityToDrop);
         }
 

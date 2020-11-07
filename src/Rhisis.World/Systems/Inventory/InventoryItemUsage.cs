@@ -8,8 +8,6 @@ using Rhisis.World.Game.Maps;
 using Rhisis.World.Game.Maps.Regions;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
-using Rhisis.World.Systems.PlayerData;
-using Rhisis.World.Systems.SpecialEffect;
 using System;
 using System.Collections.Generic;
 
@@ -21,24 +19,24 @@ namespace Rhisis.World.Systems.Inventory
         private readonly ILogger<InventoryItemUsage> _logger;
         private readonly IInventoryPacketFactory _inventoryPacketFactory;
         private readonly IMapManager _mapManager;
-        private readonly ISpecialEffectSystem _specialEffectSystem;
+        //private readonly ISpecialEffectSystem _specialEffectSystem;
         private readonly IMoverPacketFactory _moverPacketFactory;
         private readonly ITextPacketFactory _textPacketFactory;
-        private readonly IPlayerDataSystem _playerDataSystem;
+        //private readonly IPlayerDataSystem _playerDataSystem;
         private readonly WorldConfiguration _worldServerConfiguration;
 
         /// <summary>
         /// Creates a new <see cref="InventoryItemUsage"/> instance.
         /// </summary>
-        public InventoryItemUsage(ILogger<InventoryItemUsage> logger, IInventoryPacketFactory inventoryPacketFactory, IMapManager mapManager, ISpecialEffectSystem specialEffectSystem, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory, IPlayerDataSystem playerDataSystem, IOptions<WorldConfiguration> worldServerConfiguration)
+        public InventoryItemUsage(ILogger<InventoryItemUsage> logger, IInventoryPacketFactory inventoryPacketFactory, IMapManager mapManager, IMoverPacketFactory moverPacketFactory, ITextPacketFactory textPacketFactory, IOptions<WorldConfiguration> worldServerConfiguration)
         {
             _logger = logger;
             _inventoryPacketFactory = inventoryPacketFactory;
             _mapManager = mapManager;
-            _specialEffectSystem = specialEffectSystem;
+            //_specialEffectSystem = specialEffectSystem;
             _moverPacketFactory = moverPacketFactory;
             _textPacketFactory = textPacketFactory;
-            _playerDataSystem = playerDataSystem;
+            //_playerDataSystem = playerDataSystem;
             _worldServerConfiguration = worldServerConfiguration.Value;
         }
 
@@ -151,37 +149,37 @@ namespace Rhisis.World.Systems.Inventory
             {
                 //player.Object.Angle = teleportEvent.Angle;
                 //_teleportSystem.Teleport(player, teleportEvent.MapId, teleportEvent.PositionX, teleportEvent.PositionY, teleportEvent.PositionZ);
-                _specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_OFF);
+                //_specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_OFF);
                 player.Inventory.ItemInUseActionId = Guid.Empty;
                 DecreaseItem(player, blinkwing);
             });
 
-            _specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_ON, blinkwing);
+            //_specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_ON, blinkwing);
         }
 
         public void UseMagicItem(IPlayerEntity player, Item magicItem)
         {
             player.Inventory.ItemInUseActionId = player.Delayer.DelayAction(TimeSpan.FromMilliseconds(magicItem.Data.SkillReadyType), () =>
             {
-                _specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_OFF);
+                //_specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_OFF);
                 player.Inventory.ItemInUseActionId = Guid.Empty;
                 DecreaseItem(player, magicItem, noFollowSfx: true);
             });
-            _specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_ON, magicItem);
+            //_specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_ON, magicItem);
         }
 
         public void UsePerin(IPlayerEntity player, Item perinItem)
         {
             int perinValue = _worldServerConfiguration.Perin.PerinValue;
-            if (!_playerDataSystem.IncreaseGold(player, perinValue))
-            {
-                _logger.LogTrace($"Failed to generate gold from a perin for player '{player.Object.Name}'.");
-            }
-            else
-            {
-                DecreaseItem(player, perinItem);
-                _logger.LogTrace($"Player '{player.Object.Name}' created {perinValue} gold.");
-            }
+            //if (!_playerDataSystem.IncreaseGold(player, perinValue))
+            //{
+            //    _logger.LogTrace($"Failed to generate gold from a perin for player '{player.Object.Name}'.");
+            //}
+            //else
+            //{
+            //    DecreaseItem(player, perinItem);
+            //    _logger.LogTrace($"Player '{player.Object.Name}' created {perinValue} gold.");
+            //}
         }
 
         /// <summary>
@@ -208,7 +206,7 @@ namespace Rhisis.World.Systems.Inventory
 
             if (item.Data.SfxObject3 != 0)
             {
-                _specialEffectSystem.StartSpecialEffect(player, (DefineSpecialEffects)item.Data.SfxObject3, noFollowSfx);
+                //_specialEffectSystem.StartSpecialEffect(player, (DefineSpecialEffects)item.Data.SfxObject3, noFollowSfx);
             }
 
             if (item.Quantity <= 0)

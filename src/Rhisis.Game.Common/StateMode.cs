@@ -5,6 +5,7 @@ namespace Rhisis.Game.Common
     [Flags]
     public enum StateMode : int
     {
+        NONE = 0,
         PK_MODE = 0x00000001,
         PVP_MODE = 0x00000002,
         BASEMOTION_MODE = 0x00000004,

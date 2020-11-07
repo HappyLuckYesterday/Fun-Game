@@ -1,11 +1,10 @@
-﻿using Rhisis.Game.Common;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.Serialization;
 
 namespace Rhisis.Game.Common.Resources
 {
     [DataContract]
-    [DebuggerDisplay("{Name}")]
+    [DebuggerDisplay("{Id}")]
     public class JobData
     {
         /// <summary>

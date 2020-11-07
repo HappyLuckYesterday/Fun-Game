@@ -1,4 +1,5 @@
-﻿using Rhisis.Game.Abstractions.Protocol;
+﻿using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common.Resources;
 using System;
 
@@ -12,9 +13,9 @@ namespace Rhisis.Game.Abstractions
         int Id { get; }
 
         /// <summary>
-        /// Gets the character id owner of this skill.
+        /// Gets the skill owner.
         /// </summary>
-        int CharacterId { get; }
+        IMover Owner { get; }
 
         /// <summary>
         /// Gets the skill database id.
@@ -52,5 +53,15 @@ namespace Rhisis.Game.Abstractions
         /// </summary>
         /// <returns>True if the cooltime is over; false otherwise.</returns>
         bool IsCoolTimeElapsed();
+
+        bool CanUse(IMover target = null);
+
+        void Use(IMover target = null);
+
+        /// <summary>
+        /// Gets the skill casting time.
+        /// </summary>
+        /// <returns>Skill casting time in milliseconds.</returns>
+        int GetCastingTime();
     }
 }

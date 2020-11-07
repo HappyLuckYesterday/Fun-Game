@@ -71,7 +71,7 @@ namespace Rhisis.Network.Snapshots
 
                         Write((byte)player.Authority); // authority
                         Write((uint)player.Mode); // mode
-                        Write(0); // state mode
+                        Write((int)player.StateMode); // state mode
                         Write(0); // item used ??
                         Write(0); // last pk time.
                         Write(0); // karma

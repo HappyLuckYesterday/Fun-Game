@@ -7,6 +7,8 @@ namespace Rhisis.Game.Abstractions
     {
         ushort SkillPoints { get; }
 
+        void AddSkillPoints(ushort skillPointsToAdd, bool sendToPlayer = true);
+
         ISkill GetSkill(int skillId);
 
         ISkill GetSkillAtIndex(int skillIndex);
@@ -18,5 +20,7 @@ namespace Rhisis.Game.Abstractions
         void SetSkillLevel(int skillId, int level);
 
         void SetSkills(IEnumerable<ISkill> skills);
+
+        void Update(IReadOnlyDictionary<int, int> skillsToUpdate);
     }
 }

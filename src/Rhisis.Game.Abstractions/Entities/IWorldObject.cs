@@ -48,6 +48,11 @@ namespace Rhisis.Game.Abstractions.Entities
         StateFlags ObjectStateFlags { get; set; }
 
         /// <summary>
+        /// Gets or sets the current object state.
+        /// </summary>
+        StateMode StateMode { get; set; }
+
+        /// <summary>
         /// Gets or sets a collection of visible objects for the current entity.
         /// </summary>
         IList<IWorldObject> VisibleObjects { get; set; }

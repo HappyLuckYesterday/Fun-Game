@@ -1,53 +1,70 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Rhisis.Game.Abstractions;
+using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Common;
+using Rhisis.Game.Protocol.Snapshots.Skills;
+using Rhisis.Network;
 using Rhisis.Network.Packets.World;
-using Rhisis.World.Client;
-using Rhisis.World.Game.Structures;
-using Rhisis.World.Packets;
-using Rhisis.World.Systems.Skills;
 using Sylver.HandlerInvoker.Attributes;
+using System;
+using System.Linq;
 
 namespace Rhisis.World.Handlers
 {
     [Handler]
     public class UseSkillHandler
     {
-        private readonly ILogger<UseSkillHandler> _logger;
-        private readonly ISkillSystem _skillSystem;
-        private readonly ISkillPacketFactory _skillPacketFactory;
-
-        public UseSkillHandler(ILogger<UseSkillHandler> logger, ISkillSystem skillSystem, ISkillPacketFactory skillPacketFactory)
-        {
-            _logger = logger;
-            _skillSystem = skillSystem;
-            _skillPacketFactory = skillPacketFactory;
-        }
-
         /// <summary>
         /// Use a skill for a given player.
         /// </summary>
         /// <param name="serverClient">Current client.</param>
         /// <param name="packet">Incoming packet.</param>
-        //[HandlerAction(PacketType.USESKILL)]
-        public void OnUseSkill(IWorldServerClient serverClient, UseSkillPacket packet)
+        [HandlerAction(PacketType.USESKILL)]
+        public void OnUseSkill(IPlayer player, UseSkillPacket packet)
         {
             if (packet.SkillIndex < 0 || packet.SkillIndex > (int)DefineJob.JobMax.MAX_SKILLS)
             {
-                _logger.LogWarning($"Player {serverClient.Player} tried to use an unknown skill: '{packet.SkillIndex}'.");
-                _skillPacketFactory.SendSkillCancellation(serverClient.Player);
-                return;
+                CancelSkill(player);
+                throw new InvalidOperationException($"Attempt to use an unknown skill: '{packet.SkillIndex}'.");
             }
 
             if (packet.TargetObjectId < 0)
             {
-                _logger.LogWarning($"Player {serverClient.Player} tried to use a skill on an unknown target.");
-                _skillPacketFactory.SendSkillCancellation(serverClient.Player);
-                return;
+                CancelSkill(player);
+                throw new InvalidOperationException($"Attempt to use a skill on an unknown target: '{packet.TargetObjectId}'.");
             }
 
-            Skill skill = serverClient.Player.SkillTree.GetSkillByIndex(packet.SkillIndex);
+            ISkill skill = player.SkillTree.GetSkillAtIndex(packet.SkillIndex);
 
-            _skillSystem.UseSkill(serverClient.Player, skill, packet.TargetObjectId, packet.UseType);
+            if (skill == null)
+            {
+                throw new InvalidOperationException($"Failed to find skill at index: '{packet.SkillIndex}'.");
+            }
+
+            IMover target = player.Id == packet.TargetObjectId
+                ? player
+                : player.VisibleObjects.OfType<IMover>().FirstOrDefault(x => x.Id == packet.TargetObjectId);
+
+            if (target == null)
+            {
+                throw new InvalidOperationException($"Cannot find target with id: '{packet.TargetObjectId}'.");
+            }
+
+            if (skill.CanUse(target))
+            {
+                skill.Use(target);
+            }
+            else
+            {
+                CancelSkill(player);
+            }
+        }
+
+        private void CancelSkill(IPlayer player)
+        {
+            using var cancelSkillSnapshot = new ClearUseSkillSnapshot(player);
+
+            player.Send(cancelSkillSnapshot);
+            player.SendToVisible(cancelSkillSnapshot);
         }
     }
 }

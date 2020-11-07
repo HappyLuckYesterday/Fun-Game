@@ -41,6 +41,8 @@ namespace Rhisis.Game.Entities
 
         public StateFlags ObjectStateFlags { get; set; }
 
+        public StateMode StateMode { get; set; } = StateMode.NONE;
+
         public int ModelId { get; set; }
 
         public IMap Map => MapLayer.ParentMap;

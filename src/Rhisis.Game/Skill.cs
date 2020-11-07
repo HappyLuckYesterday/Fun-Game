@@ -1,5 +1,7 @@
 ﻿using Rhisis.Core.IO;
 using Rhisis.Game.Abstractions;
+using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Sylver.Network.Data;
 using System;
@@ -16,7 +18,7 @@ namespace Rhisis.Game
 
         public int Id => Data.Id;
 
-        public int CharacterId { get; set; }
+        public IMover Owner { get; }
 
         public int? DatabaseId { get; set; }
 
@@ -32,10 +34,10 @@ namespace Rhisis.Game
 
         public SkillLevelData LevelData => Data.SkillLevels[Level];
 
-        public Skill(SkillData skillData, int characterId, int? databaseId = null)
+        public Skill(SkillData skillData, IMover owner, int? databaseId = null)
         {
             Data = skillData;
-            CharacterId = characterId;
+            Owner = owner;
             DatabaseId = databaseId;
         }
 
@@ -55,5 +57,32 @@ namespace Rhisis.Game
             packet.Write(Level);
         }
 
-        public bool Equals([AllowNull] ISkill otherSkill) => Id == otherSkill?.Id && CharacterId == otherSkill?.CharacterId;
+        public bool Equals([AllowNull] ISkill otherSkill) => Id == otherSkill?.Id && Owner.Id == otherSkill?.Owner.Id;
+
+        public bool CanUse(IMover target = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Use(IMover target = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetCastingTime()
+        {
+            if (Data.Type == SkillType.Skill)
+            {
+                return 1000;
+            }
+            else
+            {
+                int castingTime = (int)((LevelData.CastingTime / 1000f) * (60 / 4));
+
+                castingTime -= castingTime * (Owner.Attributes.Get(DefineAttributes.SPELL_RATE) / 100);
+
+                return Math.Max(castingTime, 0);
+            }
+        }
     }
+}

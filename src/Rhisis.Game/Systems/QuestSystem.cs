@@ -338,12 +338,12 @@ namespace Rhisis.Game.Systems
 
             if (quest.Rewards.Reskill)
             {
-                //_skillSystem.Reskill(player);
+                player.SkillTree.Reskill();
             }
 
             if (quest.Rewards.SkillPoints > 0)
             {
-                //_skillSystem.AddSkillPoints(player, quest.Rewards.SkillPoints);
+                player.SkillTree.AddSkillPoints(quest.Rewards.SkillPoints);
             }
 
             questToFinish.IsFinished = true;
