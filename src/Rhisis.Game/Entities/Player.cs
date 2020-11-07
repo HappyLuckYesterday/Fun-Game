@@ -2,7 +2,6 @@
 using Rhisis.Core.DependencyInjection.Extensions;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
-using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;

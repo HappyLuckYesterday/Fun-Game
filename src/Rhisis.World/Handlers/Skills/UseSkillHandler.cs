@@ -51,7 +51,15 @@ namespace Rhisis.World.Handlers
 
             if (skill.CanUse(target))
             {
-                skill.Use(target);
+                try
+                {
+                    skill.Use(target);
+                }
+                catch
+                {
+                    CancelSkill(player);
+                    throw;
+                }
             }
             else
             {

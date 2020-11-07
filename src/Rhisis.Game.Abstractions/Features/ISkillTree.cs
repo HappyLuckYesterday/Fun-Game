@@ -1,7 +1,7 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
 using System.Collections.Generic;
 
-namespace Rhisis.Game.Abstractions
+namespace Rhisis.Game.Abstractions.Features
 {
     public interface ISkillTree : IPacketSerializer, IEnumerable<ISkill>
     {

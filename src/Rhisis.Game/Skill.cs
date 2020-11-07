@@ -1,6 +1,8 @@
-﻿using Rhisis.Core.IO;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Rhisis.Core.IO;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Sylver.Network.Data;
@@ -13,6 +15,7 @@ namespace Rhisis.Game
     [DebuggerDisplay("{Name} Lv.{Level}")]
     public class Skill : ISkill
     {
+        private readonly Lazy<ISkillSystem> _skillSystem;
         private int _level;
         private long _nextSkillUsageTime;
 
@@ -39,6 +42,23 @@ namespace Rhisis.Game
             Data = skillData;
             Owner = owner;
             DatabaseId = databaseId;
+            _skillSystem = new Lazy<ISkillSystem>(() => Owner.Systems.GetService<ISkillSystem>());
+        }
+
+        public int GetCastingTime()
+        {
+            if (Data.Type == SkillType.Skill)
+            {
+                return 1000;
+            }
+            else
+            {
+                int castingTime = (int)((LevelData.CastingTime / 1000f) * (60 / 4));
+
+                castingTime -= castingTime * (Owner.Attributes.Get(DefineAttributes.SPELL_RATE) / 100);
+
+                return Math.Max(castingTime, 0);
+            }
         }
 
         public void SetCoolTime(long coolTime)
@@ -59,30 +79,14 @@ namespace Rhisis.Game
 
         public bool Equals([AllowNull] ISkill otherSkill) => Id == otherSkill?.Id && Owner.Id == otherSkill?.Owner.Id;
 
-        public bool CanUse(IMover target = null)
+        public bool CanUse(IMover target)
         {
-            throw new NotImplementedException();
+            return _skillSystem.Value.CanUseSkill(Owner as IPlayer, target, this);
         }
 
-        public void Use(IMover target = null)
+        public void Use(IMover target, SkillUseType skillUseType = SkillUseType.Normal)
         {
-            throw new NotImplementedException();
-        }
-
-        public int GetCastingTime()
-        {
-            if (Data.Type == SkillType.Skill)
-            {
-                return 1000;
-            }
-            else
-            {
-                int castingTime = (int)((LevelData.CastingTime / 1000f) * (60 / 4));
-
-                castingTime -= castingTime * (Owner.Attributes.Get(DefineAttributes.SPELL_RATE) / 100);
-
-                return Math.Max(castingTime, 0);
-            }
+            _skillSystem.Value.UseSkill(Owner as IPlayer, target, this, skillUseType);
         }
     }
 }

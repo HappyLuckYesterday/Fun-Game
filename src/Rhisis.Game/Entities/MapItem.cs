@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace Rhisis.Game.Entities
 {
-    [DebuggerDisplay("MapItem {Name} ({Map.Name}/{Map.Layer.Id}")]
+    [DebuggerDisplay("MapItem {Name} ({Map.Name}/{MapLayer.Id}")]
     public class MapItem : IMapItem
     {
         public uint Id { get; }

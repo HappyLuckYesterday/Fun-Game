@@ -40,11 +40,14 @@ namespace Rhisis.Game
         /// <param name="player">Current player.</param>
         /// <param name="text">Defined text id.</param>
         /// <param name="parameters">Additionnal parameters.</param>
-        public void SendDefinedText(IPlayer player, DefineText text, params object[] parameters)
+        public void SendDefinedText(IWorldObject worldObject, DefineText text, params object[] parameters)
         {
-            using var definedTextSnapshot = new DefinedTextSnapshot(player, text, parameters);
+            if (worldObject is IPlayer player)
+            {
+                using var definedTextSnapshot = new DefinedTextSnapshot(player, text, parameters);
 
-            player.Connection.Send(definedTextSnapshot);
+                player.Connection.Send(definedTextSnapshot);
+            }
         }
     }
 }

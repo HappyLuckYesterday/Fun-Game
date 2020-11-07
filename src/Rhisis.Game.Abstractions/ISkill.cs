@@ -1,5 +1,6 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Protocol;
+using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using System;
 
@@ -43,6 +44,12 @@ namespace Rhisis.Game.Abstractions
         SkillLevelData LevelData { get; }
 
         /// <summary>
+        /// Gets the skill casting time.
+        /// </summary>
+        /// <returns>Skill casting time in milliseconds.</returns>
+        int GetCastingTime();
+
+        /// <summary>
         /// Sets the skill cool time before it can be used again.
         /// </summary>
         /// <param name="coolTime">Cool time.</param>
@@ -54,14 +61,18 @@ namespace Rhisis.Game.Abstractions
         /// <returns>True if the cooltime is over; false otherwise.</returns>
         bool IsCoolTimeElapsed();
 
-        bool CanUse(IMover target = null);
-
-        void Use(IMover target = null);
+        /// <summary>
+        /// Checks if the player can use the skill.
+        /// </summary>
+        /// <param name="target">Skill target.</param>
+        /// <returns>True if the player can use the skill; false otherwise.</returns>
+        bool CanUse(IMover target);
 
         /// <summary>
-        /// Gets the skill casting time.
+        /// Use a skill.
         /// </summary>
-        /// <returns>Skill casting time in milliseconds.</returns>
-        int GetCastingTime();
+        /// <param name="target">Target.</param>
+        /// <param name="skillUseType">Skill usage type.</param>
+        void Use(IMover target, SkillUseType skillUseType = SkillUseType.Normal);
     }
 }
