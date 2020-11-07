@@ -60,6 +60,7 @@ namespace Rhisis.Game.Behavior.Default
         {
             DropGold(killerEntity);
             DropItems(killerEntity);
+            _monster.Timers.DespawnTime = Time.TimeInSeconds() + 3;
         }
 
         public void OnTargetKilled(IMover killedEntity)

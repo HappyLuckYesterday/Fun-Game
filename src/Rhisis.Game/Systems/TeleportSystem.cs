@@ -27,12 +27,7 @@ namespace Rhisis.Game.Systems
                 throw new InvalidOperationException($"Attempt to teleport '{player.Name}' to an invalid position: {position} in map: '{player.Map.Name}'.");
             }
 
-            player.Unfollow();
-            player.Battle.ClearTarget();
-            player.DestinationPosition.Reset();
-
-            player.Position.Copy(position);
-            player.ObjectState = ObjectState.OBJSTA_STAND;
+            SetPlayerPosition(player, position);
 
             if (sendToPlayer)
             {
@@ -66,8 +61,7 @@ namespace Rhisis.Game.Systems
             player.Spawned = false;
             player.MapLayer.RemovePlayer(player);
 
-            player.Position.Copy(position);
-            player.ObjectState = ObjectState.OBJSTA_STAND;
+            SetPlayerPosition(player, position);
 
             player.MapLayer = destinationMap.GetDefaultMapLayer();
             player.MapLayer.AddPlayer(player);
@@ -80,6 +74,17 @@ namespace Rhisis.Game.Systems
             }
 
             player.Spawned = true;
+        }
+
+        private void SetPlayerPosition(IPlayer player, Vector3 position)
+        {
+            player.Unfollow();
+            player.Battle.ClearTarget();
+            player.DestinationPosition.Reset();
+
+            player.Position.Copy(position);
+            player.DestinationPosition.Reset();
+            player.ObjectState = ObjectState.OBJSTA_STAND;
         }
     }
 }

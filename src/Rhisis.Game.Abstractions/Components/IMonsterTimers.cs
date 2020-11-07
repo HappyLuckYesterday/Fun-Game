@@ -5,5 +5,9 @@
         long NextMoveTime { get; set; }
 
         long NextAttackTime { get; set; }
+
+        long DespawnTime { get; set; }
+
+        long RespawnTime { get; set; }
     }
 }

@@ -235,10 +235,7 @@ namespace Rhisis.Game.Map
                     {
                         foreach (IMapItem mapItem in _items)
                         {
-                            if (mapItem.VisibleObjects.Any())
-                            {
-                                _respawnSystem.Execute(mapItem);
-                            }
+                            _respawnSystem.Execute(mapItem);
                         }
                     }
                 }

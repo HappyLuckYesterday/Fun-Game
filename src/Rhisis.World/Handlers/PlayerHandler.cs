@@ -15,21 +15,18 @@ using System.Linq;
 
 namespace Rhisis.World.Handlers
 {
-    [Handler]
     public sealed class PlayerHandler
     {
         private readonly ILogger<PlayerHandler> _logger;
         private readonly ISpecialEffectSystem _specialEffectSystem;
         private readonly IInteractionSystem _interationSystem;
-        private readonly IFollowSystem _followSystem;
         private readonly IMoverPacketFactory _moverPacketFactory;
 
-        public PlayerHandler(ILogger<PlayerHandler> logger, ISpecialEffectSystem specialEffectSystem, IInteractionSystem interationSystem, IFollowSystem followSystem, IMoverPacketFactory moverPacketFactory)
+        public PlayerHandler(ILogger<PlayerHandler> logger, ISpecialEffectSystem specialEffectSystem, IInteractionSystem interationSystem, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;
             _specialEffectSystem = specialEffectSystem;
             _interationSystem = interationSystem;
-            _followSystem = followSystem;
             _moverPacketFactory = moverPacketFactory;
         }
 
@@ -51,19 +48,6 @@ namespace Rhisis.World.Handlers
         public void OnSetTarget(IWorldServerClient serverClient, SetTargetPacket packet)
         {
             _interationSystem.SetTarget(serverClient.Player, packet.TargetId, packet.TargetMode);
-        }
-
-        [HandlerAction(PacketType.PLAYERSETDESTOBJ)]
-        public void OnPlayerSetDestObject(IPlayer player, PlayerDestObjectPacket packet)
-        {
-            if (player.Id == packet.TargetObjectId)
-            {
-                return;
-            }
-
-            IWorldObject targetObject = player.VisibleObjects.Single(x => x.Id == packet.TargetObjectId);
-
-            player.Follow(targetObject);
         }
 
         //[HandlerAction(PacketType.QUERY_PLAYER_DATA)]

@@ -44,6 +44,8 @@ namespace Rhisis.Game.Entities
 
         public IItem Item { get; }
 
+        public MapItemType ItemType { get; }
+
         public IWorldObject Owner { get; set; }
 
         public long OwnershipTime { get; set; }
@@ -63,10 +65,11 @@ namespace Rhisis.Game.Entities
 
         public IMapRespawnRegion RespawnRegion { get; set; }
 
-        public MapItem(IItem item, IMapLayer mapLayer)
+        public MapItem(IItem item, MapItemType itemType, IMapLayer mapLayer)
         {
             Id = RandomHelper.GenerateUniqueId();
             Item = item;
+            ItemType = itemType;
             MapLayer = mapLayer;
             VisibleObjects = new List<IWorldObject>();
         }

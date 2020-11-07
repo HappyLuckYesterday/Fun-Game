@@ -8,6 +8,8 @@ namespace Rhisis.Game.Entities
     {
         IItem Item { get; }
 
+        MapItemType ItemType { get; }
+
         IWorldObject Owner { get; set; }
 
         IMapRespawnRegion RespawnRegion { get; }

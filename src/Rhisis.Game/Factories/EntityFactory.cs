@@ -50,7 +50,7 @@ namespace Rhisis.Game.Factories
 
         public IMapItem CreateMapItem(IItem item, IMapLayer mapLayer, IWorldObject owner, Vector3 position)
         {
-            return new MapItem(item, mapLayer)
+            return new MapItem(item, MapItemType.DropItem, mapLayer)
             {
                 Owner = owner,
                 Position = position.Clone(),
@@ -60,7 +60,7 @@ namespace Rhisis.Game.Factories
 
         public IMapItem CreateTemporaryMapItem(IItem item, IMapLayer mapLayer, IWorldObject owner, Vector3 position, int despawnTime)
         {
-            return new MapItem(item, mapLayer)
+            return new MapItem(item, MapItemType.DropItem, mapLayer)
             {
                 Owner = owner,
                 Position = position.Clone(),
@@ -71,7 +71,7 @@ namespace Rhisis.Game.Factories
 
         public IMapItem CreatePermanentMapItem(IItem item, IMapLayer mapLayer, IWorldObject owner, IMapRespawnRegion region)
         {
-            return new MapItem(item, mapLayer)
+            return new MapItem(item, MapItemType.QuestItem, mapLayer)
             {
                 Owner = owner,
                 Position = region.GetRandomPosition(),
