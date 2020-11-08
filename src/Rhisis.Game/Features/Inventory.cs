@@ -1,9 +1,11 @@
-﻿using Rhisis.Core.IO;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Rhisis.Core.IO;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Factories;
 using Rhisis.Game.Abstractions.Features;
+using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Network;
 using Rhisis.Network.Snapshots;
@@ -25,6 +27,7 @@ namespace Rhisis.Game.Features
         private readonly IEntityFactory _entityFactory;
         private readonly IItemContainer _container;
         private readonly IDictionary<CoolTimeType, long> _itemsCoolTimes;
+        private readonly Lazy<IInventoryItemUsage> _inventoryItemUsage;
 
         public int StorageCapacity => _container.Capacity;
 
@@ -44,6 +47,7 @@ namespace Rhisis.Game.Features
                 { CoolTimeType.Pills, 0 },
                 { CoolTimeType.Skill, 0 }
             };
+            _inventoryItemUsage = new Lazy<IInventoryItemUsage>(() => _player.Systems.GetService<IInventoryItemUsage>());
             Hand = _entityFactory.CreateItem(DefineItem.II_WEA_HAN_HAND, 0, ElementType.None, 0);
         }
 
@@ -151,7 +155,7 @@ namespace Rhisis.Game.Features
             return creationResult.Sum(x => x.Item.Quantity);
         }
 
-        public int DeleteItem(int itemIndex, int quantity, bool sendToPlayer = true)
+        public int DeleteItem(int itemIndex, int quantity, UpdateItemType updateType = UpdateItemType.UI_NUM, bool sendToPlayer = true)
         {
             if (quantity <= 0)
             {
@@ -165,10 +169,10 @@ namespace Rhisis.Game.Features
                 throw new ArgumentException($"Cannot find item with index: '{itemIndex}' in '{_player.Name}''s inventory.", nameof(itemToDelete));
             }
 
-            return DeleteItem(itemToDelete, quantity, sendToPlayer);
+            return DeleteItem(itemToDelete, quantity, updateType, sendToPlayer);
         }
 
-        public int DeleteItem(IItem item, int quantity, bool sendToPlayer = true)
+        public int DeleteItem(IItem item, int quantity, UpdateItemType updateType = UpdateItemType.UI_NUM, bool sendToPlayer = true)
         {
             int quantityToDelete = Math.Min(item.Quantity, quantity);
 
@@ -176,7 +180,7 @@ namespace Rhisis.Game.Features
 
             if (sendToPlayer)
             {
-                using var snapshot = new UpdateItemSnapshot(_player, UpdateItemType.UI_NUM, item.Index, item.Quantity);
+                using var snapshot = new UpdateItemSnapshot(_player, updateType, item.Index, item.Quantity);
 
                 _player.Connection.Send(snapshot);
             }
@@ -192,6 +196,44 @@ namespace Rhisis.Game.Features
             }
 
             return quantityToDelete;
+        }
+
+        public void UseItem(IItem item)
+        {
+            if (!_container.Contains(item))
+            {
+                return;
+            }
+
+            // TODO: check expiracy
+
+            if (item.Data.IsUseable && item.Quantity > 0)
+            {
+                if (ItemHasCoolTime(item) && !CanUseItemWithCoolTime(item))
+                {
+                    return;
+                }
+
+                // TODO: implement custom item usage
+                // TODO: check for custom items usages
+
+                switch (item.Data.ItemKind2)
+                {
+                    case ItemKind2.POTION:
+                    case ItemKind2.REFRESHER:
+                    case ItemKind2.FOOD:
+                        _inventoryItemUsage.Value.UseFoodItem(_player, item);
+                        break;
+                    case ItemKind2.BLINKWING:
+                        _inventoryItemUsage.Value.UseBlinkwingItem(_player, item);
+                        break;
+                    case ItemKind2.MAGIC:
+                        _inventoryItemUsage.Value.UseMagicItem(_player, item);
+                        break;
+                    default:
+                        throw new NotImplementedException($"Item usage {item.Data.ItemKind2} is not implemented.");
+                }
+            }
         }
 
         public void Serialize(INetPacketStream packet) => _container.Serialize(packet);

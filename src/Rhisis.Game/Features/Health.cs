@@ -179,6 +179,51 @@ namespace Rhisis.Game.Abstractions.Components
             }
         }
 
+        public int GetCurrent(DefineAttributes attribute)
+        {
+            return attribute switch
+            {
+                DefineAttributes.HP => Hp,
+                DefineAttributes.MP => Mp,
+                DefineAttributes.FP => Fp,
+                _ => -1
+            };
+        }
+
+        public void SetCurrent(DefineAttributes attribute, int value, bool send = true)
+        {
+            switch (attribute)
+            {
+                case DefineAttributes.HP:
+                    Hp = value;
+                    break;
+                case DefineAttributes.MP:
+                    Mp = value;
+                    break;
+                case DefineAttributes.FP:
+                    Fp = value;
+                    break;
+            }
+
+            if (send)
+            {
+                using var healthSnapshot = new UpdateParamPointSnapshot(_mover, attribute, GetCurrent(attribute));
+
+                SendPacketToVisible(_mover, healthSnapshot, sendToPlayer: true);
+            }
+        }
+
+        public int GetMaximum(DefineAttributes attribute)
+        {
+            return attribute switch
+            {
+                DefineAttributes.HP => MaxHp,
+                DefineAttributes.MP => MaxMp,
+                DefineAttributes.FP => MaxFp,
+                _ => -1
+            };
+        }
+
         private void SendHealth()
         {
             using var healthSnapshot = new FFSnapshot();

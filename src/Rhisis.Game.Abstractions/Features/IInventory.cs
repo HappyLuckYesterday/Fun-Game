@@ -114,18 +114,26 @@ namespace Rhisis.Game.Abstractions.Features
         /// </summary>
         /// <param name="itemIndex">Item index to delete.</param>
         /// <param name="quantity">Quantity to delete.</param>
+        /// <param name="updateType">Update item type.</param>
         /// <param name="sendToPlayer">Sends the packet to the current player.</param>
         /// <returns>Deleted quantity.</returns>
-        int DeleteItem(int itemIndex, int quantity, bool sendToPlayer = true);
+        int DeleteItem(int itemIndex, int quantity, UpdateItemType updateType = UpdateItemType.UI_NUM, bool sendToPlayer = true);
 
         /// <summary>
         /// Deletes an item in player's inventory.
         /// </summary>
         /// <param name="item">Item to delete.</param>
         /// <param name="quantity">Quantity to delete.</param>
+        /// <param name="updateType">Update item type.</param>
         /// <param name="sendToPlayer">Sends the packet to the current player.</param>
         /// <returns>Deleted quantity.</returns>
-        int DeleteItem(IItem item, int quantity, bool sendToPlayer = true);
+        int DeleteItem(IItem item, int quantity, UpdateItemType updateType = UpdateItemType.UI_NUM, bool sendToPlayer = true);
+
+        /// <summary>
+        /// Uses an inventory item.
+        /// </summary>
+        /// <param name="item">Inventory item.</param>
+        void UseItem(IItem item);
 
         /// <summary>
         /// Checks if the item has a cooltime.

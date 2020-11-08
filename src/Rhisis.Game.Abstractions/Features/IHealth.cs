@@ -72,5 +72,27 @@ namespace Rhisis.Game.Abstractions.Features
         /// </summary>
         /// <param name="send">Sends the update to the visible movers of the current mover.</param>
         void ApplyDeathRecovery(bool send = true);
+
+        /// <summary>
+        /// Gets the current health points based on the given attribute.
+        /// </summary>
+        /// <param name="attribute">Health attribute.</param>
+        /// <returns></returns>
+        int GetCurrent(DefineAttributes attribute);
+
+        /// <summary>
+        /// Sets the current health points based on the given attribute.
+        /// </summary>
+        /// <param name="attribute">Health attribute.</param>
+        /// <param name="value">Health points value.</param>
+        /// <param name="send">Boolean value that indicates if the changes should be sent.</param>
+        void SetCurrent(DefineAttributes attribute, int value, bool send = true);
+
+        /// <summary>
+        /// Gets the maximum health points based on the given attribute.
+        /// </summary>
+        /// <param name="attribute">Health attribute.</param>
+        /// <returns></returns>
+        int GetMaximum(DefineAttributes attribute);
     }
 }
