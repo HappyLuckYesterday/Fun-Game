@@ -30,6 +30,8 @@ namespace Rhisis.Game.Entities
 
         public IGameConnection Connection { get; set; }
 
+        public DateTime LoggedInAt { get; set; }
+
         public uint Id { get; }
 
         public int CharacterId { get; set; }
@@ -112,6 +114,8 @@ namespace Rhisis.Game.Entities
         public IQuestDiary Quests { get; set; }
 
         public ISkillTree SkillTree { get; set; }
+
+        public ITaskbar Taskbar { get; set; }
 
         public IHumanVisualAppearance Appearence { get; set; }
 

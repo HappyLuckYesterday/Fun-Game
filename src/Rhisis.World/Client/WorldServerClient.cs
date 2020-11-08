@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Rhisis.Core.Helpers;
+using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Entities;
@@ -116,7 +118,13 @@ namespace Rhisis.World.Client
                 {
                     NewPlayer.Spawned = false;
                     NewPlayer.MapLayer.RemovePlayer(NewPlayer);
-                    // TODO: dispose
+
+                    var initializers = NewPlayer.Systems.GetService<IEnumerable<IPlayerInitializer>>();
+
+                    foreach (IPlayerInitializer initializer in initializers)
+                    {
+                        initializer.Save(NewPlayer);
+                    }
                 }
             }
 

@@ -29,13 +29,17 @@ namespace Rhisis.World.Systems.Initializers
 
         public void Load(IPlayer player)
         {
+            IEnumerable<DbSkill> playerSkills = _database.Skills
+                .Where(x => x.CharacterId == player.CharacterId)
+                .AsNoTracking()
+                .AsEnumerable();
             IEnumerable<SkillData> jobSkills = _gameResources.GetSkillDataByJob(player.Job.Id);
-            IEnumerable<DbSkill> playerSkills = _database.Skills.Where(x => x.CharacterId == player.CharacterId).AsNoTracking().AsEnumerable();
 
             IEnumerable<ISkill> skills = (from x in jobSkills
                                           join s in playerSkills on x.Id equals s.SkillId into dbSkills
                                           from dbSkill in dbSkills.DefaultIfEmpty()
-                                          select new Skill(_gameResources.Skills[x.Id], player, dbSkill?.Id)).ToList();
+                                          select new Skill(_gameResources.Skills[x.Id], player, dbSkill?.Level ?? 0, dbSkill?.Id))
+                                          .ToList();
 
             player.SkillTree.SetSkills(skills);
         }
@@ -43,7 +47,11 @@ namespace Rhisis.World.Systems.Initializers
         /// <inheritdoc />
         public void Save(IPlayer player)
         {
-            var skillsSet = from x in _database.Skills.Where(x => x.CharacterId == player.CharacterId).AsNoTracking().ToList()
+            IEnumerable<DbSkill> dbSkills = _database.Skills
+                .Where(x => x.CharacterId == player.CharacterId)
+                .AsNoTracking()
+                .AsEnumerable();
+            var skillsSet = from x in dbSkills
                             join s in player.SkillTree on
                              new { x.SkillId, x.CharacterId }
                              equals

@@ -6,16 +6,16 @@ using Rhisis.Network.Packets.World;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 
-namespace Rhisis.World.Handlers
+namespace Rhisis.World.Handlers.Quests
 {
     /// <summary>
     /// Handles all quest packets.
     /// </summary>
     [Handler]
-    public class QuestHandler
+    public class QuestCheckHandler
     {
         [HandlerAction(PacketType.QUEST_CHECK)]
-        public void OnQuestCheck(IPlayer player, QuestCheckPacket questCheckPacket)
+        public void Execute(IPlayer player, QuestCheckPacket questCheckPacket)
         {
             if (questCheckPacket.QuestId <= 0)
             {

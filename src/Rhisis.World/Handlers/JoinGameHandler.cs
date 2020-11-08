@@ -137,6 +137,7 @@ namespace Rhisis.World.Handlers
                 realPlayer.Battle = _serviceProvider.CreateInstance<Rhisis.Game.Features.Battle>(realPlayer);
                 realPlayer.Quests = _serviceProvider.CreateInstance<QuestDiary>(realPlayer);
                 realPlayer.SkillTree = _serviceProvider.CreateInstance<SkillTree>(realPlayer, (ushort)character.SkillPoints);
+                realPlayer.Taskbar = _serviceProvider.CreateInstance<Taskbar>();
 
                 IEnumerable<IPlayerInitializer> playerInitializers = _serviceProvider.GetRequiredService<IEnumerable<IPlayerInitializer>>();
 
@@ -187,6 +188,8 @@ namespace Rhisis.World.Handlers
                     realPlayer.MapLayer = _mapManager.GetMap(revivalRegion.MapId).GetDefaultMapLayer();
                     realPlayer.Position.Copy(revivalRegion.RevivalPosition);
                 }
+
+                realPlayer.LoggedInAt = DateTime.UtcNow;
             }
 
             using (var joinPacket = new JoinCompletePacket())
@@ -194,7 +197,8 @@ namespace Rhisis.World.Handlers
                 joinPacket.AddSnapshots(
                     new EnvironmentAllSnapshot(player, SeasonType.None), // TODO: get the season id using current weather time.
                     new WorldReadInfoSnapshot(player),
-                    new AddObjectSnapshot(player)
+                    new AddObjectSnapshot(player),
+                    new TaskbarSnapshot(player)
                 );
 
                 player.Connection.Send(joinPacket);
@@ -202,43 +206,6 @@ namespace Rhisis.World.Handlers
 
             player.MapLayer.AddPlayer(player);
             player.Spawned = true;
-            // -----------------------
-
-            //IPlayerEntity player = _playerFactory.CreatePlayer(character);
-
-            //if (player == null)
-            //{
-            //    _logger.LogError($"Failed to create character for '{character.Name}'.");
-            //    return;
-            //}
-
-            //player.Connection = serverClient;
-            //serverClient.Player = player;
-
-            //if (player.IsDead)
-            //{
-            //    IMapRevivalRegion revivalRegion = _deathSystem.GetNearestRevivalRegion(player);
-
-            //    if (revivalRegion == null)
-            //    {
-            //        _logger.LogError($"Cannot resurect player '{player}'; Revival map region not found.");
-            //        return;
-            //    }
-
-            //    _deathSystem.ApplyRevivalHealthPenality(player);
-            //    _deathSystem.ApplyDeathPenality(player, sendToPlayer: false);
-
-            //    IMapInstance map = _mapManager.GetMap(revivalRegion.MapId);
-
-            //    _teleportSystem.ChangePosition(player, map, revivalRegion.X, null, revivalRegion.Z);
-            //}
-
-            //_playerDataSystem.CalculateDefense(player);
-            //player.Object.CurrentLayer.AddEntity(player);
-            //_worldSpawnPacketFactory.SendPlayerSpawn(player);
-
-            //player.Object.Spawned = true;
-            //player.PlayerData.LoggedInAt = DateTime.UtcNow;
         }
     }
 }

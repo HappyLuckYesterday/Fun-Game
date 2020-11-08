@@ -4,46 +4,41 @@ using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
-using Rhisis.World.Game;
-using Rhisis.World.Game.Components;
-using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Structures;
-using Rhisis.World.Systems.Taskbar;
+using Rhisis.Game.Abstractions;
+using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.World.Systems.Initializers
+namespace Rhisis.Game.Systems.Initializers
 {
     [Injectable(ServiceLifetime.Singleton)]
-    public sealed class PlayerTaskbarInitializer : IGameSystemLifeCycle
+    public sealed class PlayerTaskbarInitializer : IPlayerInitializer
     {
         private readonly IRhisisDatabase _database;
-        private readonly ITaskbarSystem _taskbarSystem;
 
         public int Order => 1;
 
-        public PlayerTaskbarInitializer(IRhisisDatabase database, ITaskbarSystem taskbarSystem)
+        public PlayerTaskbarInitializer(IRhisisDatabase database)
         {
             _database = database;
-            _taskbarSystem = taskbarSystem;
         }
 
         /// <inheritdoc />
-        public void Initialize(IPlayerEntity player)
+        public void Load(IPlayer player)
         {
-            IEnumerable<DbShortcut> shortcuts = _database.TaskbarShortcuts.Where(x => x.CharacterId == player.PlayerData.Id).AsNoTracking().AsEnumerable();
-
-            player.Taskbar.Applets = new TaskbarAppletContainerComponent(TaskbarSystem.MaxTaskbarApplets);
-            player.Taskbar.Items = new TaskbarItemContainerComponent(TaskbarSystem.MaxTaskbarItems, TaskbarSystem.MaxTaskbarItemLevels);
-            player.Taskbar.Queue = new TaskbarQueueContainerComponent(TaskbarSystem.MaxTaskbarQueue);
+            IEnumerable<DbShortcut> shortcuts = _database.TaskbarShortcuts
+                .Where(x => x.CharacterId == player.CharacterId)
+                .AsNoTracking()
+                .AsEnumerable();
 
             foreach (DbShortcut dbShortcut in shortcuts)
             {
-                Shortcut shortcut = null;
+                IShortcut shortcut = null;
 
                 if (dbShortcut.Type == ShortcutType.Item)
                 {
-                    Item item = player.Inventory.GetItemAtSlot(dbShortcut.ObjectItemSlot.GetValueOrDefault(-1));
+                    IItem item = player.Inventory.GetItem(x => x.Slot == dbShortcut.ObjectItemSlot.GetValueOrDefault(-1));
 
                     if (item is null)
                     {
@@ -59,27 +54,32 @@ namespace Rhisis.World.Systems.Initializers
 
                 if (dbShortcut.TargetTaskbar == ShortcutTaskbarTarget.Applet)
                 {
-                    _taskbarSystem.AddShortcutToAppletTaskbar(player, shortcut);
+                    player.Taskbar.Applets.Add(shortcut, shortcut.Slot);
                 }
                 else if (dbShortcut.TargetTaskbar == ShortcutTaskbarTarget.Item)
                 {
-                    _taskbarSystem.AddShortcutToItemTaskbar(player, shortcut, dbShortcut.SlotLevelIndex);
+                    ITaskbarContainer<IShortcut> taskbarContainer = player.Taskbar.Items.GetContainerAtLevel(dbShortcut.SlotLevelIndex);
+
+                    if (taskbarContainer != null)
+                    {
+                        taskbarContainer.Add(shortcut, shortcut.Slot);
+                    }
                 }
             }
         }
 
         /// <inheritdoc />
-        public void Save(IPlayerEntity player)
+        public void Save(IPlayer player)
         {
             DbCharacter character = _database.Characters
                 .Include(x => x.TaskbarShortcuts)
-                .FirstOrDefault(x => x.Id == player.PlayerData.Id);
+                .FirstOrDefault(x => x.Id == player.CharacterId);
 
             character.TaskbarShortcuts.Clear();
 
             _database.SaveChanges();
 
-            foreach (Shortcut appletShortcut in player.Taskbar.Applets.Objects)
+            foreach (IShortcut appletShortcut in player.Taskbar.Applets)
             {
                 if (appletShortcut == null)
                 {
@@ -94,13 +94,14 @@ namespace Rhisis.World.Systems.Initializers
                     appletShortcut.ObjectIndex,
                     appletShortcut.UserId,
                     appletShortcut.ObjectData,
-                    appletShortcut.Text);
-
-                dbApplet.CharacterId = character.Id;
+                    appletShortcut.Text)
+                {
+                    CharacterId = character.Id
+                };
 
                 if (appletShortcut.Type == ShortcutType.Item && appletShortcut.ItemIndex.HasValue)
                 {
-                    InventoryItem inventoryItem = player.Inventory.GetItemAtIndex(appletShortcut.ItemIndex.Value);
+                    IItem inventoryItem = player.Inventory.GetItem(appletShortcut.ItemIndex.Value);
 
                     if (inventoryItem is null)
                     {
@@ -114,26 +115,27 @@ namespace Rhisis.World.Systems.Initializers
             }
 
 
-            for (int slotLevel = 0; slotLevel < player.Taskbar.Items.Objects.Count; slotLevel++)
+            for (var level = 0; level < player.Taskbar.Items.Count(); level++)
             {
-                for (int slot = 0; slot < player.Taskbar.Items.Objects[slotLevel].Count; slot++)
-                {
-                    Shortcut itemShortcut = player.Taskbar.Items.Objects[slotLevel][slot];
+                ITaskbarContainer<IShortcut> taskbarContainer = player.Taskbar.Items.GetContainerAtLevel(level);
 
+                foreach (IShortcut itemShortcut in taskbarContainer)
+                {
                     if (itemShortcut == null)
                     {
                         continue;
                     }
 
-                    var dbShortcut = new DbShortcut(ShortcutTaskbarTarget.Item, slotLevel, itemShortcut.Slot,
+                    var dbShortcut = new DbShortcut(ShortcutTaskbarTarget.Item, level, itemShortcut.Slot,
                         itemShortcut.Type, itemShortcut.ItemIndex, itemShortcut.ObjectType, itemShortcut.ObjectIndex,
-                        itemShortcut.UserId, itemShortcut.ObjectData, itemShortcut.Text);
-
-                    dbShortcut.CharacterId = character.Id;
+                        itemShortcut.UserId, itemShortcut.ObjectData, itemShortcut.Text)
+                    {
+                        CharacterId = character.Id
+                    };
 
                     if (itemShortcut.Type == ShortcutType.Item && itemShortcut.ItemIndex.HasValue)
                     {
-                        Item item = player.Inventory.GetItemAtIndex(itemShortcut.ItemIndex.Value);
+                        IItem item = player.Inventory.GetItem(itemShortcut.ItemIndex.Value);
 
                         if (item is null)
                         {

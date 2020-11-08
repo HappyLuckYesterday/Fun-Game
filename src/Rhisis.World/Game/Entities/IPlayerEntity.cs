@@ -28,7 +28,7 @@ namespace Rhisis.World.Game.Entities
         /// <summary>
         /// Gets or sets the player's taskbar component.
         /// </summary>
-        TaskbarComponent Taskbar { get; set; }
+        //TaskbarComponent Taskbar { get; set; }
 
         /// <summary>
         /// Gets or sets the player's statistics component.

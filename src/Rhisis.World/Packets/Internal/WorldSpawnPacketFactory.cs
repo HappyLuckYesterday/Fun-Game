@@ -195,7 +195,7 @@ namespace Rhisis.World.Packets.Internal
             using (var packet = new FFPacket())
             {
                 packet.StartNewMergedPacket(player.Id, SnapshotType.TASKBAR);
-                player.Taskbar.Serialize(packet);
+                //player.Taskbar.Serialize(packet);
 
                 SendToPlayer(player, packet);
             }

@@ -33,10 +33,9 @@ namespace Rhisis.World.Handlers
                 throw new InvalidOperationException($"Attempt to use a skill on an unknown target: '{packet.TargetObjectId}'.");
             }
 
-            ISkill skill = player.SkillTree.GetSkillAtIndex(packet.SkillIndex);
-
-            if (skill == null)
+            if (!player.SkillTree.TryGetSkillAtIndex(packet.SkillIndex, out ISkill skill))
             {
+                CancelSkill(player);
                 throw new InvalidOperationException($"Failed to find skill at index: '{packet.SkillIndex}'.");
             }
 

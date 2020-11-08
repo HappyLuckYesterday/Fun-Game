@@ -43,7 +43,14 @@ namespace Rhisis.Game.Features
 
         public ISkill GetSkill(int skillId) => _skills.FirstOrDefault(x => x.Id == skillId);
 
-        public ISkill GetSkillAtIndex(int skillIndex) => _skills.ElementAtOrDefault(skillIndex);
+        public ISkill GetSkillAtIndex(int skillIndex) => _skills.ElementAt(skillIndex);
+
+        public bool TryGetSkillAtIndex(int skillIndex, out ISkill skill)
+        {
+            skill = _skills.ElementAtOrDefault(skillIndex);
+
+            return skill != null;
+        }
 
         public bool HasSkill(int skillId) => _skills.Any(x => x.Id == skillId);
 

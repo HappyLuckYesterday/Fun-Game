@@ -37,10 +37,11 @@ namespace Rhisis.Game
 
         public SkillLevelData LevelData => Data.SkillLevels[Level];
 
-        public Skill(SkillData skillData, IMover owner, int? databaseId = null)
+        public Skill(SkillData skillData, IMover owner, int level, int? databaseId = null)
         {
             Data = skillData;
             Owner = owner;
+            Level = level;
             DatabaseId = databaseId;
             _skillSystem = new Lazy<ISkillSystem>(() => Owner.Systems.GetService<ISkillSystem>());
         }

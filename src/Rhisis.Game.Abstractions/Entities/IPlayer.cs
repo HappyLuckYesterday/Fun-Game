@@ -4,12 +4,15 @@ using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
+using System;
 
 namespace Rhisis.Game.Abstractions.Entities
 {
     public interface IPlayer : IHuman
     {
         IGameConnection Connection { get; }
+
+        DateTime LoggedInAt { get; }
 
         int CharacterId { get; }
 
@@ -38,6 +41,8 @@ namespace Rhisis.Game.Abstractions.Entities
         IQuestDiary Quests { get; }
 
         ISkillTree SkillTree { get; }
+
+        ITaskbar Taskbar { get; }
 
         string CurrentNpcShopName { get; set; }
 

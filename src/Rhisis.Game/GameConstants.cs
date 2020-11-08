@@ -20,5 +20,10 @@ namespace Rhisis.Game
             { DefineJob.JobType.JTYPE_MASTER, 3 },
             { DefineJob.JobType.JTYPE_HERO, 3 }
         };
+
+        public const int MaxTaskbarApplets = 18;
+        public const int MaxTaskbarItems = 9;
+        public const int MaxTaskbarItemLevels = 8;
+        public const int MaxTaskbarQueue = 5;
     }
 }

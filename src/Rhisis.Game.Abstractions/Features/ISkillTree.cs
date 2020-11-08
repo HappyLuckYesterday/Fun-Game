@@ -13,6 +13,8 @@ namespace Rhisis.Game.Abstractions.Features
 
         ISkill GetSkillAtIndex(int skillIndex);
 
+        bool TryGetSkillAtIndex(int skillIndex, out ISkill skill);
+
         bool HasSkill(int skillId);
 
         void Reskill();
