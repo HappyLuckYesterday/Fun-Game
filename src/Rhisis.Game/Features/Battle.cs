@@ -60,22 +60,7 @@ namespace Rhisis.Game.Features
             {
                 attackResult = new MeleeAttackReducer(_mover, target).ReduceDamages(attackResult);
 
-                target.Health.SufferDamages(_mover, Math.Max(0, attackResult.Damages), attackResult.Flags, objectMessageType);
-
-                if (target is IMonster monster)
-                {
-                    if (monster.Health.IsDead)
-                    {
-                        ClearTarget();
-                        monster.Battle.ClearTarget();
-                        monster.Unfollow();
-                    }
-                    else
-                    {
-                        monster.Follow(_mover);
-                        monster.Battle.Target = _mover;
-                    }
-                }
+                InflictDamages(_mover, target, attackResult, objectMessageType);
             }
 
             using var meleeAttackSnapshot = new MeleeAttackSnapshot(_mover, target, objectMessageType, attackResult.Flags);
@@ -83,9 +68,44 @@ namespace Rhisis.Game.Features
             SendPacketToVisible(_mover, meleeAttackSnapshot);
         }
 
-        public void RangeAttack(IMover target, int power, ObjectMessageType objectMessageType)
+        public void RangeAttack(IMover target, int power, ObjectMessageType objectMessageType, int projectileId)
         {
-            throw new NotImplementedException();
+            var projectile = new ArrowProjectile(_mover, target, power, () =>
+            {
+                AttackResult attackResult = new MeleeAttackArbiter(_mover, target, AttackFlags.AF_GENERIC | AttackFlags.AF_RANGE, power).CalculateDamages();
+
+                if (!attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+                {
+                    attackResult = new MeleeAttackReducer(_mover, target).ReduceDamages(attackResult);
+
+                    InflictDamages(_mover, target, attackResult, objectMessageType);
+                }
+            });
+
+            _mover.Projectiles.Add(projectileId, projectile);
+
+            using var snapshot = new RangeAttackSnapshot(_mover, objectMessageType, target.Id, power, projectileId);
+            SendPacketToVisible(_mover, snapshot);
+        }
+
+        private void InflictDamages(IMover attacker, IMover target, AttackResult attackResult, ObjectMessageType objectMessageType)
+        {
+            target.Health.SufferDamages(attacker, Math.Max(0, attackResult.Damages), attackResult.Flags, objectMessageType);
+
+            if (target is IMonster monster)
+            {
+                if (monster.Health.IsDead)
+                {
+                    ClearTarget();
+                    monster.Battle.ClearTarget();
+                    monster.Unfollow();
+                }
+                else
+                {
+                    monster.Follow(_mover);
+                    monster.Battle.Target = _mover;
+                }
+            }
         }
     }
 }

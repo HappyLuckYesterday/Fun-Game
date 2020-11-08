@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using Rhisis.Game.Abstractions;
+using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Common;
+using Rhisis.Network;
 using Rhisis.Network.Packets.World;
-using Rhisis.World.Client;
-using Rhisis.World.Game.Structures;
-using Rhisis.World.Systems.Projectile;
 using Sylver.HandlerInvoker.Attributes;
+using System.Collections.Generic;
 
 namespace Rhisis.World.Handlers
 {
@@ -12,28 +13,26 @@ namespace Rhisis.World.Handlers
     public class ProjectileHandler
     {
         private readonly ILogger<ProjectileHandler> _logger;
-        private readonly IProjectileSystem _projectileSystem;
 
         /// <summary>
         /// Creates a new <see cref="ProjectileHandler"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        /// <param name="projectileSystem">Projectile system.</param>
-        public ProjectileHandler(ILogger<ProjectileHandler> logger, IProjectileSystem projectileSystem)
+        public ProjectileHandler(ILogger<ProjectileHandler> logger)
         {
             _logger = logger;
-            _projectileSystem = projectileSystem;
         }
 
         /// <summary>
         /// Indicates that a projectile has been fired.
         /// </summary>
-        /// <param name="serverClient">Current client.</param>
+        /// <param name="player">Current player.</param>
         /// <param name="packet">Projectile packet.</param>
-        //[HandlerAction(PacketType.SFX_ID)]
-        public void OnProjectileLaunched(IWorldServerClient serverClient, SfxIdPacket packet)
+        [HandlerAction(PacketType.SFX_ID)]
+        public void OnProjectileLaunched(IPlayer player, SfxIdPacket packet)
         {
-            var projectile = _projectileSystem.GetProjectile<ProjectileInfo>(serverClient.Player, packet.IdSfxHit);
+            int projectileId = packet.IdSfxHit;
+            IProjectile projectile = player.Projectiles.GetValueOrDefault(projectileId);
 
             if (projectile != null)
             {
@@ -41,19 +40,19 @@ namespace Rhisis.World.Handlers
 
                 if (projectile.Target.Id != packet.TargetId)
                 {
-                    _logger.LogError($"Invalid projectile target for '{serverClient.Player}'");
+                    _logger.LogError($"Invalid projectile target for '{player}'");
                     isProjectileValid = false;
                 }
 
                 if (projectile.Type != (AttackFlags)packet.Type)
                 {
-                    _logger.LogError($"Invalid projectile type for '{serverClient.Player}'");
+                    _logger.LogError($"Invalid projectile type for '{player}'");
                     isProjectileValid = false;
                 }
 
                 if (!isProjectileValid)
                 {
-                    _projectileSystem.RemoveProjectile(serverClient.Player, packet.IdSfxHit);
+                    player.Projectiles.Remove(projectileId);
                 }
             }
         }
@@ -61,26 +60,27 @@ namespace Rhisis.World.Handlers
         /// <summary>
         /// Indicates that a projectile has arrivied and hit its target.
         /// </summary>
-        /// <param name="serverClient">Current client.</param>
+        /// <param name="player">Current player.</param>
         /// <param name="packet">Projectile hit packet.</param>
-        //[HandlerAction(PacketType.SFX_HIT)]
-        public void OnProjectileArrived(IWorldServerClient serverClient, SfxHitPacket packet)
+        [HandlerAction(PacketType.SFX_HIT)]
+        public void OnProjectileArrived(IPlayer player, SfxHitPacket packet)
         {
-            var projectile = _projectileSystem.GetProjectile<ProjectileInfo>(serverClient.Player, packet.Id);
+            int projectileId = packet.Id;
+            IProjectile projectile = player.Projectiles.GetValueOrDefault(projectileId);
 
             if (projectile != null)
             {
-                bool isProjectileValid = packet.AttackerId == serverClient.Player.Id;
+                bool isProjectileValid = packet.AttackerId == player.Id;
 
-                if (projectile.Type == AttackFlags.AF_MAGIC && projectile is MagicProjectileInfo magicProjectile)
+                if (projectile.Type == AttackFlags.AF_MAGIC && projectile is IMagicProjectile magicProjectile)
                 {
                     isProjectileValid = isProjectileValid && packet.MagicPower == magicProjectile.MagicPower;
                 }
-                else if (projectile.Type == AttackFlags.AF_MAGICSKILL && projectile is MagicSkillProjectileInfo magicSkillProjectile)
+                else if (projectile.Type == AttackFlags.AF_MAGICSKILL && projectile is IMagicSkillProjectile magicSkillProjectile)
                 {
-                    isProjectileValid = isProjectileValid && packet.SkillId == magicSkillProjectile.Skill.SkillId;
+                    isProjectileValid = isProjectileValid && packet.SkillId == magicSkillProjectile.Skill.Id;
                 }
-                else if (projectile.Type.HasFlag(AttackFlags.AF_RANGE) && projectile is RangeArrowProjectileInfo arrowProjectile)
+                else if (projectile.Type.HasFlag(AttackFlags.AF_RANGE) && projectile is IArrowProjectile arrowProjectile)
                 {
                     isProjectileValid = isProjectileValid && packet.MagicPower == arrowProjectile.Power;
                 }
@@ -91,14 +91,14 @@ namespace Rhisis.World.Handlers
                 }
                 else
                 {
-                    _logger.LogError($"Invalid projectile information for player '{serverClient.Player}'.");
+                    _logger.LogError($"Invalid projectile information for player '{player}'.");
                 }
 
-                _projectileSystem.RemoveProjectile(serverClient.Player, packet.Id);
+                player.Projectiles.Remove(projectileId);
             }
             else
             {
-                _logger.LogError($"Cannot find projectile with id '{packet.Id}' for '{serverClient.Player}'.");
+                _logger.LogError($"Cannot find projectile with id '{projectileId}' for '{player}'.");
             }
         }
     }

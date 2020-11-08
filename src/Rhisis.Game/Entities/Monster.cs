@@ -90,6 +90,8 @@ namespace Rhisis.Game.Entities
 
         public IStatistics Statistics { get; set; }
 
+        public IProjectiles Projectiles { get; set; }
+
         public IList<IWorldObject> VisibleObjects { get; set; }
 
         public bool CanRespawn => RespawnRegion != null;

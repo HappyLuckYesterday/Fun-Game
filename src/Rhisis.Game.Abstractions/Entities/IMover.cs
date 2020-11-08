@@ -26,6 +26,8 @@ namespace Rhisis.Game.Abstractions.Entities
 
         IAttributes Attributes { get; }
 
+        IProjectiles Projectiles { get; }
+
         IWorldObject FollowTarget { get; set; }
 
         float FollowDistance { get; set; }

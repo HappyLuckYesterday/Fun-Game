@@ -5,7 +5,6 @@ using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Game.Resources;
 using Rhisis.Network.Snapshots;
 using System;
 using System.Linq;
