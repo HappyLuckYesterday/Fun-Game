@@ -138,7 +138,8 @@ namespace Rhisis.World.Handlers
                 realPlayer.Quests = _serviceProvider.CreateInstance<QuestDiary>(realPlayer);
                 realPlayer.SkillTree = _serviceProvider.CreateInstance<SkillTree>(realPlayer, (ushort)character.SkillPoints);
                 realPlayer.Taskbar = _serviceProvider.CreateInstance<Taskbar>();
-                realPlayer.Projectiles = _serviceProvider.CreateInstance<Projectiles>(realPlayer);
+                realPlayer.Projectiles = _serviceProvider.CreateInstance<Projectiles>();
+                realPlayer.Delayer = _serviceProvider.CreateInstance<Delayer>();
 
                 IEnumerable<IPlayerInitializer> playerInitializers = _serviceProvider.GetRequiredService<IEnumerable<IPlayerInitializer>>();
 

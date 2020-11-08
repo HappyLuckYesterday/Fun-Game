@@ -110,7 +110,8 @@ namespace Rhisis.Game.Factories
                 Systems = _serviceProvider
             };
             monster.Attributes = _serviceProvider.CreateInstance<Attributes>(monster);
-            monster.Projectiles = _serviceProvider.CreateInstance<Projectiles>(monster);
+            monster.Projectiles = _serviceProvider.CreateInstance<Projectiles>();
+            monster.Delayer = _serviceProvider.CreateInstance<Delayer>();
             monster.Battle = _serviceProvider.CreateInstance<Battle>(monster);
             monster.Health = _serviceProvider.CreateInstance<Health>(monster);
             monster.Health.Hp = moverData.AddHp;

@@ -5,7 +5,7 @@ using Rhisis.World.Game.Entities;
 using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Battle.Arbiters;
-using Rhisis.World.Systems.Inventory;
+//using Rhisis.World.Systems.Inventory;
 
 namespace Rhisis.World.Systems.Battle
 {
@@ -14,7 +14,7 @@ namespace Rhisis.World.Systems.Battle
     {
         private readonly ILogger<BattleSystem> _logger;
         //private readonly IProjectileSystem _projectileSystem;
-        private readonly IInventorySystem _inventorySystem;
+        //private readonly IInventorySystem _inventorySystem;
         private readonly IBattlePacketFactory _battlePacketFactory;
         private readonly IMoverPacketFactory _moverPacketFactory;
 
@@ -26,10 +26,9 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="inventorySystem">Inventory system.</param>
         /// <param name="battlePacketFactory">Battle packet factory.</param>
         /// <param name="moverPacketFactory">Mover packet factory.</param>
-        public BattleSystem(ILogger<BattleSystem> logger, IInventorySystem inventorySystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
+        public BattleSystem(ILogger<BattleSystem> logger, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;
-            _inventorySystem = inventorySystem;
             _battlePacketFactory = battlePacketFactory;
             _moverPacketFactory = moverPacketFactory;
         }
@@ -144,7 +143,7 @@ namespace Rhisis.World.Systems.Battle
                     return;
                 }
 
-                _inventorySystem.DeleteItem(player, bulletItem, 1);
+                //_inventorySystem.DeleteItem(player, bulletItem, 1);
             }
 
             //var projectile = new RangeArrowProjectileInfo(attacker, defender, power, onArrived: () =>

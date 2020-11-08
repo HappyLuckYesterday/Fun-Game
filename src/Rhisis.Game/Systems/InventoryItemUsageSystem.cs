@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Network.Snapshots;
@@ -14,15 +16,72 @@ namespace Rhisis.Game.Systems
     public class InventoryItemUsageSystem : GameFeature, IInventoryItemUsage
     {
         private readonly ISpecialEffectSystem _specialEffectSystem;
+        private readonly IMapManager _mapManager;
 
-        public InventoryItemUsageSystem(ISpecialEffectSystem specialEffectSystem)
+        public InventoryItemUsageSystem(ISpecialEffectSystem specialEffectSystem, IMapManager mapManager)
         {
             _specialEffectSystem = specialEffectSystem;
+            _mapManager = mapManager;
         }
 
         public void UseBlinkwingItem(IPlayer player, IItem blinkwing)
         {
-            throw new NotImplementedException();
+            if (player.Level < blinkwing.Data.LimitLevel)
+            {
+                SendDefinedText(player, DefineText.TID_GAME_USINGNOTLEVEL);
+                return;
+            }
+
+            // TODO: Check if player is sit
+            // TODO: Check if player is on Kebaras island
+            // TODO: Check if player is in guild war map
+
+            int teleportMapId = player.Map.Id;
+            Vector3 destinationPosition;
+
+            if (blinkwing.Data.ItemKind3 == ItemKind3.TOWNBLINKWING)
+            {
+                IMapRevivalRegion revivalRegion = player.Map.GetNearRevivalRegion(player.Position);
+
+                if (revivalRegion == null)
+                {
+                    throw new InvalidOperationException($"Cannot find any revival region for map '{player.Map.Name}'.");
+                }
+
+                if (player.Map.Id != revivalRegion.MapId)
+                {
+                    IMap revivalMap = _mapManager.GetMap(revivalRegion.MapId);
+
+                    if (revivalMap == null)
+                    {
+                        throw new InvalidOperationException($"Cannot find revival map with id '{revivalRegion.MapId}'.");
+                    }
+
+                    revivalRegion = revivalMap.GetRevivalRegion(revivalRegion.Key);
+                }
+
+                teleportMapId = revivalRegion.MapId;
+                destinationPosition = revivalRegion.RevivalPosition.Clone();
+            }
+            else
+            {
+                teleportMapId = blinkwing.Data.WeaponTypeId;
+                destinationPosition = new Vector3(
+                    blinkwing.Data.ItemAtkOrder1, 
+                    blinkwing.Data.ItemAtkOrder2,
+                    blinkwing.Data.ItemAtkOrder3);
+            }
+
+            player.Inventory.ItemInUseActionId = player.Delayer.DelayAction(TimeSpan.FromMilliseconds(blinkwing.Data.SkillReadyType), () =>
+            {
+                player.Angle = blinkwing.Data.ItemAtkOrder4;
+                player.Teleport(destinationPosition, teleportMapId);
+                _specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_OFF);
+                player.Inventory.ItemInUseActionId = Guid.Empty;
+                DecreaseItem(player, blinkwing);
+            });
+
+            _specialEffectSystem.SetStateModeBaseMotion(player, StateModeBaseMotion.BASEMOTION_ON, blinkwing);
         }
 
         public void UseFoodItem(IPlayer player, IItem foodItem)

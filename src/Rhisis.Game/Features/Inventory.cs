@@ -35,6 +35,8 @@ namespace Rhisis.Game.Features
 
         public IItem Hand { get; }
 
+        public Guid ItemInUseActionId { get; set; }
+
         public Inventory(IPlayer player, IEntityFactory entityFactory)
         {
             _player = player;

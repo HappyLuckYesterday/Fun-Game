@@ -28,6 +28,8 @@ namespace Rhisis.Game.Abstractions.Entities
 
         IProjectiles Projectiles { get; }
 
+        IDelayer Delayer { get; }
+
         IWorldObject FollowTarget { get; set; }
 
         float FollowDistance { get; set; }

@@ -26,6 +26,11 @@ namespace Rhisis.Game.Abstractions.Features
         IItem Hand { get; }
 
         /// <summary>
+        /// Gets or sets the delayed action id of the current item behing used.
+        /// </summary>
+        Guid ItemInUseActionId { get; set; }
+
+        /// <summary>
         /// Sets the given collection of items into the inventory.
         /// </summary>
         /// <param name="items">Items to inject inside the inventory.</param>

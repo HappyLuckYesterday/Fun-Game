@@ -9,6 +9,7 @@ using System;
 
 namespace Rhisis.World.Handlers
 {
+
     public sealed class PlayerHandler
     {
         private readonly ILogger<PlayerHandler> _logger;
@@ -21,20 +22,6 @@ namespace Rhisis.World.Handlers
             //_specialEffectSystem = specialEffectSystem;
             _interationSystem = interationSystem;
             _moverPacketFactory = moverPacketFactory;
-        }
-
-        //[HandlerAction(PacketType.STATEMODE)]
-        public void OnStateMode(IWorldServerClient serverClient, StateModePacket packet)
-        {
-            if (serverClient.Player.Object.StateMode == packet.StateMode)
-            {
-                if (packet.Flag == StateModeBaseMotion.BASEMOTION_CANCEL)
-                {
-                    //_specialEffectSystem.SetStateModeBaseMotion(serverClient.Player, packet.Flag);
-                    serverClient.Player.Delayer.CancelAction(serverClient.Player.Inventory.ItemInUseActionId);
-                    serverClient.Player.Inventory.ItemInUseActionId = Guid.Empty;
-                }
-            }
         }
 
         //[HandlerAction(PacketType.SETTARGET)]

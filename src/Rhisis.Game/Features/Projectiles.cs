@@ -9,7 +9,6 @@ namespace Rhisis.Game.Features
     public class Projectiles : GameFeature, IProjectiles
     {
         private readonly IDictionary<int, IProjectile> _projectiles;
-        private readonly IMover _mover;
 
         public IProjectile this[int key] => _projectiles[key];
 
@@ -19,9 +18,8 @@ namespace Rhisis.Game.Features
 
         public int Count => _projectiles.Count;
 
-        public Projectiles(IMover mover)
+        public Projectiles()
         {
-            _mover = mover;
             _projectiles = new Dictionary<int, IProjectile>();
         }
 

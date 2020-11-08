@@ -92,6 +92,8 @@ namespace Rhisis.Game.Entities
 
         public IProjectiles Projectiles { get; set; }
 
+        public IDelayer Delayer { get; set; }
+
         public IList<IWorldObject> VisibleObjects { get; set; }
 
         public bool CanRespawn => RespawnRegion != null;

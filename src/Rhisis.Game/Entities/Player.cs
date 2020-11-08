@@ -99,6 +99,8 @@ namespace Rhisis.Game.Entities
 
         public IAttributes Attributes { get; set; }
 
+        public IDelayer Delayer { get; set; }
+
         IStatistics IMover.Statistics => Statistics;
 
         public IPlayerStatistics Statistics { get; set; }
