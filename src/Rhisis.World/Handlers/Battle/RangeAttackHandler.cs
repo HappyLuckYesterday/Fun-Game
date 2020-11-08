@@ -47,7 +47,7 @@ namespace Rhisis.World.Handlers.Battle
             }
 
             player.Inventory.DeleteItem(bulletItem, 1);
-            player.Battle.RangeAttack(target, Math.Max(0, packet.Power), packet.AttackMessage, packet.ProjectileId + 1);
+            player.Battle.RangeAttack(target, Math.Max(0, packet.Power), ObjectMessageType.OBJMSG_ATK_RANGE1, packet.ProjectileId + 1);
         }
     }
 }

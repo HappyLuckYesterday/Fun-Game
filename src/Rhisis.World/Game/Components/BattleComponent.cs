@@ -25,7 +25,7 @@ namespace Rhisis.World.Game.Components
         /// <summary>
         /// Gets the collection of active projectiles.
         /// </summary>
-        public IDictionary<int, ProjectileInfo> Projectiles { get; }
+        //public IDictionary<int, ProjectileInfo> Projectiles { get; }
 
         /// <summary>
         /// Gets the last projectile id.
@@ -38,7 +38,7 @@ namespace Rhisis.World.Game.Components
         public BattleComponent()
         {
             Targets = new List<ILivingEntity>();
-            Projectiles = new Dictionary<int, ProjectileInfo>();
+            //Projectiles = new Dictionary<int, ProjectileInfo>();
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Common;
@@ -70,22 +71,42 @@ namespace Rhisis.Game.Features
 
         public void RangeAttack(IMover target, int power, ObjectMessageType objectMessageType, int projectileId)
         {
-            var projectile = new ArrowProjectile(_mover, target, power, () =>
+            IProjectile projectile = null;
+
+            if (objectMessageType.HasFlag(ObjectMessageType.OBJMSG_ATK_RANGE1))
             {
-                AttackResult attackResult = new MeleeAttackArbiter(_mover, target, AttackFlags.AF_GENERIC | AttackFlags.AF_RANGE, power).CalculateDamages();
-
-                if (!attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+                projectile = new ArrowProjectile(_mover, target, power, () =>
                 {
-                    attackResult = new MeleeAttackReducer(_mover, target).ReduceDamages(attackResult);
+                    AttackResult attackResult = new MeleeAttackArbiter(_mover, target, AttackFlags.AF_GENERIC | AttackFlags.AF_RANGE, power).CalculateDamages();
 
-                    InflictDamages(_mover, target, attackResult, objectMessageType);
-                }
-            });
+                    if (!attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+                    {
+                        attackResult = new MeleeAttackReducer(_mover, target).ReduceDamages(attackResult);
 
-            _mover.Projectiles.Add(projectileId, projectile);
+                        InflictDamages(_mover, target, attackResult, objectMessageType);
+                    }
+                });
+            }
+            else if (objectMessageType.HasFlag(ObjectMessageType.OBJMSG_ATK_MAGIC1))
+            {
+                projectile = new MagicProjectile(_mover, target, power, () =>
+                {
+                    AttackResult attackResult = new MagicAttackArbiter(_mover, target, power).CalculateDamages();
 
-            using var snapshot = new RangeAttackSnapshot(_mover, objectMessageType, target.Id, power, projectileId);
-            SendPacketToVisible(_mover, snapshot);
+                    if (!attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+                    {
+                        InflictDamages(_mover, target, attackResult, objectMessageType);
+                    }
+                });
+            }
+
+            if (projectile != null)
+            {
+                _mover.Projectiles.Add(projectileId, projectile);
+
+                using var snapshot = new RangeAttackSnapshot(_mover, objectMessageType, target.Id, power, projectileId);
+                SendPacketToVisible(_mover, snapshot);
+            }
         }
 
         private void InflictDamages(IMover attacker, IMover target, AttackResult attackResult, ObjectMessageType objectMessageType)

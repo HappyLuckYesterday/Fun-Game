@@ -6,7 +6,6 @@ using Rhisis.World.Game.Structures;
 using Rhisis.World.Packets;
 using Rhisis.World.Systems.Battle.Arbiters;
 using Rhisis.World.Systems.Inventory;
-using Rhisis.World.Systems.Projectile;
 
 namespace Rhisis.World.Systems.Battle
 {
@@ -14,7 +13,7 @@ namespace Rhisis.World.Systems.Battle
     public class BattleSystem : IBattleSystem
     {
         private readonly ILogger<BattleSystem> _logger;
-        private readonly IProjectileSystem _projectileSystem;
+        //private readonly IProjectileSystem _projectileSystem;
         private readonly IInventorySystem _inventorySystem;
         private readonly IBattlePacketFactory _battlePacketFactory;
         private readonly IMoverPacketFactory _moverPacketFactory;
@@ -27,10 +26,9 @@ namespace Rhisis.World.Systems.Battle
         /// <param name="inventorySystem">Inventory system.</param>
         /// <param name="battlePacketFactory">Battle packet factory.</param>
         /// <param name="moverPacketFactory">Mover packet factory.</param>
-        public BattleSystem(ILogger<BattleSystem> logger, IProjectileSystem projectileSystem, IInventorySystem inventorySystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
+        public BattleSystem(ILogger<BattleSystem> logger, IInventorySystem inventorySystem, IBattlePacketFactory battlePacketFactory, IMoverPacketFactory moverPacketFactory)
         {
             _logger = logger;
-            _projectileSystem = projectileSystem;
             _inventorySystem = inventorySystem;
             _battlePacketFactory = battlePacketFactory;
             _moverPacketFactory = moverPacketFactory;
@@ -116,14 +114,14 @@ namespace Rhisis.World.Systems.Battle
         /// <inheritdoc />
         public void MagicAttack(ILivingEntity attacker, ILivingEntity defender, ObjectMessageType attackType, int magicAttackPower, int projectileId)
         {
-            var projectile = new MagicProjectileInfo(attacker, defender, magicAttackPower, onArrived: () =>
-            {
-                IAttackArbiter magicAttackArbiter = new MagicAttackArbiter(attacker, defender, magicAttackPower);
+            //var projectile = new MagicProjectileInfo(attacker, defender, magicAttackPower, onArrived: () =>
+            //{
+            //    IAttackArbiter magicAttackArbiter = new MagicAttackArbiter(attacker, defender, magicAttackPower);
 
-                DamageTarget(attacker, defender, magicAttackArbiter, ObjectMessageType.OBJMSG_ATK_MAGIC1);
-            });
+            //    DamageTarget(attacker, defender, magicAttackArbiter, ObjectMessageType.OBJMSG_ATK_MAGIC1);
+            //});
 
-            _projectileSystem.CreateProjectile(projectileId, projectile);
+            //_projectileSystem.CreateProjectile(projectileId, projectile);
             _battlePacketFactory.SendMagicAttack(attacker, ObjectMessageType.OBJMSG_ATK_MAGIC1, defender.Id, magicAttackPower, projectileId);
         }
 
@@ -149,14 +147,14 @@ namespace Rhisis.World.Systems.Battle
                 _inventorySystem.DeleteItem(player, bulletItem, 1);
             }
 
-            var projectile = new RangeArrowProjectileInfo(attacker, defender, power, onArrived: () =>
-            {
-                IAttackArbiter attackArbiter = new MeleeAttackArbiter(attacker, defender, AttackFlags.AF_GENERIC | AttackFlags.AF_RANGE, power);
+            //var projectile = new RangeArrowProjectileInfo(attacker, defender, power, onArrived: () =>
+            //{
+            //    IAttackArbiter attackArbiter = new MeleeAttackArbiter(attacker, defender, AttackFlags.AF_GENERIC | AttackFlags.AF_RANGE, power);
                 
-                DamageTarget(attacker, defender, attackArbiter, attackType);
-            });
+            //    DamageTarget(attacker, defender, attackArbiter, attackType);
+            //});
 
-            _projectileSystem.CreateProjectile(projectileId, projectile);
+            //_projectileSystem.CreateProjectile(projectileId, projectile);
             _battlePacketFactory.SendRangeAttack(attacker, ObjectMessageType.OBJMSG_ATK_RANGE1, defender.Id, power, projectileId);
         }
 
