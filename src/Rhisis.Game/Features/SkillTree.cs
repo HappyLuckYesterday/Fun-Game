@@ -72,7 +72,13 @@ namespace Rhisis.Game.Features
 
         public void Reskill()
         {
-            throw new System.NotImplementedException();
+            SkillPoints = 0;
+
+            foreach (ISkill skill in _skills)
+            {
+                SkillPoints += (ushort)(skill.Level * GameConstants.SkillPointUsage[skill.Data.JobType]);
+                skill.Level = 0;
+            }
         }
 
         public void Serialize(INetPacketStream packet)

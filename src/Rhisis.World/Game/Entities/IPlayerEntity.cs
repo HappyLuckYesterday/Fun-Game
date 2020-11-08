@@ -23,7 +23,7 @@ namespace Rhisis.World.Game.Entities
         /// <summary>
         /// Gets or sets the player's trade component.
         /// </summary>
-        TradeComponent Trade { get; set; }
+        //TradeComponent Trade { get; set; }
 
         /// <summary>
         /// Gets or sets the player's taskbar component.

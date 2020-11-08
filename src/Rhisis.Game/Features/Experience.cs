@@ -105,6 +105,11 @@ namespace Rhisis.Game.Features
             }
         }
 
+        public void Reset()
+        {
+            Amount = 0;
+        }
+
         /// <summary>
         /// Give experience to a player and returns a boolean value that indicates if the player has level up.
         /// </summary>

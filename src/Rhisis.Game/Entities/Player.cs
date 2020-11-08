@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Rhisis.Core.DependencyInjection.Extensions;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Behavior;
@@ -12,8 +11,6 @@ using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Game.Features;
-using Rhisis.Game.Features.Chat;
 using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;
@@ -27,6 +24,7 @@ namespace Rhisis.Game.Entities
     {
         private readonly Lazy<IFollowSystem> _followSystem;
         private readonly Lazy<ITeleportSystem> _teleportSystem;
+        private readonly Lazy<IJobSystem> _jobSystem;
 
         public IGameConnection Connection { get; set; }
 
@@ -135,6 +133,7 @@ namespace Rhisis.Game.Entities
             VisibleObjects = new List<IWorldObject>();
             _followSystem = new Lazy<IFollowSystem>(() => Systems.GetService<IFollowSystem>());
             _teleportSystem = new Lazy<ITeleportSystem>(() => Systems.GetService<ITeleportSystem>());
+            _jobSystem = new Lazy<IJobSystem>(() => Systems.GetService<IJobSystem>());
         }
 
         public void Follow(IWorldObject worldObject) => _followSystem.Value.Follow(this, worldObject);
@@ -144,6 +143,8 @@ namespace Rhisis.Game.Entities
         public void Teleport(Vector3 position, bool sendToPlayer = true) => _teleportSystem.Value.Teleport(this, position, sendToPlayer);
 
         public void Teleport(Vector3 position, int mapId, bool sendToPlayer = true) => _teleportSystem.Value.Teleport(this, position, mapId, sendToPlayer);
+
+        public void ChangeJob(DefineJob.Job newJob) => _jobSystem.Value.ChangeJob(this, newJob);
 
         public bool Equals(IWorldObject other) => Id == other.Id;
 

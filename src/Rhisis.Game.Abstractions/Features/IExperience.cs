@@ -29,5 +29,10 @@
         /// </summary>
         /// <param name="sendToPlayer">Optionnal parameter indicating if the experience should be sent to the player.</param>
         void ApplyDeathPenality( bool sendToPlayer = true);
+
+        /// <summary>
+        /// Resets the experience to zero.
+        /// </summary>
+        void Reset();
     }
 }

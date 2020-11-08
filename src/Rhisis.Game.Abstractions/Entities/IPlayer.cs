@@ -49,5 +49,7 @@ namespace Rhisis.Game.Abstractions.Entities
         void Teleport(Vector3 position, bool sendToPlayer = true);
 
         void Teleport(Vector3 position, int mapId, bool sendToPlayer = true);
+
+        void ChangeJob(DefineJob.Job newJob);
     }
 }
