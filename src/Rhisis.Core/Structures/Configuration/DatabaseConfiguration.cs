@@ -67,6 +67,28 @@ namespace Rhisis.Core.Structures.Configuration
         public string EncryptionKey { get; set; }
 
         /// <summary>
+        /// (optional) Get or sets if the public key may be retrieved by the mysql connector.
+        /// </summary>
+        /// <remarks>
+        /// Check the mysql connector documentation for details: https://mysqlconnector.net/connection-options/
+        /// </remarks>
+        [DataMember(Name = "allowPublicKeyRetrieval")]
+        [DefaultValue(false)]
+        [Display(Name = "Allow public key retrieval", Order = 6)]
+        public bool AllowPublicKeyRetrieval { get; set; }
+
+        /// <summary>
+        /// (optional) Get or sets the RSA public key file to be used by the mysql connector.
+        /// </summary>
+        /// <remarks>
+        /// Check the mysql connector documentation for details: https://mysqlconnector.net/connection-options/
+        /// </remarks>
+        [DataMember(Name = "serverRSAPublicKeyFile")]
+        [DefaultValue(null)]
+        [Display(Name = "Server RSA public key file", Order = 6)]
+        public string ServerRSAPublicKeyFile { get; set; }
+
+        /// <summary>
         /// Gets or sets the valid state of the configuration.
         /// </summary>
         [IgnoreDataMember]
