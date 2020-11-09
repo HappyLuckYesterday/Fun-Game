@@ -85,7 +85,7 @@ namespace Rhisis.Core.Structures.Configuration
         /// </remarks>
         [DataMember(Name = "serverRSAPublicKeyFile")]
         [DefaultValue(null)]
-        [Display(Name = "Server RSA public key file", Order = 6)]
+        [Display(Name = "Server RSA public key file", Order = 7)]
         public string ServerRSAPublicKeyFile { get; set; }
 
         /// <summary>
