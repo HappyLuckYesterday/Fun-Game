@@ -9,8 +9,8 @@ namespace Rhisis.Network.Snapshots
         public DefinedTextSnapshot(IPlayer player, DefineText textId, params object[] parameters)
             : base(parameters.Any() ? SnapshotType.DEFINEDTEXT : SnapshotType.DEFINEDTEXT1, player.Id)
         {
-            Write((int)textId);
-            Write(string.Join(" ", parameters));
+            WriteInt32((int)textId);
+            WriteString(string.Join(" ", parameters));
         }
     }
 }

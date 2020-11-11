@@ -109,8 +109,45 @@ namespace Rhisis.Game.Features
             }
         }
 
+        public void SkillAttack(IMover target, ISkill skill)
+        {
+            var skillMessageType = skill.Data.Type switch
+            {
+                SkillType.Magic => ObjectMessageType.OBJMSG_MAGICSKILL,
+                SkillType.Skill => ObjectMessageType.OBJMSG_MELEESKILL,
+                _ => ObjectMessageType.OBJMSG_MELEESKILL
+            };
+
+            AttackResult attackResult = null;
+            
+            if (skillMessageType == ObjectMessageType.OBJMSG_MELEESKILL)
+            {
+                attackResult = new MeleeSkillAttackArbiter(_mover, target, skill).CalculateDamages();
+
+                if (!attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+                {
+                    attackResult = new MeleeSkillAttackReducer(_mover, target, skill).ReduceDamages(attackResult);
+                }
+            }
+            else if (skillMessageType == ObjectMessageType.OBJMSG_MAGICSKILL)
+            {
+                attackResult = new MagicSkillAttackArbiter(_mover, target, skill).CalculateDamages();
+
+                if (!attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+                {
+                    attackResult = new MagicSkillAttackReducer(_mover, target, skill).ReduceDamages(attackResult);
+                }
+            }
+
+            if (attackResult != null)
+            {
+                InflictDamages(_mover, target, attackResult, skillMessageType);
+            }
+        }
+
         private void InflictDamages(IMover attacker, IMover target, AttackResult attackResult, ObjectMessageType objectMessageType)
         {
+            Target = target;
             target.Health.SufferDamages(attacker, Math.Max(0, attackResult.Damages), attackResult.Flags, objectMessageType);
 
             if (target is IMonster monster)

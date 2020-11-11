@@ -20,6 +20,11 @@ namespace Rhisis.Game.Features.AttackArbiters
         }
 
         /// <summary>
+        /// Calculates the damages to inflict to the given defender.
+        /// </summary>
+        public virtual AttackResult CalculateDamages() => AttackResult.Miss();
+
+        /// <summary>
         /// Gets the escape rating of an entity.
         /// </summary>
         /// <param name="entity"></param>
@@ -37,7 +42,7 @@ namespace Rhisis.Game.Features.AttackArbiters
                 return monster.Data.EscapeRating;
             }
 
-            return 0;
+            return default;
         }
 
         /// <summary>
@@ -116,7 +121,6 @@ namespace Rhisis.Game.Features.AttackArbiters
             );
         }
 
-
         /// <summary>
         /// Gets the weapon item multiplier.
         /// </summary>
@@ -124,6 +128,11 @@ namespace Rhisis.Game.Features.AttackArbiters
         /// <returns></returns>
         public float GetWeaponItemMultiplier(IItem weapon)
         {
+            if (weapon is null)
+            {
+                return 1f;
+            }
+
             // TODO: check if item has expired.
             float multiplier = 1.0f;
             int refine = weapon.Data.WeaponKind == WeaponKindType.Ultimate ? ItemConstants.WeaponArmonRefineMax : weapon.Refine;
@@ -146,6 +155,11 @@ namespace Rhisis.Game.Features.AttackArbiters
         /// <returns>Weapon extra damages</returns>
         public int GetWeaponExtraDamages(IMover entity, IItem weapon)
         {
+            if (weapon is null)
+            {
+                return default;
+            }
+
             int extraDamages = weapon.Data.WeaponType switch
             {
                 WeaponType.MELEE_SWD => entity.Attributes.Get(DefineAttributes.SWD_DMG) + entity.Attributes.Get(DefineAttributes.TWOHANDMASTER_DMG),
@@ -163,6 +177,30 @@ namespace Rhisis.Game.Features.AttackArbiters
             }
 
             return extraDamages;
+        }
+
+        /// <summary>
+        /// Gets attacker attack multiplier.
+        /// </summary>
+        /// <returns></returns>
+        public float GetAttackMultiplier()
+        {
+            var multiplier = 1.0f + Attacker.Attributes.Get(DefineAttributes.ATKPOWER_RATE) / 100f;
+
+            if (Attacker is IPlayer)
+            {
+                // TODO: check SM mode SM_ATTACK_UP or SM_ATTACK_UP1 => multiplier *= 1.2f;
+
+                var attribute = Defender is IPlayer ? DefineAttributes.PVP_DMG : DefineAttributes.MONSTER_DMG;
+                int damages = Attacker.Attributes.Get(attribute);
+
+                if (damages > 0)
+                {
+                    multiplier += multiplier * damages / 100;
+                }
+            }
+
+            return multiplier;
         }
     }
 }

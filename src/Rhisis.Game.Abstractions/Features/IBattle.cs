@@ -41,6 +41,8 @@ namespace Rhisis.Game.Abstractions.Features
         /// <param name="projectileId">Projectile id.</param>
         void RangeAttack(IMover target, int power, ObjectMessageType objectMessageType, int projectileId);
 
+        void SkillAttack(IMover target, ISkill skill);
+
         /// <summary>
         /// Clears the battle target.
         /// </summary>

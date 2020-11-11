@@ -17,7 +17,7 @@ namespace Rhisis.Game.Features.AttackArbiters
             _magicPower = magicPower;
         }
 
-        public AttackResult CalculateDamages()
+        public override AttackResult CalculateDamages()
         {
             int damages = 0;
 

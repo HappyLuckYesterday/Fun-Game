@@ -32,7 +32,7 @@ namespace Rhisis.Game.Features.AttackArbiters
         /// Calculates the melee attack damages.
         /// </summary>
         /// <returns></returns>
-        public AttackResult CalculateDamages()
+        public override AttackResult CalculateDamages()
         {
             AttackFlags flags = GetAttackFlags();
 

@@ -2,10 +2,12 @@
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
+using Rhisis.Game.Protocol.Snapshots.Skills;
 using Rhisis.Network;
 using Rhisis.Network.Snapshots;
 using System;
@@ -156,17 +158,17 @@ namespace Rhisis.Game.Systems
 
             if (skill.Data.SpellRegionType == SpellRegionType.Around)
             {
-                // TODO: AoE
                 throw new NotImplementedException("AoE skills");
             }
             else
             {
-                //_skillPacketFactory.SendUseSkill(caster, target, skill, skillCastingTime, skillUseType);
+                using var snapshot = new UseSkillSnapshot(caster, target, skill, skillCastingTime, skillUseType);
+                SendPacketToVisible(caster, snapshot, sendToPlayer: true);
 
-                //caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.ComboSkillTime), () =>
-                //{
-                //    ExecuteSkill(caster, target, skill);
-                //});
+                caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.ComboSkillTime), () =>
+                {
+                    ExecuteSkill(caster, target, skill);
+                });
             }
         }
 
@@ -183,53 +185,19 @@ namespace Rhisis.Game.Systems
 
             if (skill.Data.SpellRegionType == SpellRegionType.Around)
             {
-                // TODO: AoE
                 throw new NotImplementedException("AoE skills");
             }
             else
             {
-                //_skillPacketFactory.SendUseSkill(caster, target, skill, skillCastingTime, skillUseType);
 
-                //caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.CastingTime), () =>
-                //{
-                //    ExecuteSkill(caster, target, skill);
-                //});
+                using var snapshot = new UseSkillSnapshot(caster, target, skill, skillCastingTime, skillUseType);
+                SendPacketToVisible(caster, snapshot, sendToPlayer: true);
+
+                caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.CastingTime), () =>
+                {
+                    ExecuteSkill(caster, target, skill);
+                });
             }
-        }
-
-        /// <summary>
-        /// Executes a melee or magic skill and inflicts the damages to the target.
-        /// </summary>
-        /// <param name="caster">Living entity casting a skill.</param>
-        /// <param name="target">Living target entity touched by the skill.</param>
-        /// <param name="skill">Skill to be casted.</param>
-        /// <param name="reduceCasterPoints">Value that indicates if it should reduce caster points or not.</param>
-        private void ExecuteSkill(IMover caster, IMover target, Skill skill, bool reduceCasterPoints = true)
-        {
-            //ObjectMessageType skillMessageType = ObjectMessageType.OBJMSG_NONE;
-            //IAttackArbiter attackArbiter = null;
-
-            //switch (skill.Data.Type)
-            //{
-            //    case SkillType.Magic:
-            //        attackArbiter = new MagicSkillAttackArbiter(caster, target, skill);
-            //        skillMessageType = ObjectMessageType.OBJMSG_MAGICSKILL;
-            //        break;
-
-            //    case SkillType.Skill:
-            //        attackArbiter = new MeleeSkillAttackArbiter(caster, target, skill);
-            //        skillMessageType = ObjectMessageType.OBJMSG_MELEESKILL;
-            //        break;
-            //}
-
-            //_battleSystem.DamageTarget(caster, target, attackArbiter, skillMessageType);
-
-            //skill.SetCoolTime(skill.LevelData.CooldownTime);
-
-            //if (reduceCasterPoints)
-            //{
-            //    ReduceCasterPoints(caster, skill);
-            //}
         }
 
         /// <summary>
@@ -241,7 +209,7 @@ namespace Rhisis.Game.Systems
         /// <param name="skillUseType">Skill use type.</param>
         private void CastMagicAttackShot(IMover caster, IMover target, ISkill skill, SkillUseType skillUseType)
         {
-            //var skillCastingTime = skill.GetCastingTime();
+            int skillCastingTime = skill.GetCastingTime();
             //var projectile = new MagicSkillProjectileInfo(caster, target, skill, () =>
             //{
             //    ExecuteSkill(caster, target, skill, reduceCasterPoints: false);
@@ -253,6 +221,36 @@ namespace Rhisis.Game.Systems
             //{
             //    ReduceCasterPoints(caster, skill);
             //});
+        }
+
+        /// <summary>
+        /// Executes a melee or magic skill and inflicts the damages to the target.
+        /// </summary>
+        /// <param name="caster">Living entity casting a skill.</param>
+        /// <param name="target">Living target entity touched by the skill.</param>
+        /// <param name="skill">Skill to be casted.</param>
+        /// <param name="reduceCasterPoints">Value that indicates if it should reduce caster points or not.</param>
+        private void ExecuteSkill(IMover caster, IMover target, ISkill skill, bool reduceCasterPoints = true)
+        {
+            IBattle battle = caster switch
+            {
+                IPlayer player => player.Battle,
+                IMonster monster => monster.Battle,
+                _ => null
+            };
+
+            if (battle == null)
+            {
+                throw new InvalidOperationException("Only a player or monster can cast a skill.");
+            }
+
+            battle.SkillAttack(target, skill);
+            skill.SetCoolTime(skill.LevelData.CooldownTime);
+
+            if (reduceCasterPoints)
+            {
+                ReduceCasterPoints(caster, skill);
+            }
         }
 
         /// <summary>
