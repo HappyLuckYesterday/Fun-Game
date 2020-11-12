@@ -1,14 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.Core.Common;
-using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Factories;
-using Rhisis.World.Game.Maps;
-using System;
-using Rhisis.Core.Structures;
-using Rhisis.World.Game.Maps.Regions;
-using Rhisis.Game.Common;
-using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features.Chat;
+using Rhisis.Game.Abstractions.Map;
+using Rhisis.Game.Common;
+using System;
 
 namespace Rhisis.World.Game.Chat
 {
@@ -18,18 +13,18 @@ namespace Rhisis.World.Game.Chat
     public class CreateMonsterChatCommand : IChatCommand
     {
         private readonly ILogger<CreateMonsterChatCommand> _logger;
-        private readonly IMonsterFactory _monsterFactory;
+        private readonly IMapManager _mapManager;
 
         /// <summary>
         /// Creates a new <see cref="CreateMonsterChatCommand"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        /// <param name="monsterFactory">Monster factory.</param>
+        /// <param name="mapManager"></param>
 
-        public CreateMonsterChatCommand(ILogger<CreateMonsterChatCommand> logger, IMapManager mapManager, IMonsterFactory monsterFactory)
+        public CreateMonsterChatCommand(ILogger<CreateMonsterChatCommand> logger, IMapManager mapManager)
         {
             _logger = logger;
-            _monsterFactory = monsterFactory;
+            _mapManager = mapManager;
         }
 
         /// <inheritdoc />

@@ -3,7 +3,6 @@ using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Common;
 using Rhisis.Network.Snapshots;
-using Rhisis.World.Packets;
 
 namespace Rhisis.World.Game.Chat
 {
@@ -12,17 +11,14 @@ namespace Rhisis.World.Game.Chat
     public class NoOneKillChatCommand : IChatCommand
     {
         private readonly ILogger<NoOneKillChatCommand> _logger;
-        private readonly IPlayerDataPacketFactory _playerDataPacketFactory;
 
         /// <summary>
         /// Creates a new <see cref="NoOneKillChatCommand"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        /// <param name="playerDataPacketFactory">Player data packet factory system.</param>
-        public NoOneKillChatCommand(ILogger<NoOneKillChatCommand> logger, IPlayerDataPacketFactory playerDataPacketFactory)
+        public NoOneKillChatCommand(ILogger<NoOneKillChatCommand> logger)
         {
             _logger = logger;
-            _playerDataPacketFactory = playerDataPacketFactory;
         }
 
         /// <inheritdoc />

@@ -1,7 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
-using Rhisis.World.Game.Entities;
 using Sylver.Network.Common;
-using System;
 
 namespace Rhisis.World.Client
 {
@@ -15,9 +13,6 @@ namespace Rhisis.World.Client
         /// <summary>
         /// Gets or sets the player entity.
         /// </summary>
-        [Obsolete]
-        IPlayerEntity Player { get; set; }
-
-        IPlayer NewPlayer { get; }
+        IPlayer Player { get; }
     }
 }

@@ -29,7 +29,7 @@ namespace Rhisis.World.Handlers
             player.DestinationPosition = new Vector3(packet.X, packet.Y, packet.Z);
             player.Unfollow();
             player.Battle.ClearTarget();
-            player.Connection.SendToVisible(new DestPositionSnapshot(player));
+            player.SendToVisible(new DestPositionSnapshot(player));
         }
     }
 }

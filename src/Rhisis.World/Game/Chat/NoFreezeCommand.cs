@@ -1,14 +1,9 @@
 using Microsoft.Extensions.Logging;
-using Rhisis.Core.Common;
-using Rhisis.World.Game.Entities;
-using System;
-using Rhisis.World.Packets;
-using Rhisis.Game.Common;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features.Chat;
-using System.Collections.Generic;
-using System.Linq;
+using Rhisis.Game.Common;
 using Rhisis.Network.Snapshots;
+using System;
 
 namespace Rhisis.World.Game.Chat
 {
@@ -18,19 +13,16 @@ namespace Rhisis.World.Game.Chat
     {
         private readonly ILogger<NoFreezeChatCommand> _logger;
         private readonly IWorldServer _worldServer;
-        private readonly IPlayerDataPacketFactory _playerDataPacketFactory;
 
         /// <summary>
         /// Creates a new <see cref="NoFreezeChatCommand"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="worldServer">World server system.</param>
-        /// <param name="playerDataPacketFactory">Player data packet factory system.</param>
-        public NoFreezeChatCommand(ILogger<NoFreezeChatCommand> logger, IWorldServer worldServer, IPlayerDataPacketFactory playerDataPacketFactory)
+        public NoFreezeChatCommand(ILogger<NoFreezeChatCommand> logger, IWorldServer worldServer)
         {
             _logger = logger;
             _worldServer = worldServer;
-            _playerDataPacketFactory = playerDataPacketFactory;
         }
 
         /// <inheritdoc />

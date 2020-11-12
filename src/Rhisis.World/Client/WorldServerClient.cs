@@ -5,16 +5,14 @@ using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Entities;
+using Rhisis.Game.Protocol.Packets;
 using Rhisis.Network;
-using Rhisis.World.Game.Entities;
-using Rhisis.World.Packets;
 using Sylver.HandlerInvoker;
 using Sylver.HandlerInvoker.Exceptions;
 using Sylver.Network.Data;
 using Sylver.Network.Server;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 
 namespace Rhisis.World.Client
@@ -24,13 +22,9 @@ namespace Rhisis.World.Client
         private ILogger<WorldServerClient> _logger;
         private IHandlerInvoker _handlerInvoker;
 
-        /// <inheritdoc />
         public uint SessionId { get; }
 
-        /// <inheritdoc />
-        public IPlayerEntity Player { get; set; }
-
-        public IPlayer NewPlayer { get; }
+        public IPlayer Player { get; }
 
         /// <summary>
         /// Creates a new <see cref="WorldServerClient"/> instance.
@@ -40,7 +34,7 @@ namespace Rhisis.World.Client
             : base(socketConnection)
         {
             SessionId = RandomHelper.GenerateSessionKey();
-            NewPlayer = new Player
+            Player = new Player
             {
                 Connection = this
             };
@@ -49,12 +43,13 @@ namespace Rhisis.World.Client
         /// <summary>
         /// Initialize the client and send welcome packet.
         /// </summary>
-        public void Initialize(ILogger<WorldServerClient> logger, IHandlerInvoker handlerInvoker, IWorldServerPacketFactory worldServerPacketFactory)
+        public void Initialize(ILogger<WorldServerClient> logger, IHandlerInvoker handlerInvoker)
         {
             _logger = logger;
             _handlerInvoker = handlerInvoker;
 
-            worldServerPacketFactory.SendWelcome(this, SessionId);
+            using var welcomePacket = new WelcomePacket(SessionId);
+            Send(welcomePacket);
         }
 
         /// <inheritdoc />
@@ -76,30 +71,30 @@ namespace Rhisis.World.Client
                 packetHeaderNumber = packet.Read<uint>();
                 packetType = (PacketType)packetHeaderNumber;
 #if DEBUG
-                _logger.LogTrace("Received {0} packet from {1}.", packetType, Socket.RemoteEndPoint);
+                _logger.LogTrace("[{Player}] Received {0} packet from {1}.", packetType, Socket.RemoteEndPoint);
 #endif
-                _handlerInvoker.Invoke(packetType, NewPlayer, packet);
+                _handlerInvoker.Invoke(packetType, Player, packet);
             }
             catch (HandlerActionNotFoundException)
             {
                 if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
                 {
-                    _logger.LogTrace("Received an unimplemented World packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
+                    _logger.LogTrace("[{Player}] Received an unimplemented World packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
                 }
                 else
                 {
-                    _logger.LogTrace("Received an unknown World packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
+                    _logger.LogTrace("[{Player}] Received an unknown World packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
                 }
             }
             catch (Exception exception)
             {
                 if (packetType == PacketType.WELCOME)
                 {
-                    _logger.LogError(exception, $"Failed to read incoming packet header. {Environment.NewLine}");
+                    _logger.LogError(exception, $"[{Player}] Failed to read incoming packet header. {Environment.NewLine}");
                 }
                 else
                 {
-                    _logger.LogError(exception, $"An error occured while handling '{packetType}'{Environment.NewLine}.");
+                    _logger.LogError(exception, $"[{Player}] An error occured while handling '{packetType}'{Environment.NewLine}.");
                     
                     if (exception.InnerException != null)
                     {
@@ -114,36 +109,21 @@ namespace Rhisis.World.Client
         {
             if (disposing)
             {
-                if (NewPlayer != null)
+                if (Player != null)
                 {
-                    NewPlayer.Spawned = false;
-                    NewPlayer.MapLayer.RemovePlayer(NewPlayer);
+                    Player.Spawned = false;
+                    Player.MapLayer.RemovePlayer(Player);
 
-                    var initializers = NewPlayer.Systems.GetService<IEnumerable<IPlayerInitializer>>();
+                    var initializers = Player.Systems.GetService<IEnumerable<IPlayerInitializer>>();
 
                     foreach (IPlayerInitializer initializer in initializers)
                     {
-                        initializer.Save(NewPlayer);
+                        initializer.Save(Player);
                     }
                 }
             }
 
             base.Dispose(disposing);
-        }
-
-        public void SendToVisible(INetPacketStream packet, bool sendToPlayer = false)
-        {
-            IEnumerable<IPlayer> visiblePlayers = NewPlayer.VisibleObjects.OfType<IPlayer>();
-
-            foreach (IPlayer visiblePlayer in visiblePlayers)
-            {
-                visiblePlayer.Connection.Send(packet);
-            }
-
-            if (sendToPlayer)
-            {
-                Send(packet);
-            }
         }
     }
 }

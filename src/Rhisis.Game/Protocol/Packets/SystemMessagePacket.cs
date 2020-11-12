@@ -7,7 +7,7 @@ namespace Rhisis.Game.Protocol.Packets
         public SystemMessagePacket(string message)
             : base(PacketType.SYSTEM)
         {
-            Write(message);
+            WriteString(message);
         }
     }
 }

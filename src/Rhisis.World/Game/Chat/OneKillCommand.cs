@@ -1,10 +1,7 @@
 using Microsoft.Extensions.Logging;
-using Rhisis.Core.Common;
-using Rhisis.World.Game.Entities;
-using Rhisis.World.Packets;
-using Rhisis.Game.Common;
-using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features.Chat;
+using Rhisis.Game.Common;
 using Rhisis.Network.Snapshots;
 
 namespace Rhisis.World.Game.Chat
@@ -14,17 +11,14 @@ namespace Rhisis.World.Game.Chat
     public class OneKillChatCommand : IChatCommand
     {
         private readonly ILogger<OneKillChatCommand> _logger;
-        private readonly IPlayerDataPacketFactory _playerDataPacketFactory;
 
         /// <summary>
         /// Creates a new <see cref="OneKillChatCommand"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        /// <param name="playerDataPacketFactory">Player data packet factory system.</param>
-        public OneKillChatCommand(ILogger<OneKillChatCommand> logger, IPlayerDataPacketFactory playerDataPacketFactory)
+        public OneKillChatCommand(ILogger<OneKillChatCommand> logger)
         {
             _logger = logger;
-            _playerDataPacketFactory = playerDataPacketFactory;
         }
 
         /// <inheritdoc />
@@ -42,7 +36,8 @@ namespace Rhisis.World.Game.Chat
 
                 _logger.LogTrace($"Player '{player.Name}' is now in OneKill mode.");
             }
-            else {
+            else
+            {
                 _logger.LogTrace($"Player '{player.Name}' is already in OneKill mode.");
             }
         }

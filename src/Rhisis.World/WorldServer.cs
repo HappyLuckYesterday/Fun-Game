@@ -12,9 +12,6 @@ using Rhisis.Game.Resources.Loaders;
 using Rhisis.Network;
 using Rhisis.Scripting.Quests;
 using Rhisis.World.Client;
-using Rhisis.World.Game.Chat;
-using Rhisis.World.Game.Entities;
-using Rhisis.World.Packets;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Server;
 using System;
@@ -97,8 +94,7 @@ namespace Rhisis.World
         protected override void OnClientConnected(WorldServerClient serverClient)
         {
             serverClient.Initialize(_serviceProvider.GetRequiredService<ILogger<WorldServerClient>>(),
-                _serviceProvider.GetRequiredService<IHandlerInvoker>(),
-                _serviceProvider.GetRequiredService<IWorldServerPacketFactory>());
+                _serviceProvider.GetRequiredService<IHandlerInvoker>());
 
             _logger.LogInformation("New client connected from {0}.", serverClient.Socket.RemoteEndPoint);
         }
@@ -110,15 +106,15 @@ namespace Rhisis.World
         }
 
         /// <inheritdoc />
-        public IPlayer GetPlayerEntity(uint id) => Clients.FirstOrDefault(x => x.Player.Id == id)?.NewPlayer;
+        public IPlayer GetPlayerEntity(uint id) => Clients.FirstOrDefault(x => x.Player.Id == id)?.Player;
 
         /// <inheritdoc />
         public IPlayer GetPlayerEntity(string name) 
-            => Clients.FirstOrDefault(x => x.Player.Object.Name.Equals(name, StringComparison.OrdinalIgnoreCase))?.NewPlayer;
+            => Clients.FirstOrDefault(x => x.Player.Name.Equals(name, StringComparison.OrdinalIgnoreCase))?.Player;
 
         /// <inheritdoc />
         public IPlayer GetPlayerEntityByCharacterId(uint id) 
-            => Clients.FirstOrDefault(x => x.Player.PlayerData.Id == id)?.NewPlayer;
+            => Clients.FirstOrDefault(x => x.Player.CharacterId == id)?.Player;
 
         /// <inheritdoc />
         public uint GetOnlineConnectedPlayerNumber() 

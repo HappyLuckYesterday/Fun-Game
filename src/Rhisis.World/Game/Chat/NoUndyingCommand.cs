@@ -1,10 +1,7 @@
 using Microsoft.Extensions.Logging;
-using Rhisis.Core.Common;
-using Rhisis.World.Game.Entities;
-using Rhisis.World.Packets;
-using Rhisis.Game.Common;
-using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features.Chat;
+using Rhisis.Game.Common;
 using Rhisis.Network.Snapshots;
 
 namespace Rhisis.World.Game.Chat
@@ -14,17 +11,14 @@ namespace Rhisis.World.Game.Chat
     public class NoUndyingChatCommand : IChatCommand
     {
         private readonly ILogger<NoUndyingChatCommand> _logger;
-        private readonly IPlayerDataPacketFactory _playerDataPacketFactory;
 
         /// <summary>
         /// Creates a new <see cref="NoUndyingChatCommand"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        /// <param name="playerDataPacketFactory">Player data packey factory system.</param>
-        public NoUndyingChatCommand(ILogger<NoUndyingChatCommand> logger, IPlayerDataPacketFactory playerDataPacketFactory)
+        public NoUndyingChatCommand(ILogger<NoUndyingChatCommand> logger)
         {
             _logger = logger;
-            _playerDataPacketFactory = playerDataPacketFactory;
         }
 
         /// <inheritdoc />
