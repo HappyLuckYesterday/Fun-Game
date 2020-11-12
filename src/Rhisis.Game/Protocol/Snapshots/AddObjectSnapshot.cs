@@ -200,7 +200,7 @@ namespace Rhisis.Network.Snapshots
                         }
 
                         // buffs
-                        Write(0);
+                        player.Buffs.Serialize(this);
                     }
                     break;
                 case IMonster monster:

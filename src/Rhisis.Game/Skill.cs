@@ -89,5 +89,7 @@ namespace Rhisis.Game
         {
             _skillSystem.Value.UseSkill(Owner as IPlayer, target, this, skillUseType);
         }
+
+        public override string ToString() => Name;
     }
 }

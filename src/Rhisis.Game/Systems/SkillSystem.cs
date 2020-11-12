@@ -295,7 +295,9 @@ namespace Rhisis.Game.Systems
 
             if (target is IMonster)
             {
-                //_skillPacketFactory.SendSkillCancellation(caster as IPlayerEntity);
+                using var cancelSkillSnapshot = new ClearUseSkillSnapshot(caster);
+
+                SendPacketToVisible(caster, cancelSkillSnapshot, sendToPlayer: true);
                 return;
             }
 
@@ -311,11 +313,11 @@ namespace Rhisis.Game.Systems
                     else
                     {
                         _logger.LogTrace($"{caster} is healing {target} in {castingTime}...");
-                        //caster.Delayer.DelayActionMilliseconds(castingTime, () =>
-                        //{
-                        //    _logger.LogTrace($"{target} healed by {caster} !");
-                        //    ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
-                        //});
+                        caster.Delayer.DelayActionMilliseconds(castingTime, () =>
+                        {
+                            _logger.LogTrace($"{target} healed by {caster} !");
+                            ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
+                        });
                     }
                 }
             }
@@ -323,10 +325,10 @@ namespace Rhisis.Game.Systems
             {
                 if (skill.LevelData.DestParam2 == DefineAttributes.HP)
                 {
-                    //caster.Delayer.DelayActionMilliseconds(castingTime, () =>
-                    //{
-                    //    ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
-                    //});
+                    caster.Delayer.DelayActionMilliseconds(castingTime, () =>
+                    {
+                        ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
+                    });
                 }
             }
 
@@ -351,24 +353,30 @@ namespace Rhisis.Game.Systems
                     attributes.Add(skill.LevelData.DestParam2, skill.LevelData.DestParam2Value);
                 }
 
-                //caster.Delayer.DelayActionMilliseconds(castingTime, () =>
-                //{
-                //    var buff = new BuffSkill(skill.SkillId, skill.Level, buffTime, attributes);
-                //    bool isBuffAdded = _buffSystem.AddBuff(target, buff);
+                caster.Delayer.DelayActionMilliseconds(castingTime, () =>
+                {
+                    var buff = new BuffSkill(target, attributes, skill.Data, skill.Level)
+                    {
+                        RemainingTime = buffTime
+                    };
+                    bool buffAdded = target.Buffs.Add(buff);
 
-                //    if (isBuffAdded)
-                //    {
-                //        ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
-                //        ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam2, skill.LevelData.DestParam2Value);
+                    if (buffAdded)
+                    {
+                        ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
+                        ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam2, skill.LevelData.DestParam2Value);
 
-                //        _skillPacketFactory.SendSkillState(target, buff.SkillId, buff.SkillLevel, buff.RemainingTime);
-                //    }
-                //});
+                        using var skillStateSnapshot = new SetSkillStateSnapshot(target, skill, buff.RemainingTime);
+                        SendPacketToVisible(target, skillStateSnapshot, sendToPlayer: true);
+                    }
+                });
             }
 
             skill.SetCoolTime(skill.LevelData.CooldownTime);
 
-            //_skillPacketFactory.SendUseSkill(caster, target, skill, castingTime, skillUseType);
+            using var snapshot = new UseSkillSnapshot(caster, target, skill, castingTime, skillUseType);
+
+            SendPacketToVisible(caster, snapshot, sendToPlayer: true);
         }
 
         public int GetTimeBonus(IMover entity, DefineAttributes attribute, int value, int skillLevel)
@@ -378,9 +386,9 @@ namespace Rhisis.Game.Systems
         {
             var attributeValue = attribute switch
             {
-                //DefineAttributes.STA => _statisticsSystem.GetTotalStrength(entity),
-                //DefineAttributes.DEX => _statisticsSystem.GetTotalDexterity(entity),
-                //DefineAttributes.INT => _statisticsSystem.GetTotalIntelligence(entity),
+                DefineAttributes.STA => entity.Statistics.Stamina + entity.Attributes.Get(DefineAttributes.STA),
+                DefineAttributes.DEX => entity.Statistics.Dexterity + entity.Attributes.Get(DefineAttributes.DEX),
+                DefineAttributes.INT => entity.Statistics.Intelligence + entity.Attributes.Get(DefineAttributes.INT),
                 _ => 1
             };
 
@@ -404,12 +412,12 @@ namespace Rhisis.Game.Systems
 
                         if (recoveredHp > 0)
                         {
-                            //_attributeSystem.SetAttribute(target, attribute, recoveredHp);
+                            target.Health.Hp += recoveredHp;
                         }
                     }
                     break;
                 default:
-                    //_attributeSystem.SetAttribute(target, attribute, value);
+                    target.Attributes.Increase(attribute, value);
                     break;
             }
         }

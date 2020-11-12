@@ -9,7 +9,7 @@ namespace Rhisis.Game.Features
     public class Attributes : GameFeature, IAttributes
     {
         private readonly IMover _mover;
-        private readonly IDictionary<DefineAttributes, int> _attributes;
+        private readonly Dictionary<DefineAttributes, int> _attributes;
 
         public Attributes(IMover mover)
         {
@@ -61,11 +61,11 @@ namespace Rhisis.Game.Features
                     case DefineAttributes.IMMUNITY:
                         if (value != -1)
                         {
-                            _attributes[attribute] |= value;
+                            Set(attribute, Get(attribute) | value);
                         }
                         break;
                     default:
-                        _attributes[attribute] += value;
+                        Set(attribute, Get(attribute) + value);
                         break;
                 }
 
@@ -99,11 +99,12 @@ namespace Rhisis.Game.Features
             {
                 if (attribute == DefineAttributes.CHRSTATE)
                 {
-                    _attributes[attribute] &= ~value;
+                    Set(attribute, Get(attribute) & ~value);
+                    //_attributes[attribute] &= ~value;
                 }
                 else
                 {
-                    _attributes[attribute] -= value;
+                    Set(attribute, Get(attribute) - value);
                 }
             }
 

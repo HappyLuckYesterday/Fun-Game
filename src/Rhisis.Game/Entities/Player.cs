@@ -78,8 +78,7 @@ namespace Rhisis.Game.Entities
         {
             get
             {
-                // TODO: add attribute speed
-                return Data.Speed * SpeedFactor;
+                return (Data.Speed + (Attributes.Get(DefineAttributes.SPEED) / 100)) * SpeedFactor;
             }
         }
 
@@ -100,6 +99,8 @@ namespace Rhisis.Game.Entities
         public IAttributes Attributes { get; set; }
 
         public IDelayer Delayer { get; set; }
+
+        public IBuffs Buffs { get; set; }
 
         IStatistics IMover.Statistics => Statistics;
 

@@ -1,5 +1,4 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
-using Rhisis.World.Game.Entities;
 using Sylver.Network.Server;
 
 namespace Rhisis.World

@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Rhisis.Game.Systems.Initializers
 {
-    [Injectable(ServiceLifetime.Singleton)]
+    [Injectable]
     public sealed class PlayerTaskbarInitializer : IPlayerInitializer
     {
         private readonly IRhisisDatabase _database;

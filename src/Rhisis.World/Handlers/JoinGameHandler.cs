@@ -140,6 +140,7 @@ namespace Rhisis.World.Handlers
                 realPlayer.Taskbar = _serviceProvider.CreateInstance<Taskbar>();
                 realPlayer.Projectiles = _serviceProvider.CreateInstance<Projectiles>();
                 realPlayer.Delayer = _serviceProvider.CreateInstance<Delayer>();
+                realPlayer.Buffs = _serviceProvider.CreateInstance<Buffs>(realPlayer);
 
                 IEnumerable<IPlayerInitializer> playerInitializers = _serviceProvider.GetRequiredService<IEnumerable<IPlayerInitializer>>();
 

@@ -191,6 +191,7 @@ namespace Rhisis.Game.Map
         public void StartUpdate()
         {
             Task.Factory.StartNew(Process, _mainProcessTaskCancelToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            Task.Factory.StartNew(ProcessEachSeconds, _mainProcessTaskCancelToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         public void StopUpdate()
@@ -235,6 +236,33 @@ namespace Rhisis.Game.Map
                 foreach (IMapLayer layer in _layers)
                 {
                     layer.Process();
+                }
+            }
+        }
+
+        private void ProcessEachSeconds()
+        {
+            while (!_mainProcessTaskCancelToken.IsCancellationRequested)
+            {
+                try
+                {
+                    UpdateEachSeconds();
+                    Thread.Sleep(1000);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, $"An error occured on map '{Name}'.");
+                }
+            }
+        }
+
+        private void UpdateEachSeconds()
+        {
+            lock (_layers)
+            {
+                foreach (IMapLayer layer in _layers)
+                {
+                    layer.ProcessEachSeconds();
                 }
             }
         }

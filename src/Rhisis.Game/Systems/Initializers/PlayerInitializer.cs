@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Rhisis.Game.Systems.Initializers
 {
-    [Injectable(ServiceLifetime.Singleton)]
+    [Injectable]
     public class PlayerInitializer : IPlayerInitializer
     {
         private readonly IRhisisDatabase _database;

@@ -9,7 +9,6 @@ using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Game.Features;
 using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;
@@ -50,7 +49,7 @@ namespace Rhisis.Game.Entities
         public int Level
         {
             get => Data.Level;
-            set => throw new InvalidOperationException();
+            set => throw new InvalidOperationException("Cannot set monster level.");
         }
 
         public Vector3 DestinationPosition { get; set; } = new Vector3();
@@ -63,8 +62,7 @@ namespace Rhisis.Game.Entities
         {
             get
             {
-                // TODO: add bonus attributes
-                return (Data.Speed * 0.5f) * SpeedFactor;
+                return ((Data.Speed * 0.5f) + (Attributes.Get(DefineAttributes.SPEED) / 100)) * SpeedFactor;
             }
         }
 
@@ -109,6 +107,8 @@ namespace Rhisis.Game.Entities
         public float FollowDistance { get; set; }
 
         public IBattle Battle { get; set; }
+
+        public IBuffs Buffs { get; set; }
 
         public Monster()
         {

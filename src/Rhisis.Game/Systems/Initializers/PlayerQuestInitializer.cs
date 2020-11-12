@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace Rhisis.World.Systems.Initializers
 {
-    [Injectable(ServiceLifetime.Singleton)]
+    [Injectable]
     public sealed class PlayerQuestInitializer : IPlayerInitializer
     {
         private readonly IRhisisDatabase _database;

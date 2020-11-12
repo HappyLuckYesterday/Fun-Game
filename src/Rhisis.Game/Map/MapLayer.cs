@@ -204,6 +204,39 @@ namespace Rhisis.Game.Map
                         {
                             monster.Behavior.Update();
                             _mobilitySystem.Execute(monster);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void ProcessEachSeconds()
+        {
+            if (!_players.Any())
+            {
+                return;
+            }
+
+            lock (_players)
+            {
+                if (_players.Any())
+                {
+                    foreach (IPlayer player in _players)
+                    {
+                        player.Buffs.Update();
+                    }
+                }
+            }
+
+            if (_monsters.Any())
+            {
+                lock (_monsters)
+                {
+                    if (_monsters.Any())
+                    {
+                        foreach (IMonster monster in _monsters)
+                        {
+                            monster.Buffs.Update();
                             _respawnSystem.Execute(monster);
                         }
                     }

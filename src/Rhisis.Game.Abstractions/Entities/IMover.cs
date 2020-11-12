@@ -30,6 +30,8 @@ namespace Rhisis.Game.Abstractions.Entities
 
         IDelayer Delayer { get; }
 
+        IBuffs Buffs { get; }
+
         IWorldObject FollowTarget { get; set; }
 
         float FollowDistance { get; set; }

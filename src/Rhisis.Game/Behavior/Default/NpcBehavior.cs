@@ -16,17 +16,17 @@ namespace Rhisis.Game.Behavior.Default
 
         public void OnArrived()
         {
-            throw new NotImplementedException();
+            throw new InvalidOperationException("A NPC cannot move.");
         }
 
         public void OnKilled(IMover killerEntity)
         {
-            throw new NotImplementedException();
+            throw new InvalidOperationException("A NPC cannot be killed by other entities.");
         }
 
         public void OnTargetKilled(IMover killedEntity)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException($"A NPC cannot kill other entities.");
         }
 
         public void Update()
@@ -36,7 +36,7 @@ namespace Rhisis.Game.Behavior.Default
                 return;
             }
 
-            
+            // TODO: NPC oral text
         }
     }
 }

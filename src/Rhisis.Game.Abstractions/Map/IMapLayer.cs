@@ -99,6 +99,11 @@ namespace Rhisis.Game.Abstractions.Map
         void Process();
 
         /// <summary>
+        /// Process the map layer logic each seconds.
+        /// </summary>
+        void ProcessEachSeconds();
+
+        /// <summary>
         /// Gets a collection of visible objects for the given world object.
         /// </summary>
         /// <param name="worldObject">World object.</param>
