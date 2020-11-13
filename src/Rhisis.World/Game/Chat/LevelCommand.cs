@@ -51,9 +51,15 @@ namespace Rhisis.Game.Features.Chat.Commands
             player.Experience.Reset();
             player.Statistics.Restat();
 
+            player.SkillTree.Reskill();
+            player.SkillTree.ResetAvailableSkillPoints();
+            for (int levelNr = 2; levelNr <= player.Level; levelNr++)
+            {
+                player.SkillTree.AddSkillPointsForLevelUp(levelNr, false);
+            }
+
             if (player.Job.Id != job.Id)
             {
-                player.SkillTree.Reskill();
                 player.ChangeJob(job.Id);
             }
 

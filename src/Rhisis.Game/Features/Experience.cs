@@ -185,7 +185,7 @@ namespace Rhisis.Game.Features
 
             if (_player.Level != _player.DeathLevel)
             {
-                _player.SkillTree.AddSkillPoints((ushort)((_player.Level - 1) / 20 + 2), sendToPlayer: false);
+                _player.SkillTree.AddSkillPointsForLevelUp(_player.Level, sendToPlayer: false);
                 _player.Statistics.AvailablePoints += statPoints;
             }
 
