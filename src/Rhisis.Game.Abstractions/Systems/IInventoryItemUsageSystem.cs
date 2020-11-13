@@ -2,7 +2,10 @@
 
 namespace Rhisis.Game.Abstractions.Systems
 {
-    public interface IInventoryItemUsage
+    /// <summary>
+    /// Provides a mechanism to manage the player inventory item usage.
+    /// </summary>
+    public interface IInventoryItemUsageSystem
     {
         /// <summary>
         /// Uses blinkwing items.

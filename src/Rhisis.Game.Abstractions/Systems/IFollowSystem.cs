@@ -2,6 +2,9 @@
 
 namespace Rhisis.Game.Abstractions.Systems
 {
+    /// <summary>
+    /// Provides a mechanism to manage the entity follow system.
+    /// </summary>
     public interface IFollowSystem
     {
         /// <summary>

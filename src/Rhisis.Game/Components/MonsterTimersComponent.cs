@@ -1,4 +1,6 @@
-﻿namespace Rhisis.Game.Abstractions.Components
+﻿using Rhisis.Game.Abstractions.Features;
+
+namespace Rhisis.Game.Abstractions.Components
 {
     public class MonsterTimersComponent : IMonsterTimers
     {

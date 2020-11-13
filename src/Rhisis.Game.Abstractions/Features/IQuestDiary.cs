@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Rhisis.Game.Abstractions.Features
 {
+    /// <summary>
+    /// Provides a mechanism to manage the player quest diary.
+    /// </summary>
     public interface IQuestDiary : IPacketSerializer, IEnumerable<IQuest>
     {
         /// <summary>

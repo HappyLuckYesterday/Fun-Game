@@ -27,7 +27,7 @@ namespace Rhisis.Game.Features
         private readonly IEntityFactory _entityFactory;
         private readonly IItemContainer _container;
         private readonly IDictionary<CoolTimeType, long> _itemsCoolTimes;
-        private readonly Lazy<IInventoryItemUsage> _inventoryItemUsage;
+        private readonly Lazy<IInventoryItemUsageSystem> _inventoryItemUsage;
 
         public int StorageCapacity => _container.Capacity;
 
@@ -49,7 +49,7 @@ namespace Rhisis.Game.Features
                 { CoolTimeType.Pills, 0 },
                 { CoolTimeType.Skill, 0 }
             };
-            _inventoryItemUsage = new Lazy<IInventoryItemUsage>(() => _player.Systems.GetService<IInventoryItemUsage>());
+            _inventoryItemUsage = new Lazy<IInventoryItemUsageSystem>(() => _player.Systems.GetService<IInventoryItemUsageSystem>());
             Hand = _entityFactory.CreateItem(DefineItem.II_WEA_HAN_HAND, 0, ElementType.None, 0);
         }
 

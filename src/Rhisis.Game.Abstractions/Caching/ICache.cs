@@ -2,8 +2,18 @@
 
 namespace Rhisis.Game.Abstractions.Caching
 {
+    /// <summary>
+    /// Provides a mechanism to manage in-game cache.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     public interface ICache<in TKey, TValue>
     {
+        /// <summary>
+        /// Gets the cached items.
+        /// </summary>
+        ICollection<TValue> Items { get; }
+
         /// <summary>
         /// Adds an item to the cache
         /// </summary>
@@ -25,7 +35,5 @@ namespace Rhisis.Game.Abstractions.Caching
         /// <param name="key">Unique key to get the item with</param>
         /// <returns>Item or default value if not found</returns>
         TValue TryGetOrDefault(TKey key);
-
-        ICollection<TValue> Items { get; }
     }
 }

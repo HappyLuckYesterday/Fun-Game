@@ -3,6 +3,9 @@ using Rhisis.Game.Abstractions.Entities;
 
 namespace Rhisis.Game.Abstractions.Systems
 {
+    /// <summary>
+    /// Provides a mechnism to manage the player teleportation system.
+    /// </summary>
     public interface ITeleportSystem
     {
         /// <summary>

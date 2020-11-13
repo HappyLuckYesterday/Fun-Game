@@ -2,6 +2,9 @@
 
 namespace Rhisis.Game.Abstractions.Features.Chat
 {
+    /// <summary>
+    /// Provides a mechanism to manage the chat commands.
+    /// </summary>
     public interface IChatCommandManager
     {
         /// <summary>

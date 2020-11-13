@@ -97,7 +97,7 @@ namespace Rhisis.Game.Abstractions.Components
 
             if (item == null)
             {
-                throw new ArgumentNullException(nameof(item), $"No item found at index {index}.");
+                throw new ArgumentException($"No item found at index {index}.", nameof(item));
             }
 
             return item.Id != -1 ? item : null;

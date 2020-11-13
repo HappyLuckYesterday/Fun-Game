@@ -8,6 +8,9 @@ using System.Linq;
 
 namespace Rhisis.Game.Abstractions.Entities
 {
+    /// <summary>
+    /// Describes the NPC entity.
+    /// </summary>
     public interface INpc : IWorldObject, IInteligentEntity
     {
         /// <summary>

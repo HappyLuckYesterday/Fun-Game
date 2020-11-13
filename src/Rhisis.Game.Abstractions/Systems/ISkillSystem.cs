@@ -3,6 +3,9 @@ using Rhisis.Game.Common;
 
 namespace Rhisis.Game.Abstractions.Systems
 {
+    /// <summary>
+    /// Provides a mechanism to manage player skills.
+    /// </summary>
     public interface ISkillSystem
     {
         /// <summary>

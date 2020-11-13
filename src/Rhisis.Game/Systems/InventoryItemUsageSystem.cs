@@ -13,7 +13,7 @@ using System.Collections.Generic;
 namespace Rhisis.Game.Systems
 {
     [Injectable(ServiceLifetime.Singleton)]
-    public class InventoryItemUsageSystem : GameFeature, IInventoryItemUsage
+    public class InventoryItemUsageSystem : GameFeature, IInventoryItemUsageSystem
     {
         private readonly ISpecialEffectSystem _specialEffectSystem;
         private readonly IMapManager _mapManager;

@@ -53,7 +53,7 @@ namespace Rhisis.Game.Abstractions
         DateTime StartTime { get; }
 
         /// <summary>
-        /// Gets a dictionnary of the killed monsters. Key is the monster id; Value is the killed amount.
+        /// Gets a dictionary of the killed monsters. Key is the monster id; Value is the killed amount.
         /// </summary>
         IDictionary<int, short> Monsters { get; set; }
 

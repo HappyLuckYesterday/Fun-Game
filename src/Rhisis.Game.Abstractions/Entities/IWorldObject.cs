@@ -1,34 +1,73 @@
-﻿using Rhisis.Game.Common;
-using Rhisis.Core.Structures;
-using System;
+﻿using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Map;
-using System.Collections.Generic;
+using Rhisis.Game.Common;
 using Sylver.Network.Data;
+using System;
+using System.Collections.Generic;
 
 namespace Rhisis.Game.Abstractions.Entities
 {
+    /// <summary>
+    /// Describes the world object entity.
+    /// </summary>
+    /// <remarks>
+    /// This is the most common entity of the game. All entities should implement this interface.
+    /// </remarks>
     public interface IWorldObject : IEquatable<IWorldObject>
     {
+        /// <summary>
+        /// Gets the object id.
+        /// </summary>
         uint Id { get; }
 
+        /// <summary>
+        /// Gets the object type.
+        /// </summary>
         WorldObjectType Type { get; }
 
+        /// <summary>
+        /// Gets the object model id.
+        /// </summary>
         int ModelId { get; }
 
+        /// <summary>
+        /// Gets the map where the current object is located.
+        /// </summary>
         IMap Map { get; }
 
+        /// <summary>
+        /// Gets the map layer where the current object is located.
+        /// </summary>
         IMapLayer MapLayer { get; set; }
 
+        /// <summary>
+        /// Gets the object position.
+        /// </summary>
         Vector3 Position { get; }
 
+        /// <summary>
+        /// Gets or sets the object orientation angle.
+        /// </summary>
         float Angle { get; set; }
 
+        /// <summary>
+        /// Gets the object size.
+        /// </summary>
         short Size { get; }
 
+        /// <summary>
+        /// Gets the object name.
+        /// </summary>
         string Name { get; }
 
+        /// <summary>
+        /// Gets the game systems.
+        /// </summary>
         IServiceProvider Systems { get; }
 
+        /// <summary>
+        /// Gets or sets a boolean value that indicates if the object is spawned.
+        /// </summary>
         bool Spawned { get; set; }
 
         /// <summary>

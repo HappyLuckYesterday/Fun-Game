@@ -1,5 +1,8 @@
 ﻿namespace Rhisis.Game.Abstractions.Features.Chat
 {
+    /// <summary>
+    /// Provides a mechanism to manage the entities chat system.
+    /// </summary>
     public interface IChat
     {
         /// <summary>

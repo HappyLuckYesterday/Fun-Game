@@ -1,6 +1,6 @@
 ﻿using Rhisis.Game.Common;
 
-namespace Rhisis.Game.Abstractions.Components
+namespace Rhisis.Game.Abstractions.Features
 {
     public interface IHumanVisualAppearance
     {
