@@ -78,8 +78,6 @@ namespace Rhisis.Game.Features
 
         public void Reskill()
         {
-            SkillPoints = 0;
-
             foreach (ISkill skill in _skills)
             {
                 SkillPoints += (ushort)(skill.Level * GameConstants.SkillPointUsage[skill.Data.JobType]);
