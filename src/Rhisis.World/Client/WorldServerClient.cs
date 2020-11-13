@@ -71,7 +71,7 @@ namespace Rhisis.World.Client
                 packetHeaderNumber = packet.Read<uint>();
                 packetType = (PacketType)packetHeaderNumber;
 #if DEBUG
-                _logger.LogTrace("[{Player}] Received {0} packet from {1}.", packetType, Socket.RemoteEndPoint);
+                _logger.LogTrace($"[{Player}] Received {0} packet from {1}.", packetType, Socket.RemoteEndPoint);
 #endif
                 _handlerInvoker.Invoke(packetType, Player, packet);
             }
@@ -79,11 +79,11 @@ namespace Rhisis.World.Client
             {
                 if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
                 {
-                    _logger.LogTrace("[{Player}] Received an unimplemented World packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
+                    _logger.LogTrace($"[{Player}] Received an unimplemented World packet {0} (0x{1}) from {2}.", Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
                 }
                 else
                 {
-                    _logger.LogTrace("[{Player}] Received an unknown World packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
+                    _logger.LogTrace($"[{Player}] Received an unknown World packet 0x{0} from {1}.", packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
                 }
             }
             catch (Exception exception)
