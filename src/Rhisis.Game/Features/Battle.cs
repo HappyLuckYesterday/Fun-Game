@@ -147,6 +147,8 @@ namespace Rhisis.Game.Features
 
         private void InflictDamages(IMover attacker, IMover target, AttackResult attackResult, ObjectMessageType objectMessageType)
         {
+            OverrideDamagesIfOneHitKillMode(attackResult, target);
+
             Target = target;
             target.Health.SufferDamages(attacker, Math.Max(0, attackResult.Damages), attackResult.Flags, objectMessageType);
 
@@ -163,6 +165,15 @@ namespace Rhisis.Game.Features
                     monster.Follow(_mover);
                     monster.Battle.Target = _mover;
                 }
+            }
+        }
+
+        private void OverrideDamagesIfOneHitKillMode(AttackResult attackResult, IMover target)
+        {
+            if (_mover is IPlayer player && player.Mode.HasFlag(ModeType.ONEKILL_MODE))
+            {
+                attackResult.Damages = target.Health.Hp;
+                attackResult.Flags = AttackFlags.AF_GENERIC;
             }
         }
     }

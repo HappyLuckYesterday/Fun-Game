@@ -88,11 +88,6 @@ namespace Rhisis.Game.Features.AttackArbiters
         /// <returns></returns>
         private AttackFlags GetAttackFlags()
         {
-            if (Attacker is IPlayer player && player.Mode.HasFlag(ModeType.ONEKILL_MODE))
-            {
-                return AttackFlags.AF_GENERIC;
-            }
-
             int hitRate;
             var hitRating = GetHitRating(Attacker);
             var escapeRating = GetEspaceRating(Defender);
