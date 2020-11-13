@@ -1,7 +1,6 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using Rhisis.Core.Data;
-using Rhisis.Core.Structures.Game.Quests;
+using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.Scripting.Quests;
 using System;
 using System.Collections.Generic;

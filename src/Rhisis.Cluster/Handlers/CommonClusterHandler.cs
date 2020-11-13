@@ -1,5 +1,6 @@
 ﻿using Rhisis.Cluster.Client;
 using Rhisis.Cluster.Packets;
+using Rhisis.Network;
 using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.Cluster;
 using Sylver.HandlerInvoker.Attributes;

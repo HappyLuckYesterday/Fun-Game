@@ -30,5 +30,12 @@ namespace Rhisis.Core.Extensions
         /// <returns></returns>
         public static string TakeCharacters(this string source, int numberOfCharacters)
             => source.Substring(0, source.Length > numberOfCharacters ? numberOfCharacters : source.Length);
+
+        /// <summary>
+        /// Check if the input string is numeric.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static bool IsNumeric(this string source) => decimal.TryParse(source, out _);
     }
 }

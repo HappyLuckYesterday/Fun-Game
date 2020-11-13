@@ -1,13 +1,14 @@
-﻿using Sylver.Network.Data;
+﻿using Rhisis.Game.Abstractions.Protocol;
+using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World
 {
     public class SellItemPacket : IPacketDeserializer
     {
         /// <summary>
-        /// Gets the item's unique id.
+        /// Gets the item's index in the player's inventory.
         /// </summary>
-        public byte ItemUniqueId { get; set; }
+        public byte ItemIndex { get; set; }
 
         /// <summary>
         /// Gets the item quantity to sell.
@@ -17,7 +18,7 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            ItemUniqueId = packet.Read<byte>();
+            ItemIndex = packet.Read<byte>();
             Quantity = packet.Read<short>();
         }
     }

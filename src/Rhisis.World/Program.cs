@@ -5,16 +5,16 @@ using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Extensions;
-using Rhisis.Core.Resources;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Database;
-using Rhisis.Network.Packets;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
 using System.IO;
 using System.Threading.Tasks;
 using Rhisis.World.ClusterClient;
+using Rhisis.Game;
+using Rhisis.Game.Abstractions.Protocol;
 
 namespace Rhisis.World
 {
@@ -40,8 +40,8 @@ namespace Rhisis.World
 
                     services.AddDatabase(hostContext.Configuration);
                     services.AddHandlers();
-                    services.AddGameResources();
                     services.AddInjectableServices();
+                    services.AddGameSystems();
 
                     // World server configuration
                     services.AddSingleton<IWorldServer, WorldServer>();

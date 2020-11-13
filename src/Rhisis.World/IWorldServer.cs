@@ -1,4 +1,4 @@
-﻿using Rhisis.World.Game.Entities;
+﻿using Rhisis.Game.Abstractions.Entities;
 using Sylver.Network.Server;
 
 namespace Rhisis.World
@@ -9,22 +9,22 @@ namespace Rhisis.World
         /// Gets a player entity by his id.
         /// </summary>
         /// <param name="id">Player id</param>
-        /// <returns><see cref="IPlayerEntity"/></returns>
-        IPlayerEntity GetPlayerEntity(uint id);
+        /// <returns><see cref="IPlayer"/></returns>
+        IPlayer GetPlayerEntity(uint id);
 
         /// <summary>
         /// Gets a player entity by his name
         /// </summary>
         /// <param name="name">Player name.</param>
-        /// <returns><see cref="IPlayerEntity"/></returns>
-        IPlayerEntity GetPlayerEntity(string name);
+        /// <returns><see cref="IPlayer"/></returns>
+        IPlayer GetPlayerEntity(string name);
 
         /// <summary>
         /// Gets a player entity by its character id.
         /// </summary>
         /// <param name="id">Character id.</param>
-        /// <returns><see cref="IPlayerEntity"/></returns>
-        IPlayerEntity GetPlayerEntityByCharacterId(uint id);
+        /// <returns><see cref="IPlayer"/></returns>
+        IPlayer GetPlayerEntityByCharacterId(uint id);
 
         /// <summary>
         /// Gets the number of players connected to the worldserver.

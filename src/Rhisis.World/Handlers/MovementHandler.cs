@@ -1,40 +1,35 @@
-﻿using Rhisis.Core.Data;
-using Rhisis.Core.Structures;
-using Rhisis.Network.Packets;
+﻿using Rhisis.Core.Structures;
+using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Common;
+using Rhisis.Network;
 using Rhisis.Network.Packets.World;
-using Rhisis.World.Client;
-using Rhisis.World.Packets;
+using Rhisis.Network.Snapshots;
 using Sylver.HandlerInvoker.Attributes;
+using System;
 
 namespace Rhisis.World.Handlers
 {
     [Handler]
     public class MovementHandler
     {
-        private readonly IMoverPacketFactory _moverPacketFactory;
-
-        /// <summary>
-        /// Creates a new <see cref="MovementHandler"/> instance.
-        /// </summary>
-        /// <param name="moverPacketFactory">Mover packet factory.</param>
-        public MovementHandler(IMoverPacketFactory moverPacketFactory)
-        {
-            _moverPacketFactory = moverPacketFactory;
-        }
-
         /// <summary>
         /// Handles the destination position snapshot.
         /// </summary>
         /// <param name="serverClient">Client.</param>
         /// <param name="packet">Incoming packet.</param>
         [HandlerAction(SnapshotType.DESTPOS)]
-        public void OnSnapshotSetDestPosition(IWorldServerClient serverClient, SetDestPositionPacket packet)
+        public void OnSnapshotSetDestPosition(IPlayer player, SetDestPositionPacket packet)
         {
-            serverClient.Player.Object.MovingFlags = ObjectState.OBJSTA_FMOVE;
-            serverClient.Player.Moves.DestinationPosition = new Vector3(packet.X, packet.Y, packet.Z);
-            serverClient.Player.Follow.Reset();
+            if (!player.Map.IsInBounds(packet.X, packet.Y, packet.Z))
+            {
+                throw new InvalidOperationException("Destination position is out of map bounds.");
+            }
 
-            _moverPacketFactory.SendDestinationPosition(serverClient.Player);
+            player.ObjectState = ObjectState.OBJSTA_FMOVE;
+            player.DestinationPosition = new Vector3(packet.X, packet.Y, packet.Z);
+            player.Unfollow();
+            player.Battle.ClearTarget();
+            player.SendToVisible(new DestPositionSnapshot(player));
         }
     }
 }

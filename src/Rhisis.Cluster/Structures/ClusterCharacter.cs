@@ -1,11 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Rhisis.Core.Common;
-using Rhisis.Core.Data;
-using Rhisis.Database.Entities;
-using System;
+﻿using Rhisis.Database.Entities;
+using Rhisis.Game.Common;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Rhisis.Cluster.Structures
 {

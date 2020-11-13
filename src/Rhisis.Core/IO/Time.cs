@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Rhisis.Core.IO
 {
@@ -59,6 +60,16 @@ namespace Rhisis.Core.IO
         public static long GetElapsedTime()
         {
             return Environment.TickCount - Start;
+        }
+
+        public static long GetTimeInNanoSeconds()
+        {
+            long nanoTime = 10000L * Stopwatch.GetTimestamp();
+
+            nanoTime /= TimeSpan.TicksPerMillisecond;
+            nanoTime *= 100L;
+
+            return nanoTime;
         }
     }
 }

@@ -3,14 +3,15 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Cluster.Client;
 using Rhisis.Cluster.Packets;
 using Rhisis.Cluster.Structures;
-using Rhisis.Core.Data;
-using Rhisis.Core.Resources;
 using Rhisis.Core.Structures;
-using Rhisis.Core.Structures.Game;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
+using Rhisis.Game.Abstractions.Caching;
+using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources;
+using Rhisis.Network;
 using Rhisis.Network.Core;
-using Rhisis.Network.Packets;
 using Rhisis.Network.Packets.Cluster;
 using Sylver.HandlerInvoker.Attributes;
 using System;
@@ -137,7 +138,7 @@ namespace Rhisis.Cluster.Handlers
                 HairId = packet.HairMeshId,
                 BankCode = packet.BankPassword,
                 Gender = packet.Gender,
-                JobId = (int)packet.Job,
+                JobId = 0,
                 // Not the best of solutions.
                 // Need to store these values in a configuration file of isolate the health calculation
                 // in a shared injectable service in both cluster and world server.

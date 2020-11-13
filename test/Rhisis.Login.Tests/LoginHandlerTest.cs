@@ -16,6 +16,7 @@ using System.Net.Sockets;
 using Rhisis.Login.Handlers;
 using Xunit;
 using Rhisis.Testing.Abstract;
+using Rhisis.Network;
 
 namespace Rhisis.Login.Tests
 {

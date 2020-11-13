@@ -1,18 +1,19 @@
-﻿using Sylver.Network.Data;
+﻿using Rhisis.Game.Abstractions.Protocol;
+using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World
 {
     public class RemoveInventoryItemPacket : IPacketDeserializer
     {
         /// <summary>
-        /// Gets the unique item id.
+        /// Gets the item index in the inventory.
         /// </summary>
-        public int ItemUniqueId { get; private set; }
+        public int ItemIndex { get; private set; }
 
         /// <summary>
         /// Gets the item quantity.
         /// </summary>
-        public int ItemQuantity { get; private set; }
+        public int Quantity { get; private set; }
 
         /// <summary>
         /// Creates a new <see cref="RemoveInventoryItemPacket"/> object.
@@ -20,8 +21,8 @@ namespace Rhisis.Network.Packets.World
         /// <param name="packet">Incoming packet</param>
         public void Deserialize(INetPacketStream packet)
         {
-            ItemUniqueId = packet.Read<int>();
-            ItemQuantity = packet.Read<int>();
+            ItemIndex = packet.Read<int>();
+            Quantity = packet.Read<int>();
         }
     }
 }

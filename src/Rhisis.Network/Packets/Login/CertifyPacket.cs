@@ -1,7 +1,8 @@
-﻿using Sylver.Network.Data;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Rhisis.Core.Cryptography;
 using Rhisis.Core.Structures.Configuration;
+using Rhisis.Game.Abstractions.Protocol;
+using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.Login
 {

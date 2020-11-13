@@ -1,18 +1,17 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Rhisis.Core.Resources;
-using Rhisis.Core.Resources.Loaders;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Database;
+using Rhisis.Game.Abstractions.Behavior;
+using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features.Chat;
+using Rhisis.Game.Abstractions.Map;
+using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Game.Resources.Loaders;
 using Rhisis.Network;
 using Rhisis.Scripting.Quests;
 using Rhisis.World.Client;
-using Rhisis.World.Game.Behaviors;
-using Rhisis.World.Game.Chat;
-using Rhisis.World.Game.Entities;
-using Rhisis.World.Game.Maps;
-using Rhisis.World.Packets;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Server;
 using System;
@@ -26,7 +25,6 @@ namespace Rhisis.World
         private const int ClientBacklog = 50;
 
         private readonly ILogger<WorldServer> _logger;
-        private readonly IWorldServerTaskManager _worldServerTaskManager;
         private readonly WorldConfiguration _worldConfiguration;
         private readonly IGameResources _gameResources;
         private readonly IServiceProvider _serviceProvider;
@@ -39,12 +37,10 @@ namespace Rhisis.World
         /// Creates a new <see cref="WorldServer"/> instance.
         /// </summary>
         public WorldServer(ILogger<WorldServer> logger, IOptions<WorldConfiguration> worldConfiguration, 
-            IWorldServerTaskManager worldServerTaskManager,
             IGameResources gameResources, IServiceProvider serviceProvider, 
             IMapManager mapManager, IBehaviorManager behaviorManager, IChatCommandManager chatCommandManager, IRhisisDatabase database)
         {
             _logger = logger;
-            _worldServerTaskManager = worldServerTaskManager;
             _worldConfiguration = worldConfiguration.Value;
             _gameResources = gameResources;
             _serviceProvider = serviceProvider;
@@ -85,7 +81,6 @@ namespace Rhisis.World
         /// <inheritdoc />
         protected override void OnAfterStart()
         {
-            _worldServerTaskManager.Start();
             _logger.LogInformation("'{0}' world server is started and listenening on {1}:{2}.",
                 _worldConfiguration.Name, ServerConfiguration.Host, ServerConfiguration.Port);
         }
@@ -93,15 +88,13 @@ namespace Rhisis.World
         /// <inheritdoc />
         protected override void OnBeforeStop()
         {
-            _worldServerTaskManager.Stop();
         }
 
         /// <inheritdoc />
         protected override void OnClientConnected(WorldServerClient serverClient)
         {
             serverClient.Initialize(_serviceProvider.GetRequiredService<ILogger<WorldServerClient>>(),
-                _serviceProvider.GetRequiredService<IHandlerInvoker>(),
-                _serviceProvider.GetRequiredService<IWorldServerPacketFactory>());
+                _serviceProvider.GetRequiredService<IHandlerInvoker>());
 
             _logger.LogInformation("New client connected from {0}.", serverClient.Socket.RemoteEndPoint);
         }
@@ -113,15 +106,15 @@ namespace Rhisis.World
         }
 
         /// <inheritdoc />
-        public IPlayerEntity GetPlayerEntity(uint id) => Clients.FirstOrDefault(x => x.Player.Id == id)?.Player;
+        public IPlayer GetPlayerEntity(uint id) => Clients.FirstOrDefault(x => x.Player.Id == id)?.Player;
 
         /// <inheritdoc />
-        public IPlayerEntity GetPlayerEntity(string name) 
-            => Clients.FirstOrDefault(x => x.Player.Object.Name.Equals(name, StringComparison.OrdinalIgnoreCase))?.Player;
+        public IPlayer GetPlayerEntity(string name) 
+            => Clients.FirstOrDefault(x => x.Player.Name.Equals(name, StringComparison.OrdinalIgnoreCase))?.Player;
 
         /// <inheritdoc />
-        public IPlayerEntity GetPlayerEntityByCharacterId(uint id) 
-            => Clients.FirstOrDefault(x => x.Player.PlayerData.Id == id)?.Player;
+        public IPlayer GetPlayerEntityByCharacterId(uint id) 
+            => Clients.FirstOrDefault(x => x.Player.CharacterId == id)?.Player;
 
         /// <inheritdoc />
         public uint GetOnlineConnectedPlayerNumber() 

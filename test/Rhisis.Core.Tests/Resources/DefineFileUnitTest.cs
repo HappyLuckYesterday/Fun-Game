@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.Resources;
+﻿using Rhisis.Game.IO;
 using System.Collections.Generic;
 using Xunit;
 

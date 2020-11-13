@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.Network.Packets;
-using Rhisis.World.Client;
+using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Network;
 using Sylver.HandlerInvoker;
 using Sylver.HandlerInvoker.Attributes;
 using Sylver.Network.Data;
@@ -28,10 +28,10 @@ namespace Rhisis.World.Handlers
         /// <summary>
         /// Receives and handles a snapshot.
         /// </summary>
-        /// <param name="serverClient">Client.</param>
+        /// <param name="player">Current player.</param>
         /// <param name="packet">Incoming packet with snapshots.</param>
         [HandlerAction(PacketType.SNAPSHOT)]
-        public void OnSnapshot(IWorldServerClient serverClient, INetPacketStream packet)
+        public void OnSnapshot(IPlayer player, INetPacketStream packet)
         {
             var snapshotCount = packet.Read<byte>();
 
@@ -43,15 +43,15 @@ namespace Rhisis.World.Handlers
                 {
                     var snapshotHeader = (SnapshotType)snapshotHeaderNumber;
 
-                    _handlerInvoker.Invoke(snapshotHeader, serverClient, packet);
+                    _handlerInvoker.Invoke(snapshotHeader, player, packet);
 
                 }
                 catch (ArgumentNullException)
                 {
                     if (Enum.IsDefined(typeof(SnapshotType), snapshotHeaderNumber))
-                        _logger.LogWarning("Received an unimplemented World snapshot {0} (0x{1}) from {2}.", Enum.GetName(typeof(SnapshotType), snapshotHeaderNumber), snapshotHeaderNumber.ToString("X4"), serverClient.Socket.RemoteEndPoint);
+                        _logger.LogWarning("Received an unimplemented World snapshot {0} (0x{1}) from {2}.", Enum.GetName(typeof(SnapshotType), snapshotHeaderNumber), snapshotHeaderNumber.ToString("X4"), player.Connection.Socket.RemoteEndPoint);
                     else
-                        _logger.LogWarning("[SECURITY] Received an unknown World snapshot 0x{0} from {1}.", snapshotHeaderNumber.ToString("X4"), serverClient.Socket.RemoteEndPoint);
+                        _logger.LogWarning("[SECURITY] Received an unknown World snapshot 0x{0} from {1}.", snapshotHeaderNumber.ToString("X4"), player.Connection.Socket.RemoteEndPoint);
                 }
                 catch (Exception exception)
                 {

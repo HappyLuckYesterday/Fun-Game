@@ -1,7 +1,6 @@
-﻿using Rhisis.Core.Common;
-using Rhisis.Core.Data;
-using Rhisis.Core.Resources.Include;
-using Rhisis.Core.Structures.Game.Quests;
+﻿using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources.Quests;
+using Rhisis.Game.IO.Include;
 using Rhisis.Scripting.Quests;
 using System;
 using System.Collections.Generic;

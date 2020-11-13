@@ -1,5 +1,6 @@
 ﻿using System;
-using Rhisis.Core.Data;
+using Rhisis.Game.Abstractions.Protocol;
+using Rhisis.Game.Common;
 using Sylver.Network.Data;
 
 namespace Rhisis.Network.Packets.World

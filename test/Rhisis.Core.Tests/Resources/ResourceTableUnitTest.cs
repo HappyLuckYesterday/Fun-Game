@@ -1,4 +1,4 @@
-﻿using Rhisis.Core.Resources;
+﻿using Rhisis.Game.IO;
 using Xunit;
 
 namespace Rhisis.Core.Test.Resources

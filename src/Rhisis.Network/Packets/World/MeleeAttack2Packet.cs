@@ -1,5 +1,6 @@
 ﻿using Sylver.Network.Data;
-using Rhisis.Core.Data;
+using Rhisis.Game.Common;
+using Rhisis.Game.Abstractions.Protocol;
 
 namespace Rhisis.Network.Packets.World
 {
@@ -28,7 +29,7 @@ namespace Rhisis.Network.Packets.World
         /// <inheritdoc />
         public void Deserialize(INetPacketStream packet)
         {
-            AttackMessage = (ObjectMessageType) packet.Read<uint>();
+            AttackMessage = (ObjectMessageType)packet.Read<uint>();
             ObjectId = packet.Read<uint>();
             Parameter2 = packet.Read<int>();
             Parameter3 = packet.Read<int>();

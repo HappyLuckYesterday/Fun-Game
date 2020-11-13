@@ -1,9 +1,9 @@
 ﻿using NLua;
 using Rhisis.Core.Common;
-using Rhisis.Core.Data;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Helpers;
-using Rhisis.Core.Structures.Game.Quests;
+using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.Scripting.Extensions;
 using System;
 using System.Collections.Generic;

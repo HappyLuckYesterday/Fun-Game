@@ -9,18 +9,28 @@ namespace Rhisis.Network
     /// </summary>
     public class FFPacket : NetPacketStream
     {
+        /// <summary>
+        /// Gets the FlyFF packet header constant value.
+        /// </summary>
         public const byte Header = 0x5E;
-        public const uint NullId = 0xFFFFFFFF;
 
-        private static readonly Encoding FlyFFWriteStringEncoding = Encoding.GetEncoding(1252);
-        private static readonly Encoding FlyFFReadStringEncoding = Encoding.GetEncoding(1252);
+        /// <summary>
+        /// Gets the FlyFF packet size offset in packet stream.
+        /// </summary>
+        public static readonly int PacketSizeOffset = sizeof(byte);
+
+        /// <summary>
+        /// Gets the FlyFF packet offset where the data starts.
+        /// </summary>
+        public static readonly int PacketDataStartOffset = sizeof(byte) + sizeof(int);
+
         private short _mergedPacketCount;
 
         /// <inheritdoc />
-        protected override Encoding ReadEncoding => FlyFFReadStringEncoding;
+        protected override Encoding ReadEncoding => Encoding.GetEncoding(1252);
 
         /// <inheritdoc />
-        protected override Encoding WriteEncoding => FlyFFWriteStringEncoding;
+        protected override Encoding WriteEncoding => Encoding.GetEncoding(1252);
 
         /// <summary>
         /// Gets the FFPacket buffer.
@@ -69,8 +79,8 @@ namespace Rhisis.Network
         {
             long oldPointer = Position;
 
-            Seek(1, SeekOrigin.Begin);
-            base.Write((int)Length - 5);
+            Seek(PacketSizeOffset, SeekOrigin.Begin);
+            base.Write((int)Length - PacketDataStartOffset);
             Seek(oldPointer, SeekOrigin.Begin);
 
             return base.Buffer;
