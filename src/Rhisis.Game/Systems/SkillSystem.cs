@@ -210,17 +210,19 @@ namespace Rhisis.Game.Systems
         private void CastMagicAttackShot(IMover caster, IMover target, ISkill skill, SkillUseType skillUseType)
         {
             int skillCastingTime = skill.GetCastingTime();
-            //var projectile = new MagicSkillProjectileInfo(caster, target, skill, () =>
-            //{
-            //    ExecuteSkill(caster, target, skill, reduceCasterPoints: false);
-            //});
+            var projectile = new MagicSkillProjectile(caster, target, skill, () =>
+            {
+                ExecuteSkill(caster, target, skill, reduceCasterPoints: false);
+            });
+            caster.Projectiles.Add(projectile);
 
-            //_skillPacketFactory.SendUseSkill(caster, target, skill, skillCastingTime, skillUseType);
+            using var snapshot = new UseSkillSnapshot(caster, target, skill, skillCastingTime, skillUseType);
+            SendPacketToVisible(caster, snapshot, sendToPlayer: true);
 
-            //caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.CastingTime), () =>
-            //{
-            //    ReduceCasterPoints(caster, skill);
-            //});
+            caster.Delayer.DelayAction(TimeSpan.FromMilliseconds(skill.LevelData.CastingTime), () =>
+            {
+                ReduceCasterPoints(caster, skill);
+            });
         }
 
         /// <summary>

@@ -10,14 +10,19 @@ namespace Rhisis.Game.Abstractions.Features
         /// <summary>
         /// Adds a new projectile.
         /// </summary>
-        /// <param name="projectileId">Projectile id.</param>
         /// <param name="projectile">Projectile to add.</param>
-        void Add(int projectileId, IProjectile projectile);
+        /// <returns>The projectile id.</returns>
+        int Add(IProjectile projectile);
 
         /// <summary>
         /// Removes a projectile by its id.
         /// </summary>
         /// <param name="projectileId">Projectile id.</param>
         void Remove(int projectileId);
+
+        /// <summary>
+        /// Resets the mover's projectiles.
+        /// </summary>
+        void Reset();
     }
 }

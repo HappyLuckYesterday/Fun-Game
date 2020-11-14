@@ -38,8 +38,7 @@ namespace Rhisis.Game.Abstractions.Features
         /// <param name="target">Target to attack.</param>
         /// <param name="power">Range attack power.</param>
         /// <param name="objectMessageType">Range attack type.</param>
-        /// <param name="projectileId">Projectile id.</param>
-        void RangeAttack(IMover target, int power, ObjectMessageType objectMessageType, int projectileId);
+        void RangeAttack(IMover target, int power, ObjectMessageType objectMessageType);
 
         /// <summary>
         /// Process a skill attack on a given target.
