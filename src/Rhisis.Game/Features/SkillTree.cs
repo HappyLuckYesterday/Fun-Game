@@ -41,6 +41,12 @@ namespace Rhisis.Game.Features
             }
         }
 
+        public void AddSkillPointsForLevelUp(int level, bool sendToPlayer = true)
+        {
+            int skillPointsToAdd = (level - 1) / 20 + 2;
+            AddSkillPoints((ushort)skillPointsToAdd, sendToPlayer);
+        }
+
         public ISkill GetSkill(int skillId) => _skills.FirstOrDefault(x => x.Id == skillId);
 
         public ISkill GetSkillAtIndex(int skillIndex) => _skills.ElementAt(skillIndex);
@@ -72,13 +78,16 @@ namespace Rhisis.Game.Features
 
         public void Reskill()
         {
-            SkillPoints = 0;
-
             foreach (ISkill skill in _skills)
             {
                 SkillPoints += (ushort)(skill.Level * GameConstants.SkillPointUsage[skill.Data.JobType]);
                 skill.Level = 0;
             }
+        }
+
+        public void ResetAvailableSkillPoints()
+        {
+            SkillPoints = 0;
         }
 
         public void Serialize(INetPacketStream packet)
@@ -210,6 +219,5 @@ namespace Rhisis.Game.Features
 
             return false;
         }
-
     }
 }
