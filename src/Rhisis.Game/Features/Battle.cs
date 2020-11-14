@@ -55,13 +55,18 @@ namespace Rhisis.Game.Features
 
         public void MeleeAttack(IMover target, ObjectMessageType objectMessageType)
         {
-            AttackResult attackResult = new MeleeAttackArbiter(_mover, target).CalculateDamages();
+            AttackResult attackResult;
 
-            if (!attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+            if (!TryInflictDamagesIfOneHitKillMode(target, objectMessageType, out attackResult))
             {
-                attackResult = new MeleeAttackReducer(_mover, target).ReduceDamages(attackResult);
+                attackResult = new MeleeAttackArbiter(_mover, target).CalculateDamages();
 
-                InflictDamages(_mover, target, attackResult, objectMessageType);
+                if (!attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+                {
+                    attackResult = new MeleeAttackReducer(_mover, target).ReduceDamages(attackResult);
+
+                    InflictDamages(_mover, target, attackResult, objectMessageType);
+                }
             }
 
             using var meleeAttackSnapshot = new MeleeAttackSnapshot(_mover, target, objectMessageType, attackResult.Flags);
@@ -77,6 +82,11 @@ namespace Rhisis.Game.Features
             {
                 projectile = new ArrowProjectile(_mover, target, power, () =>
                 {
+                    if (TryInflictDamagesIfOneHitKillMode(target, objectMessageType))
+                    {
+                        return;
+                    }
+
                     AttackResult attackResult = new MeleeAttackArbiter(_mover, target, AttackFlags.AF_GENERIC | AttackFlags.AF_RANGE, power).CalculateDamages();
 
                     if (!attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
@@ -91,6 +101,11 @@ namespace Rhisis.Game.Features
             {
                 projectile = new MagicProjectile(_mover, target, power, () =>
                 {
+                    if (TryInflictDamagesIfOneHitKillMode(target, objectMessageType))
+                    {
+                        return;
+                    }
+
                     AttackResult attackResult = new MagicAttackArbiter(_mover, target, power).CalculateDamages();
 
                     if (!attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
@@ -118,8 +133,13 @@ namespace Rhisis.Game.Features
                 _ => ObjectMessageType.OBJMSG_MELEESKILL
             };
 
-            AttackResult attackResult = null;
-            
+            if (TryInflictDamagesIfOneHitKillMode(target, skillMessageType))
+            {
+                return;
+            }
+
+            AttackResult attackResult;
+
             if (skillMessageType == ObjectMessageType.OBJMSG_MELEESKILL)
             {
                 attackResult = new MeleeSkillAttackArbiter(_mover, target, skill).CalculateDamages();
@@ -129,7 +149,7 @@ namespace Rhisis.Game.Features
                     attackResult = new MeleeSkillAttackReducer(_mover, target, skill).ReduceDamages(attackResult);
                 }
             }
-            else if (skillMessageType == ObjectMessageType.OBJMSG_MAGICSKILL)
+            else
             {
                 attackResult = new MagicSkillAttackArbiter(_mover, target, skill).CalculateDamages();
 
@@ -139,16 +159,11 @@ namespace Rhisis.Game.Features
                 }
             }
 
-            if (attackResult != null)
-            {
-                InflictDamages(_mover, target, attackResult, skillMessageType);
-            }
+            InflictDamages(_mover, target, attackResult, skillMessageType);            
         }
 
         private void InflictDamages(IMover attacker, IMover target, AttackResult attackResult, ObjectMessageType objectMessageType)
         {
-            OverrideDamagesIfOneHitKillMode(attackResult, target);
-
             Target = target;
             target.Health.SufferDamages(attacker, Math.Max(0, attackResult.Damages), attackResult.Flags, objectMessageType);
 
@@ -168,13 +183,26 @@ namespace Rhisis.Game.Features
             }
         }
 
-        private void OverrideDamagesIfOneHitKillMode(AttackResult attackResult, IMover target)
+        private bool TryInflictDamagesIfOneHitKillMode(IMover target, ObjectMessageType objectMessageType)
+        {
+            return TryInflictDamagesIfOneHitKillMode(target, objectMessageType, out var _);
+        }
+
+        private bool TryInflictDamagesIfOneHitKillMode(IMover target, ObjectMessageType objectMessageType, out AttackResult attackResult)
         {
             if (_mover is IPlayer player && player.Mode.HasFlag(ModeType.ONEKILL_MODE))
             {
-                attackResult.Damages = target.Health.Hp;
-                attackResult.Flags = AttackFlags.AF_GENERIC;
+                attackResult = new AttackResult()
+                {
+                    Damages = target.Health.Hp,
+                    Flags = AttackFlags.AF_GENERIC
+                };
+
+                InflictDamages(_mover, target, attackResult, objectMessageType);
+                return true;
             }
+            attackResult = null;
+            return false;
         }
     }
 }
