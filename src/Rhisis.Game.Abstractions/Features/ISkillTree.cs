@@ -22,6 +22,13 @@ namespace Rhisis.Game.Abstractions.Features
         void AddSkillPoints(ushort skillPointsToAdd, bool sendToPlayer = true);
 
         /// <summary>
+        /// Adds the amount of available skill points to the tree as if the player would level from (level - 1) to (level).
+        /// </summary>
+        /// <param name="level">The level to which the player just leveled.</param>
+        /// <param name="sendToPlayer">Boolean value that indicates if the system should send the update packet back to the player.</param>
+        void AddSkillPointsForLevelUp(int level, bool sendToPlayer = true);
+
+        /// <summary>
         /// Gets a skill by its id.
         /// </summary>
         /// <param name="skillId">Skill id.</param>
@@ -54,7 +61,16 @@ namespace Rhisis.Game.Abstractions.Features
         /// <summary>
         /// Resets the skill tree and redistribute the skill points.
         /// </summary>
+        /// <remarks>
+        /// - Sets all the skills of the skill tree to level 0.
+        /// - Returns all the spent skill points to the available skill points.
+        /// </remarks>
         void Reskill();
+
+        /// <summary>
+        /// Resets the available skill points to 0.
+        /// </summary>
+        void ResetAvailableSkillPoints();
 
         /// <summary>
         /// Sets a skill level.
