@@ -50,7 +50,7 @@ namespace Rhisis.Game.Abstractions.Features
         /// Kills the current mover and makes it die.
         /// </summary>
         /// <param name="killer">Mover that killed the current mover.</param>
-        /// <param name="objectMessageType">Object message type.</param>
+        /// <param name="attackType">The type of attack that caused the death.</param>
         /// <param name="sendHitPoints">Boolean value that indiciates if the system should send the current hit points.</param>
         void Die(IMover killer, AttackType attackType, bool sendHitPoints = false);
 
