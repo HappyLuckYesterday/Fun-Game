@@ -191,7 +191,7 @@ namespace Rhisis.Game.Features
             {
                 if (IsItemEquiped(item))
                 {
-                    InternalUnequip(item);
+                    MoveUnequipedItemWithinContainer(item);
                 }
 
                 _container.DeleteItem(item);
@@ -334,6 +334,32 @@ namespace Rhisis.Game.Features
         }
 
         public bool Equip(IItem itemToEquip)
+        {            
+            if (EquipWithoutSnapshot(itemToEquip))
+            { 
+                using var equipSnapshot = new DoEquipSnapshot(_player, itemToEquip, true);
+                _player.Connection.Send(equipSnapshot);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool Unequip(IItem itemToUnequip)
+        {
+            if (UnequipWithoutSnapshot(itemToUnequip))
+            { 
+                using var equipSnapshot = new DoEquipSnapshot(_player, itemToUnequip, false);
+                _player.Connection.Send(equipSnapshot);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool EquipWithoutSnapshot(IItem itemToEquip)
         {
             if (!IsItemEquipable(itemToEquip))
             {
@@ -344,33 +370,32 @@ namespace Rhisis.Game.Features
 
             if (equipedItem != null)
             {
-                InternalUnequip(equipedItem);
+                UnequipWithoutSnapshot(equipedItem);
             }
 
-            if (InternalEquip(itemToEquip, itemToEquip.Data.Parts))
+            if (!MoveEquipedItemWithinContainer(itemToEquip, itemToEquip.Data.Parts))
             {
-                using var equipSnapshot = new DoEquipSnapshot(_player, itemToEquip, true);
-
-                _player.Connection.Send(equipSnapshot);
+                return false;
             }
+
+            // TODO if the item is a Ride, add the player fly state
 
             return true;
         }
 
-        public bool Unequip(IItem itemToUnequip)
+        private bool UnequipWithoutSnapshot(IItem itemToUnequip)
         {
-            if (InternalUnequip(itemToUnequip))
+            if (!MoveUnequipedItemWithinContainer(itemToUnequip))
             {
-                using var equipSnapshot = new DoEquipSnapshot(_player, itemToUnequip, true);
-
-                _player.Connection.Send(equipSnapshot);
-                return true;
+                return false;
             }
 
-            return false;
+            // TODO if the item is a Ride, reset the player states from fly etc.
+
+            return true;
         }
 
-        private bool InternalEquip(IItem itemToEquip, ItemPartType destinationPart)
+        private bool MoveEquipedItemWithinContainer(IItem itemToEquip, ItemPartType destinationPart)
         {
             int sourceSlot = itemToEquip.Slot;
             int destinationSlot = _container.Capacity + (int)destinationPart;
@@ -397,7 +422,7 @@ namespace Rhisis.Game.Features
             return true;
         }
 
-        private bool InternalUnequip(IItem itemToUnequip)
+        private bool MoveUnequipedItemWithinContainer(IItem itemToUnequip)
         {
             int slot = itemToUnequip.Slot;
 
