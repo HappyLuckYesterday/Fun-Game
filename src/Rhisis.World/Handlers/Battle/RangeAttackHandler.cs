@@ -1,5 +1,6 @@
 ﻿using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Common;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World;
@@ -47,7 +48,7 @@ namespace Rhisis.World.Handlers.Battle
             }
 
             player.Inventory.DeleteItem(bulletItem, 1);
-            player.Battle.RangeAttack(target, Math.Max(0, packet.Power), ObjectMessageType.OBJMSG_ATK_RANGE1);
+            player.Battle.TryRangeAttack(target, Math.Max(0, packet.Power), AttackType.RangeBowAttack);
         }
     }
 }

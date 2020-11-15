@@ -246,7 +246,7 @@ namespace Rhisis.Game.Systems
                 throw new InvalidOperationException("Only a player or monster can cast a skill.");
             }
 
-            battle.SkillAttack(target, skill);
+            battle.TrySkillAttack(target, skill);
             skill.SetCoolTime(skill.LevelData.CooldownTime);
 
             if (reduceCasterPoints)

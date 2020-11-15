@@ -1,5 +1,6 @@
 ﻿using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Common;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World;
@@ -35,10 +36,17 @@ namespace Rhisis.World.Handlers.Battle
                 throw new InvalidOperationException($"Player '{player}' has a different weapon speed that the server.");
             }
 
-            if (player.Battle.CanAttack(monster))
+            var attackType = packet.AttackMessage switch
             {
-                player.Battle.MeleeAttack(monster, packet.AttackMessage);
-            }
+                ObjectMessageType.OBJMSG_ATK1 => AttackType.MeleeAttack1,
+                ObjectMessageType.OBJMSG_ATK2 => AttackType.MeleeAttack2,
+                ObjectMessageType.OBJMSG_ATK3 => AttackType.MeleeAttack3,
+                ObjectMessageType.OBJMSG_ATK4 => AttackType.MeleeAttack4,
+                _ => throw new InvalidOperationException($"the object message type {packet.AttackMessage} can not be used during a melee attack packet")
+            };
+
+
+            player.Battle.TryMeleeAttack(monster, attackType);            
         }
     }
 }

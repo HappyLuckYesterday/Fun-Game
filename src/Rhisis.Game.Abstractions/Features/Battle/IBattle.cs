@@ -1,4 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Common;
 
 namespace Rhisis.Game.Abstractions.Features
@@ -19,33 +20,29 @@ namespace Rhisis.Game.Abstractions.Features
         IMover Target { get; set; }
 
         /// <summary>
-        /// Checks if the current mover can attack the given mover.
-        /// </summary>
-        /// <param name="target">Target to attack.</param>
-        /// <returns>True if the current mover can attack the mover; false otherwise.</returns>
-        bool CanAttack(IMover target);
-
-        /// <summary>
-        /// Attacks the given target.
+        /// Attacks the given target if the target is valid.
         /// </summary>
         /// <param name="target"></param>
-        /// <param name="objectMessageType">Attack type.</param>
-        void MeleeAttack(IMover target, ObjectMessageType objectMessageType);
+        /// <param name="attackType">Attack type.</param>
+        /// <returns>true is the target was valid and the attack happened</returns>
+        bool TryMeleeAttack(IMover target, AttackType attackType);
 
         /// <summary>
-        /// Process a range attack of the given type (range or magic) on a given target.
+        /// Process a range attack of the given type (range or magic) on a given target if the target is valid.
         /// </summary>
         /// <param name="target">Target to attack.</param>
         /// <param name="power">Range attack power.</param>
-        /// <param name="objectMessageType">Range attack type.</param>
-        void RangeAttack(IMover target, int power, ObjectMessageType objectMessageType);
+        /// <param name="rangeAttackType">Range attack type.</param>
+        /// <returns>true is the target was valid and the attack happened</returns>
+        bool TryRangeAttack(IMover target, int power, AttackType rangeAttackType);
 
         /// <summary>
-        /// Process a skill attack on a given target.
+        /// Process a skill attack on a given target if the target is valid.
         /// </summary>
         /// <param name="target">Target to attack.</param>
         /// <param name="skill">Skill to execute.</param>
-        void SkillAttack(IMover target, ISkill skill);
+        /// <returns>true is the target was valid and the attack happened</returns>
+        bool TrySkillAttack(IMover target, ISkill skill);
 
         /// <summary>
         /// Clears the battle target.
