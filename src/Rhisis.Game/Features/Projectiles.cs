@@ -8,7 +8,10 @@ namespace Rhisis.Game.Features
 {
     public class Projectiles : GameFeature, IProjectiles
     {
+        private const int DefaultProjectileId = 1;
         private readonly IDictionary<int, IProjectile> _projectiles;
+
+        private int _projectileCounter;
 
         public IProjectile this[int key] => _projectiles[key];
 
@@ -21,16 +24,27 @@ namespace Rhisis.Game.Features
         public Projectiles()
         {
             _projectiles = new Dictionary<int, IProjectile>();
+            _projectileCounter = DefaultProjectileId;
         }
 
-        public void Add(int projectileId, IProjectile projectile)
+        public int Add(IProjectile projectile)
         {
+            int projectileId = _projectileCounter++;
+
             _projectiles.Add(projectileId, projectile);
+
+            return projectileId;
         }
 
         public void Remove(int projectileId)
         {
             _projectiles.Remove(projectileId);
+        }
+
+        public void Reset()
+        {
+            _projectiles.Clear();
+            _projectileCounter = DefaultProjectileId;
         }
 
         public bool ContainsKey(int key) => _projectiles.ContainsKey(key);

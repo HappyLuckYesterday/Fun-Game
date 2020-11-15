@@ -74,7 +74,7 @@ namespace Rhisis.Game.Features
             SendPacketToVisible(_mover, meleeAttackSnapshot);
         }
 
-        public void RangeAttack(IMover target, int power, ObjectMessageType objectMessageType, int projectileId)
+        public void RangeAttack(IMover target, int power, ObjectMessageType objectMessageType)
         {
             IProjectile projectile = null;
 
@@ -117,7 +117,7 @@ namespace Rhisis.Game.Features
 
             if (projectile != null)
             {
-                _mover.Projectiles.Add(projectileId, projectile);
+                int projectileId = _mover.Projectiles.Add(projectile);
 
                 using var snapshot = new RangeAttackSnapshot(_mover, objectMessageType, target.Id, power, projectileId);
                 SendPacketToVisible(_mover, snapshot);

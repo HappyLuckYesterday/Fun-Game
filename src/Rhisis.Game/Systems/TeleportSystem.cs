@@ -74,6 +74,7 @@ namespace Rhisis.Game.Systems
             }
 
             player.Spawned = true;
+            player.Projectiles.Reset();
         }
 
         private void SetPlayerPosition(IPlayer player, Vector3 position)

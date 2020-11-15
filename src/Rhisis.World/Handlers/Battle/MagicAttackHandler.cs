@@ -31,7 +31,7 @@ namespace Rhisis.World.Handlers.Battle
                 throw new InvalidOperationException($"Invalid projectile id.");
             }
 
-            player.Battle.RangeAttack(target, Math.Max(0, packet.MagicPower), ObjectMessageType.OBJMSG_ATK_MAGIC1, packet.ProjectileId + 1);
+            player.Battle.RangeAttack(target, Math.Max(0, packet.MagicPower), ObjectMessageType.OBJMSG_ATK_MAGIC1);
         }
     }
 }
