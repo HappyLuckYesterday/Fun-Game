@@ -58,16 +58,22 @@ namespace Rhisis.World.Systems.Initializers
                              new { SkillId = s.Id, CharacterId = (s.Owner as IPlayer).CharacterId }
                             select new { DbSkill = x, PlayerSkill = s };
 
+            var updatedSkillIds = new HashSet<int>();
             foreach (var skillToUpdate in skillsSet)
             {
                 skillToUpdate.DbSkill.Level = (byte)skillToUpdate.PlayerSkill.Level;
-
                 _database.Skills.Update(skillToUpdate.DbSkill);
+
+                updatedSkillIds.Add(skillToUpdate.DbSkill.SkillId);
+
+                // Note: skills of level 0 are not stored in database, but skills that were once leveled by a player 
+                //      but are now level 0 again stay in the database with level 0
             }
 
             foreach (ISkill skill in player.SkillTree)
             {
-                if (!skill.DatabaseId.HasValue && skill.Level > 0)
+                if (!updatedSkillIds.Contains(skill.Id)
+                    && !skill.DatabaseId.HasValue && skill.Level > 0)
                 {
                     var newSkill = new DbSkill
                     {
