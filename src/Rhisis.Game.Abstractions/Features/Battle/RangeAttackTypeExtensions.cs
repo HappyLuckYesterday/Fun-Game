@@ -5,6 +5,13 @@ namespace Rhisis.Game.Abstractions.Features.Battle
 {
     public static class RangeAttackTypeExtensions
     {
+        /// <summary>
+        /// The client uses the <see cref="ObjectMessageType"/> enum to indicate the attack type.
+        /// This method will convert the <see cref="AttackType"/> known at the server to the attack type known by the client (<see cref="ObjectMessageType"/>).
+        /// </summary>
+        /// <param name="attackType">The attack type.</param>
+        /// <exception cref="NotImplementedException">The given attack type does not have a matching <see cref="ObjectMessageType"/>.</exception>
+        /// <returns>The attack type as object message type.</returns>
         public static ObjectMessageType ToObjectMessageType(this AttackType attackType)
         {
             return attackType switch
@@ -21,6 +28,10 @@ namespace Rhisis.Game.Abstractions.Features.Battle
             };
         }
 
+        /// <summary>
+        /// Checks if the given attack type causes a melee attack in combat or not.
+        /// </summary>
+        /// <param name="attackType">The attack type.</param>
         public static bool IsMeleeAttack(this AttackType attackType)
         {
             return attackType switch
@@ -33,6 +44,10 @@ namespace Rhisis.Game.Abstractions.Features.Battle
             };
         }
 
+        /// <summary>
+        /// Checks if the given attack type causes a ranged attack in combat or not.
+        /// </summary>
+        /// <param name="attackType">The attack type.</param>
         public static bool IsRangeAttack(this AttackType attackType)
         {
             return attackType switch
@@ -43,6 +58,10 @@ namespace Rhisis.Game.Abstractions.Features.Battle
             };
         }
 
+        /// <summary>
+        /// Checks if the given attack type causes a skill attack in combat or not.
+        /// </summary>
+        /// <param name="attackType">The attack type.</param>
         public static bool IsSkillAttack(this AttackType attackType)
         {
             return attackType switch
@@ -51,9 +70,12 @@ namespace Rhisis.Game.Abstractions.Features.Battle
                 AttackType.SkillMagicAttack => true,
                 _ => false
             };
-
         }
 
+        /// <summary>
+        /// Checks if the given attack type should cause a arrow projectile to be launched during combat.
+        /// </summary>
+        /// <param name="attackType">The attack type.</param>
         public static bool CausesArrowProjectile(this AttackType attackType)
         {
             return attackType switch
@@ -63,6 +85,10 @@ namespace Rhisis.Game.Abstractions.Features.Battle
             };
         }
 
+        /// <summary>
+        /// Checks if the given attack type should cause a magic projectile to be launched during combat.
+        /// </summary>
+        /// <param name="attackType">The attack type.</param>
         public static bool CausesMagicProjectile(this AttackType attackType)
         {
             return attackType switch
@@ -72,6 +98,10 @@ namespace Rhisis.Game.Abstractions.Features.Battle
             };
         }
 
+        /// <summary>
+        /// Checks if the given attack type should cause a melee skill to be cast during combat.
+        /// </summary>
+        /// <param name="attackType">The attack type.</param>
         public static bool CausesMeleeSkill(this AttackType attackType)
         {
             return attackType switch
@@ -81,6 +111,10 @@ namespace Rhisis.Game.Abstractions.Features.Battle
             };
         }
 
+        /// <summary>
+        /// Checks if the given attack type should cause a magic skill to be cast during combat.
+        /// </summary>
+        /// <param name="attackType">The attack type.</param>
         public static bool CausesMagicSkill(this AttackType attackType)
         {
             return attackType switch
@@ -90,6 +124,12 @@ namespace Rhisis.Game.Abstractions.Features.Battle
             };
         }
 
+        /// <summary>
+        /// Decides which type of attack should be used when a skill of the given type is used in combat.
+        /// </summary>
+        /// <param name="skillType">The skill type.</param>
+        /// <exception cref="NotImplementedException">The given skill type does not have a matching attack type.</exception>
+        /// <returns>An attack type that matches the given skill type.</returns>
         public static AttackType ToAttackType(this SkillType skillType)
         {
             return skillType switch
