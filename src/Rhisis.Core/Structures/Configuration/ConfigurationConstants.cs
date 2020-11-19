@@ -18,7 +18,7 @@
         /// <summary>
         /// Gets the LoginServer configuration file path.
         /// </summary>
-        public const string LoginServerPath = "config/login.json";
+        public const string LoginServerPath = "./config/login.json";
 
         /// <summary>
         /// Gets the ClusterServer configuration key.
@@ -28,7 +28,7 @@
         /// <summary>
         /// Gets the ClusterServer configuration file path.
         /// </summary>
-        public const string ClusterServerPath = "config/cluster.json";
+        public const string ClusterServerPath = "./config/cluster.json";
 
         /// <summary>
         /// Gets the WorldServer configuration key.
@@ -43,7 +43,7 @@
         /// <summary>
         /// Gets the WorldServer configuration file path.
         /// </summary>
-        public const string WorldServerPath = "config/world.json";
+        public const string WorldServerPath = "./config/world.json";
 
         /// <summary>
         /// Gets the Database configuration file path.

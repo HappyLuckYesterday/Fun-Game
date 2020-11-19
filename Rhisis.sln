@@ -54,6 +54,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Game", "src\Rhisis.G
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rhisis.Game.Common", "src\Rhisis.Game.Common\Rhisis.Game.Common.csproj", "{82B3B54C-B52F-4A46-B0DE-6F9323BC39ED}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{DBCED8A2-EEC4-4989-9872-03551A97F6D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -124,6 +126,10 @@ Global
 		{82B3B54C-B52F-4A46-B0DE-6F9323BC39ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82B3B54C-B52F-4A46-B0DE-6F9323BC39ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82B3B54C-B52F-4A46-B0DE-6F9323BC39ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBCED8A2-EEC4-4989-9872-03551A97F6D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBCED8A2-EEC4-4989-9872-03551A97F6D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBCED8A2-EEC4-4989-9872-03551A97F6D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBCED8A2-EEC4-4989-9872-03551A97F6D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

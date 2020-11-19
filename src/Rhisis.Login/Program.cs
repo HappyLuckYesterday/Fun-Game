@@ -12,6 +12,7 @@ using Rhisis.Login.Core.Packets;
 using Rhisis.Login.Packets;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -23,12 +24,14 @@ namespace Rhisis.Login
         {
             const string culture = "en-US";
 
+            System.Console.WriteLine($"{System.Environment.CurrentDirectory}");
+
             var host = new HostBuilder()
                 .ConfigureAppConfiguration((hostContext, configApp) =>
                 {
                     configApp.SetBasePath(Directory.GetCurrentDirectory());
-                    configApp.AddJsonFile(ConfigurationConstants.LoginServerPath, optional: false);
-                    configApp.AddJsonFile(ConfigurationConstants.DatabasePath, optional: false);
+                    configApp.AddJsonFile(Path.Combine(Environment.CurrentDirectory, ConfigurationConstants.LoginServerPath), optional: false);
+                    configApp.AddJsonFile(Path.Combine(Environment.CurrentDirectory, ConfigurationConstants.DatabasePath), optional: false);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
