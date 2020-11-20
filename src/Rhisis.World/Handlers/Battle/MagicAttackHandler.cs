@@ -1,4 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Common;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World;
@@ -31,7 +32,7 @@ namespace Rhisis.World.Handlers.Battle
                 throw new InvalidOperationException($"Invalid projectile id.");
             }
 
-            player.Battle.RangeAttack(target, Math.Max(0, packet.MagicPower), ObjectMessageType.OBJMSG_ATK_MAGIC1);
+            player.Battle.TryRangeAttack(target, Math.Max(0, packet.MagicPower), AttackType.RangeWandAttack);
         }
     }
 }

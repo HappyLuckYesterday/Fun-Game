@@ -7,6 +7,7 @@ using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Factories;
+using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
@@ -88,7 +89,7 @@ namespace Rhisis.Game.Behavior.Default
                     {
                         if (_monster.Timers.NextAttackTime < Time.TimeInMilliseconds())
                         {
-                            _monster.Battle.MeleeAttack(_monster.Battle.Target, ObjectMessageType.OBJMSG_ATK1);
+                            _monster.Battle.TryMeleeAttack(_monster.Battle.Target, AttackType.MeleeAttack1);
                             _monster.Timers.NextAttackTime = (long)(Time.TimeInMilliseconds() + _monster.Data.ReAttackDelay);
                         }
                     }

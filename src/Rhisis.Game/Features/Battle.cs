@@ -2,6 +2,7 @@
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
+using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Common;
 using Rhisis.Game.Features.AttackArbiters;
 using Rhisis.Game.Features.AttackArbiters.Reducers;
@@ -53,11 +54,20 @@ namespace Rhisis.Game.Features
             Target = null;
         }
 
-        public void MeleeAttack(IMover target, ObjectMessageType objectMessageType)
+        public bool TryMeleeAttack(IMover target, AttackType attackType)
         {
+            if (!CanAttack(target))
+            {
+                return false;
+            }
+            if (!attackType.IsMeleeAttack())
+            {
+                throw new InvalidOperationException($"can not do a melee attack with attack type {attackType}");
+            }
+
             AttackResult attackResult;
 
-            if (!TryInflictDamagesIfOneHitKillMode(target, objectMessageType, out attackResult))
+            if (!TryInflictDamagesIfOneHitKillMode(target, attackType, out attackResult))
             {
                 attackResult = new MeleeAttackArbiter(_mover, target).CalculateDamages();
 
@@ -65,24 +75,35 @@ namespace Rhisis.Game.Features
                 {
                     attackResult = new MeleeAttackReducer(_mover, target).ReduceDamages(attackResult);
 
-                    InflictDamages(_mover, target, attackResult, objectMessageType);
+                    InflictDamages(_mover, target, attackResult, attackType);
                 }
             }
 
-            using var meleeAttackSnapshot = new MeleeAttackSnapshot(_mover, target, objectMessageType, attackResult.Flags);
+            using var meleeAttackSnapshot = new MeleeAttackSnapshot(_mover, target, attackType, attackResult.Flags);
 
             SendPacketToVisible(_mover, meleeAttackSnapshot);
+            return true;
         }
 
-        public void RangeAttack(IMover target, int power, ObjectMessageType objectMessageType)
+        public bool TryRangeAttack(IMover target, int power, AttackType rangeAttackType)
         {
+            if (!CanAttack(target))
+            {
+                return false;
+            }
+
+            if (!rangeAttackType.IsRangeAttack())
+            {
+                throw new NotSupportedException($"can not cause a range attack for attack type {rangeAttackType}");
+            }
+
             IProjectile projectile = null;
 
-            if (objectMessageType.HasFlag(ObjectMessageType.OBJMSG_ATK_RANGE1))
-            {
+            if (rangeAttackType.CausesArrowProjectile()) 
+            { 
                 projectile = new ArrowProjectile(_mover, target, power, () =>
                 {
-                    if (TryInflictDamagesIfOneHitKillMode(target, objectMessageType))
+                    if (TryInflictDamagesIfOneHitKillMode(target, rangeAttackType))
                     {
                         return;
                     }
@@ -93,15 +114,15 @@ namespace Rhisis.Game.Features
                     {
                         attackResult = new MeleeAttackReducer(_mover, target).ReduceDamages(attackResult);
 
-                        InflictDamages(_mover, target, attackResult, objectMessageType);
+                        InflictDamages(_mover, target, attackResult, rangeAttackType);
                     }
                 });
             }
-            else if (objectMessageType.HasFlag(ObjectMessageType.OBJMSG_ATK_MAGIC1))
+            else if (rangeAttackType.CausesMagicProjectile())
             {
                 projectile = new MagicProjectile(_mover, target, power, () =>
                 {
-                    if (TryInflictDamagesIfOneHitKillMode(target, objectMessageType))
+                    if (TryInflictDamagesIfOneHitKillMode(target, rangeAttackType))
                     {
                         return;
                     }
@@ -110,7 +131,7 @@ namespace Rhisis.Game.Features
 
                     if (!attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
                     {
-                        InflictDamages(_mover, target, attackResult, objectMessageType);
+                        InflictDamages(_mover, target, attackResult, rangeAttackType);
                     }
                 });
             }
@@ -119,28 +140,35 @@ namespace Rhisis.Game.Features
             {
                 int projectileId = _mover.Projectiles.Add(projectile);
 
-                using var snapshot = new RangeAttackSnapshot(_mover, objectMessageType, target.Id, power, projectileId);
+                using var snapshot = new RangeAttackSnapshot(_mover, rangeAttackType, target.Id, power, projectileId);
                 SendPacketToVisible(_mover, snapshot);
             }
+
+            return true;
         }
 
-        public void SkillAttack(IMover target, ISkill skill)
+        public bool TrySkillAttack(IMover target, ISkill skill)
         {
-            var skillMessageType = skill.Data.Type switch
+            if (!CanAttack(target))
             {
-                SkillType.Magic => ObjectMessageType.OBJMSG_MAGICSKILL,
-                SkillType.Skill => ObjectMessageType.OBJMSG_MELEESKILL,
-                _ => ObjectMessageType.OBJMSG_MELEESKILL
-            };
+                return false;
+            }
 
-            if (TryInflictDamagesIfOneHitKillMode(target, skillMessageType))
+            var skillAttackType = skill.Data.Type.ToAttackType();
+
+            if (!skillAttackType.IsSkillAttack())
             {
-                return;
+                throw new NotSupportedException($"can not cause a skill attack for attack type {skillAttackType}");
+            }
+
+            if (TryInflictDamagesIfOneHitKillMode(target, skillAttackType))
+            {
+                return true;
             }
 
             AttackResult attackResult;
 
-            if (skillMessageType == ObjectMessageType.OBJMSG_MELEESKILL)
+            if (skillAttackType.CausesMeleeSkill())
             {
                 attackResult = new MeleeSkillAttackArbiter(_mover, target, skill).CalculateDamages();
 
@@ -149,7 +177,7 @@ namespace Rhisis.Game.Features
                     attackResult = new MeleeSkillAttackReducer(_mover, target, skill).ReduceDamages(attackResult);
                 }
             }
-            else
+            else if (skillAttackType.CausesMagicSkill())
             {
                 attackResult = new MagicSkillAttackArbiter(_mover, target, skill).CalculateDamages();
 
@@ -158,14 +186,19 @@ namespace Rhisis.Game.Features
                     attackResult = new MagicSkillAttackReducer(_mover, target, skill).ReduceDamages(attackResult);
                 }
             }
+            else
+            {
+                throw new InvalidOperationException($"the attack type {skillAttackType} did not cause any type of skill");
+            }
 
-            InflictDamages(_mover, target, attackResult, skillMessageType);            
+            InflictDamages(_mover, target, attackResult, skillAttackType);
+            return true;
         }
 
-        private void InflictDamages(IMover attacker, IMover target, AttackResult attackResult, ObjectMessageType objectMessageType)
+        private void InflictDamages(IMover attacker, IMover target, AttackResult attackResult, AttackType attackType)
         {
             Target = target;
-            target.Health.SufferDamages(attacker, Math.Max(0, attackResult.Damages), attackResult.Flags, objectMessageType);
+            target.Health.SufferDamages(attacker, Math.Max(0, attackResult.Damages), attackType, attackResult.Flags);
 
             if (target is IMonster monster)
             {
@@ -183,12 +216,12 @@ namespace Rhisis.Game.Features
             }
         }
 
-        private bool TryInflictDamagesIfOneHitKillMode(IMover target, ObjectMessageType objectMessageType)
+        private bool TryInflictDamagesIfOneHitKillMode(IMover target, AttackType attackType)
         {
-            return TryInflictDamagesIfOneHitKillMode(target, objectMessageType, out var _);
+            return TryInflictDamagesIfOneHitKillMode(target, attackType, out var _);
         }
 
-        private bool TryInflictDamagesIfOneHitKillMode(IMover target, ObjectMessageType objectMessageType, out AttackResult attackResult)
+        private bool TryInflictDamagesIfOneHitKillMode(IMover target, AttackType attackType, out AttackResult attackResult)
         {
             if (_mover is IPlayer player && player.Mode.HasFlag(ModeType.ONEKILL_MODE))
             {
@@ -198,7 +231,7 @@ namespace Rhisis.Game.Features
                     Flags = AttackFlags.AF_GENERIC
                 };
 
-                InflictDamages(_mover, target, attackResult, objectMessageType);
+                InflictDamages(_mover, target, attackResult, attackType);
                 return true;
             }
             attackResult = null;

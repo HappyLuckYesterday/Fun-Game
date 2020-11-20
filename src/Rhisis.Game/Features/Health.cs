@@ -2,6 +2,7 @@
 using Rhisis.Core.IO;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
+using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
@@ -94,7 +95,7 @@ namespace Rhisis.Game.Abstractions.Components
             SendHealth();
         }
 
-        public void Die(IMover killer, ObjectMessageType objectMessageType = ObjectMessageType.OBJMSG_ATK1, bool sendHitPoints = false)
+        public void Die(IMover killer, AttackType attackType, bool sendHitPoints = false)
         {
             Hp = 0;
 
@@ -105,7 +106,7 @@ namespace Rhisis.Game.Abstractions.Components
             else
             {
                 using var moverDeathSnapshot = new FFSnapshot();
-                moverDeathSnapshot.Merge(new MoverDeathSnapshot(_mover, killer, objectMessageType));
+                moverDeathSnapshot.Merge(new MoverDeathSnapshot(_mover, killer, attackType));
 
                 if (sendHitPoints)
                 {
@@ -119,7 +120,7 @@ namespace Rhisis.Game.Abstractions.Components
             killer.Behavior.OnTargetKilled(_mover);
         }
 
-        public void SufferDamages(IMover attacker, int damages, AttackFlags attackFlags = AttackFlags.AF_GENERIC, ObjectMessageType objectMessageType = ObjectMessageType.OBJMSG_ATK1)
+        public void SufferDamages(IMover attacker, int damages, AttackType attackType, AttackFlags attackFlags = AttackFlags.AF_GENERIC)
         {
             int damagesToInflict = Math.Min(Hp, damages);
 
@@ -137,7 +138,7 @@ namespace Rhisis.Game.Abstractions.Components
 
             if (IsDead)
             {
-                Die(attacker, objectMessageType, sendHitPoints: true);
+                Die(attacker, attackType, sendHitPoints: true);
             }
         }
 

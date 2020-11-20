@@ -1,4 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Common;
 
 namespace Rhisis.Game.Abstractions.Features
@@ -49,18 +50,18 @@ namespace Rhisis.Game.Abstractions.Features
         /// Kills the current mover and makes it die.
         /// </summary>
         /// <param name="killer">Mover that killed the current mover.</param>
-        /// <param name="objectMessageType">Object message type.</param>
+        /// <param name="attackType">The type of attack that caused the death.</param>
         /// <param name="sendHitPoints">Boolean value that indiciates if the system should send the current hit points.</param>
-        void Die(IMover killer, ObjectMessageType objectMessageType = ObjectMessageType.OBJMSG_ATK1, bool sendHitPoints = false);
+        void Die(IMover killer, AttackType attackType, bool sendHitPoints = false);
 
         /// <summary>
         /// Inflict a given amount of damages to the current mover.
         /// </summary>
         /// <param name="attacker">Mover that attacked the current mover.</param>
         /// <param name="damages">Amount of damages to inflict.</param>
+        /// <param name="attackType">Attack type that causes the damages</param>
         /// <param name="attackFlags">Attack flags.</param>
-        /// <param name="objectMessageType">Attack message type.</param>
-        void SufferDamages(IMover attacker, int damages, AttackFlags attackFlags = AttackFlags.AF_GENERIC, ObjectMessageType objectMessageType = ObjectMessageType.OBJMSG_ATK1);
+        void SufferDamages(IMover attacker, int damages, AttackType attackType, AttackFlags attackFlags = AttackFlags.AF_GENERIC);
 
         /// <summary>
         /// Regenerates a small amount of the current mover health.
