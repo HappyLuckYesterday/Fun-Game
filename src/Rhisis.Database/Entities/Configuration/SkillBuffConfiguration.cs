@@ -7,7 +7,6 @@ namespace Rhisis.Database.Entities.Configuration
     {
         public void Configure(EntityTypeBuilder<DbSkillBuff> builder)
         {
-            builder.ToTable("SkillBuffs");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
             builder.HasIndex(x => new { x.CharacterId, x.SkillId }).IsUnique();

@@ -11,10 +11,9 @@ namespace Rhisis.Database.Entities.Configuration
     {
         public void Configure(EntityTypeBuilder<DbAttribute> builder)
         {
-            builder.ToTable("Attributes");
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).ValueGeneratedOnAdd();
-            builder.Property(x => x.Name).HasMaxLength(20).HasColumnType("VARCHAR(20)");
+            builder.Property(x => x.Id).IsRequired().ValueGeneratedNever();
+            builder.Property(x => x.Name).IsRequired().HasMaxLength(20).HasColumnType("VARCHAR(20)");
 
             SeedData(builder);
         }
@@ -23,6 +22,7 @@ namespace Rhisis.Database.Entities.Configuration
         {
             IEnumerable<DbAttribute> initialValues = Enum.GetValues(typeof(DefineAttributes))
                    .Cast<DefineAttributes>()
+                   .OrderBy(x => (int)x)
                    .Select(x => new DbAttribute
                    {
                        Id = (int)x,

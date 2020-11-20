@@ -7,8 +7,6 @@ namespace Rhisis.Database.Entities.Configuration
     {
         public void Configure(EntityTypeBuilder<DbShortcut> builder)
         {
-            builder.ToTable("shortcuts");
-
             builder.Property(x => x.TargetTaskbar)
                 .HasColumnType("TINYINT");
 

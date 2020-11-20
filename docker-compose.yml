@@ -2,16 +2,17 @@ version: '3.5'
 
 services:
   rhisis.login:
-    container_name: 'Rhisis-Login-Server'
     image: ${DOCKER_REGISTRY-}rhisislogin
     build:
       context: .
       dockerfile: src/Rhisis.Login/Dockerfile
     depends_on:
       - rhisis.database
+    ports:
+      - "23000:23000"
+      - "15000:15000"
 
   rhisis.cluster:
-    container_name: 'Rhisis-Cluster-Server'
     image: ${DOCKER_REGISTRY-}rhisiscluster
     build:
       context: .
@@ -19,9 +20,11 @@ services:
     depends_on:
       - rhisis.login
       - rhisis.database
+    ports:
+      - "28000:28000"
+      - "28001:28001"
 
   rhisis.world:
-    container_name: 'Rhisis-World-Server'
     image: ${DOCKER_REGISTRY-}rhisisworld
     build:
       context: .
@@ -29,24 +32,25 @@ services:
     depends_on:
       - rhisis.cluster
       - rhisis.database
+    ports:
+      - "5400:5400"
 
   rhisis.database:
-    container_name: 'Rhisis-Database-Server'
     image: mysql:5.7
     restart: always
     environment:
-      MYSQL_DATABASE: 'rhisis'
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
       # So you don't have to use root, but you can if you like
-      MYSQL_USER: 'user'
+      MYSQL_USER: ${MYSQL_USER}
       # You can use whatever password you like
-      MYSQL_PASSWORD: 'password'
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       # Password for root access
       MYSQL_ROOT_PASSWORD: 'password'
     ports:
       # <Port exposed> : < MySQL Port running inside container>
-      - '3307:3306'
+      - "${MYSQL_PORT}:3306"
     expose:
       # Opens port 3306 on the container
-      - '3307'
+      - "${MYSQL_PORT}"
     volumes:
       - ./bin/_database:/var/lib/mysql

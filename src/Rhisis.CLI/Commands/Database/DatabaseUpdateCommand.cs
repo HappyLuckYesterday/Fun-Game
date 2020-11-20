@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using McMaster.Extensions.CommandLineUtils;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
@@ -49,23 +50,43 @@ namespace Rhisis.CLI.Commands.Database
                     return;
                 }
 
-                using IRhisisDatabase database = _databaseFactory.CreateDatabaseInstance(dbConfig);
-                
                 Console.WriteLine("Starting database structure update...");
-
-                if (database.Exists())
-                {
-                    database.Migrate();
-                    Console.WriteLine("Database updated.");
-                }
-                else
-                {
-                    Console.WriteLine("Database does not exist yet!");
-                }
+                TryMigration(dbConfig);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        private void TryMigration(DatabaseConfiguration databaseConfiguration)
+        {
+            const int MaxAttempts = 5;
+            int attempts = 0;
+
+            while (attempts < MaxAttempts)
+            {
+                try
+                {
+                    using IRhisisDatabase database = _databaseFactory.CreateDatabaseInstance(databaseConfiguration);
+
+                    if (database.Exists())
+                    {
+                        database.Migrate();
+                        Console.WriteLine("Database updated.");
+                        break;
+                    }
+
+                    Console.WriteLine("Database does not exist yet!");
+                    break;
+                }
+                catch
+                {
+                    Console.WriteLine("Failed to migrate database. New attempt in 5 seconds.");
+
+                    Thread.Sleep(5000);
+                    attempts++;
+                }
             }
         }
     }

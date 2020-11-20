@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Rhisis.World.ClusterClient;
 using Rhisis.Game;
 using Rhisis.Game.Abstractions.Protocol;
+using System;
 
 namespace Rhisis.World
 {
@@ -28,8 +29,8 @@ namespace Rhisis.World
                 .ConfigureAppConfiguration((hostContext, configApp) =>
                 {
                     configApp.SetBasePath(Directory.GetCurrentDirectory());
-                    configApp.AddJsonFile(ConfigurationConstants.WorldServerPath, optional: false);
-                    configApp.AddJsonFile(ConfigurationConstants.DatabasePath, optional: false);
+                    configApp.AddJsonFile(Path.Combine(Environment.CurrentDirectory, ConfigurationConstants.WorldServerPath), optional: false);
+                    configApp.AddJsonFile(Path.Combine(Environment.CurrentDirectory, ConfigurationConstants.DatabasePath), optional: false);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {

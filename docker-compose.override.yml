@@ -3,20 +3,20 @@ version: '3.5'
 services:
   rhisis.login:
    volumes:
-     - ./bin/config/login.json:/app/config/login.json
-     - ./bin/config/database.json:/app/config/database.json
+     - ./bin/config/login.json:/app/config/login.json:ro
+     - ./bin/config/database.json:/app/config/database.json:ro
      - ./bin/logs/login:/app/logs/login
 
   rhisis.cluster:
    volumes:
-     - ./bin/config/login.json:/app/config/login.json
-     - ./bin/config/database.json:/app/config/database.json
+     - ./bin/config/cluster.json:/app/config/cluster.json:ro
+     - ./bin/config/database.json:/app/config/database.json:ro
      - ./bin/logs/cluster:/app/logs/cluster
-     - ./bin/data:/app/data
+     - ./bin/data:/app/data:ro
 
   rhisis.world:
    volumes:
-     - ./bin/config/cluster.json:/app/config/cluster.json
-     - ./bin/config/database.json:/app/config/database.json
+     - ./bin/config/world.json:/app/config/world.json:ro
+     - ./bin/config/database.json:/app/config/database.json:ro
      - ./bin/logs/world:/app/logs/world
-     - ./bin/data:/app/data
+     - ./bin/data:/app/data:ro

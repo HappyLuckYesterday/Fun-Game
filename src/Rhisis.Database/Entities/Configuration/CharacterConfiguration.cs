@@ -7,14 +7,13 @@ namespace Rhisis.Database.Entities.Configuration
     {
         public void Configure(EntityTypeBuilder<DbCharacter> builder)
         {
-            builder.ToTable("Characters");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).IsRequired().ValueGeneratedOnAdd();
             builder.Property(x => x.Name).IsRequired().HasMaxLength(32).HasColumnType("NVARCHAR(32)");
             builder.Property(x => x.Gender).IsRequired().HasColumnType("TINYINT");
             builder.Property(x => x.Level).IsRequired().HasDefaultValue(1);
             builder.Property(x => x.Experience).HasColumnType("BIGINT").HasDefaultValue(0);
-            builder.Property(x => x.JobId).IsRequired().HasColumnType("TINYINT").HasDefaultValue(1);
+            builder.Property(x => x.JobId).IsRequired().HasColumnType("TINYINT").HasDefaultValue(0);
             builder.Property(x => x.Experience).HasColumnType("BIGINT").HasDefaultValue(0);
             builder.Property(x => x.Slot).IsRequired().HasColumnType("TINYINT");
             builder.Property(x => x.Strength).IsRequired().HasColumnType("SMALLINT");

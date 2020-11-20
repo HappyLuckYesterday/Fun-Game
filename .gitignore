@@ -244,4 +244,6 @@ dist/
 
 # Rhisis related
 bin/config/
+bin/logs/
 .idea/
+.env

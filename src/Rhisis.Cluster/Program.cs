@@ -21,6 +21,7 @@ using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Resources;
 using Rhisis.Game.Abstractions.Protocol;
+using System;
 
 namespace Rhisis.Cluster
 {
@@ -34,8 +35,8 @@ namespace Rhisis.Cluster
                 .ConfigureAppConfiguration((hostContext, configApp) =>
                 {
                     configApp.SetBasePath(Directory.GetCurrentDirectory());
-                    configApp.AddJsonFile(ConfigurationConstants.ClusterServerPath, optional: false);
-                    configApp.AddJsonFile(ConfigurationConstants.DatabasePath, optional: false);
+                    configApp.AddJsonFile(Path.Combine(Environment.CurrentDirectory, ConfigurationConstants.ClusterServerPath), optional: false);
+                    configApp.AddJsonFile(Path.Combine(Environment.CurrentDirectory, ConfigurationConstants.DatabasePath), optional: false);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {

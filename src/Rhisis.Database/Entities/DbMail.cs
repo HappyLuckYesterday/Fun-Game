@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rhisis.Database.Entities
 {
-    [Table("mails")]
     public sealed class DbMail : DbEntity
     {
         [Required]

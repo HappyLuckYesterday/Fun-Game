@@ -1,4 +1,5 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
+using Rhisis.CLI.Commands;
 using Rhisis.CLI.Commands.Configure;
 using Rhisis.CLI.Commands.Database;
 using Rhisis.CLI.Commands.Resources;
@@ -7,6 +8,7 @@ using Rhisis.CLI.Commands.User;
 namespace Rhisis.CLI
 {
     [Command(Description = Description)]
+    [Subcommand(typeof(SetupCommand))]
     [Subcommand(typeof(DatabaseCommand))]
     [Subcommand(typeof(UserCommand))]
     [Subcommand(typeof(ConfigureCommand))]
