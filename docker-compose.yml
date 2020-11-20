@@ -11,29 +11,13 @@ services:
     ports:
       - "23000:23000"
       - "15000:15000"
-
-  rhisis.cluster:
-    image: ${DOCKER_REGISTRY-}rhisiscluster
-    build:
-      context: .
-      dockerfile: src/Rhisis.Cluster/Dockerfile
-    depends_on:
-      - rhisis.login
-      - rhisis.database
-    ports:
-      - "28000:28000"
-      - "28001:28001"
-
-  rhisis.world:
-    image: ${DOCKER_REGISTRY-}rhisisworld
-    build:
-      context: .
-      dockerfile: src/Rhisis.World/Dockerfile
-    depends_on:
-      - rhisis.cluster
-      - rhisis.database
-    ports:
-      - "5400:5400"
+    environment:
+      RHISIS_CONFIGURATION: /opt/rhisis
+    volumes:
+     - ./bin/config/login.json:/opt/rhisis/config/login.json:ro
+     - "./bin/config/database.json:/opt/rhisis/config/database.json:ro"
+     - "./bin/logs/login:/opt/rhisis/logs/login"
+    network_mode: host
 
   rhisis.database:
     image: mysql:5.7
@@ -54,3 +38,4 @@ services:
       - "${MYSQL_PORT}"
     volumes:
       - ./bin/_database:/var/lib/mysql
+    network_mode: host

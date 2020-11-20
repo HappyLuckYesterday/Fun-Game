@@ -6,6 +6,16 @@
     public sealed class ConfigurationConstants
     {
         /// <summary>
+        /// Gets the default configuration path when Rhisis is running inside a container.
+        /// </summary>
+        public const string DefaultRhisisDockerConfigurationPath = "/var/rhisis";
+
+        /// <summary>
+        /// Gets the Rhisis docker configuration environment key.
+        /// </summary>
+        public const string RhisisDockerConfigurationKey = "RHISIS_CONFIGURATION";
+
+        /// <summary>
         /// Gets the CoreServer configuration key.
         /// </summary>
         public const string CoreServer = "coreServer";

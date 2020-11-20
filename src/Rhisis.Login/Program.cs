@@ -24,14 +24,20 @@ namespace Rhisis.Login
         {
             const string culture = "en-US";
 
-            System.Console.WriteLine($"{System.Environment.CurrentDirectory}");
-
             var host = new HostBuilder()
                 .ConfigureAppConfiguration((hostContext, configApp) =>
                 {
-                    configApp.SetBasePath(Directory.GetCurrentDirectory());
-                    configApp.AddJsonFile(Path.Combine(Environment.CurrentDirectory, ConfigurationConstants.LoginServerPath), optional: false);
-                    configApp.AddJsonFile(Path.Combine(Environment.CurrentDirectory, ConfigurationConstants.DatabasePath), optional: false);
+                    string environmentPath = Environment.CurrentDirectory;
+
+                    if (EnvironmentExtension.IsRunningInDocker())
+                    {
+                        environmentPath = Environment.GetEnvironmentVariable(ConfigurationConstants.RhisisDockerConfigurationKey) 
+                                            ?? ConfigurationConstants.DefaultRhisisDockerConfigurationPath;
+                    }
+
+                    configApp.SetBasePath(environmentPath);
+                    configApp.AddJsonFile(ConfigurationConstants.LoginServerPath, optional: false);
+                    configApp.AddJsonFile(ConfigurationConstants.DatabasePath, optional: false);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
