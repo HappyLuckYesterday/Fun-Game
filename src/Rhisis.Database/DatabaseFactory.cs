@@ -61,7 +61,7 @@ namespace Rhisis.Database
                 Database = databaseConfiguration.Database,
                 SslMode = MySqlSslMode.None,
                 AllowPublicKeyRetrieval = databaseConfiguration.AllowPublicKeyRetrieval,
-                ServerRsaPublicKeyFile = databaseConfiguration.ServerRSAPublicKeyFile
+                //ServerRsaPublicKeyFile = databaseConfiguration.ServerRSAPublicKeyFile
             };
 
             return sqlConnectionStringBuilder.ToString();

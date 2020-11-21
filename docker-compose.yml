@@ -14,28 +14,42 @@ services:
     environment:
       RHISIS_CONFIGURATION: /opt/rhisis
     volumes:
-     - ./bin/config/login.json:/opt/rhisis/config/login.json:ro
+     - "./bin/config/login.json:/opt/rhisis/config/login.json:ro"
      - "./bin/config/database.json:/opt/rhisis/config/database.json:ro"
      - "./bin/logs/login:/opt/rhisis/logs/login"
-    network_mode: host
+
+  rhisis.cluster:
+    image: ${DOCKER_REGISTRY-}rhisiscluster
+    build:
+      context: .
+      dockerfile: src/Rhisis.Cluster/Dockerfile
+    depends_on:
+      - rhisis.database
+    ports:
+      - "28000:28000"
+      - "28001:28001"
+    environment:
+      RHISIS_CONFIGURATION: /opt/rhisis
+    volumes:
+     - "./bin/config/cluster.json:/opt/rhisis/config/cluster.json:ro"
+     - "./bin/config/database.json:/opt/rhisis/config/database.json:ro"
+     - "./bin/logs/cluster:/opt/rhisis/logs/cluster"
 
   rhisis.database:
     image: mysql:5.7
     restart: always
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
-      # So you don't have to use root, but you can if you like
       MYSQL_USER: ${MYSQL_USER}
-      # You can use whatever password you like
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      # Password for root access
       MYSQL_ROOT_PASSWORD: 'password'
     ports:
-      # <Port exposed> : < MySQL Port running inside container>
-      - "${MYSQL_PORT}:3306"
+      - "3307:3306"
     expose:
-      # Opens port 3306 on the container
-      - "${MYSQL_PORT}"
+      - "3307"
     volumes:
       - ./bin/_database:/var/lib/mysql
-    network_mode: host
+
+  rhisis.database.waiter:
+    image: willwill/wait-for-it
+    command: "127.0.0.1:3306 -- echo MySQL is running"

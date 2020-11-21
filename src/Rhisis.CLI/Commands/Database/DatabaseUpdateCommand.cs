@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading;
-using McMaster.Extensions.CommandLineUtils;
-using Rhisis.Core.Helpers;
+﻿using McMaster.Extensions.CommandLineUtils;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
+using System;
+using System.Threading;
 
 namespace Rhisis.CLI.Commands.Database
 {
@@ -13,13 +12,34 @@ namespace Rhisis.CLI.Commands.Database
         private readonly DatabaseFactory _databaseFactory;
 
         /// <summary>
-        /// Gets or sets the database configuration file.
+        /// Gets or sets the database server's host.
         /// </summary>
-        /// <remarks>
-        /// If the database configuration file is not specified, the <see cref="ConfigurationConstants.DatabasePath"/> constant is used instead.
-        /// </remarks>
-        [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration", Description = "Specify the database configuration file path.")]
-        public string DatabaseConfigurationFile { get; set; }
+        [Option(CommandOptionType.SingleValue, ShortName = "s", LongName = "server", Description = "Specify the database host.")]
+        public string ServerHost { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database server's username.
+        /// </summary>
+        [Option(CommandOptionType.SingleValue, ShortName = "u", LongName = "user", Description = "Specify the database server user.")]
+        public string User { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database server username's password.
+        /// </summary>
+        [Option(CommandOptionType.SingleValue, ShortName = "pwd", LongName = "password", Description = "Specify the database server user's password.")]
+        public string Password { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database server listening port.
+        /// </summary>
+        [Option(CommandOptionType.SingleValue, ShortName = "p", LongName = "port", Description = "Specify the database server port.")]
+        public int Port { get; set; } = 3306;
+
+        /// <summary>
+        /// Gets or sets the database name.
+        /// </summary>
+        [Option(CommandOptionType.SingleValue, ShortName = "d", LongName = "database", Description = "Specify the database host.")]
+        public string DatabaseName { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="DatabaseUpdateCommand"/> instance.
@@ -37,18 +57,14 @@ namespace Rhisis.CLI.Commands.Database
         {
             try
             {
-                if (string.IsNullOrEmpty(DatabaseConfigurationFile))
+                var dbConfig = new DatabaseConfiguration
                 {
-                    DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
-                }
-
-                DatabaseConfiguration dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile, ConfigurationConstants.DatabaseConfiguration);
-                
-                if (dbConfig is null)
-                {
-                    Console.WriteLine("Couldn't load database configuration file during execution of update command.");
-                    return;
-                }
+                    Host = ServerHost,
+                    Username = User,
+                    Password = Password,
+                    Port = Port,
+                    Database = DatabaseName
+                };
 
                 Console.WriteLine("Starting database structure update...");
                 TryMigration(dbConfig);
