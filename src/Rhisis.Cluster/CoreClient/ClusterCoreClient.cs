@@ -34,7 +34,7 @@ namespace Rhisis.Cluster.CoreClient
             _logger = logger;
             _handlerInvoker = handlerInvoker;
             CoreConfiguration = coreConfiguration.Value;
-            ClientConfiguration = new NetClientConfiguration(CoreConfiguration.Host, CoreConfiguration.Port, BufferSize);
+            ClientConfiguration = new NetClientConfiguration(CoreConfiguration.Host, CoreConfiguration.Port, BufferSize, new NetClientRetryConfiguration(NetClientRetryOption.Limited, 10));
         }
 
         /// <inheritdoc />

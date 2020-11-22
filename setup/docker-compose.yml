@@ -1,0 +1,6 @@
+# Docker Compose
+version: '3.5'
+services:
+  rhisis.database.waiter:
+    image: willwill/wait-for-it
+    command: "127.0.0.1:3307 -- echo MySQL is running"

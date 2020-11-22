@@ -1,4 +1,5 @@
-﻿using Rhisis.Game.Common.Resources;
+﻿using Rhisis.Core.Extensions;
+using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Resources.Loaders;
 using System.IO;
 
@@ -31,7 +32,7 @@ namespace Rhisis.Game.Resources
 
         public class Paths
         {
-            public static readonly string DataPath = Path.Combine(Directory.GetCurrentDirectory(), "data");
+            public static readonly string DataPath = Path.Combine(EnvironmentExtension.GetCurrentEnvironementDirectory(), "data");
             public static readonly string DialogsPath = Path.Combine(DataPath, "dialogs");
             public static readonly string ResourcePath = Path.Combine(DataPath, "res");
             public static readonly string MapsPath = Path.Combine(DataPath, "maps");

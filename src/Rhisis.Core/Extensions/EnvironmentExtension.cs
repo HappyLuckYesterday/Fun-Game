@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rhisis.Core.Structures.Configuration;
+using System;
 
 namespace Rhisis.Core.Extensions
 {
@@ -11,6 +12,17 @@ namespace Rhisis.Core.Extensions
         public static bool IsRunningInDocker()
         {
             return Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+        }
+
+        public static string GetCurrentEnvironementDirectory()
+        {
+            if (IsRunningInDocker())
+            {
+                return Environment.GetEnvironmentVariable(ConfigurationConstants.RhisisDockerConfigurationKey)
+                                            ?? ConfigurationConstants.DefaultRhisisDockerConfigurationPath;
+            }
+
+            return Environment.CurrentDirectory;
         }
     }
 }

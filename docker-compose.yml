@@ -1,5 +1,8 @@
-version: '3.5'
+# ===========================================
+# Docker Compose file for Visual Studio debug 
+# ===========================================
 
+version: '3.5'
 services:
   rhisis.login:
     image: ${DOCKER_REGISTRY-}rhisislogin
@@ -11,6 +14,8 @@ services:
     ports:
       - "23000:23000"
       - "15000:15000"
+    expose: 
+      - 23000
     environment:
       RHISIS_CONFIGURATION: /opt/rhisis
     volumes:
@@ -24,16 +29,41 @@ services:
       context: .
       dockerfile: src/Rhisis.Cluster/Dockerfile
     depends_on:
+      - rhisis.login
       - rhisis.database
     ports:
       - "28000:28000"
       - "28001:28001"
+    expose:
+      - 28000
     environment:
       RHISIS_CONFIGURATION: /opt/rhisis
     volumes:
      - "./bin/config/cluster.json:/opt/rhisis/config/cluster.json:ro"
      - "./bin/config/database.json:/opt/rhisis/config/database.json:ro"
      - "./bin/logs/cluster:/opt/rhisis/logs/cluster"
+     - "./bin/data:/opt/rhisis/data:ro"
+
+  rhisis.world:
+    image: ${DOCKER_REGISTRY-}rhisisworld
+    build:
+      context: .
+      dockerfile: src/Rhisis.World/Dockerfile
+    depends_on:
+      - rhisis.login
+      - rhisis.cluster
+      - rhisis.database
+    ports:
+      - "5400:5400"
+    expose:
+      - 5400
+    environment:
+      RHISIS_CONFIGURATION: /opt/rhisis
+    volumes:
+     - "./bin/config/world.json:/opt/rhisis/config/world.json:ro"
+     - "./bin/config/database.json:/opt/rhisis/config/database.json:ro"
+     - "./bin/logs/world:/opt/rhisis/logs/world"
+     - "./bin/data:/opt/rhisis/data:ro"
 
   rhisis.database:
     image: mysql:5.7
@@ -49,7 +79,3 @@ services:
       - "3307"
     volumes:
       - ./bin/_database:/var/lib/mysql
-
-  rhisis.database.waiter:
-    image: willwill/wait-for-it
-    command: "127.0.0.1:3306 -- echo MySQL is running"

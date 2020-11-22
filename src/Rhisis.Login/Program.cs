@@ -27,15 +27,7 @@ namespace Rhisis.Login
             var host = new HostBuilder()
                 .ConfigureAppConfiguration((hostContext, configApp) =>
                 {
-                    string environmentPath = Environment.CurrentDirectory;
-
-                    if (EnvironmentExtension.IsRunningInDocker())
-                    {
-                        environmentPath = Environment.GetEnvironmentVariable(ConfigurationConstants.RhisisDockerConfigurationKey) 
-                                            ?? ConfigurationConstants.DefaultRhisisDockerConfigurationPath;
-                    }
-
-                    configApp.SetBasePath(environmentPath);
+                    configApp.SetBasePath(EnvironmentExtension.GetCurrentEnvironementDirectory());
                     configApp.AddJsonFile(ConfigurationConstants.LoginServerPath, optional: false);
                     configApp.AddJsonFile(ConfigurationConstants.DatabasePath, optional: false);
                 })

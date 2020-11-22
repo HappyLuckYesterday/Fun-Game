@@ -36,7 +36,7 @@ namespace Rhisis.Login
             _serviceProvider = serviceProvider;
             _database = database;
             PacketProcessor = new FlyffPacketProcessor();
-            ServerConfiguration = new NetServerConfiguration(_loginConfiguration.Host, 
+            ServerConfiguration = new NetServerConfiguration("0.0.0.0", 
                 _loginConfiguration.Port, 
                 ClientBacklog, 
                 ClientBufferSize);

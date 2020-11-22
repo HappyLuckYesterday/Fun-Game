@@ -28,9 +28,9 @@ namespace Rhisis.World
             var host = new HostBuilder()
                 .ConfigureAppConfiguration((hostContext, configApp) =>
                 {
-                    configApp.SetBasePath(Directory.GetCurrentDirectory());
-                    configApp.AddJsonFile(Path.Combine(Environment.CurrentDirectory, ConfigurationConstants.WorldServerPath), optional: false);
-                    configApp.AddJsonFile(Path.Combine(Environment.CurrentDirectory, ConfigurationConstants.DatabasePath), optional: false);
+                    configApp.SetBasePath(EnvironmentExtension.GetCurrentEnvironementDirectory());
+                    configApp.AddJsonFile(ConfigurationConstants.WorldServerPath, optional: false);
+                    configApp.AddJsonFile(ConfigurationConstants.DatabasePath, optional: false);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {

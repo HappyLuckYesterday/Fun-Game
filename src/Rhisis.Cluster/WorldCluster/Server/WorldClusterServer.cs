@@ -55,7 +55,7 @@ namespace Rhisis.Cluster.WorldCluster.Server
             _worldCache = worldCache;
             
             WorldClusterConfiguration = configuration.Value;
-            ServerConfiguration = new NetServerConfiguration(WorldClusterConfiguration.Host, 
+            ServerConfiguration = new NetServerConfiguration("0.0.0.0", 
                 WorldClusterConfiguration.Port, 
                 ClientBacklog, 
                 ClientBufferSize);

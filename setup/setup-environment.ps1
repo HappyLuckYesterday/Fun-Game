@@ -29,10 +29,16 @@ function ConfigureMySQLServer {
     WriteToFile -FileName ".env" -Content "MYSQL_DATABASE=$MySQLDatabase"
 
     docker-compose up -d rhisis.database
-    docker-compose up rhisis.database.waiter
+    docker-compose -f "./setup/docker-compose.yml" up 
 
+    Write-Host "Create database structure."
     Start-Process -FilePath "./bin/rhisis-cli" -WorkingDirectory "./bin" -ArgumentList "database update -s 127.0.0.1 -u ${MySQLUser} -pwd ${MySQLPassword} -d ${MySQLDatabase} -p 3307" -NoNewWindow -Wait
-
+    
+    Write-Host "Create a new game account."
+    Start-Process -FilePath "./bin/rhisis-cli" -WorkingDirectory "./bin" -ArgumentList "user create -s 127.0.0.1 -u ${MySQLUser} -pwd ${MySQLPassword} -d ${MySQLDatabase} -p 3307" -NoNewWindow -Wait
+    
+    Write-Host "Shutting down containers"
+    docker-compose -f "./setup/docker-compose.yml" down
     docker-compose down
 }
 
