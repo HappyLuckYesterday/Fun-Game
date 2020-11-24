@@ -11,6 +11,7 @@ services:
       dockerfile: src/Rhisis.Login/Dockerfile
     depends_on:
       - rhisis.database
+      - rhisis.messagequeue
     ports:
       - "23000:23000"
       - "15000:15000"
@@ -31,6 +32,7 @@ services:
     depends_on:
       - rhisis.login
       - rhisis.database
+      - rhisis.messagequeue
     ports:
       - "28000:28000"
       - "28001:28001"
@@ -53,6 +55,7 @@ services:
       - rhisis.login
       - rhisis.cluster
       - rhisis.database
+      - rhisis.messagequeue
     ports:
       - "5400:5400"
     expose:
@@ -78,4 +81,20 @@ services:
     expose:
       - "3307"
     volumes:
-      - ./bin/_database:/var/lib/mysql
+      - ./bin/_docker/mysql:/var/lib/mysql
+
+  rhisis.messagequeue:
+    image: rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASS: "rabbitmq"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    volumes:
+      - ./bin/_docker/rabbitmq/etc/:/etc/rabbitmq/
+      - ./bin/_docker/rabbitmq/data/:/var/lib/rabbitmq/mnesia
+      - ./bin/_docker/rabbitmq/logs/:/var/log/rabbitmq/
+    ports:
+      - 5672:5672
+      - 15672:15672
