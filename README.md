@@ -60,6 +60,8 @@ Before getting started, you will need to install the following softwares:
 - Docker, Docker-Compose, Docker Desktop (if running on Windows)
 - Any MySQL database explorer (MySQL Workbench for example)
 
+> The solution is configured to run with Linux containers.
+
 Once you have checked out the repository source code, go to the root directory of the repository and type the following command in a `PowerShell` command prompt and follow the instruction to setup your development environment:
 
 ```sh
