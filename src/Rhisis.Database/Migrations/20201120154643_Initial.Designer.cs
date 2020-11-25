@@ -9,8 +9,8 @@ using Rhisis.Database;
 namespace Rhisis.Database.Migrations
 {
     [DbContext(typeof(RhisisDatabaseContext))]
-    [Migration("20200704112456_v05x_ItemStructure")]
-    partial class v05x_ItemStructure
+    [Migration("20201120154643_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -22,10 +22,10 @@ namespace Rhisis.Database.Migrations
             modelBuilder.Entity("Rhisis.Database.Entities.DbAttribute", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("VARCHAR(20)")
                         .HasMaxLength(20);
 
@@ -643,7 +643,7 @@ namespace Rhisis.Database.Migrations
                     b.Property<sbyte>("JobId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TINYINT")
-                        .HasDefaultValue((sbyte)1);
+                        .HasDefaultValue((sbyte)0);
 
                     b.Property<DateTime>("LastConnectionTime")
                         .HasColumnType("DATETIME");
@@ -786,24 +786,24 @@ namespace Rhisis.Database.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Updated")
-                        .HasColumnType("DATETIME");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DATETIME")
+                        .HasDefaultValueSql("NOW()");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CharacterId");
 
                     b.HasIndex("ItemId");
 
                     b.HasIndex("StorageTypeId");
 
-                    b.HasIndex("CharacterId", "StorageTypeId", "Slot")
-                        .IsUnique();
-
-                    b.ToTable("ItemsStorage");
+                    b.ToTable("ItemStorage");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbItemStorageType", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -889,7 +889,7 @@ namespace Rhisis.Database.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("mails");
+                    b.ToTable("Mails");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbQuest", b =>
@@ -984,7 +984,7 @@ namespace Rhisis.Database.Migrations
                     b.HasIndex("CharacterId", "Slot", "SlotLevelIndex")
                         .IsUnique();
 
-                    b.ToTable("shortcuts");
+                    b.ToTable("TaskbarShortcuts");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbSkill", b =>
@@ -1010,6 +1010,52 @@ namespace Rhisis.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("Skills");
+                });
+
+            modelBuilder.Entity("Rhisis.Database.Entities.DbSkillBuff", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("CharacterId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RemainingTime")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SkillId")
+                        .HasColumnType("int");
+
+                    b.Property<sbyte>("SkillLevel")
+                        .HasColumnType("TINYINT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CharacterId", "SkillId")
+                        .IsUnique();
+
+                    b.ToTable("SkillBuffs");
+                });
+
+            modelBuilder.Entity("Rhisis.Database.Entities.DbSkillBuffAttribute", b =>
+                {
+                    b.Property<int>("SkillBuffId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AttributeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("SkillBuffId", "AttributeId");
+
+                    b.HasIndex("AttributeId");
+
+                    b.HasIndex("SkillBuffId", "AttributeId");
+
+                    b.ToTable("SkillBuffAttributes");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbUser", b =>
@@ -1143,8 +1189,32 @@ namespace Rhisis.Database.Migrations
             modelBuilder.Entity("Rhisis.Database.Entities.DbSkill", b =>
                 {
                     b.HasOne("Rhisis.Database.Entities.DbCharacter", "Character")
-                        .WithMany()
+                        .WithMany("Skills")
                         .HasForeignKey("CharacterId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Rhisis.Database.Entities.DbSkillBuff", b =>
+                {
+                    b.HasOne("Rhisis.Database.Entities.DbCharacter", "Character")
+                        .WithMany("SkillBuffs")
+                        .HasForeignKey("CharacterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Rhisis.Database.Entities.DbSkillBuffAttribute", b =>
+                {
+                    b.HasOne("Rhisis.Database.Entities.DbAttribute", "Attribute")
+                        .WithMany()
+                        .HasForeignKey("AttributeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Rhisis.Database.Entities.DbSkillBuff", "SkillBuff")
+                        .WithMany("Attributes")
+                        .HasForeignKey("SkillBuffId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });

@@ -25,7 +25,7 @@ We choose to use the <a href="https://github.com/Eastrall/Sylver.Network">Sylver
 	    
 <p align="center">
   <a href="#technical-information">Technical information</a> •
-  <a href="#features">Features</a> •
+  <a href="https://github.com/Eastrall/Rhisis/blob/develop/Features.md">Features</a> •
   <a href="https://github.com/Eastrall/Rhisis/tree/develop/docs/howtos">How To's</a> •
   <a href="#contributing">Contributing</a> •
   <a href="#contributors">Contributors</a> •
@@ -37,100 +37,99 @@ We choose to use the <a href="https://github.com/Eastrall/Sylver.Network">Sylver
 
 ## Technical information
 
-- Language: `C#` 8 (latest)
+- Language: `C#` 9 (latest)
 - Framework: `.NET Core 3.0`
-- Application type: `Console`
+- Application type: `Console` with `Docker` support
 - Database type: `MySQL`
 - Configuration files type: `JSON`
+- Environment: `Visual Studio 2019`
 - External libraries used:
 	- [Sylver.Network][sylvernetwork]
 	- [Sylver.HandlerInvoker](https://github.com/Eastrall/Sylver.HandlerInvoker)
 	- [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore)
 	- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
 	- [NLog](https://github.com/NLog/NLog)
-- Environment: Visual Studio 2019
 
-## Features
-
-### Common
-- [x] Logger
-- [x] Rijndael cryptography algorithm
-- [x] Custom exceptions
-- [x] Packet handler
-
-### Database
-- [x] MySQL database support
-
-### Login
-- [x] Inter-Server authentication process (CoreServer)
-- [x] Client authentication process
-- [x] Send server list to connected client
-
-### Cluster
-- [x] Inter-Server authentication (CoreClient)
-- [x] Character list
-- [x] Create character
-- [x] Delete character
-- [x] 2nd password verification
-- [x] Pre join
-
-### World
-- [x] Inter-Server authentication (CoreClient)
-- [x] Entity Component System architecture
-- [x] Connect to the world
-- [x] Load resources
-   - [x] Defines & texts
-   - [x] Monsters
-   - [x] Maps
-   - [x] Items
-   - [x] NPC Data/Shops/Dialogs
-   - [x] Job Data
-   - [x] Exp table
-   - [x] Behaviors (AI)
-- [x] Spawn monsters and NPC
-- [x] Visibility System
-- [x] Mobility System
-- [x] Respawn System
-- [x] Chat System
-	- [x] Chat commands:
-		- [x] Create item : `/ci` or `/createitem`
-		- [x] Get gold : `/getgold`
-		- [x] Teleport : `/teleport`
-- [x] Inventory System
-	- [x] Move items
-	- [x] Equip/Unequip items
-	- [x] Save inventory
-	- [x] Drop items on the ground
-	- [x] Item usage (food, potion, refreshers)
-- [x] Shop System
-	- [x] Buy items
-	- [x] Sell items
-- [x] Trade System
-- [x] NPC Dialog System
-- [x] Drop System
-	- [x] Pickup Gold / Items
-- [x] Battle System
-	- [x] Melee Attack
-		- [x] Player VS Monster
-	- [x] Monster death
-	- [x] Monster item/gold drop
-- [x] Character customization system
-- [x] Attribute System
-- [x] Quest System
-- [ ] [Bank System](https://github.com/Eastrall/Rhisis/issues/309)
-- [ ] [Friend System](https://github.com/Eastrall/Rhisis/issues/37)
-- [ ] [Motion System](https://github.com/Eastrall/Rhisis/issues/82)
-- [ ] [Buff Pang System](https://github.com/Eastrall/Rhisis/issues/39)
-- [ ] [Mailbox System](https://github.com/Eastrall/Rhisis/issues/38)
-- [ ] [Guild System](https://github.com/Eastrall/Rhisis/issues/36)
-- [ ] [Skill System](https://github.com/Eastrall/Rhisis/issues/35)
-- [ ] [Item Bonus System](https://github.com/Eastrall/Rhisis/issues/34)
-- [ ] [Party System](https://github.com/Eastrall/Rhisis/issues/33)
-- [ ] [Job System](https://github.com/Eastrall/Rhisis/issues/31)
-
-## Contributing
+## Getting started
 
 Please take a look at our [contributing](https://github.com/Eastrall/Rhisis/blob/develop/CONTRIBUTING.md) guidelines, if you're interested in helping!
+
+Before getting started, you will need to install the following softwares:
+
+- Visual Studio 2019
+- Docker, Docker-Compose, Docker Desktop (if running on Windows)
+- Any MySQL database explorer (MySQL Workbench for example)
+
+> The solution is configured to run with Linux containers.
+
+Once you have checked out the repository source code, go to the root directory of the repository and type the following command in a `PowerShell` command prompt and follow the instruction to setup your development environment:
+
+```sh
+$> ./setup/setup-environment.ps1
+```
+
+> Note: By the MySQL container listen to port 3306 internally, but exposes the port 3307 if you ever need to connect to the MySQL server using a tool like MySQL workbench.
+> Note2: The database files are located in the `bin/_database` folder.
+
+### Configure the database access
+
+In the same command prompt you used to setup your development environment, navigate to the `bin/` directory of your repository and type the following commands:
+
+```sh
+$> ./rhisis-cli database configure
+```
+
+This command will configure the different servers to access the database. Since the servers will be running inside docker containers, please configure your environnement as followed:
+
+```
+Database server host address: rhisis.database
+```
+> The `rhisis.database` is the name of the Docker container where the MySQL Server is running. In order for other containers to access this container, you need to specify the container name as the host.
+
+```
+Database server listening port: 3306
+```
+> Even if the docker container has an acces with the `3307` port, you should use the port `3306` internally so other containers can access the MySQL Server
+
+```
+Database username:
+Database user password:
+Database name:
+```
+> Type the **same** information you entered during the setup.
+
+For the rest of the options, you can choose to use encryption or not. It's up to you now.
+
+### Configure the servers
+
+#### Login Server
+
+```sh
+$> ./rhisis-cli configure login
+```
+
+#### Cluster Server
+
+```sh
+$> ./rhisis-cli configure cluster
+----- Core Server -----
+Core server host address: rhisis.login
+```
+
+> Note: You will need to specify the `rhisis.login` container name has the core server host in order for the cluster server to communicate with the CoreServer.
+> Also: The port and passwords should match on both sides.
+
+#### World Server
+
+```sh
+$> ./rhisis-cli configure world
+...
+----- World cluster Server -----
+World cluster server host address: rhisis.cluster
+```
+
+> Note: You will need to specify the `rhisis.cluster` container name, so the world server can be considered as a "channel" of the given cluster.
+> Also: The port and passwords should match on both sides.
 
 ## Contributors
 

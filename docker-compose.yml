@@ -1,0 +1,100 @@
+# ===========================================
+# Docker Compose file for Visual Studio debug 
+# ===========================================
+
+version: '3.5'
+services:
+  rhisis.login:
+    image: ${DOCKER_REGISTRY-}rhisislogin
+    build:
+      context: .
+      dockerfile: src/Rhisis.Login/Dockerfile
+    depends_on:
+      - rhisis.database
+      - rhisis.messagequeue
+    ports:
+      - "23000:23000"
+      - "15000:15000"
+    expose: 
+      - 23000
+    environment:
+      RHISIS_CONFIGURATION: /opt/rhisis
+    volumes:
+     - "./bin/config/login.json:/opt/rhisis/config/login.json:ro"
+     - "./bin/config/database.json:/opt/rhisis/config/database.json:ro"
+     - "./bin/logs/login:/opt/rhisis/logs/login"
+
+  rhisis.cluster:
+    image: ${DOCKER_REGISTRY-}rhisiscluster
+    build:
+      context: .
+      dockerfile: src/Rhisis.Cluster/Dockerfile
+    depends_on:
+      - rhisis.login
+      - rhisis.database
+      - rhisis.messagequeue
+    ports:
+      - "28000:28000"
+      - "28001:28001"
+    expose:
+      - 28000
+    environment:
+      RHISIS_CONFIGURATION: /opt/rhisis
+    volumes:
+     - "./bin/config/cluster.json:/opt/rhisis/config/cluster.json:ro"
+     - "./bin/config/database.json:/opt/rhisis/config/database.json:ro"
+     - "./bin/logs/cluster:/opt/rhisis/logs/cluster"
+     - "./bin/data:/opt/rhisis/data:ro"
+
+  rhisis.world:
+    image: ${DOCKER_REGISTRY-}rhisisworld
+    build:
+      context: .
+      dockerfile: src/Rhisis.World/Dockerfile
+    depends_on:
+      - rhisis.login
+      - rhisis.cluster
+      - rhisis.database
+      - rhisis.messagequeue
+    ports:
+      - "5400:5400"
+    expose:
+      - 5400
+    environment:
+      RHISIS_CONFIGURATION: /opt/rhisis
+    volumes:
+     - "./bin/config/world.json:/opt/rhisis/config/world.json:ro"
+     - "./bin/config/database.json:/opt/rhisis/config/database.json:ro"
+     - "./bin/logs/world:/opt/rhisis/logs/world"
+     - "./bin/data:/opt/rhisis/data:ro"
+
+  rhisis.database:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - "3307:3306"
+    expose:
+      - "3307"
+    volumes:
+      - ./bin/_docker/mysql:/var/lib/mysql
+
+  rhisis.messagequeue:
+    image: rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASS: "rabbitmq"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    volumes:
+      - ./bin/_docker/rabbitmq/etc/:/etc/rabbitmq/
+      - ./bin/_docker/rabbitmq/data/:/var/lib/rabbitmq/mnesia
+      - ./bin/_docker/rabbitmq/logs/:/var/log/rabbitmq/
+    ports:
+      - 5672:5672
+      - 15672:15672

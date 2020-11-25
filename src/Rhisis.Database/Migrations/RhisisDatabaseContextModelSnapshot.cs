@@ -20,10 +20,10 @@ namespace Rhisis.Database.Migrations
             modelBuilder.Entity("Rhisis.Database.Entities.DbAttribute", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("VARCHAR(20)")
                         .HasMaxLength(20);
 
@@ -641,7 +641,7 @@ namespace Rhisis.Database.Migrations
                     b.Property<sbyte>("JobId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TINYINT")
-                        .HasDefaultValue((sbyte)1);
+                        .HasDefaultValue((sbyte)0);
 
                     b.Property<DateTime>("LastConnectionTime")
                         .HasColumnType("DATETIME");
@@ -796,13 +796,12 @@ namespace Rhisis.Database.Migrations
 
                     b.HasIndex("StorageTypeId");
 
-                    b.ToTable("ItemsStorage");
+                    b.ToTable("ItemStorage");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbItemStorageType", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -888,7 +887,7 @@ namespace Rhisis.Database.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("mails");
+                    b.ToTable("Mails");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbQuest", b =>
@@ -983,7 +982,7 @@ namespace Rhisis.Database.Migrations
                     b.HasIndex("CharacterId", "Slot", "SlotLevelIndex")
                         .IsUnique();
 
-                    b.ToTable("shortcuts");
+                    b.ToTable("TaskbarShortcuts");
                 });
 
             modelBuilder.Entity("Rhisis.Database.Entities.DbSkill", b =>

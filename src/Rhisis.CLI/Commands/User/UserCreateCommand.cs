@@ -1,15 +1,13 @@
-﻿using System;
-using System.Linq;
-using McMaster.Extensions.CommandLineUtils;
+﻿using McMaster.Extensions.CommandLineUtils;
 using Rhisis.CLI.Services;
-using Rhisis.Core.Common;
 using Rhisis.Core.Cryptography;
 using Rhisis.Core.Extensions;
-using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.Game.Common;
+using System;
+using System.Linq;
 
 namespace Rhisis.CLI.Commands.User
 {
@@ -19,8 +17,35 @@ namespace Rhisis.CLI.Commands.User
         private readonly DatabaseFactory _databaseFactory;
         private readonly ConsoleHelper _consoleHelper;
 
-        [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration", Description = "Specify the database configuration file path.")]
-        public string DatabaseConfigurationFile { get; set; }
+        /// <summary>
+        /// Gets or sets the database server's host.
+        /// </summary>
+        [Option(CommandOptionType.SingleValue, ShortName = "s", LongName = "server", Description = "Specify the database host.")]
+        public string ServerHost { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database server's username.
+        /// </summary>
+        [Option(CommandOptionType.SingleValue, ShortName = "u", LongName = "user", Description = "Specify the database server user.")]
+        public string User { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database server username's password.
+        /// </summary>
+        [Option(CommandOptionType.SingleValue, ShortName = "pwd", LongName = "password", Description = "Specify the database server user's password.")]
+        public string Password { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database server listening port.
+        /// </summary>
+        [Option(CommandOptionType.SingleValue, ShortName = "p", LongName = "port", Description = "Specify the database server port.")]
+        public int Port { get; set; } = 3306;
+
+        /// <summary>
+        /// Gets or sets the database name.
+        /// </summary>
+        [Option(CommandOptionType.SingleValue, ShortName = "d", LongName = "database", Description = "Specify the database host.")]
+        public string DatabaseName { get; set; }
 
         public UserCreateCommand(DatabaseFactory databaseFactory, ConsoleHelper consoleHelper)
         {
@@ -30,15 +55,14 @@ namespace Rhisis.CLI.Commands.User
 
         public void OnExecute()
         {
-            if (string.IsNullOrEmpty(DatabaseConfigurationFile))
-                DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
-
-            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile, ConfigurationConstants.DatabaseConfiguration);
-            if (dbConfig is null)
+            var dbConfig = new DatabaseConfiguration
             {
-                Console.WriteLine("Couldn't load database configuration file during execution of user create command.");
-                return;
-            }
+                Host = ServerHost,
+                Username = User,
+                Password = Password,
+                Port = Port,
+                Database = DatabaseName
+            };
 
             var user = new DbUser();
 
@@ -54,8 +78,8 @@ namespace Rhisis.CLI.Commands.User
             Console.Write("Password confirmation: ");
             string passwordConfirmation = _consoleHelper.ReadPassword();
 
-            Console.Write("Password salt: ");
-            string passwordSalt = _consoleHelper.ReadStringOrDefault();
+            Console.Write("Password salt (kikugalanet): ");
+            string passwordSalt = _consoleHelper.ReadStringOrDefault("kikugalanet");
 
             Console.WriteLine("Authority: ");
             _consoleHelper.DisplayEnum<AuthorityType>();

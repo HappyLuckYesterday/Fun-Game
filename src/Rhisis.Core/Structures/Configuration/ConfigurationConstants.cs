@@ -6,6 +6,16 @@
     public sealed class ConfigurationConstants
     {
         /// <summary>
+        /// Gets the default configuration path when Rhisis is running inside a container.
+        /// </summary>
+        public const string DefaultRhisisDockerConfigurationPath = "/var/rhisis";
+
+        /// <summary>
+        /// Gets the Rhisis docker configuration environment key.
+        /// </summary>
+        public const string RhisisDockerConfigurationKey = "RHISIS_CONFIGURATION";
+
+        /// <summary>
         /// Gets the CoreServer configuration key.
         /// </summary>
         public const string CoreServer = "coreServer";
@@ -18,7 +28,7 @@
         /// <summary>
         /// Gets the LoginServer configuration file path.
         /// </summary>
-        public const string LoginServerPath = "config/login.json";
+        public const string LoginServerPath = "./config/login.json";
 
         /// <summary>
         /// Gets the ClusterServer configuration key.
@@ -28,7 +38,7 @@
         /// <summary>
         /// Gets the ClusterServer configuration file path.
         /// </summary>
-        public const string ClusterServerPath = "config/cluster.json";
+        public const string ClusterServerPath = "./config/cluster.json";
 
         /// <summary>
         /// Gets the WorldServer configuration key.
@@ -43,7 +53,7 @@
         /// <summary>
         /// Gets the WorldServer configuration file path.
         /// </summary>
-        public const string WorldServerPath = "config/world.json";
+        public const string WorldServerPath = "./config/world.json";
 
         /// <summary>
         /// Gets the Database configuration file path.

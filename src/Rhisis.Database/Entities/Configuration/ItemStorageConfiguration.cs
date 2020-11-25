@@ -7,7 +7,6 @@ namespace Rhisis.Database.Entities.Configuration
     {
         public void Configure(EntityTypeBuilder<DbItemStorage> builder)
         {
-            builder.ToTable("ItemsStorage");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
             builder.Property(x => x.CharacterId).IsRequired();

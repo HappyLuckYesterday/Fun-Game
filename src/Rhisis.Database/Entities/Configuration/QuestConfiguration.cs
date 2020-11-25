@@ -7,7 +7,6 @@ namespace Rhisis.Database.Entities.Configuration
     {
         public void Configure(EntityTypeBuilder<DbQuest> builder)
         {
-            builder.ToTable("Quests");
             builder.HasIndex(x => new { x.QuestId, x.CharacterId }).IsUnique();
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).ValueGeneratedOnAdd();

@@ -1,8 +1,8 @@
-﻿using System;
-using McMaster.Extensions.CommandLineUtils;
-using Rhisis.Core.Helpers;
+﻿using McMaster.Extensions.CommandLineUtils;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
+using System;
+using System.Threading;
 
 namespace Rhisis.CLI.Commands.Database
 {
@@ -12,13 +12,34 @@ namespace Rhisis.CLI.Commands.Database
         private readonly DatabaseFactory _databaseFactory;
 
         /// <summary>
-        /// Gets or sets the database configuration file.
+        /// Gets or sets the database server's host.
         /// </summary>
-        /// <remarks>
-        /// If the database configuration file is not specified, the <see cref="ConfigurationConstants.DatabasePath"/> constant is used instead.
-        /// </remarks>
-        [Option(CommandOptionType.SingleValue, ShortName = "c", LongName = "configuration", Description = "Specify the database configuration file path.")]
-        public string DatabaseConfigurationFile { get; set; }
+        [Option(CommandOptionType.SingleValue, ShortName = "s", LongName = "server", Description = "Specify the database host.")]
+        public string ServerHost { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database server's username.
+        /// </summary>
+        [Option(CommandOptionType.SingleValue, ShortName = "u", LongName = "user", Description = "Specify the database server user.")]
+        public string User { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database server username's password.
+        /// </summary>
+        [Option(CommandOptionType.SingleValue, ShortName = "pwd", LongName = "password", Description = "Specify the database server user's password.")]
+        public string Password { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database server listening port.
+        /// </summary>
+        [Option(CommandOptionType.SingleValue, ShortName = "p", LongName = "port", Description = "Specify the database server port.")]
+        public int Port { get; set; } = 3306;
+
+        /// <summary>
+        /// Gets or sets the database name.
+        /// </summary>
+        [Option(CommandOptionType.SingleValue, ShortName = "d", LongName = "database", Description = "Specify the database host.")]
+        public string DatabaseName { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="DatabaseUpdateCommand"/> instance.
@@ -36,36 +57,52 @@ namespace Rhisis.CLI.Commands.Database
         {
             try
             {
-                if (string.IsNullOrEmpty(DatabaseConfigurationFile))
+                var dbConfig = new DatabaseConfiguration
                 {
-                    DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
-                }
+                    Host = ServerHost,
+                    Username = User,
+                    Password = Password,
+                    Port = Port,
+                    Database = DatabaseName
+                };
 
-                DatabaseConfiguration dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile, ConfigurationConstants.DatabaseConfiguration);
-                
-                if (dbConfig is null)
-                {
-                    Console.WriteLine("Couldn't load database configuration file during execution of update command.");
-                    return;
-                }
-
-                using IRhisisDatabase database = _databaseFactory.CreateDatabaseInstance(dbConfig);
-                
                 Console.WriteLine("Starting database structure update...");
-
-                if (database.Exists())
-                {
-                    database.Migrate();
-                    Console.WriteLine("Database updated.");
-                }
-                else
-                {
-                    Console.WriteLine("Database does not exist yet!");
-                }
+                TryMigration(dbConfig);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        private void TryMigration(DatabaseConfiguration databaseConfiguration)
+        {
+            const int MaxAttempts = 5;
+            int attempts = 0;
+
+            while (attempts < MaxAttempts)
+            {
+                try
+                {
+                    using IRhisisDatabase database = _databaseFactory.CreateDatabaseInstance(databaseConfiguration);
+
+                    if (database.Exists())
+                    {
+                        database.Migrate();
+                        Console.WriteLine("Database updated.");
+                        break;
+                    }
+
+                    Console.WriteLine("Database does not exist yet!");
+                    break;
+                }
+                catch
+                {
+                    Console.WriteLine("Failed to migrate database. New attempt in 5 seconds.");
+
+                    Thread.Sleep(5000);
+                    attempts++;
+                }
             }
         }
     }

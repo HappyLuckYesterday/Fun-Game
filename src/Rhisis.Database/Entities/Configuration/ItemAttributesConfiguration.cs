@@ -7,7 +7,6 @@ namespace Rhisis.Database.Entities.Configuration
     {
         public void Configure(EntityTypeBuilder<DbItemAttributes> builder)
         {
-            builder.ToTable("ItemAttributes");
             builder.HasKey(x => new { x.ItemId, x.AttributeId });
             builder.HasIndex(x => new { x.ItemId, x.AttributeId }).IsUnique();
             builder.Property(x => x.ItemId).IsRequired();

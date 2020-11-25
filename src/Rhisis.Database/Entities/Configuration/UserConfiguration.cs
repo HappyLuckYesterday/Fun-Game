@@ -7,7 +7,6 @@ namespace Rhisis.Database.Entities.Configuration
     {
         public void Configure(EntityTypeBuilder<DbUser> builder)
         {
-            builder.ToTable("Users");
             builder.HasIndex(c => new { c.Username, c.Email }).IsUnique();
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).IsRequired().ValueGeneratedOnAdd();

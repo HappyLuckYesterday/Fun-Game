@@ -7,7 +7,6 @@ namespace Rhisis.Database.Entities.Configuration
     {
         public void Configure(EntityTypeBuilder<DbSkillBuffAttribute> builder)
         {
-            builder.ToTable("SkillBuffAttributes");
             builder.HasKey(x => new { x.SkillBuffId, x.AttributeId });
             builder.HasIndex(x => new { x.SkillBuffId, x.AttributeId });
             builder.Property(x => x.SkillBuffId).IsRequired();

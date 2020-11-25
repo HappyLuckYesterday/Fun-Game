@@ -44,7 +44,7 @@ namespace Rhisis.Cluster
             _serviceProvider = serviceProvider;
             _database = database;
             PacketProcessor = new FlyffPacketProcessor();
-            ServerConfiguration = new NetServerConfiguration(ClusterConfiguration.Host,
+            ServerConfiguration = new NetServerConfiguration("0.0.0.0",
                 ClusterConfiguration.Port,
                 ClientBacklog,
                 ClientBufferSize);

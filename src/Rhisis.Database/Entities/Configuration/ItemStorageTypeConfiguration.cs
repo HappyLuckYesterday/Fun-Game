@@ -11,9 +11,8 @@ namespace Rhisis.Database.Entities.Configuration
     {
         public void Configure(EntityTypeBuilder<DbItemStorageType> builder)
         {
-            builder.ToTable("ItemStorageTypes");
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).ValueGeneratedOnAdd();
+            builder.Property(x => x.Id).IsRequired().ValueGeneratedNever();
             builder.Property(x => x.Name).IsRequired().HasMaxLength(20).HasColumnType("VARCHAR(20)");
 
             SeedData(builder);
@@ -23,6 +22,7 @@ namespace Rhisis.Database.Entities.Configuration
         {
             IEnumerable<DbAttribute> initialValues = Enum.GetValues(typeof(ItemStorageType))
                    .Cast<ItemStorageType>()
+                   .OrderBy(x => (int)x)
                    .Select(x => new DbAttribute
                    {
                        Id = (int)x,

@@ -3,6 +3,9 @@
     "Rhisis.Cluster": {
       "commandName": "Project",
       "workingDirectory": "../../bin"
+    },
+    "Docker": {
+      "commandName": "Docker"
     }
   }
 }

@@ -3,6 +3,9 @@
     "Rhisis.Login": {
       "commandName": "Project",
       "workingDirectory": "../../bin"
+    },
+    "Docker": {
+      "commandName": "Docker"
     }
   }
 }

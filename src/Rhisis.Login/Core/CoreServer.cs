@@ -38,7 +38,7 @@ namespace Rhisis.Login.Core
             CoreConfiguration = configuration.Value;
             _serviceProvider = serviceProvider;
             _handlerInvoker = handlerInvoker;
-            ServerConfiguration = new NetServerConfiguration(CoreConfiguration.Host, 
+            ServerConfiguration = new NetServerConfiguration("0.0.0.0", 
                 CoreConfiguration.Port, 
                 ClientBacklog, 
                 ClientBufferSize);

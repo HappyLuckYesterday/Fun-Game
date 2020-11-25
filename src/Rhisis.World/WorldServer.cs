@@ -49,7 +49,7 @@ namespace Rhisis.World
             _chatCommandManager = chatCommandManager;
             _database = database;
             PacketProcessor = new FlyffPacketProcessor();
-            ServerConfiguration = new NetServerConfiguration(_worldConfiguration.Host, _worldConfiguration.Port, ClientBacklog, ClientBufferSize);
+            ServerConfiguration = new NetServerConfiguration("0.0.0.0", _worldConfiguration.Port, ClientBacklog, ClientBufferSize);
         }
 
         /// <inheritdoc />
