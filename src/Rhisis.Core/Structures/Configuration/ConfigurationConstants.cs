@@ -21,6 +21,11 @@
         public const string CoreServer = "coreServer";
 
         /// <summary>
+        /// Gets the CoreServer configuration path.
+        /// </summary>
+        public const string CoreServerPath = "./config/core.json";
+
+        /// <summary>
         /// Gets the LoginServer configuration key.
         /// </summary>
         public const string LoginServer = "loginServer";

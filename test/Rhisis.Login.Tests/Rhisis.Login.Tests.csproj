@@ -23,7 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Rhisis.Core\Rhisis.Core.csproj" />
     <ProjectReference Include="..\..\src\Rhisis.Database\Rhisis.Database.csproj" />
-    <ProjectReference Include="..\..\src\Rhisis.Login\Rhisis.Login.csproj" />
+    <ProjectReference Include="..\..\src\Rhisis.Login\Rhisis.LoginServer.csproj" />
     <ProjectReference Include="..\Rhisis.Testing\Rhisis.Testing.csproj" />
   </ItemGroup>
 

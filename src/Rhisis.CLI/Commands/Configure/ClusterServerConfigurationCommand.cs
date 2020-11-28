@@ -32,10 +32,8 @@ namespace Rhisis.CLI.Commands.Configure
         {
             var clusterServerConfiguration = ConfigurationHelper.Load<ClusterConfiguration>(ConfigurationFile, ConfigurationConstants.ClusterServer);
             var coreServerConfiguration = ConfigurationHelper.Load<CoreConfiguration>(ConfigurationFile, ConfigurationConstants.CoreServer);
-            var worldClusterServerConfiguration = ConfigurationHelper.Load<WorldClusterConfiguration>(ConfigurationFile, ConfigurationConstants.WorldClusterServer);
             var clusterConfiguration = new ObjectConfigurationFiller<ClusterConfiguration>(clusterServerConfiguration);
             var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguration);
-            var worldClusterConfiguration = new ObjectConfigurationFiller<WorldClusterConfiguration>(worldClusterServerConfiguration);
 
             Console.WriteLine("----- Core Server -----");
             coreConfiguration.Fill();
@@ -43,13 +41,10 @@ namespace Rhisis.CLI.Commands.Configure
             
             Console.WriteLine("----- Cluster Server -----");
             clusterConfiguration.Fill();
-            worldClusterConfiguration.Fill();
-            worldClusterConfiguration.Value.Password = MD5.GetMD5Hash(worldClusterConfiguration.Value.Password);
 
             Console.WriteLine("##### Configuration review #####");
             coreConfiguration.Show("Core server configuration");
             clusterConfiguration.Show("Cluster Server configuration");
-            worldClusterConfiguration.Show("World cluster server configuration");
 
             bool response = _consoleHelper.AskConfirmation("Save this configuration?");
 
@@ -58,7 +53,6 @@ namespace Rhisis.CLI.Commands.Configure
                 var configuration = new Dictionary<string, object>
                 {
                     { ConfigurationConstants.ClusterServer, clusterConfiguration.Value },
-                    { ConfigurationConstants.WorldClusterServer, worldClusterConfiguration.Value },
                     { ConfigurationConstants.CoreServer, coreConfiguration.Value }
                 };
 

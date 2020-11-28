@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Rhisis.WorldServer": {
+      "commandName": "Project",
+      "workingDirectory": "../../bin"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

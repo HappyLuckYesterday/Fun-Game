@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Rhisis.CoreServer": {
+      "commandName": "Project"
+    },
+    "Docker (1)": {
+      "commandName": "Docker"
+    }
+  }
+}
