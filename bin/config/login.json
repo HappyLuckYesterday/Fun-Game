@@ -1,0 +1,10 @@
+{
+  "loginServer": {
+    "host": "127.0.0.1",
+    "port": 23000,
+    "buildVersion": "20100412",
+    "accountVerification": false,
+    "passwordEncryption": true,
+    "encryptionKey": "dldhsvmflvm"
+  }
+}
