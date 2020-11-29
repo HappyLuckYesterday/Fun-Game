@@ -50,7 +50,7 @@ namespace Rhisis.CoreServer
                         _ => throw new NotImplementedException()
                     };
 
-                    if (ServerInfo is not null)
+                    if (ServerInfo != null)
                     {
                         SendAuthenticationResult(CoreAuthenticationResultType.Success);
                         _coreServer.SendServerListUpdate();
