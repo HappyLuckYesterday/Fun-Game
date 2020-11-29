@@ -13,7 +13,7 @@ namespace Rhisis.Messaging.RabbitMQ
         private readonly IConnection _connection;
         private readonly IModel _channel;
 
-        public event EventHandler? Disconnected;
+        public event EventHandler Disconnected;
 
         public RabbitMQMessaging(RabbitMQBuilderOptions options)
         {
@@ -60,7 +60,7 @@ namespace Rhisis.Messaging.RabbitMQ
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += (model, deliverEvent) =>
             {
-                if (callback is not null)
+                if (callback != null)
                 {
                     try
                     {

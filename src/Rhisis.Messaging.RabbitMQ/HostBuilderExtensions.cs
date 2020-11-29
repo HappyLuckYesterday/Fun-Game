@@ -24,7 +24,7 @@ namespace Rhisis.Messaging.RabbitMQ
                 {
                     var options = new RabbitMQBuilderOptions();
 
-                    if (builder is not null)
+                    if (builder != null)
                     {
                         builder(host, options);
                     }
