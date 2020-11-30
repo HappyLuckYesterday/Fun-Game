@@ -68,7 +68,7 @@ namespace Rhisis.WorldServer.CoreClient
             {
                 case CoreAuthenticationResultType.Success:
                     {
-                        _logger.LogInformation("Cluster Core client authenticated successfully.");
+                        _logger.LogInformation("World Core client authenticated successfully.");
                         return;
                     }
                 case CoreAuthenticationResultType.FailedWorldExists:
