@@ -1,4 +1,4 @@
-﻿namespace Rhisis.Caching.Redis
+﻿namespace Rhisis.Redis
 {
     public class RedisConfiguration
     {

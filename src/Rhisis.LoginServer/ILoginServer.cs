@@ -1,7 +1,5 @@
 ﻿using Rhisis.LoginServer.Client;
-using Rhisis.Network.Core.Servers;
 using Sylver.Network.Server;
-using System.Collections.Generic;
 
 namespace Rhisis.LoginServer
 {
@@ -10,11 +8,6 @@ namespace Rhisis.LoginServer
     /// </summary>
     public interface ILoginServer : INetServer
     {
-        /// <summary>
-        /// Gets the connected clusters list.
-        /// </summary>
-        IReadOnlyDictionary<int, Cluster> ConnectedClusters { get; }
-
         /// <summary>
         /// Gets a connected client by his username.
         /// </summary>

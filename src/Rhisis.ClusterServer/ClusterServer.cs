@@ -1,18 +1,18 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.ClusterServer.Client;
 using Rhisis.ClusterServer.Packets;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
+using Rhisis.Game.Abstractions.Caching;
+using Rhisis.Game.Abstractions.Messaging;
 using Rhisis.Game.Abstractions.Resources;
-using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Resources.Loaders;
-using Rhisis.Messaging.Abstractions;
 using Rhisis.Network;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Server;
+using System;
 
 namespace Rhisis.ClusterServer
 {
@@ -27,7 +27,7 @@ namespace Rhisis.ClusterServer
         private readonly IGameResources _gameResources;
         private readonly IServiceProvider _serviceProvider;
         private readonly IRhisisDatabase _database;
-        private readonly IMessaging _messaging;
+        private readonly IRhisisCacheManager _rhisisCacheManager;
 
         /// <inheritdoc />
         public ClusterConfiguration ClusterConfiguration { get; }
@@ -42,7 +42,7 @@ namespace Rhisis.ClusterServer
         /// <param name="clusterConfiguration">Cluster Server configuration.</param>
         /// <param name="gameResources">Game resources.</param>
         /// <param name="serviceProvider">Service provider.</param>
-        public ClusterServer(ILogger<ClusterServer> logger, IOptions<ClusterConfiguration> clusterConfiguration, IOptions<CoreConfiguration> coreConfiguration, IGameResources gameResources, IServiceProvider serviceProvider, IRhisisDatabase database, IMessaging messaging)
+        public ClusterServer(ILogger<ClusterServer> logger, IOptions<ClusterConfiguration> clusterConfiguration, IOptions<CoreConfiguration> coreConfiguration, IGameResources gameResources, IServiceProvider serviceProvider, IRhisisDatabase database, IRhisisCacheManager rhisisCacheManager)
         {
             _logger = logger;
             ClusterConfiguration = clusterConfiguration.Value;
@@ -50,7 +50,7 @@ namespace Rhisis.ClusterServer
             _gameResources = gameResources;
             _serviceProvider = serviceProvider;
             _database = database;
-            _messaging = messaging;
+            _rhisisCacheManager = rhisisCacheManager;
             PacketProcessor = new FlyffPacketProcessor();
             ServerConfiguration = new NetServerConfiguration("0.0.0.0",
                 ClusterConfiguration.Port,
@@ -60,6 +60,15 @@ namespace Rhisis.ClusterServer
 
         protected override void OnBeforeStart()
         {
+            try
+            {
+                _rhisisCacheManager.ClearAllCaches();
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, $"Failed to clear cluster cache.");
+            }
+
             if (!_database.IsAlive())
             {
                 throw new InvalidProgramException($"Cannot start {nameof(ClusterServer)}. Failed to reach database.");

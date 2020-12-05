@@ -7,8 +7,8 @@ using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Game.Abstractions.Protocol;
+using Rhisis.LoginServer.CoreServer;
 using Rhisis.LoginServer.Packets;
-using Rhisis.Messaging.RabbitMQ;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
 using System.Threading.Tasks;
@@ -26,6 +26,7 @@ namespace Rhisis.LoginServer
                 {
                     configApp.SetBasePath(EnvironmentExtension.GetCurrentEnvironementDirectory());
                     configApp.AddJsonFile(ConfigurationConstants.LoginServerPath, optional: false);
+                    configApp.AddJsonFile(ConfigurationConstants.CoreServerPath, optional: false);
                     configApp.AddJsonFile(ConfigurationConstants.DatabasePath, optional: false);
                 })
                 .ConfigureServices((hostContext, services) =>
@@ -41,6 +42,10 @@ namespace Rhisis.LoginServer
                     services.AddSingleton<ILoginServer, LoginServer>();
                     services.AddSingleton<ILoginPacketFactory, LoginPacketFactory>();
                     services.AddSingleton<IHostedService, LoginServerService>();
+
+                    // Core Server
+                    services.AddSingleton<ICoreServer, CoreServer.CoreServer>();
+                    services.AddSingleton<IHostedService, CoreServerService>();
                 })
                 .ConfigureLogging(builder =>
                 {
@@ -51,13 +56,6 @@ namespace Rhisis.LoginServer
                         CaptureMessageTemplates = true,
                         CaptureMessageProperties = true
                     });
-                })
-                .UseRabbitMQ((host, options) =>
-                {
-                    // TODO: load from configuration
-                    options.Host = "rhisis.messagequeue";
-                    options.Username = "rabbitmq";
-                    options.Password = "rabbitmq";
                 })
                 .UseConsoleLifetime()
                 .SetConsoleCulture(culture)

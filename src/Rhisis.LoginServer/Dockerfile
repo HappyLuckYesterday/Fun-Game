@@ -6,8 +6,6 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/core/sdk:3.0-buster AS build
 WORKDIR /src
 COPY ["src/Rhisis.LoginServer/Rhisis.LoginServer.csproj", "src/Rhisis.LoginServer/"]
-COPY ["src/Rhisis.Messaging.RabbitMQ/Rhisis.Messaging.RabbitMQ.csproj", "src/Rhisis.Messaging.RabbitMQ/"]
-COPY ["src/Rhisis.Messaging.Abstractions/Rhisis.Messaging.Abstractions.csproj", "src/Rhisis.Messaging.Abstractions/"]
 COPY ["src/Rhisis.Core/Rhisis.Core.csproj", "src/Rhisis.Core/"]
 COPY ["src/Rhisis.Game/Rhisis.Game.csproj", "src/Rhisis.Game/"]
 COPY ["src/Rhisis.Game.Abstractions/Rhisis.Game.Abstractions.csproj", "src/Rhisis.Game.Abstractions/"]

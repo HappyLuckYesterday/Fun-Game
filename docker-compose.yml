@@ -4,33 +4,13 @@
 
 version: '3.5'
 services:
-  rhisis.coreserver:
-    image: ${DOCKER_REGISTRY-}rhisiscoreserver
-    build:
-      context: .
-      dockerfile: src/Rhisis.CoreServer/Dockerfile
-    depends_on:
-      - rhisis.messagequeue
-    ports:
-      - "15000:15000"
-    expose:
-      - 15000
-    environment:
-      RHISIS_CONFIGURATION: /opt/rhisis
-    volumes:
-     - "./bin/config/core.json:/opt/rhisis/config/core.json:ro"
-     - "./bin/logs/core:/opt/rhisis/logs/core"
-
   rhisis.loginserver:
     image: ${DOCKER_REGISTRY-}rhisislogin
     build:
       context: .
       dockerfile: src/Rhisis.LoginServer/Dockerfile
     depends_on:
-      - rhisis.coreserver
       - rhisis.database
-      - rhisis.messagequeue
-      - rhisis.redis
     ports:
       - "23000:23000"
     expose: 
@@ -39,6 +19,7 @@ services:
       RHISIS_CONFIGURATION: /opt/rhisis
     volumes:
      - "./bin/config/login.json:/opt/rhisis/config/login.json:ro"
+     - "./bin/config/core.json:/opt/rhisis/config/core.json:ro"
      - "./bin/config/database.json:/opt/rhisis/config/database.json:ro"
      - "./bin/logs/login:/opt/rhisis/logs/login"
 
@@ -48,10 +29,8 @@ services:
       context: .
       dockerfile: src/Rhisis.ClusterServer/Dockerfile
     depends_on:
-      - rhisis.coreserver
       - rhisis.loginserver
       - rhisis.database
-      - rhisis.messagequeue
       - rhisis.redis
     ports:
       - "28000:28000"
@@ -71,11 +50,9 @@ services:
       context: .
       dockerfile: src/Rhisis.WorldServer/Dockerfile
     depends_on:
-      - rhisis.coreserver
       - rhisis.loginserver
       - rhisis.clusterserver
       - rhisis.database
-      - rhisis.messagequeue
       - rhisis.redis
     ports:
       - "5400:5400"
@@ -110,19 +87,3 @@ services:
       - "6379:6379"
     volumes:
       - ./bin/_docker/redis/:/data
-
-  rhisis.messagequeue:
-    image: rabbitmq
-    restart: always
-    environment:
-      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
-      RABBITMQ_DEFAULT_USER: "rabbitmq"
-      RABBITMQ_DEFAULT_PASS: "rabbitmq"
-      RABBITMQ_DEFAULT_VHOST: "/"
-    volumes:
-      - ./bin/_docker/rabbitmq/etc/:/etc/rabbitmq/
-      - ./bin/_docker/rabbitmq/data/:/var/lib/rabbitmq/mnesia
-      - ./bin/_docker/rabbitmq/logs/:/var/log/rabbitmq/
-    ports:
-      - 5672:5672
-      - 15672:15672

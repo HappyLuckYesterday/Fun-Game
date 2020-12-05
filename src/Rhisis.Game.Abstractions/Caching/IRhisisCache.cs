@@ -1,4 +1,4 @@
-﻿namespace Rhisis.Caching.Abstractions
+﻿namespace Rhisis.Game.Abstractions.Caching
 {
     /// <summary>
     /// Provides a mechanism to manage a key-value cache.
@@ -11,6 +11,11 @@
         /// <param name="key">Cache key.</param>
         /// <returns>True if the key contains a cached value; false otherwise.</returns>
         bool Contains(string key);
+
+        /// <summary>
+        /// Clears the cache data.
+        /// </summary>
+        void Clear();
 
         /// <summary>
         /// Deletes an object from the cache.

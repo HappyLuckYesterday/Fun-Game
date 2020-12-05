@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Rhisis.CoreServer
+namespace Rhisis.LoginServer.CoreServer
 {
     public class CoreServerService : IHostedService
     {

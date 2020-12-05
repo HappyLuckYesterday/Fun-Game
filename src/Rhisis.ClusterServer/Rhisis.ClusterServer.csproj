@@ -26,15 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Rhisis.Caching.Abstractions\Rhisis.Caching.Abstractions.csproj" />
-    <ProjectReference Include="..\Rhisis.Caching.Redis\Rhisis.Caching.Redis.csproj" />
     <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
     <ProjectReference Include="..\Rhisis.Database\Rhisis.Database.csproj" />
     <ProjectReference Include="..\Rhisis.Game.Abstractions\Rhisis.Game.Abstractions.csproj" />
     <ProjectReference Include="..\Rhisis.Game\Rhisis.Game.csproj" />
-    <ProjectReference Include="..\Rhisis.Messaging.Abstractions\Rhisis.Messaging.Abstractions.csproj" />
-    <ProjectReference Include="..\Rhisis.Messaging.RabbitMQ\Rhisis.Messaging.RabbitMQ.csproj" />
     <ProjectReference Include="..\Rhisis.Network\Rhisis.Network.csproj" />
+    <ProjectReference Include="..\Rhisis.Redis\Rhisis.Redis.csproj" />
   </ItemGroup>
 
   <ItemGroup>

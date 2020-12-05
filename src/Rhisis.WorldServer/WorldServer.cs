@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Rhisis.Caching.Abstractions;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Database;
@@ -96,25 +95,22 @@ namespace Rhisis.WorldServer
             _logger.LogInformation("'{0}' world server is started and listenening on {1}:{2}.",
                 WorldConfiguration.Name, ServerConfiguration.Host, ServerConfiguration.Port);
 
-            IRhisisCache cache = _cacheManager.GetCache(CacheKeys.ClusterWorldChannels);
+            IRhisisCache cache = _cacheManager.GetCache(CacheType.ClusterWorldChannels);
 
-            if (!cache.Contains(WorldConfiguration.Id.ToString()))
+            cache.Set(WorldConfiguration.Id.ToString(), new WorldChannel
             {
-                cache.Set(WorldConfiguration.Id.ToString(), new WorldChannel
-                {
-                    ClusterId = WorldConfiguration.ClusterId,
-                    Host = WorldConfiguration.Host,
-                    Port = WorldConfiguration.Port,
-                    Id = WorldConfiguration.Id,
-                    Name = WorldConfiguration.Name
-                });
-            }
+                ClusterId = WorldConfiguration.ClusterId,
+                Host = WorldConfiguration.Host,
+                Port = WorldConfiguration.Port,
+                Id = WorldConfiguration.Id,
+                Name = WorldConfiguration.Name
+            });
         }
 
         /// <inheritdoc />
         protected override void OnBeforeStop()
         {
-            IRhisisCache cache = _cacheManager.GetCache(CacheKeys.ClusterWorldChannels);
+            IRhisisCache cache = _cacheManager.GetCache(CacheType.ClusterWorldChannels);
 
             if (cache.Contains(WorldConfiguration.Id.ToString()))
             {

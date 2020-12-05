@@ -5,6 +5,7 @@ using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.LoginServer.Client;
+using Rhisis.LoginServer.CoreServer;
 using Rhisis.LoginServer.Packets;
 using Rhisis.Network;
 using Rhisis.Network.Core.Servers;
@@ -22,6 +23,7 @@ namespace Rhisis.LoginServer.Handlers
         private readonly ILogger<CertifyHandler> _logger;
         private readonly LoginConfiguration _loginConfiguration;
         private readonly ILoginServer _loginServer;
+        private readonly ICoreServer _coreServer;
         private readonly IRhisisDatabase _database;
         private readonly ILoginPacketFactory _loginPacketFactory;
 
@@ -34,11 +36,12 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="database">Database service.</param>
         /// <param name="coreServer">Core server.</param>
         /// <param name="loginPacketFactory">Login server packet factory.</param>
-        public CertifyHandler(ILogger<CertifyHandler> logger, IOptions<LoginConfiguration> loginConfiguration, ILoginServer loginServer, IRhisisDatabase database, ILoginPacketFactory loginPacketFactory)
+        public CertifyHandler(ILogger<CertifyHandler> logger, IOptions<LoginConfiguration> loginConfiguration, ILoginServer loginServer, ICoreServer coreServer, IRhisisDatabase database, ILoginPacketFactory loginPacketFactory)
         {
             _logger = logger;
             _loginConfiguration = loginConfiguration.Value;
             _loginServer = loginServer;
+            _coreServer = coreServer;
             _database = database;
             _loginPacketFactory = loginPacketFactory;
         }
@@ -88,7 +91,7 @@ namespace Rhisis.LoginServer.Handlers
                     _database.Users.Update(user);
                     _database.SaveChanges();
 
-                    IEnumerable<Cluster> clusters = _loginServer.ConnectedClusters.Values.OrderBy(x => x.Id);
+                    IEnumerable<Cluster> clusters = _coreServer.Clusters.OrderBy(x => x.Id);
 
                     _loginPacketFactory.SendServerList(client, certifyPacket.Username, clusters);
                     client.SetClientUsername(certifyPacket.Username);
@@ -119,7 +122,7 @@ namespace Rhisis.LoginServer.Handlers
         /// <returns>Authentication result</returns>
         private AuthenticationResult Authenticate(DbUser user, string password)
         {
-            if (user == null)
+            if (user is null)
             {
                 return AuthenticationResult.BadUsername;
             }

@@ -33,8 +33,6 @@
     <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
     <ProjectReference Include="..\Rhisis.Database\Rhisis.Database.csproj" />
     <ProjectReference Include="..\Rhisis.Game\Rhisis.Game.csproj" />
-    <ProjectReference Include="..\Rhisis.Messaging.Abstractions\Rhisis.Messaging.Abstractions.csproj" />
-    <ProjectReference Include="..\Rhisis.Messaging.RabbitMQ\Rhisis.Messaging.RabbitMQ.csproj" />
     <ProjectReference Include="..\Rhisis.Network\Rhisis.Network.csproj" />
   </ItemGroup>
 

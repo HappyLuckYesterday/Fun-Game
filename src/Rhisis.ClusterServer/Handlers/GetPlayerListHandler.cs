@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.Caching.Abstractions;
 using Rhisis.ClusterServer.Client;
 using Rhisis.ClusterServer.Packets;
 using Rhisis.ClusterServer.Structures;
@@ -47,7 +46,7 @@ namespace Rhisis.ClusterServer.Handlers
         [HandlerAction(PacketType.GETPLAYERLIST)]
         public void Execute(IClusterClient client, GetPlayerListPacket packet)
         {
-            var selectedWorldServer = _cacheManager.GetCache(CacheKeys.ClusterWorldChannels).Get<WorldChannel>(packet.ServerId.ToString());
+            var selectedWorldServer = _cacheManager.GetCache(CacheType.ClusterWorldChannels).Get<WorldChannel>(packet.ServerId.ToString());
 
             if (selectedWorldServer is null)
             {

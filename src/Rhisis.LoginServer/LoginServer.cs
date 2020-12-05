@@ -5,14 +5,10 @@ using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
 using Rhisis.LoginServer.Client;
 using Rhisis.LoginServer.Packets;
-using Rhisis.Messaging.Abstractions;
 using Rhisis.Network;
-using Rhisis.Network.Core.Servers;
-using Rhisis.Network.Protocol.Messages;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Server;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.LoginServer
@@ -25,11 +21,6 @@ namespace Rhisis.LoginServer
         private readonly LoginConfiguration _loginConfiguration;
         private readonly IServiceProvider _serviceProvider;
         private readonly IRhisisDatabase _database;
-        private readonly IMessaging _messaging;
-
-        private Dictionary<int, Cluster> _clusters;
-
-        public IReadOnlyDictionary<int, Cluster> ConnectedClusters => _clusters;
 
         /// <summary>
         /// Creates a new <see cref="LoginServer"/> instance.
@@ -38,14 +29,12 @@ namespace Rhisis.LoginServer
         /// <param name="loginConfiguration">Login server configuration.</param>
         /// <param name="serviceProvider">Service provider.</param>
         public LoginServer(ILogger<LoginServer> logger, IOptions<LoginConfiguration> loginConfiguration, 
-            IServiceProvider serviceProvider, IRhisisDatabase database, IMessaging messaging)
+            IServiceProvider serviceProvider, IRhisisDatabase database)
         {
             _logger = logger;
             _loginConfiguration = loginConfiguration.Value;
             _serviceProvider = serviceProvider;
             _database = database;
-            _messaging = messaging;
-            _clusters = new Dictionary<int, Cluster>();
             PacketProcessor = new FlyffPacketProcessor();
             ServerConfiguration = new NetServerConfiguration("0.0.0.0", 
                 _loginConfiguration.Port, 
@@ -60,8 +49,6 @@ namespace Rhisis.LoginServer
             {
                 throw new InvalidProgramException($"Cannot start {nameof(LoginServer)}. Failed to reach database.");
             }
-
-            _messaging.Subscribe<ServerListUpdateMessage>(message => OnServerListUpdate(message));
         }
 
         /// <inheritdoc />
@@ -99,14 +86,5 @@ namespace Rhisis.LoginServer
 
         /// <inheritdoc />
         public bool IsClientConnected(string username) => GetClientByUsername(username) != null;
-
-        private void OnServerListUpdate(ServerListUpdateMessage message)
-        {
-            lock (_clusters)
-            {
-                _clusters = message.Clusters.ToDictionary(x => x.Id, x => x);
-                _logger.LogTrace($"Cluster server list updated. Available clusters: {_clusters.Count}");
-            }
-        }
     }
 }

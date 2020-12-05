@@ -1,21 +1,28 @@
-﻿using Rhisis.Caching.Abstractions;
+﻿using Rhisis.Game.Abstractions.Caching;
 using StackExchange.Redis;
 using System.Text.Json;
 
-namespace Rhisis.Caching.Redis
+namespace Rhisis.Redis.Caching
 {
     internal class RedisCache : IRhisisCache
     {
+        private readonly IServer _server;
         private readonly IDatabase _redisDatabase;
 
-        public RedisCache(IDatabase database)
+        public RedisCache(IServer server, IDatabase database)
         {
+            _server = server;
             _redisDatabase = database;
         }
 
         public bool Contains(string key)
         {
             return _redisDatabase.StringGet(key).HasValue;
+        }
+
+        public void Clear()
+        {
+            _server.FlushDatabase(_redisDatabase.Database);
         }
 
         public bool Delete(string key)

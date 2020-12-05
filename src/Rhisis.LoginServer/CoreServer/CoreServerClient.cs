@@ -8,7 +8,7 @@ using System;
 using System.Linq;
 using System.Net.Sockets;
 
-namespace Rhisis.CoreServer
+namespace Rhisis.LoginServer.CoreServer
 {
     public class CoreServerClient : NetServerClient
     {
@@ -20,7 +20,7 @@ namespace Rhisis.CoreServer
 
         public ServerDescriptor ServerInfo { get; private set; }
 
-        public CoreServerClient(Socket socketConnection) 
+        public CoreServerClient(Socket socketConnection)
             : base(socketConnection)
         {
         }
@@ -33,7 +33,7 @@ namespace Rhisis.CoreServer
 
                 if (packetHeader == CorePacketType.Authenticate)
                 {
-                    string corePassword = packet.ReadString();
+                    var corePassword = packet.ReadString();
 
                     if (!_coreServer.Configuration.Password.ToLowerInvariant().Equals(corePassword.ToLowerInvariant()))
                     {
@@ -53,7 +53,6 @@ namespace Rhisis.CoreServer
                     if (ServerInfo != null)
                     {
                         SendAuthenticationResult(CoreAuthenticationResultType.Success);
-                        _coreServer.SendServerListUpdate();
                     }
                 }
             }
@@ -86,7 +85,7 @@ namespace Rhisis.CoreServer
 
         private ServerDescriptor ReadClusterInformation(INetPacketStream packet)
         {
-            byte serverId = packet.ReadByte();
+            var serverId = packet.ReadByte();
 
             if (_coreServer.Clusters.Any(x => x.Id == serverId))
             {
@@ -95,9 +94,9 @@ namespace Rhisis.CoreServer
                 throw new InvalidOperationException($"Cluster with id '{serverId}' already exists.");
             }
 
-            string name = packet.ReadString();
-            string host = packet.ReadString();
-            ushort port = packet.ReadUInt16();
+            var name = packet.ReadString();
+            var host = packet.ReadString();
+            var port = packet.ReadUInt16();
 
             return new Cluster
             {
@@ -110,8 +109,8 @@ namespace Rhisis.CoreServer
 
         private ServerDescriptor ReadWorldInformation(INetPacketStream packet)
         {
-            byte serverId = packet.ReadByte();
-            byte clusterServerId = packet.ReadByte();
+            var serverId = packet.ReadByte();
+            var clusterServerId = packet.ReadByte();
 
             Cluster cluster = _coreServer.Clusters.FirstOrDefault(x => x.Id == clusterServerId);
 
@@ -127,9 +126,9 @@ namespace Rhisis.CoreServer
                 throw new InvalidOperationException($"World channel with id '{serverId}' already exists.");
             }
 
-            string name = packet.ReadString();
-            string host = packet.ReadString();
-            ushort port = packet.ReadUInt16();
+            var name = packet.ReadString();
+            var host = packet.ReadString();
+            var port = packet.ReadUInt16();
 
             return new WorldChannel
             {

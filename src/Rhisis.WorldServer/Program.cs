@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
-using Rhisis.Caching.Redis;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Configuration;
@@ -11,7 +10,7 @@ using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Database;
 using Rhisis.Game;
 using Rhisis.Game.Abstractions.Protocol;
-using Rhisis.Messaging.RabbitMQ;
+using Rhisis.Redis;
 using Rhisis.WorldServer.CoreClient;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
@@ -61,13 +60,7 @@ namespace Rhisis.WorldServer
                         CaptureMessageProperties = true
                     });
                 })
-                .UseRabbitMQ((host, options) =>
-                {
-                    options.Host = "rhisis.messagequeue";
-                    options.Username = "rabbitmq";
-                    options.Password = "rabbitmq";
-                })
-                .UseRedisCache((host, options) =>
+                .UseRedis((host, options) =>
                 {
                     options.Host = "rhisis.redis";
                 })

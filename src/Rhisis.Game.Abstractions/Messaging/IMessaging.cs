@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rhisis.Messaging.Abstractions
+namespace Rhisis.Game.Abstractions.Messaging
 {
     /// <summary>
     /// Provides an interface to send messages using a message queue system.

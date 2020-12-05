@@ -8,11 +8,10 @@ using Rhisis.ClusterServer.Packets;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Database;
-using Rhisis.Caching.Redis;
 using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Resources;
-using Rhisis.Messaging.RabbitMQ;
+using Rhisis.Redis;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
 using System.Threading.Tasks;
@@ -62,13 +61,7 @@ namespace Rhisis.ClusterServer
                         CaptureMessageProperties = true
                     });
                 })
-                .UseRabbitMQ((host, options) =>
-                {
-                    options.Host = "rhisis.messagequeue";
-                    options.Username = "rabbitmq";
-                    options.Password = "rabbitmq";
-                })
-                .UseRedisCache((host, options) =>
+                .UseRedis((host, options) =>
                 {
                     options.Host = "rhisis.redis";
                 })
