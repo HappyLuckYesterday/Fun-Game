@@ -10,7 +10,6 @@ jobs:
     include:
       - stage: "Build"
         script: 
-        - dotnet build src/Rhisis.CoreServer/ --configuration Release
         - dotnet build src/Rhisis.LoginServer/ --configuration Release
         - dotnet build src/Rhisis.ClusterServer/ --configuration Release
         - dotnet build src/Rhisis.WorldServer/ --configuration Release
