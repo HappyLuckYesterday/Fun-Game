@@ -4,38 +4,36 @@
 
 version: '3.5'
 services:
-  rhisis.login:
+  rhisis.loginserver:
     image: ${DOCKER_REGISTRY-}rhisislogin
     build:
       context: .
-      dockerfile: src/Rhisis.Login/Dockerfile
+      dockerfile: src/Rhisis.LoginServer/Dockerfile
     depends_on:
       - rhisis.database
-      - rhisis.messagequeue
     ports:
       - "23000:23000"
-      - "15000:15000"
     expose: 
       - 23000
     environment:
       RHISIS_CONFIGURATION: /opt/rhisis
     volumes:
      - "./bin/config/login.json:/opt/rhisis/config/login.json:ro"
+     - "./bin/config/core.json:/opt/rhisis/config/core.json:ro"
      - "./bin/config/database.json:/opt/rhisis/config/database.json:ro"
      - "./bin/logs/login:/opt/rhisis/logs/login"
 
-  rhisis.cluster:
+  rhisis.clusterserver:
     image: ${DOCKER_REGISTRY-}rhisiscluster
     build:
       context: .
-      dockerfile: src/Rhisis.Cluster/Dockerfile
+      dockerfile: src/Rhisis.ClusterServer/Dockerfile
     depends_on:
-      - rhisis.login
+      - rhisis.loginserver
       - rhisis.database
-      - rhisis.messagequeue
+      - rhisis.redis
     ports:
       - "28000:28000"
-      - "28001:28001"
     expose:
       - 28000
     environment:
@@ -46,16 +44,16 @@ services:
      - "./bin/logs/cluster:/opt/rhisis/logs/cluster"
      - "./bin/data:/opt/rhisis/data:ro"
 
-  rhisis.world:
-    image: ${DOCKER_REGISTRY-}rhisisworld
+  rhisis.worldserver:
+    image: ${DOCKER_REGISTRY-}rhisisworldserver
     build:
       context: .
-      dockerfile: src/Rhisis.World/Dockerfile
+      dockerfile: src/Rhisis.WorldServer/Dockerfile
     depends_on:
-      - rhisis.login
-      - rhisis.cluster
+      - rhisis.loginserver
+      - rhisis.clusterserver
       - rhisis.database
-      - rhisis.messagequeue
+      - rhisis.redis
     ports:
       - "5400:5400"
     expose:
@@ -83,18 +81,9 @@ services:
     volumes:
       - ./bin/_docker/mysql:/var/lib/mysql
 
-  rhisis.messagequeue:
-    image: rabbitmq
-    restart: always
-    environment:
-      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
-      RABBITMQ_DEFAULT_USER: "rabbitmq"
-      RABBITMQ_DEFAULT_PASS: "rabbitmq"
-      RABBITMQ_DEFAULT_VHOST: "/"
-    volumes:
-      - ./bin/_docker/rabbitmq/etc/:/etc/rabbitmq/
-      - ./bin/_docker/rabbitmq/data/:/var/lib/rabbitmq/mnesia
-      - ./bin/_docker/rabbitmq/logs/:/var/log/rabbitmq/
+  rhisis.redis:
+    image: redis:6.0-alpine
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "6379:6379"
+    volumes:
+      - ./bin/_docker/redis/:/data

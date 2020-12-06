@@ -102,6 +102,8 @@ For the rest of the options, you can choose to use encryption or not. It's up to
 
 ### Configure the servers
 
+You can either use the provided configuration and modify it has you want or use the CLI to configure it in your own.
+
 #### Login Server
 
 ```sh

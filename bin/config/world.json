@@ -1,0 +1,44 @@
+{
+  "worldServer": {
+    "host": "127.0.0.1",
+    "port": 5400,
+    "id": 2,
+    "clusterId": 1,
+    "name": "Channel 1 (Docker)",
+    "systems": {},
+    "maps": [
+      "WI_WORLD_MADRIGAL",
+      "WI_DUNGEON_FL_MAS"
+    ],
+    "language": "en",
+    "rates": {
+      "gold": 1,
+      "experience": 1,
+      "drop": 5
+    },
+    "drops": {
+      "ownershipTime": 7,
+      "despawnTime": 120
+    },
+    "mails": {
+      "mailShippingCost": 500
+    },
+    "perin": {
+      "perinValue": 100000000
+    },
+    "customization": {
+      "changeFaceCost": 1000000,
+      "changeHairCost": 2000000,
+      "changeHairColorCost": 4000000
+    },
+    "party": {},
+    "death": {
+      "deathPenalityEnabled": true
+    }
+  },
+  "coreServer": {
+    "host": "rhisis.loginserver",
+    "port": 15000,
+    "password": "098f6bcd4621d373cade4e832627b4f6"
+  }
+}

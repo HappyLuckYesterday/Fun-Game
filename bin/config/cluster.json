@@ -1,0 +1,40 @@
+{
+  "clusterServer": {
+    "host": "127.0.0.1",
+    "port": 28000,
+    "id": 1,
+    "name": "Rhisis",
+    "enableLoginProtect": false,
+    "defaultCharacter": {
+      "level": 1,
+      "gold": 0,
+      "strength": 15,
+      "stamina": 15,
+      "dexterity": 15,
+      "intelligence": 15,
+      "mapId": 1,
+      "posX": 6968.0,
+      "posY": 100.0,
+      "posZ": 3328.0,
+      "man": {
+        "startWeapon": 21,
+        "startSuit": 502,
+        "startHand": 506,
+        "startShoes": 510,
+        "startHat": -1
+      },
+      "woman": {
+        "startWeapon": 21,
+        "startSuit": 504,
+        "startHand": 508,
+        "startShoes": 512,
+        "startHat": -1
+      }
+    }
+  },
+  "coreServer": {
+    "host": "rhisis.loginserver",
+    "port": 15000,
+    "password": "098f6bcd4621d373cade4e832627b4f6"
+  }
+}
