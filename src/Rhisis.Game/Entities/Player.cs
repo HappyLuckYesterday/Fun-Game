@@ -117,6 +117,8 @@ namespace Rhisis.Game.Entities
 
         public ITaskbar Taskbar { get; set; }
 
+        public IMessenger Messenger { get; set;  }
+
         public IProjectiles Projectiles { get; set; }
 
         public IHumanVisualAppearance Appearence { get; set; }
