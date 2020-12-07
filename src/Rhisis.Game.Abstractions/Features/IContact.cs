@@ -8,14 +8,19 @@ namespace Rhisis.Game.Abstractions.Features
     public interface IContact
     {
         /// <summary>
-        /// Gets the contact player id.
+        /// Gets the contact player object id.
         /// </summary>
-        int Id { get; }
+        uint Id { get; }
         
         /// <summary>
         /// Gets the contact channel id.
         /// </summary>
         int Channel { get; }
+
+        /// <summary>
+        /// Gets or sets a boolean value that indicates the friend blocking date.
+        /// </summary>
+        bool IsBlocked { get; set; }
 
         /// <summary>
         /// Gets the contact name.
@@ -25,7 +30,7 @@ namespace Rhisis.Game.Abstractions.Features
         /// <summary>
         /// Gets the contact status.
         /// </summary>
-        MessengerStatusType Status { get; }
+        MessengerStatusType Status { get; set; }
 
         /// <summary>
         /// Gets the contact job.

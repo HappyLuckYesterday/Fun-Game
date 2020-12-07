@@ -1,0 +1,31 @@
+﻿using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Features;
+using Rhisis.Game.Common;
+using System.Diagnostics;
+
+namespace Rhisis.Game
+{
+    [DebuggerDisplay("{Name} ({Status})")]
+    public class MessengerContact : IContact
+    {
+        public uint Id { get; }
+
+        public int Channel { get; }
+
+        public bool IsBlocked { get; set; }
+
+        public string Name { get; }
+
+        public MessengerStatusType Status { get; set; } = MessengerStatusType.Online;
+
+        public DefineJob.Job Job { get; set; }
+
+        public MessengerContact(IPlayer player, int channel)
+        {
+            Id = player.Id;
+            Channel = channel;
+            Name = player.Name;
+            Job = player.Job.Id;
+        }
+    }
+}

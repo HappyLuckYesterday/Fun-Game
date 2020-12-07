@@ -13,6 +13,7 @@ COPY ["src/Rhisis.Game.Common/Rhisis.Game.Common.csproj", "src/Rhisis.Game.Commo
 COPY ["src/Rhisis.Game/Rhisis.Game.csproj", "src/Rhisis.Game/"]
 COPY ["src/Rhisis.Network/Rhisis.Network.csproj", "src/Rhisis.Network/"]
 COPY ["src/Rhisis.Database/Rhisis.Database.csproj", "src/Rhisis.Database/"]
+COPY ["src/Rhisis.Redis/Rhisis.Redis.csproj", "src/Rhisis.Redis/"]
 RUN dotnet restore "src/Rhisis.WorldServer/Rhisis.WorldServer.csproj"
 COPY . .
 WORKDIR "/src/src/Rhisis.WorldServer"

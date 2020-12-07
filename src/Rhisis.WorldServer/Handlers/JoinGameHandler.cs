@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Rhisis.Core.DependencyInjection.Extensions;
 using Rhisis.Core.Structures;
+using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.Game;
@@ -37,6 +39,7 @@ namespace Rhisis.WorldServer.Handlers
         private readonly IMapManager _mapManager;
         private readonly IBehaviorManager _behaviorManager;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IOptions<WorldConfiguration> _configuration;
 
         /// <summary>
         /// Creates a new <see cref="JoinGameHandler"/> instance.
@@ -49,7 +52,8 @@ namespace Rhisis.WorldServer.Handlers
         /// <param name="serviceProvider">Service provider.</param>
         public JoinGameHandler(ILogger<JoinGameHandler> logger, IRhisisDatabase database, 
             IGameResources gameResources, IMapManager mapManager, 
-            IBehaviorManager behaviorManager, IServiceProvider serviceProvider)
+            IBehaviorManager behaviorManager, IServiceProvider serviceProvider,
+            IOptions<WorldConfiguration> configuration)
         {
             _logger = logger;
             _database = database;
@@ -57,6 +61,7 @@ namespace Rhisis.WorldServer.Handlers
             _mapManager = mapManager;
             _behaviorManager = behaviorManager;
             _serviceProvider = serviceProvider;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -141,6 +146,7 @@ namespace Rhisis.WorldServer.Handlers
                 realPlayer.Projectiles = _serviceProvider.CreateInstance<Projectiles>();
                 realPlayer.Delayer = _serviceProvider.CreateInstance<Delayer>();
                 realPlayer.Buffs = _serviceProvider.CreateInstance<Buffs>(realPlayer);
+                realPlayer.Messenger = _serviceProvider.CreateInstance<Messenger>(realPlayer, _configuration.Value.Id, _configuration.Value.Messenger.MaximumFriends);
 
                 IEnumerable<IPlayerInitializer> playerInitializers = _serviceProvider.GetRequiredService<IEnumerable<IPlayerInitializer>>();
 
