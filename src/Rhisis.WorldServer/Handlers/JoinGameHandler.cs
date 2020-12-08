@@ -10,6 +10,7 @@ using Rhisis.Database.Entities;
 using Rhisis.Game;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Behavior;
+using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Map;
@@ -40,6 +41,7 @@ namespace Rhisis.WorldServer.Handlers
         private readonly IBehaviorManager _behaviorManager;
         private readonly IServiceProvider _serviceProvider;
         private readonly IOptions<WorldConfiguration> _configuration;
+        private readonly IPlayerCache _playerCache;
 
         /// <summary>
         /// Creates a new <see cref="JoinGameHandler"/> instance.
@@ -53,7 +55,7 @@ namespace Rhisis.WorldServer.Handlers
         public JoinGameHandler(ILogger<JoinGameHandler> logger, IRhisisDatabase database, 
             IGameResources gameResources, IMapManager mapManager, 
             IBehaviorManager behaviorManager, IServiceProvider serviceProvider,
-            IOptions<WorldConfiguration> configuration)
+            IOptions<WorldConfiguration> configuration, IPlayerCache playerCache)
         {
             _logger = logger;
             _database = database;
@@ -62,6 +64,7 @@ namespace Rhisis.WorldServer.Handlers
             _behaviorManager = behaviorManager;
             _serviceProvider = serviceProvider;
             _configuration = configuration;
+            _playerCache = playerCache;
         }
 
         /// <summary>
@@ -201,13 +204,24 @@ namespace Rhisis.WorldServer.Handlers
                 realPlayer.LoggedInAt = DateTime.UtcNow;
             }
 
+            var cachedPlayer = new CachedPlayer(player.CharacterId, _configuration.Value.Id, player.Name, player.Appearence.Gender)
+            {
+                Level = player.Level,
+                Job = player.Job.Id,
+                Version = 1,
+                IsOnline = true
+            };
+
+            _playerCache.SetCachedPlayer(cachedPlayer);
+
             using (var joinPacket = new JoinCompletePacket())
             {
                 joinPacket.AddSnapshots(
                     new EnvironmentAllSnapshot(player, SeasonType.None), // TODO: get the season id using current weather time.
                     new WorldReadInfoSnapshot(player),
                     new AddObjectSnapshot(player),
-                    new TaskbarSnapshot(player)
+                    new TaskbarSnapshot(player),
+                    new QueryPlayerDataSnapshot(cachedPlayer)
                 );
 
                 player.Connection.Send(joinPacket);

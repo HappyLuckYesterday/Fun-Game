@@ -1,4 +1,6 @@
-﻿namespace Rhisis.Game.Abstractions.Caching
+﻿using Rhisis.Game.Abstractions.Entities;
+
+namespace Rhisis.Game.Abstractions.Caching
 {
     /// <summary>
     /// Provides a mechanism to manage a key-value cache.

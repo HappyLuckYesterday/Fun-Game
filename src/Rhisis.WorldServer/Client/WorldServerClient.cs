@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Helpers;
 using Rhisis.Game.Abstractions;
+using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Entities;
@@ -21,6 +22,7 @@ namespace Rhisis.WorldServer.Client
     {
         private ILogger<WorldServerClient> _logger;
         private IHandlerInvoker _handlerInvoker;
+        private IPlayerCache _playerCache;
 
         public uint SessionId { get; }
 
@@ -43,10 +45,11 @@ namespace Rhisis.WorldServer.Client
         /// <summary>
         /// Initialize the client and send welcome packet.
         /// </summary>
-        public void Initialize(ILogger<WorldServerClient> logger, IHandlerInvoker handlerInvoker)
+        public void Initialize(IServiceProvider serviceProvider)
         {
-            _logger = logger;
-            _handlerInvoker = handlerInvoker;
+            _logger = serviceProvider.GetRequiredService<ILogger<WorldServerClient>>();
+            _handlerInvoker = serviceProvider.GetRequiredService<IHandlerInvoker>();
+            _playerCache = serviceProvider.GetRequiredService<IPlayerCache>() ?? throw new InvalidOperationException($"Failed to get player cache.");
 
             using var welcomePacket = new WelcomePacket(SessionId);
             Send(welcomePacket);
@@ -111,6 +114,17 @@ namespace Rhisis.WorldServer.Client
             {
                 if (Player != null)
                 {
+                    var cachePlayer = _playerCache.GetCachedPlayer(Player.CharacterId);
+
+                    if (cachePlayer != null)
+                    {
+                        cachePlayer.Level = Player.Level;
+                        cachePlayer.Job = Player.Job.Id;
+                        cachePlayer.IsOnline = false;
+
+                        _playerCache.SetCachedPlayer(cachePlayer);
+                    }
+
                     Player.Spawned = false;
                     Player.MapLayer.RemovePlayer(Player);
 

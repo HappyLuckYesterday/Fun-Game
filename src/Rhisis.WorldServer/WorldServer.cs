@@ -121,8 +121,7 @@ namespace Rhisis.WorldServer
         /// <inheritdoc />
         protected override void OnClientConnected(WorldServerClient serverClient)
         {
-            serverClient.Initialize(_serviceProvider.GetRequiredService<ILogger<WorldServerClient>>(),
-                _serviceProvider.GetRequiredService<IHandlerInvoker>());
+            serverClient.Initialize(_serviceProvider);
 
             _logger.LogInformation("New client connected from {0}.", serverClient.Socket.RemoteEndPoint);
         }

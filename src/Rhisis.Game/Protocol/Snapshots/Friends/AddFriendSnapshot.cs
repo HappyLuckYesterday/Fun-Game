@@ -8,7 +8,7 @@ namespace Rhisis.Game.Protocol.Snapshots.Friends
         public AddFriendSnapshot(IPlayer sender, IPlayer target)
             : base(SnapshotType.ADDFRIEND, sender.Id)
         {
-            WriteUInt32(target.Id);
+            WriteUInt32((uint)target.CharacterId);
             WriteString(target.Name);
         }
     }
