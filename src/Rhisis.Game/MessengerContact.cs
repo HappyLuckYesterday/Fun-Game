@@ -8,7 +8,7 @@ namespace Rhisis.Game
     [DebuggerDisplay("{Name} ({Status})")]
     public class MessengerContact : IContact
     {
-        public uint Id { get; }
+        public int Id { get; }
 
         public int Channel { get; }
 
@@ -22,10 +22,20 @@ namespace Rhisis.Game
 
         public MessengerContact(IPlayer player, int channel)
         {
-            Id = player.Id;
+            Id = player.CharacterId;
             Channel = channel;
             Name = player.Name;
             Job = player.Job.Id;
+        }
+
+        public MessengerContact(int playerId, int channel, string name, DefineJob.Job job, MessengerStatusType messengerStatus, bool isBlocked)
+        {
+            Id = playerId;
+            Channel = channel;
+            Name = name;
+            Job = job;
+            Status = messengerStatus;
+            IsBlocked = isBlocked;
         }
     }
 }

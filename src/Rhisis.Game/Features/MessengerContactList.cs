@@ -40,7 +40,14 @@ namespace Rhisis.Game.Abstractions.Components
 
         public void Serialize(INetPacketStream packet)
         {
-            throw new System.NotImplementedException();
+            packet.WriteInt32(Count);
+
+            foreach (IContact contact in _contacts)
+            {
+                packet.WriteInt32(contact.Id);
+                packet.WriteInt32(Convert.ToInt32(contact.IsBlocked));
+                packet.WriteInt32(Convert.ToInt32(contact.Status));
+            }
         }
 
         public IEnumerator<IContact> GetEnumerator() => _contacts.GetEnumerator();

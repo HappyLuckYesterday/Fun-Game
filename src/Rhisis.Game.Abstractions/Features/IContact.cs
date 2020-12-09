@@ -8,9 +8,9 @@ namespace Rhisis.Game.Abstractions.Features
     public interface IContact
     {
         /// <summary>
-        /// Gets the contact player object id.
+        /// Gets the contact player id.
         /// </summary>
-        uint Id { get; }
+        int Id { get; }
         
         /// <summary>
         /// Gets the contact channel id.

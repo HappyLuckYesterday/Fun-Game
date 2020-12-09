@@ -21,6 +21,7 @@ using Rhisis.Game.Components;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Features;
 using Rhisis.Game.Protocol.Packets;
+using Rhisis.Game.Protocol.Snapshots.Friends;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World;
 using Rhisis.Network.Snapshots;
@@ -221,7 +222,8 @@ namespace Rhisis.WorldServer.Handlers
                     new WorldReadInfoSnapshot(player),
                     new AddObjectSnapshot(player),
                     new TaskbarSnapshot(player),
-                    new QueryPlayerDataSnapshot(cachedPlayer)
+                    new QueryPlayerDataSnapshot(cachedPlayer),
+                    new AddFriendGameJoinSnapshot(player)
                 );
 
                 player.Connection.Send(joinPacket);

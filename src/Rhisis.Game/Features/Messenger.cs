@@ -44,7 +44,8 @@ namespace Rhisis.Game.Abstractions.Components
 
         public void Serialize(INetPacketStream packet)
         {
-            throw new System.NotImplementedException();
+            packet.WriteInt32((int)Status);
+            Friends.Serialize(packet);
         }
     }
 }

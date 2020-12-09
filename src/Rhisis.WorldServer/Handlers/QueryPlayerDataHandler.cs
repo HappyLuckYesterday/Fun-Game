@@ -1,27 +1,19 @@
-﻿using Rhisis.Database;
-using Rhisis.Game.Abstractions.Caching;
+﻿using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Common;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World;
 using Rhisis.Network.Snapshots;
 using Sylver.HandlerInvoker.Attributes;
-using System;
-using System.Linq;
 
 namespace Rhisis.WorldServer.Handlers
 {
     [Handler]
     public class QueryPlayerDataHandler
     {
-        private readonly IWorldServer _server;
-        private readonly IRhisisDatabase _database;
         private readonly IPlayerCache _playerCache;
 
-        public QueryPlayerDataHandler(IWorldServer server, IRhisisDatabase database, IPlayerCache playerCache)
+        public QueryPlayerDataHandler(IPlayerCache playerCache)
         {
-            _server = server;
-            _database = database;
             _playerCache = playerCache;
         }
 
@@ -34,14 +26,7 @@ namespace Rhisis.WorldServer.Handlers
             {
                 if (player.CharacterId != packet.PlayerId)
                 {
-                    cachedPlayer = GetCachedPlayerFromDatabase((int)packet.PlayerId);
-
-                    if (cachedPlayer is null)
-                    {
-                        throw new InvalidOperationException($"Failed to fetch player with id: {packet.PlayerId}");
-                    }
-
-                    _playerCache.SetCachedPlayer(cachedPlayer);
+                    cachedPlayer = _playerCache.LoadCachedPlayer((int)packet.PlayerId);
                 }
             }
             else
@@ -65,18 +50,6 @@ namespace Rhisis.WorldServer.Handlers
                 using var queryPlayerDataSnapshot = new QueryPlayerDataSnapshot(cachedPlayer);
                 player.Send(queryPlayerDataSnapshot);
             }
-        }
-
-        private CachedPlayer GetCachedPlayerFromDatabase(int playerId)
-        {
-            return _database.Characters
-                .Where(x => x.Id == playerId)
-                .Select(x => new CachedPlayer(x.Id, -1, x.Name, (GenderType)x.Gender)
-                {
-                    Job = (DefineJob.Job)x.JobId,
-                    Level = x.Level
-                })
-                .FirstOrDefault();
         }
     }
 }
