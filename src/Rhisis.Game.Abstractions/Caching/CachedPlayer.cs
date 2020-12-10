@@ -16,7 +16,7 @@ namespace Rhisis.Game.Abstractions.Caching
 
         public int Level { get; set; }
 
-        public int Version { get; set; }
+        public int Version { get; set; } = 0;
 
         public DefineJob.Job Job { get; set; }
 
@@ -26,7 +26,6 @@ namespace Rhisis.Game.Abstractions.Caching
 
         public CachedPlayer()
         {
-
         }
 
         public CachedPlayer(int id, int channel, string name, GenderType gender)

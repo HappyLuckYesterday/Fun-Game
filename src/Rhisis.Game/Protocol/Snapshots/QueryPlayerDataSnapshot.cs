@@ -10,9 +10,10 @@ namespace Rhisis.Network.Snapshots
         {
             WriteUInt32((uint)player.Id);
             WriteString(player.Name);
-            WriteInt32((int)player.Job);
-            WriteInt32(player.Level);
-            WriteInt32((int)player.Gender);
+            WriteByte((byte)player.Job);
+            WriteByte((byte)player.Level);
+            WriteByte((byte)player.Gender);
+            WriteByte(0);
             WriteInt32(player.Version);
             WriteInt32(Convert.ToInt32(player.IsOnline));
         }

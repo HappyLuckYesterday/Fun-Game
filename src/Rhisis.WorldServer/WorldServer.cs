@@ -9,7 +9,9 @@ using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Abstractions.Map;
+using Rhisis.Game.Abstractions.Messaging;
 using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Resources.Loaders;
 using Rhisis.Network;
 using Rhisis.Network.Core.Servers;
@@ -18,6 +20,7 @@ using Rhisis.WorldServer.Client;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Server;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.WorldServer
@@ -35,6 +38,7 @@ namespace Rhisis.WorldServer
         private readonly IChatCommandManager _chatCommandManager;
         private readonly IRhisisDatabase _database;
         private readonly IRhisisCacheManager _cacheManager;
+        private readonly IMessaging _messaging;
 
         public CoreConfiguration CoreConfiguration { get; }
 
@@ -45,7 +49,8 @@ namespace Rhisis.WorldServer
         /// </summary>
         public WorldServer(ILogger<WorldServer> logger, IOptions<WorldConfiguration> worldConfiguration, IOptions<CoreConfiguration> coreConfiguration,
             IGameResources gameResources, IServiceProvider serviceProvider, 
-            IMapManager mapManager, IBehaviorManager behaviorManager, IChatCommandManager chatCommandManager, IRhisisDatabase database, IRhisisCacheManager cacheManager)
+            IMapManager mapManager, IBehaviorManager behaviorManager, IChatCommandManager chatCommandManager, IRhisisDatabase database, 
+            IRhisisCacheManager cacheManager, IMessaging messaging)
         {
             _logger = logger;
             _gameResources = gameResources;
@@ -55,6 +60,7 @@ namespace Rhisis.WorldServer
             _chatCommandManager = chatCommandManager;
             _database = database;
             _cacheManager = cacheManager;
+            _messaging = messaging;
             CoreConfiguration = coreConfiguration.Value;
             WorldConfiguration = worldConfiguration.Value;
             PacketProcessor = new FlyffPacketProcessor();
@@ -87,6 +93,8 @@ namespace Rhisis.WorldServer
             _chatCommandManager.Load();
             _behaviorManager.Load();
             _mapManager.Load();
+
+            _messaging.Subscribe<PlayerConnected>(OnPlayerConnectedMessage);
         }
 
         /// <inheritdoc />
@@ -146,5 +154,18 @@ namespace Rhisis.WorldServer
         /// <inheritdoc />
         public uint GetOnlineConnectedPlayerNumber() 
             => (uint)Clients.Count();
+
+        private void OnPlayerConnectedMessage(PlayerConnected playerConnectedMessage)
+        {
+            int playerConnectedId = playerConnectedMessage.Id;
+            IEnumerable<IPlayer> players = Clients
+                .Where(x => x.Player.CharacterId != playerConnectedId && x.Player.Messenger.Friends.Contains((uint)playerConnectedId))
+                .Select(x => x.Player);
+
+            foreach (IPlayer player in players)
+            {
+                player.Messenger.OnFriendConnected(playerConnectedId, playerConnectedMessage.Status);
+            }
+        }
     }
 }

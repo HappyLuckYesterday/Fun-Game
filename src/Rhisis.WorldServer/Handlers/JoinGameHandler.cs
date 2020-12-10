@@ -14,12 +14,14 @@ using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Map;
+using Rhisis.Game.Abstractions.Messaging;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Components;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Features;
+using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Protocol.Packets;
 using Rhisis.Game.Protocol.Snapshots.Friends;
 using Rhisis.Network;
@@ -43,6 +45,7 @@ namespace Rhisis.WorldServer.Handlers
         private readonly IServiceProvider _serviceProvider;
         private readonly IOptions<WorldConfiguration> _configuration;
         private readonly IPlayerCache _playerCache;
+        private readonly IMessaging _messaging;
 
         /// <summary>
         /// Creates a new <see cref="JoinGameHandler"/> instance.
@@ -56,7 +59,7 @@ namespace Rhisis.WorldServer.Handlers
         public JoinGameHandler(ILogger<JoinGameHandler> logger, IRhisisDatabase database, 
             IGameResources gameResources, IMapManager mapManager, 
             IBehaviorManager behaviorManager, IServiceProvider serviceProvider,
-            IOptions<WorldConfiguration> configuration, IPlayerCache playerCache)
+            IOptions<WorldConfiguration> configuration, IPlayerCache playerCache, IMessaging messaging)
         {
             _logger = logger;
             _database = database;
@@ -66,6 +69,7 @@ namespace Rhisis.WorldServer.Handlers
             _serviceProvider = serviceProvider;
             _configuration = configuration;
             _playerCache = playerCache;
+            _messaging = messaging;
         }
 
         /// <summary>
@@ -210,7 +214,8 @@ namespace Rhisis.WorldServer.Handlers
                 Level = player.Level,
                 Job = player.Job.Id,
                 Version = 1,
-                IsOnline = true
+                IsOnline = true,
+                MessengerStatus = MessengerStatusType.Online
             };
 
             _playerCache.SetCachedPlayer(cachedPlayer);
@@ -231,6 +236,15 @@ namespace Rhisis.WorldServer.Handlers
 
             player.MapLayer.AddPlayer(player);
             player.Spawned = true;
+
+            if (player.Messenger.Status != MessengerStatusType.Offline)
+            {
+                _messaging.Publish(new PlayerConnected
+                {
+                    Id = player.CharacterId,
+                    Status = player.Messenger.Status
+                });
+            }
         }
     }
 }

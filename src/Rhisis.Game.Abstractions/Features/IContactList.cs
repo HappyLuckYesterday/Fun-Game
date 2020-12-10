@@ -41,5 +41,12 @@ namespace Rhisis.Game.Abstractions.Features
         /// </summary>
         /// <param name="contact">Contact to remove.</param>
         void Remove(IContact contact);
+
+        /// <summary>
+        /// Gets the contact identified with the given id.
+        /// </summary>
+        /// <param name="contactId">Contact id.</param>
+        /// <returns>Contact if found; null otherwise.</returns>
+        IContact Get(int contactId);
     }
 }

@@ -38,6 +38,8 @@ namespace Rhisis.Game.Abstractions.Components
             _contacts.Remove(contact);
         }
 
+        public IContact Get(int contactId) => _contacts.FirstOrDefault(x => x.Id == contactId);
+
         public void Serialize(INetPacketStream packet)
         {
             packet.WriteInt32(Count);

@@ -14,9 +14,11 @@ namespace Rhisis.Game
 
         public bool IsBlocked { get; set; }
 
+        public bool IsOnline => Status != MessengerStatusType.Offline;
+
         public string Name { get; }
 
-        public MessengerStatusType Status { get; set; } = MessengerStatusType.Online;
+        public MessengerStatusType Status { get; set; } = MessengerStatusType.Offline;
 
         public DefineJob.Job Job { get; set; }
 

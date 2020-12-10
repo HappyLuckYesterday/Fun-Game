@@ -23,6 +23,11 @@ namespace Rhisis.Game.Abstractions.Features
         bool IsBlocked { get; set; }
 
         /// <summary>
+        /// Gets a boolean value that indicates if the friend is currently online.
+        /// </summary>
+        bool IsOnline { get; }
+
+        /// <summary>
         /// Gets the contact name.
         /// </summary>
         string Name { get; }

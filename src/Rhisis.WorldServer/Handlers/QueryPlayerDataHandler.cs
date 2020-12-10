@@ -37,8 +37,9 @@ namespace Rhisis.WorldServer.Handlers
                     {
                         cachedPlayer.Job = player.Job.Id;
                         cachedPlayer.Level = player.Level;
-                        cachedPlayer.Version++;
+                        cachedPlayer.Version = packet.Version + 1;
                         cachedPlayer.IsOnline = true;
+                        cachedPlayer.MessengerStatus = player.Messenger.Status;
 
                         _playerCache.SetCachedPlayer(cachedPlayer);
                     }

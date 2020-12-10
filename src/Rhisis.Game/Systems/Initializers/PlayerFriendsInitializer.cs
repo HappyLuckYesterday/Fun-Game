@@ -6,6 +6,7 @@ using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
+using Rhisis.Game.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,6 +51,8 @@ namespace Rhisis.Game.Systems.Initializers
 
                 player.Messenger.Friends.Add(contact);
             }
+
+            player.Messenger.Status = MessengerStatusType.Online;
         }
 
         public void Save(IPlayer player)

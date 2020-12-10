@@ -29,6 +29,7 @@ namespace Rhisis.Game.Caching
             var cachedPlayer = _database.Characters.Where(x => x.Id == playerId)
                 .Select(x => new CachedPlayer(x.Id, default, x.Name, (GenderType)x.Gender)
                 {
+                    Version = 1,
                     Level = x.Level,
                     Job = (DefineJob.Job)x.JobId,
                     IsOnline = false,

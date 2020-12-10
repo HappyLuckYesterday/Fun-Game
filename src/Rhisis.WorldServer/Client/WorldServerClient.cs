@@ -5,6 +5,7 @@ using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Protocol;
+using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Protocol.Packets;
 using Rhisis.Network;
@@ -120,13 +121,19 @@ namespace Rhisis.WorldServer.Client
                     {
                         cachePlayer.Level = Player.Level;
                         cachePlayer.Job = Player.Job.Id;
+                        cachePlayer.MessengerStatus = MessengerStatusType.Offline;
                         cachePlayer.IsOnline = false;
+                        cachePlayer.Version = 1;
 
                         _playerCache.SetCachedPlayer(cachePlayer);
                     }
 
                     Player.Spawned = false;
-                    Player.MapLayer.RemovePlayer(Player);
+
+                    if (Player.MapLayer != null)
+                    {
+                        Player.MapLayer.RemovePlayer(Player);
+                    }
 
                     var initializers = Player.Systems.GetService<IEnumerable<IPlayerInitializer>>();
 
