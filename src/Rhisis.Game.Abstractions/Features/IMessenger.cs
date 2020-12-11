@@ -32,13 +32,6 @@ namespace Rhisis.Game.Abstractions.Features
         void AddFriend(IPlayer playerToAdd);
 
         /// <summary>
-        /// Notifies the current player that a friend with the given player id has connected.
-        /// </summary>
-        /// <param name="playerId">Player id.</param>
-        /// <param name="statusType">Friend status type.</param>
-        void OnFriendConnected(int playerId, MessengerStatusType statusType);
-
-        /// <summary>
         /// Notifies the current player that a friend has changed its status.
         /// </summary>
         /// <param name="friendPlayerId">Friend player id.</param>

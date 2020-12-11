@@ -2,7 +2,6 @@
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Common;
-using Rhisis.Game.Protocol.Packets;
 using Rhisis.Game.Protocol.Packets.Friends;
 using Rhisis.Game.Protocol.Snapshots.Friends;
 using Rhisis.Network.Snapshots;
@@ -14,7 +13,6 @@ namespace Rhisis.Game.Abstractions.Components
     {
         private readonly IPlayer _player;
         private readonly int _currentChannelId;
-        private readonly IPlayerCache _playerCache;
 
         public MessengerStatusType Status { get; set; }
 
@@ -44,21 +42,6 @@ namespace Rhisis.Game.Abstractions.Components
             snapshot.Merge(new DefinedTextSnapshot(_player, DefineText.TID_GAME_MSGINVATECOM, playerToAdd.Name));
 
             _player.Send(snapshot);
-        }
-
-        public void OnFriendConnected(int friendPlayerId, MessengerStatusType statusType)
-        {
-            IContact friend = Friends.Get(friendPlayerId);
-
-            if (friend is null)
-            {
-                return;
-            }
-
-            friend.Status = statusType;
-
-            using var friendJoinGame = new AddFriendJoinPacket(friend);
-            _player.Send(friendJoinGame);
         }
 
         public void OnFriendStatusChanged(int friendPlayerId, MessengerStatusType statusType)

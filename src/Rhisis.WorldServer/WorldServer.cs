@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Configuration.World;
@@ -18,7 +17,6 @@ using Rhisis.Network;
 using Rhisis.Network.Core.Servers;
 using Rhisis.Scripting.Quests;
 using Rhisis.WorldServer.Client;
-using Sylver.HandlerInvoker;
 using Sylver.Network.Server;
 using System;
 using System.Collections.Generic;
@@ -160,17 +158,16 @@ namespace Rhisis.WorldServer
 
         private void OnPlayerConnectedMessage(PlayerConnected playerConnectedMessage)
         {
-            int playerConnectedId = playerConnectedMessage.Id;
-            IEnumerable<IPlayer> players = Clients
-                .Where(x => x.Player.CharacterId != playerConnectedId && x.Player.Messenger.Friends.Contains((uint)playerConnectedId))
-                .Select(x => x.Player);
-
-            foreach (IPlayer player in players)
-            {
-                player.Messenger.OnFriendConnected(playerConnectedId, playerConnectedMessage.Status);
-            }
+            OnPlayerStatusUpdateMessage(new PlayerMessengerStatusUpdate(playerConnectedMessage.Id, playerConnectedMessage.Status));
 
             // TODO: notify core server that a player has connected.
+        }
+
+        private void OnPlayerDisconnected(PlayerDisconnected playerDisconnectedMessage)
+        {
+            OnPlayerStatusUpdateMessage(new PlayerMessengerStatusUpdate(playerDisconnectedMessage.Id, MessengerStatusType.Offline));
+
+            // TODO: notify core server that a player has disconnected.
         }
 
         private void OnPlayerStatusUpdateMessage(PlayerMessengerStatusUpdate playerMessengerStatusUpdate)
@@ -184,13 +181,6 @@ namespace Rhisis.WorldServer
             {
                 player.Messenger.OnFriendStatusChanged(playerConnectedId, playerMessengerStatusUpdate.Status);
             }
-        }
-
-        private void OnPlayerDisconnected(PlayerDisconnected playerDisconnectedMessage)
-        {
-            OnPlayerStatusUpdateMessage(new PlayerMessengerStatusUpdate(playerDisconnectedMessage.Id, MessengerStatusType.Offline));
-
-            // TODO: notify core server that a player has disconnected.
         }
     }
 }
