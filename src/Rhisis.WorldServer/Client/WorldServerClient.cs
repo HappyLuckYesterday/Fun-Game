@@ -4,9 +4,11 @@ using Rhisis.Core.Helpers;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Messaging;
 using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
+using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Protocol.Packets;
 using Rhisis.Network;
 using Sylver.HandlerInvoker;
@@ -24,6 +26,7 @@ namespace Rhisis.WorldServer.Client
         private ILogger<WorldServerClient> _logger;
         private IHandlerInvoker _handlerInvoker;
         private IPlayerCache _playerCache;
+        private IMessaging _messaging;
 
         public uint SessionId { get; }
 
@@ -51,6 +54,7 @@ namespace Rhisis.WorldServer.Client
             _logger = serviceProvider.GetRequiredService<ILogger<WorldServerClient>>();
             _handlerInvoker = serviceProvider.GetRequiredService<IHandlerInvoker>();
             _playerCache = serviceProvider.GetRequiredService<IPlayerCache>() ?? throw new InvalidOperationException($"Failed to get player cache.");
+            _messaging = serviceProvider.GetRequiredService<IMessaging>() ?? throw new InvalidOperationException($"Failed to get messaging system.");
 
             using var welcomePacket = new WelcomePacket(SessionId);
             Send(welcomePacket);
@@ -126,6 +130,7 @@ namespace Rhisis.WorldServer.Client
                         cachePlayer.Version = 1;
 
                         _playerCache.SetCachedPlayer(cachePlayer);
+                        _messaging.Publish(new PlayerDisconnected(Player.CharacterId));
                     }
 
                     Player.Spawned = false;

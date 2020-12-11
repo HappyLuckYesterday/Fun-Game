@@ -46,9 +46,9 @@ namespace Rhisis.Game.Abstractions.Components
             _player.Send(snapshot);
         }
 
-        public void OnFriendConnected(int playerId, MessengerStatusType statusType)
+        public void OnFriendConnected(int friendPlayerId, MessengerStatusType statusType)
         {
-            IContact friend = Friends.Get(playerId);
+            IContact friend = Friends.Get(friendPlayerId);
 
             if (friend is null)
             {
@@ -59,6 +59,30 @@ namespace Rhisis.Game.Abstractions.Components
 
             using var friendJoinGame = new AddFriendJoinPacket(friend);
             _player.Send(friendJoinGame);
+        }
+
+        public void OnFriendStatusChanged(int friendPlayerId, MessengerStatusType statusType)
+        {
+            IContact friend = Friends.Get(friendPlayerId);
+
+            if (friend is null)
+            {
+                return;
+            }
+
+            MessengerStatusType oldStatus = friend.Status;
+            friend.Status = statusType;
+
+            if (oldStatus == MessengerStatusType.Offline)
+            {
+                using var friendJoinGame = new AddFriendJoinPacket(friend);
+                _player.Send(friendJoinGame);
+            }
+            else
+            {
+                using var setStatePacket = new SetFriendStatePacket(friend.Id, friend.Status);
+                _player.Send(setStatePacket);
+            }
         }
 
         public void Serialize(INetPacketStream packet)

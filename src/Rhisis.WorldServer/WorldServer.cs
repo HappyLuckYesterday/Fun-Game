@@ -11,6 +11,7 @@ using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Messaging;
 using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Resources.Loaders;
 using Rhisis.Network;
@@ -95,6 +96,8 @@ namespace Rhisis.WorldServer
             _mapManager.Load();
 
             _messaging.Subscribe<PlayerConnected>(OnPlayerConnectedMessage);
+            _messaging.Subscribe<PlayerDisconnected>(OnPlayerDisconnected);
+            _messaging.Subscribe<PlayerMessengerStatusUpdate>(OnPlayerStatusUpdateMessage);
         }
 
         /// <inheritdoc />
@@ -166,6 +169,28 @@ namespace Rhisis.WorldServer
             {
                 player.Messenger.OnFriendConnected(playerConnectedId, playerConnectedMessage.Status);
             }
+
+            // TODO: notify core server that a player has connected.
+        }
+
+        private void OnPlayerStatusUpdateMessage(PlayerMessengerStatusUpdate playerMessengerStatusUpdate)
+        {
+            int playerConnectedId = playerMessengerStatusUpdate.Id;
+            IEnumerable<IPlayer> players = Clients
+                .Where(x => x.Player.CharacterId != playerConnectedId && x.Player.Messenger.Friends.Contains((uint)playerConnectedId))
+                .Select(x => x.Player);
+
+            foreach (IPlayer player in players)
+            {
+                player.Messenger.OnFriendStatusChanged(playerConnectedId, playerMessengerStatusUpdate.Status);
+            }
+        }
+
+        private void OnPlayerDisconnected(PlayerDisconnected playerDisconnectedMessage)
+        {
+            OnPlayerStatusUpdateMessage(new PlayerMessengerStatusUpdate(playerDisconnectedMessage.Id, MessengerStatusType.Offline));
+
+            // TODO: notify core server that a player has disconnected.
         }
     }
 }
