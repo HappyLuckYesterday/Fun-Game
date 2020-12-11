@@ -32,6 +32,12 @@ namespace Rhisis.Game.Abstractions.Features
         void AddFriend(IPlayer playerToAdd);
 
         /// <summary>
+        /// Removes a player from the friends contact list.
+        /// </summary>
+        /// <param name="friendId">Friend ID to remove.</param>
+        void RemoveFriend(int friendId);
+
+        /// <summary>
         /// Notifies the current player that a friend has changed its status.
         /// </summary>
         /// <param name="friendPlayerId">Friend player id.</param>

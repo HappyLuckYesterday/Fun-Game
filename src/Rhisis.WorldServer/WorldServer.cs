@@ -96,6 +96,7 @@ namespace Rhisis.WorldServer
             _messaging.Subscribe<PlayerConnected>(OnPlayerConnectedMessage);
             _messaging.Subscribe<PlayerDisconnected>(OnPlayerDisconnected);
             _messaging.Subscribe<PlayerMessengerStatusUpdate>(OnPlayerStatusUpdateMessage);
+            _messaging.Subscribe<PlayerMessengerRemoveFriend>(OnPlayerMessengerRemoveFriendMessage);
         }
 
         /// <inheritdoc />
@@ -174,12 +175,30 @@ namespace Rhisis.WorldServer
         {
             int playerConnectedId = playerMessengerStatusUpdate.Id;
             IEnumerable<IPlayer> players = Clients
-                .Where(x => x.Player.CharacterId != playerConnectedId && x.Player.Messenger.Friends.Contains((uint)playerConnectedId))
+                .Where(x => x.Player.Spawned && 
+                            x.Player.CharacterId != playerConnectedId && 
+                            x.Player.Messenger.Friends.Contains((uint)playerConnectedId))
                 .Select(x => x.Player);
 
             foreach (IPlayer player in players)
             {
                 player.Messenger.OnFriendStatusChanged(playerConnectedId, playerMessengerStatusUpdate.Status);
+            }
+        }
+
+        private void OnPlayerMessengerRemoveFriendMessage(PlayerMessengerRemoveFriend friendRemovalMessage)
+        {
+            int playerId = friendRemovalMessage.PlayerId;
+            IPlayer removedPlayer = Clients
+                .Where(x => x.Player.Spawned && 
+                            x.Player.CharacterId == friendRemovalMessage.RemovedFriendId && 
+                            x.Player.Messenger.Friends.Contains((uint)playerId))
+                .Select(x => x.Player)
+                .FirstOrDefault();
+
+            if (removedPlayer != null)
+            {
+                removedPlayer.Messenger.RemoveFriend(playerId);
             }
         }
     }

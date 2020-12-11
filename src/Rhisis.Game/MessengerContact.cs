@@ -28,6 +28,7 @@ namespace Rhisis.Game
             Channel = channel;
             Name = player.Name;
             Job = player.Job.Id;
+            Status = player.Messenger.Status;
         }
 
         public MessengerContact(int playerId, int channel, string name, DefineJob.Job job, MessengerStatusType messengerStatus, bool isBlocked)

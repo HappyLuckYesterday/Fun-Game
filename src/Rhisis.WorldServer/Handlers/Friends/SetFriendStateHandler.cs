@@ -39,6 +39,7 @@ namespace Rhisis.WorldServer.Handlers.Friends
                 if (cachedPlayer != null)
                 {
                     cachedPlayer.MessengerStatus = player.Messenger.Status;
+                    cachedPlayer.Version++;
                     _playerCache.SetCachedPlayer(cachedPlayer);
                 }
 

@@ -1,11 +1,11 @@
-﻿using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets.Friends;
 using Rhisis.Game.Protocol.Snapshots.Friends;
 using Rhisis.Network.Snapshots;
 using Sylver.Network.Data;
+using System;
 
 namespace Rhisis.Game.Abstractions.Components
 {
@@ -41,6 +41,21 @@ namespace Rhisis.Game.Abstractions.Components
             using var snapshot = new AddFriendSnapshot(_player, playerToAdd);
             snapshot.Merge(new DefinedTextSnapshot(_player, DefineText.TID_GAME_MSGINVATECOM, playerToAdd.Name));
 
+            _player.Send(snapshot);
+        }
+
+        public void RemoveFriend(int friendId)
+        {
+            IContact friend = Friends.Get(friendId);
+
+            if (friend is null)
+            {
+                throw new InvalidOperationException($"Failed to find friend with id: '{friendId}'");
+            }
+
+            Friends.Remove(friend);
+
+            using var snapshot = new RemoveFriendSnapshot(_player, friend.Id);
             _player.Send(snapshot);
         }
 
