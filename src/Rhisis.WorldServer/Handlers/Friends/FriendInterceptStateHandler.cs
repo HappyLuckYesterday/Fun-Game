@@ -1,6 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Messaging;
-using Rhisis.Game.Protocol.Messages;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World.Friends;
 using Sylver.HandlerInvoker.Attributes;
@@ -9,25 +8,24 @@ using System;
 namespace Rhisis.WorldServer.Handlers.Friends
 {
     [Handler]
-    public class RemoveFriendHandler
+    public class FriendInterceptStateHandler
     {
         private readonly IMessaging _messaging;
 
-        public RemoveFriendHandler(IMessaging messaging)
+        public FriendInterceptStateHandler(IMessaging messaging)
         {
             _messaging = messaging;
         }
 
-        [HandlerAction(PacketType.REMOVEFRIEND)]
-        public void OnExecute(IPlayer player, RemoveFriendPacket packet)
+        [HandlerAction(PacketType.FRIENDINTERCEPTSTATE)]
+        public void OnExecute(IPlayer player, FriendInterceptStatePacket packet)
         {
             if (player.CharacterId != packet.CurrentPlayerId)
             {
-                throw new InvalidOperationException($"Player ids doens't match.");
+                throw new InvalidOperationException($"The player ids doesn't match.");
             }
 
-            player.Messenger.RemoveFriend(packet.FriendId);
-            _messaging.Publish(new PlayerMessengerRemoveFriend(player.CharacterId, packet.FriendId));
+            player.Messenger.SetFriendBlockState((int)packet.FriendPlayerId);
         }
     }
 }

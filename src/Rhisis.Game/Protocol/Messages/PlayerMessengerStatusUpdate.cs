@@ -8,7 +8,7 @@ namespace Rhisis.Game.Protocol.Messages
     public class PlayerMessengerStatusUpdate
     {
         /// <summary>
-        /// Gets or sets the player id.
+        /// Gets or sets the player id that has changed its status.
         /// </summary>
         public int Id { get; set; }
 
@@ -16,6 +16,15 @@ namespace Rhisis.Game.Protocol.Messages
         /// Gets or sets the player messenger status.
         /// </summary>
         public MessengerStatusType Status { get; set; }
+
+        /// <summary>
+        /// Gets or sets the target player id.
+        /// </summary>
+        /// <remarks>
+        /// If null the system should notify all players that has the player <see cref="Id"/> in the friend list.
+        /// Otherwise, notify only the player identified with the ID contained in this property.
+        /// </remarks>
+        public int? TargetPlayerId { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="PlayerMessengerStatusUpdate"/> message.

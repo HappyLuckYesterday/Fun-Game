@@ -3,6 +3,7 @@ using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets.Friends;
 using Rhisis.Game.Protocol.Snapshots.Friends;
+using Rhisis.Network;
 using Rhisis.Network.Snapshots;
 using Sylver.Network.Data;
 using System;
@@ -57,6 +58,34 @@ namespace Rhisis.Game.Abstractions.Components
 
             using var snapshot = new RemoveFriendSnapshot(_player, friend.Id);
             _player.Send(snapshot);
+        }
+
+        public void SetFriendBlockState(int friendId)
+        {
+            IContact friend = Friends.Get(friendId);
+
+            if (friend is null)
+            {
+                throw new InvalidOperationException($"Failed to find friend with id: '{friendId}'");
+            }
+
+            friend.IsBlocked = !friend.IsBlocked;
+
+            FFPacket packet;
+
+            if (friend.IsBlocked)
+            {
+                packet = new FriendInterceptPacket(_player.CharacterId, friend.Id);
+            }
+            else
+            {
+                packet = new FriendNoInterceptPacket(friend.Id, friend.Status);
+            }
+
+            using (packet)
+            {
+                _player.Send(packet);
+            }
         }
 
         public void OnFriendStatusChanged(int friendPlayerId, MessengerStatusType statusType)
