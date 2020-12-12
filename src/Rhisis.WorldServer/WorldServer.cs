@@ -17,6 +17,7 @@ using Rhisis.Network;
 using Rhisis.Network.Core.Servers;
 using Rhisis.Scripting.Quests;
 using Rhisis.WorldServer.Client;
+using Sylver.HandlerInvoker;
 using Sylver.Network.Server;
 using System;
 using System.Collections.Generic;
@@ -38,10 +39,13 @@ namespace Rhisis.WorldServer
         private readonly IRhisisDatabase _database;
         private readonly IRhisisCacheManager _cacheManager;
         private readonly IMessaging _messaging;
+        private readonly IHandlerInvoker _handlerInvoker;
 
         public CoreConfiguration CoreConfiguration { get; }
 
         public WorldConfiguration WorldConfiguration { get; }
+
+        public IEnumerable<IPlayer> ConnectedPlayers => Clients.Select(x => x.Player);
 
         /// <summary>
         /// Creates a new <see cref="WorldServer"/> instance.
@@ -49,7 +53,7 @@ namespace Rhisis.WorldServer
         public WorldServer(ILogger<WorldServer> logger, IOptions<WorldConfiguration> worldConfiguration, IOptions<CoreConfiguration> coreConfiguration,
             IGameResources gameResources, IServiceProvider serviceProvider, 
             IMapManager mapManager, IBehaviorManager behaviorManager, IChatCommandManager chatCommandManager, IRhisisDatabase database, 
-            IRhisisCacheManager cacheManager, IMessaging messaging)
+            IRhisisCacheManager cacheManager, IMessaging messaging, IHandlerInvoker handlerInvoker)
         {
             _logger = logger;
             _gameResources = gameResources;
@@ -60,6 +64,7 @@ namespace Rhisis.WorldServer
             _database = database;
             _cacheManager = cacheManager;
             _messaging = messaging;
+            _handlerInvoker = handlerInvoker;
             CoreConfiguration = coreConfiguration.Value;
             WorldConfiguration = worldConfiguration.Value;
             PacketProcessor = new FlyffPacketProcessor();
@@ -173,33 +178,12 @@ namespace Rhisis.WorldServer
 
         private void OnPlayerStatusUpdateMessage(PlayerMessengerStatusUpdate playerMessengerStatusUpdate)
         {
-            int playerConnectedId = playerMessengerStatusUpdate.Id;
-            IEnumerable<IPlayer> players = Clients
-                .Where(x => x.Player.Spawned && 
-                            x.Player.CharacterId != playerConnectedId && 
-                            x.Player.Messenger.Friends.Contains((uint)playerConnectedId))
-                .Select(x => x.Player);
-
-            foreach (IPlayer player in players)
-            {
-                player.Messenger.OnFriendStatusChanged(playerConnectedId, playerMessengerStatusUpdate.Status);
-            }
+            _handlerInvoker.Invoke(typeof(PlayerMessengerStatusUpdate), playerMessengerStatusUpdate);
         }
 
         private void OnPlayerMessengerRemoveFriendMessage(PlayerMessengerRemoveFriend friendRemovalMessage)
         {
-            int playerId = friendRemovalMessage.PlayerId;
-            IPlayer removedPlayer = Clients
-                .Where(x => x.Player.Spawned && 
-                            x.Player.CharacterId == friendRemovalMessage.RemovedFriendId && 
-                            x.Player.Messenger.Friends.Contains((uint)playerId))
-                .Select(x => x.Player)
-                .FirstOrDefault();
-
-            if (removedPlayer != null)
-            {
-                removedPlayer.Messenger.RemoveFriend(playerId);
-            }
+            _handlerInvoker.Invoke(typeof(PlayerMessengerRemoveFriend), friendRemovalMessage);
         }
     }
 }

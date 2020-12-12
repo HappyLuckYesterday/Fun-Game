@@ -42,11 +42,11 @@ namespace Rhisis.Game.Systems.Initializers
                     cachedPlayer = _playerCache.LoadCachedPlayer(friend.FriendId);
                 }
 
-                var contact = new MessengerContact(cachedPlayer.Id, 
-                    cachedPlayer.Channel, 
-                    cachedPlayer.Name, 
-                    cachedPlayer.Job, 
-                    cachedPlayer.MessengerStatus, 
+                var contact = new MessengerContact(cachedPlayer.Id,
+                    cachedPlayer.Channel,
+                    cachedPlayer.Name,
+                    cachedPlayer.Job,
+                    cachedPlayer.MessengerStatus,
                     friend.IsBlocked);
 
                 player.Messenger.Friends.Add(contact);
@@ -66,15 +66,32 @@ namespace Rhisis.Game.Systems.Initializers
                 throw new InvalidOperationException($"Failed to find player with id: {player.CharacterId} in database.");
             }
 
-            character.Friends.Clear();
+            IEnumerable<DbFriend> friendsToRemove = (from dbFriend in character.Friends
+                                                     let friend = player.Messenger.Friends.Get(dbFriend.FriendId)
+                                                     where dbFriend != null && friend is null
+                                                     select dbFriend).ToList();
+
+            foreach (DbFriend friendToRemove in friendsToRemove)
+            {
+                _database.Friends.Remove(friendToRemove);
+            }
 
             foreach (IContact contact in player.Messenger.Friends)
             {
-                character.Friends.Add(new DbFriend
+                DbFriend friend = character.Friends.FirstOrDefault(x => x.FriendId == contact.Id);
+
+                if (friend is null)
                 {
-                    FriendId = (int)contact.Id,
-                    IsBlocked = contact.IsBlocked
-                });
+                    character.Friends.Add(new DbFriend
+                    {
+                        FriendId = (int)contact.Id,
+                        IsBlocked = contact.IsBlocked
+                    });
+                }
+                else
+                {
+                    friend.IsBlocked = contact.IsBlocked;
+                }
             }
 
             _database.SaveChanges();

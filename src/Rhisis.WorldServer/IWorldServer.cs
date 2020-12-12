@@ -2,6 +2,7 @@
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Game.Abstractions.Entities;
 using Sylver.Network.Server;
+using System.Collections.Generic;
 
 namespace Rhisis.WorldServer
 {
@@ -19,6 +20,11 @@ namespace Rhisis.WorldServer
         /// Gets the world server configuration.
         /// </summary>
         WorldConfiguration WorldConfiguration { get; }
+
+        /// <summary>
+        /// Gets the connected players collection.
+        /// </summary>
+        IEnumerable<IPlayer> ConnectedPlayers { get; }
 
         /// <summary>
         /// Gets a player entity by his id.
