@@ -13,6 +13,13 @@
         CachedPlayer GetCachedPlayer(int playerId);
 
         /// <summary>
+        /// Gets the cached player by its player name.
+        /// </summary>
+        /// <param name="playerName">Player name.</param>
+        /// <returns>Cached player.</returns>
+        CachedPlayer GetCachedPlayer(string playerName);
+
+        /// <summary>
         /// Loads a player identified by the given player id and stores it into the cache.
         /// </summary>
         /// <param name="playerId">Player Id.</param>

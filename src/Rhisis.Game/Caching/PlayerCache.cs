@@ -24,6 +24,16 @@ namespace Rhisis.Game.Caching
             return _playerCache.Get<CachedPlayer>(playerId.ToString()) ?? LoadCachedPlayer(playerId);
         }
 
+        public CachedPlayer GetCachedPlayer(string playerName)
+        {
+            int playerId = _database.Characters
+                .Where(x => x.Name.ToLower() == playerName.ToLower())
+                .Select(x => x.Id)
+                .FirstOrDefault();
+
+            return GetCachedPlayer(playerId);
+        }
+
         public CachedPlayer LoadCachedPlayer(int playerId)
         {
             var cachedPlayer = _database.Characters.Where(x => x.Id == playerId)

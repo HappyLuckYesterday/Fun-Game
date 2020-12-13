@@ -103,6 +103,7 @@ namespace Rhisis.WorldServer
             _messaging.Subscribe<PlayerMessengerStatusUpdate>(OnPlayerStatusUpdateMessage);
             _messaging.Subscribe<PlayerMessengerRemoveFriend>(OnPlayerMessengerRemoveFriendMessage);
             _messaging.Subscribe<PlayerMessengerBlockFriend>(OnPlayerMessengerBlockFriendMessage);
+            _messaging.Subscribe<PlayerMessengerMessage>(OnPlayerMessengerMessage);
         }
 
         /// <inheritdoc />
@@ -190,6 +191,11 @@ namespace Rhisis.WorldServer
         private void OnPlayerMessengerBlockFriendMessage(PlayerMessengerBlockFriend friendBlockedMessage)
         {
             _handlerInvoker.Invoke(typeof(PlayerMessengerBlockFriend), friendBlockedMessage);
+        }
+
+        private void OnPlayerMessengerMessage(PlayerMessengerMessage message)
+        {
+            _handlerInvoker.Invoke(typeof(PlayerMessengerMessage), message);
         }
     }
 }

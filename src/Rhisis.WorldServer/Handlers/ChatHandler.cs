@@ -5,6 +5,7 @@ using Rhisis.Network;
 using Rhisis.Network.Packets.World;
 using Sylver.HandlerInvoker.Attributes;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -35,15 +36,16 @@ namespace Rhisis.WorldServer.Handlers
             {
                 if (packet.Message.StartsWith(GameConstants.ChatCommandPrefix))
                 {
-                    (string, string[]) commandInfo = GetCommandParameters(packet.Message);
-                    IChatCommand chatCommand = _chatCommandManager.GetChatCommand(commandInfo.Item1, player.Authority);
+                    string commandName = GetCommandName(packet.Message);
+                    IChatCommand chatCommand = _chatCommandManager.GetChatCommand(commandName, player.Authority);
+                    string[] commandParameters = GetCommandParameters(packet.Message, commandName, chatCommand.ParsingType);
 
                     if (chatCommand == null)
                     {
-                        throw new ArgumentException($"Cannot find chat command: '/{commandInfo.Item1}'", nameof(chatCommand));
+                        throw new ArgumentException($"Cannot find chat command: '/{commandName}'", nameof(chatCommand));
                     }
 
-                    chatCommand.Execute(player, commandInfo.Item2);
+                    chatCommand.Execute(player, commandParameters);
                 }
                 else
                 {
@@ -53,23 +55,34 @@ namespace Rhisis.WorldServer.Handlers
         }
 
         /// <summary>
+        /// Gets the command name.
+        /// </summary>
+        /// <param name="commandInput">Command input.</param>
+        /// <returns>Command name.</returns>
+        private string GetCommandName(string commandInput)
+        {
+            return commandInput.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        }
+
+        /// <summary>
         /// Gets the command parameters.
         /// </summary>
-        /// <param name="command">Command line</param>
+        /// <param name="commandInput">Command input text.</param>
         /// <param name="commandName">Command name</param>
+        /// <param name="parsingType">Command parsing type.</param>
         /// <returns></returns>
-        private (string, string[]) GetCommandParameters(string command)
+        private string[] GetCommandParameters(string commandInput, string commandName, ChatParameterParsingType parsingType)
         {
-            string commandName = command.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-
-            if (string.IsNullOrEmpty(commandName))
+            if (parsingType == ChatParameterParsingType.Default)
             {
-                return (command, Enumerable.Empty<string>().ToArray());
+                string commandParameters = commandInput.Remove(0, commandName.Length);
+
+                return Regex.Matches(commandParameters, @"[\""].+?[\""]|[^ ]+").Select(m => m.Value.Trim('"')).ToArray();
             }
-
-            string commandParameters = command.Remove(0, commandName.Length);
-
-            return (commandName, Regex.Matches(commandParameters, @"[\""].+?[\""]|[^ ]+").Select(m => m.Value.Trim('"')).ToArray());
+            else
+            {
+                return new[] { commandInput.Replace(commandName, "").Trim() };
+            }
         }
     }
 }

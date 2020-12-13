@@ -33,7 +33,7 @@ namespace Rhisis.Redis.Caching
         public TObject Get<TObject>(string key) where TObject : class, new()
         {
             RedisValue content = _redisDatabase.StringGet(key);
-
+            
             if (!content.HasValue)
             {
                 return default;
