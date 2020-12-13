@@ -1,4 +1,5 @@
 ﻿using Rhisis.Game.Common;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Rhisis.Game.Abstractions.Caching
@@ -23,6 +24,8 @@ namespace Rhisis.Game.Abstractions.Caching
         public bool IsOnline { get; set; }
 
         public MessengerStatusType MessengerStatus { get; set; } = MessengerStatusType.Offline;
+
+        public List<CachedPlayerFriend> Friends { get; set; } = new List<CachedPlayerFriend>();
 
         public CachedPlayer()
         {

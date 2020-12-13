@@ -17,14 +17,14 @@ namespace Rhisis.Game.Protocol.Packets.Friends
             foreach (IContact contact in unblockedFirends)
             {
                 WriteInt32(contact.Id);
-                WriteInt32(contact.IsBlocked ? (int)MessengerStatusType.Offline : (int)contact.Status);
+                WriteInt32((int)contact.Status);
                 WriteInt32(contact.IsOnline ? contact.Channel : 100);
             }
 
             foreach (IContact contact in blockedFriends)
             {
                 WriteInt32(contact.Id);
-                WriteInt32(contact.IsBlocked ? (int)MessengerStatusType.Offline : (int)contact.Status);
+                WriteInt32((int)contact.Status);
                 WriteInt32(contact.IsOnline ? contact.Channel : 100);
             }
         }

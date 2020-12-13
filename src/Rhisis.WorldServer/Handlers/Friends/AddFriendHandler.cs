@@ -1,4 +1,5 @@
-﻿using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Game.Abstractions.Caching;
+using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World.Friends;
 using Sylver.HandlerInvoker.Attributes;
@@ -10,10 +11,12 @@ namespace Rhisis.WorldServer.Handlers.Friends
     public class AddFriendHandler
     {
         private readonly IWorldServer _worldServer;
+        private readonly IPlayerCache _playerCache;
 
-        public AddFriendHandler(IWorldServer worldServer)
+        public AddFriendHandler(IWorldServer worldServer, IPlayerCache playerCache)
         {
             _worldServer = worldServer;
+            _playerCache = playerCache;
         }
 
         [HandlerAction(PacketType.ADDFRIEND)]
@@ -40,6 +43,15 @@ namespace Rhisis.WorldServer.Handlers.Friends
             {
                 sender.Messenger.AddFriend(player);
                 player.Messenger.AddFriend(sender);
+
+                CachedPlayer senderCachedPlayer = _playerCache.GetCachedPlayer(sender.CharacterId);
+                CachedPlayer friendCachedPlayer = _playerCache.GetCachedPlayer(player.CharacterId);
+
+                senderCachedPlayer.Friends.Add(new CachedPlayerFriend(player.CharacterId));
+                friendCachedPlayer.Friends.Add(new CachedPlayerFriend(sender.CharacterId));
+
+                _playerCache.SetCachedPlayer(senderCachedPlayer);
+                _playerCache.SetCachedPlayer(friendCachedPlayer);
             }
             else
             {

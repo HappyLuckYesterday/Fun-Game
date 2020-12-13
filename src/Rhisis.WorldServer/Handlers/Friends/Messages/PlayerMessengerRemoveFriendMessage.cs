@@ -1,8 +1,8 @@
 ﻿using Rhisis.Database;
+using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Protocol.Messages;
 using Sylver.HandlerInvoker.Attributes;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.WorldServer.Handlers.Friends.Messages
@@ -12,11 +12,13 @@ namespace Rhisis.WorldServer.Handlers.Friends.Messages
     {
         private readonly IWorldServer _worldServer;
         private readonly IRhisisDatabase _database;
+        private readonly IPlayerCache _playerCache;
 
-        public PlayerMessengerRemoveFriendMessage(IWorldServer worldServer, IRhisisDatabase database)
+        public PlayerMessengerRemoveFriendMessage(IWorldServer worldServer, IRhisisDatabase database, IPlayerCache playerCache)
         {
             _worldServer = worldServer;
             _database = database;
+            _playerCache = playerCache;
         }
 
         [HandlerAction(typeof(PlayerMessengerRemoveFriend))]
@@ -40,6 +42,15 @@ namespace Rhisis.WorldServer.Handlers.Friends.Messages
             {
                 _database.Friends.Remove(friend);
                 _database.SaveChangesAsync();
+            }
+
+            CachedPlayer cachedPlayer = _playerCache.GetCachedPlayer(removedPlayer.CharacterId);
+            CachedPlayerFriend playerFriend = cachedPlayer.Friends.FirstOrDefault(x => x.FriendId == playerId);
+
+            if (playerFriend != null)
+            {
+                cachedPlayer.Friends.Remove(playerFriend);
+                _playerCache.SetCachedPlayer(cachedPlayer);
             }
         }
     }

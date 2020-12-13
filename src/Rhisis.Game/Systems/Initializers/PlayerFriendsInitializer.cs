@@ -37,11 +37,6 @@ namespace Rhisis.Game.Systems.Initializers
             {
                 CachedPlayer cachedPlayer = _playerCache.GetCachedPlayer(friend.FriendId);
 
-                if (cachedPlayer is null)
-                {
-                    cachedPlayer = _playerCache.LoadCachedPlayer(friend.FriendId);
-                }
-
                 var contact = new MessengerContact(cachedPlayer.Id,
                     cachedPlayer.Channel,
                     cachedPlayer.Name,

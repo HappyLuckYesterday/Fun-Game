@@ -41,5 +41,11 @@ namespace Rhisis.Game.Abstractions.Features
         /// Gets the contact job.
         /// </summary>
         DefineJob.Job Job { get; }
+
+        /// <summary>
+        /// Clones the current contact.
+        /// </summary>
+        /// <returns></returns>
+        IContact Clone();
     }
 }

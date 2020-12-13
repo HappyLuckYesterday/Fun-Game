@@ -215,7 +215,8 @@ namespace Rhisis.WorldServer.Handlers
                 Job = player.Job.Id,
                 Version = 1,
                 IsOnline = true,
-                MessengerStatus = MessengerStatusType.Online
+                MessengerStatus = MessengerStatusType.Online,
+                Friends = player.Messenger.Friends.Select(x => new CachedPlayerFriend(x.Id, x.IsBlocked)).ToList()
             };
 
             _playerCache.SetCachedPlayer(cachedPlayer);

@@ -40,5 +40,7 @@ namespace Rhisis.Game
             Status = messengerStatus;
             IsBlocked = isBlocked;
         }
+
+        public IContact Clone() => new MessengerContact(Id, Channel, Name, Job, Status, IsBlocked);
     }
 }

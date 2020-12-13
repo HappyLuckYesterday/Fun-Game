@@ -21,7 +21,7 @@ namespace Rhisis.Game.Caching
 
         public CachedPlayer GetCachedPlayer(int playerId)
         {
-            return _playerCache.Get<CachedPlayer>(playerId.ToString());
+            return _playerCache.Get<CachedPlayer>(playerId.ToString()) ?? LoadCachedPlayer(playerId);
         }
 
         public CachedPlayer LoadCachedPlayer(int playerId)
