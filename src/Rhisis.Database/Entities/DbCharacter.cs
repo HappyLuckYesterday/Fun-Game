@@ -205,12 +205,18 @@ namespace Rhisis.Database.Entities
         /// </summary>
         public ICollection<DbSkillBuff> SkillBuffs { get; set; }
 
+        /// <summary>
+        /// Gets or sets the character friends.
+        /// </summary>
+        public ICollection<DbFriend> Friends { get; set; }
+
         public DbCharacter()
         {
             Items = new HashSet<DbItemStorage>();
             ReceivedMails = new HashSet<DbMail>();
             SentMails = new HashSet<DbMail>();
             TaskbarShortcuts = new HashSet<DbShortcut>();
+            Friends = new HashSet<DbFriend>();
         }
     }
 }

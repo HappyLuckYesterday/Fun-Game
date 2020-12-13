@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Configuration.World;
@@ -9,7 +8,10 @@ using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Abstractions.Map;
+using Rhisis.Game.Abstractions.Messaging;
 using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Game.Common;
+using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Resources.Loaders;
 using Rhisis.Network;
 using Rhisis.Network.Core.Servers;
@@ -18,6 +20,7 @@ using Rhisis.WorldServer.Client;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Server;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.WorldServer
@@ -35,17 +38,22 @@ namespace Rhisis.WorldServer
         private readonly IChatCommandManager _chatCommandManager;
         private readonly IRhisisDatabase _database;
         private readonly IRhisisCacheManager _cacheManager;
+        private readonly IMessaging _messaging;
+        private readonly IHandlerInvoker _handlerInvoker;
 
         public CoreConfiguration CoreConfiguration { get; }
 
         public WorldConfiguration WorldConfiguration { get; }
+
+        public IEnumerable<IPlayer> ConnectedPlayers => Clients.Select(x => x.Player);
 
         /// <summary>
         /// Creates a new <see cref="WorldServer"/> instance.
         /// </summary>
         public WorldServer(ILogger<WorldServer> logger, IOptions<WorldConfiguration> worldConfiguration, IOptions<CoreConfiguration> coreConfiguration,
             IGameResources gameResources, IServiceProvider serviceProvider, 
-            IMapManager mapManager, IBehaviorManager behaviorManager, IChatCommandManager chatCommandManager, IRhisisDatabase database, IRhisisCacheManager cacheManager)
+            IMapManager mapManager, IBehaviorManager behaviorManager, IChatCommandManager chatCommandManager, IRhisisDatabase database, 
+            IRhisisCacheManager cacheManager, IMessaging messaging, IHandlerInvoker handlerInvoker)
         {
             _logger = logger;
             _gameResources = gameResources;
@@ -55,6 +63,8 @@ namespace Rhisis.WorldServer
             _chatCommandManager = chatCommandManager;
             _database = database;
             _cacheManager = cacheManager;
+            _messaging = messaging;
+            _handlerInvoker = handlerInvoker;
             CoreConfiguration = coreConfiguration.Value;
             WorldConfiguration = worldConfiguration.Value;
             PacketProcessor = new FlyffPacketProcessor();
@@ -87,6 +97,13 @@ namespace Rhisis.WorldServer
             _chatCommandManager.Load();
             _behaviorManager.Load();
             _mapManager.Load();
+
+            _messaging.Subscribe<PlayerConnected>(OnPlayerConnectedMessage);
+            _messaging.Subscribe<PlayerDisconnected>(OnPlayerDisconnected);
+            _messaging.Subscribe<PlayerMessengerStatusUpdate>(OnPlayerStatusUpdateMessage);
+            _messaging.Subscribe<PlayerMessengerRemoveFriend>(OnPlayerMessengerRemoveFriendMessage);
+            _messaging.Subscribe<PlayerMessengerBlockFriend>(OnPlayerMessengerBlockFriendMessage);
+            _messaging.Subscribe<PlayerMessengerMessage>(OnPlayerMessengerMessage);
         }
 
         /// <inheritdoc />
@@ -121,8 +138,7 @@ namespace Rhisis.WorldServer
         /// <inheritdoc />
         protected override void OnClientConnected(WorldServerClient serverClient)
         {
-            serverClient.Initialize(_serviceProvider.GetRequiredService<ILogger<WorldServerClient>>(),
-                _serviceProvider.GetRequiredService<IHandlerInvoker>());
+            serverClient.Initialize(_serviceProvider);
 
             _logger.LogInformation("New client connected from {0}.", serverClient.Socket.RemoteEndPoint);
         }
@@ -147,5 +163,39 @@ namespace Rhisis.WorldServer
         /// <inheritdoc />
         public uint GetOnlineConnectedPlayerNumber() 
             => (uint)Clients.Count();
+
+        private void OnPlayerConnectedMessage(PlayerConnected playerConnectedMessage)
+        {
+            OnPlayerStatusUpdateMessage(new PlayerMessengerStatusUpdate(playerConnectedMessage.Id, playerConnectedMessage.Status));
+
+            // TODO: notify core server that a player has connected.
+        }
+
+        private void OnPlayerDisconnected(PlayerDisconnected playerDisconnectedMessage)
+        {
+            OnPlayerStatusUpdateMessage(new PlayerMessengerStatusUpdate(playerDisconnectedMessage.Id, MessengerStatusType.Offline));
+
+            // TODO: notify core server that a player has disconnected.
+        }
+
+        private void OnPlayerStatusUpdateMessage(PlayerMessengerStatusUpdate playerMessengerStatusUpdate)
+        {
+            _handlerInvoker.Invoke(typeof(PlayerMessengerStatusUpdate), playerMessengerStatusUpdate);
+        }
+
+        private void OnPlayerMessengerRemoveFriendMessage(PlayerMessengerRemoveFriend friendRemovalMessage)
+        {
+            _handlerInvoker.Invoke(typeof(PlayerMessengerRemoveFriend), friendRemovalMessage);
+        }
+
+        private void OnPlayerMessengerBlockFriendMessage(PlayerMessengerBlockFriend friendBlockedMessage)
+        {
+            _handlerInvoker.Invoke(typeof(PlayerMessengerBlockFriend), friendBlockedMessage);
+        }
+
+        private void OnPlayerMessengerMessage(PlayerMessengerMessage message)
+        {
+            _handlerInvoker.Invoke(typeof(PlayerMessengerMessage), message);
+        }
     }
 }

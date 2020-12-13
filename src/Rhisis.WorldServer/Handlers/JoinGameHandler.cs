@@ -1,23 +1,29 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Rhisis.Core.DependencyInjection.Extensions;
 using Rhisis.Core.Structures;
+using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Database;
 using Rhisis.Database.Entities;
 using Rhisis.Game;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Behavior;
+using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Map;
+using Rhisis.Game.Abstractions.Messaging;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Components;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Features;
+using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Protocol.Packets;
+using Rhisis.Game.Protocol.Snapshots.Friends;
 using Rhisis.Network;
 using Rhisis.Network.Packets.World;
 using Rhisis.Network.Snapshots;
@@ -37,6 +43,9 @@ namespace Rhisis.WorldServer.Handlers
         private readonly IMapManager _mapManager;
         private readonly IBehaviorManager _behaviorManager;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IOptions<WorldConfiguration> _configuration;
+        private readonly IPlayerCache _playerCache;
+        private readonly IMessaging _messaging;
 
         /// <summary>
         /// Creates a new <see cref="JoinGameHandler"/> instance.
@@ -49,7 +58,8 @@ namespace Rhisis.WorldServer.Handlers
         /// <param name="serviceProvider">Service provider.</param>
         public JoinGameHandler(ILogger<JoinGameHandler> logger, IRhisisDatabase database, 
             IGameResources gameResources, IMapManager mapManager, 
-            IBehaviorManager behaviorManager, IServiceProvider serviceProvider)
+            IBehaviorManager behaviorManager, IServiceProvider serviceProvider,
+            IOptions<WorldConfiguration> configuration, IPlayerCache playerCache, IMessaging messaging)
         {
             _logger = logger;
             _database = database;
@@ -57,6 +67,9 @@ namespace Rhisis.WorldServer.Handlers
             _mapManager = mapManager;
             _behaviorManager = behaviorManager;
             _serviceProvider = serviceProvider;
+            _configuration = configuration;
+            _playerCache = playerCache;
+            _messaging = messaging;
         }
 
         /// <summary>
@@ -141,6 +154,7 @@ namespace Rhisis.WorldServer.Handlers
                 realPlayer.Projectiles = _serviceProvider.CreateInstance<Projectiles>();
                 realPlayer.Delayer = _serviceProvider.CreateInstance<Delayer>();
                 realPlayer.Buffs = _serviceProvider.CreateInstance<Buffs>(realPlayer);
+                realPlayer.Messenger = _serviceProvider.CreateInstance<Messenger>(realPlayer, _configuration.Value.Id, _configuration.Value.Messenger.MaximumFriends);
 
                 IEnumerable<IPlayerInitializer> playerInitializers = _serviceProvider.GetRequiredService<IEnumerable<IPlayerInitializer>>();
 
@@ -195,13 +209,27 @@ namespace Rhisis.WorldServer.Handlers
                 realPlayer.LoggedInAt = DateTime.UtcNow;
             }
 
+            var cachedPlayer = new CachedPlayer(player.CharacterId, _configuration.Value.Id, player.Name, player.Appearence.Gender)
+            {
+                Level = player.Level,
+                Job = player.Job.Id,
+                Version = 1,
+                IsOnline = true,
+                MessengerStatus = MessengerStatusType.Online,
+                Friends = player.Messenger.Friends.Select(x => new CachedPlayerFriend(x.Id, x.IsBlocked)).ToList()
+            };
+
+            _playerCache.SetCachedPlayer(cachedPlayer);
+
             using (var joinPacket = new JoinCompletePacket())
             {
                 joinPacket.AddSnapshots(
                     new EnvironmentAllSnapshot(player, SeasonType.None), // TODO: get the season id using current weather time.
                     new WorldReadInfoSnapshot(player),
                     new AddObjectSnapshot(player),
-                    new TaskbarSnapshot(player)
+                    new TaskbarSnapshot(player),
+                    new QueryPlayerDataSnapshot(cachedPlayer),
+                    new AddFriendGameJoinSnapshot(player)
                 );
 
                 player.Connection.Send(joinPacket);
@@ -209,6 +237,15 @@ namespace Rhisis.WorldServer.Handlers
 
             player.MapLayer.AddPlayer(player);
             player.Spawned = true;
+
+            if (player.Messenger.Status != MessengerStatusType.Offline)
+            {
+                _messaging.Publish(new PlayerConnected
+                {
+                    Id = player.CharacterId,
+                    Status = player.Messenger.Status
+                });
+            }
         }
     }
 }

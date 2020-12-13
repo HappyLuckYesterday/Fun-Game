@@ -56,6 +56,11 @@ namespace Rhisis.Database.Entities.Configuration
                 .WithOne(x => x.Character)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasMany(x => x.Friends)
+                .WithOne(x => x.Character)
+                .HasForeignKey(x => x.CharacterId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.HasMany(x => x.ReceivedMails).WithOne(x => x.Receiver);
             builder.HasMany(x => x.SentMails).WithOne(x => x.Sender);
         }

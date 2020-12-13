@@ -113,6 +113,12 @@ namespace Rhisis.Core.Structures.Configuration.World
         public DeathConfiguration Death { get; set; } = new DeathConfiguration();
 
         /// <summary>
+        /// Gets or sets the messenger configuration settings.
+        /// </summary>
+        [DataMember(Name = "messenger")]
+        public MessengerConfiguration Messenger { get; set; } = new MessengerConfiguration();
+
+        /// <summary>
         /// Creates a new <see cref="WorldConfiguration"/> instance.
         /// </summary>
         public WorldConfiguration()

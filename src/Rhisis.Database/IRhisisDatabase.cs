@@ -77,6 +77,11 @@ namespace Rhisis.Database
         DbSet<DbSkillBuffAttribute> SkillBuffAttributes { get; }
 
         /// <summary>
+        /// Gets the friends.
+        /// </summary>
+        DbSet<DbFriend> Friends { get; }
+
+        /// <summary>
         /// Creates a Microsoft.EntityFrameworkCore.DbSet`1 that can be used to query and save instances of TEntity.
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>

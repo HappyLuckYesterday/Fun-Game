@@ -102,6 +102,11 @@ namespace Rhisis.Game.Abstractions.Entities
         ITaskbar Taskbar { get; }
 
         /// <summary>
+        /// Gets the player messenger.
+        /// </summary>
+        IMessenger Messenger { get; }
+
+        /// <summary>
         /// Gets or sets the current shop name the player is visiting.
         /// </summary>
         string CurrentNpcShopName { get; set; }

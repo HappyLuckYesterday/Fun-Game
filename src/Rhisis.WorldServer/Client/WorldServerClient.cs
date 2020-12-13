@@ -2,9 +2,13 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Helpers;
 using Rhisis.Game.Abstractions;
+using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions.Messaging;
 using Rhisis.Game.Abstractions.Protocol;
+using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
+using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Protocol.Packets;
 using Rhisis.Network;
 using Sylver.HandlerInvoker;
@@ -21,6 +25,8 @@ namespace Rhisis.WorldServer.Client
     {
         private ILogger<WorldServerClient> _logger;
         private IHandlerInvoker _handlerInvoker;
+        private IPlayerCache _playerCache;
+        private IMessaging _messaging;
 
         public uint SessionId { get; }
 
@@ -43,10 +49,12 @@ namespace Rhisis.WorldServer.Client
         /// <summary>
         /// Initialize the client and send welcome packet.
         /// </summary>
-        public void Initialize(ILogger<WorldServerClient> logger, IHandlerInvoker handlerInvoker)
+        public void Initialize(IServiceProvider serviceProvider)
         {
-            _logger = logger;
-            _handlerInvoker = handlerInvoker;
+            _logger = serviceProvider.GetRequiredService<ILogger<WorldServerClient>>();
+            _handlerInvoker = serviceProvider.GetRequiredService<IHandlerInvoker>();
+            _playerCache = serviceProvider.GetRequiredService<IPlayerCache>() ?? throw new InvalidOperationException($"Failed to get player cache.");
+            _messaging = serviceProvider.GetRequiredService<IMessaging>() ?? throw new InvalidOperationException($"Failed to get messaging system.");
 
             using var welcomePacket = new WelcomePacket(SessionId);
             Send(welcomePacket);
@@ -111,8 +119,26 @@ namespace Rhisis.WorldServer.Client
             {
                 if (Player != null)
                 {
+                    var cachePlayer = _playerCache.GetCachedPlayer(Player.CharacterId);
+
+                    if (cachePlayer != null)
+                    {
+                        cachePlayer.Level = Player.Level;
+                        cachePlayer.Job = Player.Job.Id;
+                        cachePlayer.MessengerStatus = MessengerStatusType.Offline;
+                        cachePlayer.IsOnline = false;
+                        cachePlayer.Version = 1;
+
+                        _playerCache.SetCachedPlayer(cachePlayer);
+                        _messaging.Publish(new PlayerDisconnected(Player.CharacterId));
+                    }
+
                     Player.Spawned = false;
-                    Player.MapLayer.RemovePlayer(Player);
+
+                    if (Player.MapLayer != null)
+                    {
+                        Player.MapLayer.RemovePlayer(Player);
+                    }
 
                     var initializers = Player.Systems.GetService<IEnumerable<IPlayerInitializer>>();
 

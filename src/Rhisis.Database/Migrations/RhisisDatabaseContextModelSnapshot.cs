@@ -707,6 +707,26 @@ namespace Rhisis.Database.Migrations
                     b.ToTable("Characters");
                 });
 
+            modelBuilder.Entity("Rhisis.Database.Entities.DbFriend", b =>
+                {
+                    b.Property<int>("CharacterId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FriendId")
+                        .HasColumnType("int");
+
+                    b.Property<ulong>("IsBlocked")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("BIT")
+                        .HasDefaultValue(0ul);
+
+                    b.HasKey("CharacterId");
+
+                    b.HasIndex("FriendId");
+
+                    b.ToTable("Friends");
+                });
+
             modelBuilder.Entity("Rhisis.Database.Entities.DbItem", b =>
                 {
                     b.Property<int>("Id")
@@ -1107,6 +1127,21 @@ namespace Rhisis.Database.Migrations
                     b.HasOne("Rhisis.Database.Entities.DbUser", "User")
                         .WithMany("Characters")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Rhisis.Database.Entities.DbFriend", b =>
+                {
+                    b.HasOne("Rhisis.Database.Entities.DbCharacter", "Character")
+                        .WithMany("Friends")
+                        .HasForeignKey("CharacterId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Rhisis.Database.Entities.DbCharacter", "Friend")
+                        .WithMany()
+                        .HasForeignKey("FriendId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
