@@ -23,30 +23,30 @@ namespace Rhisis.Game.Features
             Owner = owner;
         }
 
-        public bool Add(IBuff buff)
+        public BuffResultType Add(IBuff buff)
         {
             if (buff.HasExpired)
             {
-                return false;
+                return BuffResultType.None;
             }
 
             if (Contains(buff) && buff is IBuffSkill buffSkill)
             {
-                IBuffSkill existingBuff = _buffs.OfType<IBuffSkill>().FirstOrDefault(x => x.Id == buffSkill.Id);
+                IBuffSkill existingBuff = _buffs.OfType<IBuffSkill>().FirstOrDefault(x => x.SkillId == buffSkill.SkillId);
 
                 if (existingBuff is null)
                 {
-                    return false;
+                    return BuffResultType.None;
                 }
 
                 if (existingBuff.SkillLevel == buffSkill.SkillLevel)
                 {
                     existingBuff.RemainingTime = buffSkill.RemainingTime;
-                    return true;
+                    return BuffResultType.Updated;
                 }
                 else if (existingBuff.SkillLevel > buffSkill.SkillLevel)
                 {
-                    return true;
+                    return BuffResultType.None;
                 }
 
                 Remove(existingBuff);
@@ -54,8 +54,7 @@ namespace Rhisis.Game.Features
 
             _buffs.Add(buff);
             
-
-            return true;
+            return BuffResultType.Added;
         }
 
         public bool Remove(IBuff buff)
@@ -88,6 +87,11 @@ namespace Rhisis.Game.Features
             if (buff is null)
             {
                 return false;
+            }
+
+            if (buff is IBuffSkill buffSkill)
+            {
+                return _buffs.OfType<IBuffSkill>().Any(x => x.SkillId == buffSkill.SkillId);
             }
 
             return _buffs.Any(x => x.Id == buff.Id);
