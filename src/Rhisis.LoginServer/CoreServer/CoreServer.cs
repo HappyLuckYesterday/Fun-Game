@@ -5,6 +5,8 @@ using Rhisis.Game.Abstractions.Messaging;
 using Rhisis.Network.Core;
 using Rhisis.Network.Core.Servers;
 using Rhisis.Network.Protocol.Messages;
+using Sylver.Network.Common;
+using Sylver.Network.Data;
 using Sylver.Network.Server;
 using System;
 using System.Collections.Generic;
@@ -63,6 +65,14 @@ namespace Rhisis.LoginServer.CoreServer
         protected override void OnClientDisconnected(CoreServerClient connection)
         {
             _logger.LogTrace($"Server '{connection.ServerInfo.Name}' disconnected.");
+        }
+
+        /// <inheritdoc />
+        public void SendToClusters(INetPacketStream packet)
+        {
+            IEnumerable<INetUser> clusters = Clients.Where(x => x.ServerType == ServerType.Cluster);
+
+            SendTo(clusters, packet);
         }
     }
 }

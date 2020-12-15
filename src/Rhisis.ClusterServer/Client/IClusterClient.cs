@@ -10,6 +10,16 @@ namespace Rhisis.ClusterServer.Client
         uint SessionId { get; }
 
         /// <summary>
+        /// Gets or sets the user id.
+        /// </summary>
+        int UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client username.
+        /// </summary>
+        string Username { get; set; }
+
+        /// <summary>
         /// Gets or sets the Login protect value. 
         /// This value is random and valid only for this session in order to secure num pad disposition.
         /// </summary>

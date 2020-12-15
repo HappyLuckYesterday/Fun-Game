@@ -1,4 +1,5 @@
-﻿using Rhisis.Core.Structures.Configuration;
+﻿using Rhisis.ClusterServer.Client;
+using Rhisis.Core.Structures.Configuration;
 using Sylver.Network.Server;
 
 namespace Rhisis.ClusterServer
@@ -17,5 +18,12 @@ namespace Rhisis.ClusterServer
         /// Gets the cluster server's core configuration.
         /// </summary>
         CoreConfiguration CoreConfiguration { get; }
+
+        /// <summary>
+        /// Gets a cluster client by its user id.
+        /// </summary>
+        /// <param name="userId">Client user id.</param>
+        /// <returns></returns>
+        IClusterClient GetClientByUserId(int userId);
     }
 }

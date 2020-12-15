@@ -66,6 +66,9 @@ namespace Rhisis.ClusterServer.Handlers
                 return;
             }
 
+            client.UserId = dbUser.Id;
+            client.Username = dbUser.Username;
+
             IEnumerable<ClusterCharacter> characters = GetCharacters(dbUser.Id);
 
             _clusterPacketFactory.SendPlayerList(client, packet.AuthenticationKey, characters);

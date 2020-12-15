@@ -13,6 +13,7 @@ using Rhisis.Network;
 using Sylver.HandlerInvoker;
 using Sylver.Network.Server;
 using System;
+using System.Linq;
 
 namespace Rhisis.ClusterServer
 {
@@ -96,7 +97,12 @@ namespace Rhisis.ClusterServer
 
         protected override void OnClientDisconnected(ClusterClient client)
         {
-            _logger.LogInformation($"Client disconnected from {client.Socket.RemoteEndPoint}.");
+            _logger.LogInformation($"Client disconnected from {client.Socket?.RemoteEndPoint.ToString() ?? "unknown location"}.");
+        }
+
+        public IClusterClient GetClientByUserId(int userId)
+        {
+            return Clients.FirstOrDefault(x => x.UserId == userId);
         }
     }
 }

@@ -2,10 +2,10 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Network.Core;
 using Rhisis.Network.Core.Servers;
+using Sylver.HandlerInvoker;
 using Sylver.Network.Data;
 using Sylver.Network.Server;
 using System;
-using System.Linq;
 using System.Net.Sockets;
 
 namespace Rhisis.LoginServer.CoreServer
@@ -14,11 +14,11 @@ namespace Rhisis.LoginServer.CoreServer
     {
         private IServiceProvider _serviceProvider;
         private ILogger<CoreServerClient> _logger;
-        private ICoreServer _coreServer;
+        private IHandlerInvoker _handlerInvoker;
 
         public ServerType ServerType => ServerInfo?.ServerType ?? ServerType.Unknown;
 
-        public ServerDescriptor ServerInfo { get; private set; }
+        public ServerDescriptor ServerInfo { get; internal set; }
 
         public CoreServerClient(Socket socketConnection)
             : base(socketConnection)
@@ -31,30 +31,7 @@ namespace Rhisis.LoginServer.CoreServer
             {
                 var packetHeader = (CorePacketType)packet.ReadByte();
 
-                if (packetHeader == CorePacketType.Authenticate)
-                {
-                    var corePassword = packet.ReadString();
-
-                    if (!_coreServer.Configuration.Password.ToLowerInvariant().Equals(corePassword.ToLowerInvariant()))
-                    {
-                        SendAuthenticationResult(CoreAuthenticationResultType.FailedWrongPassword);
-                        return;
-                    }
-
-                    var serverType = (ServerType)packet.ReadByte();
-
-                    ServerInfo = serverType switch
-                    {
-                        ServerType.Cluster => ReadClusterInformation(packet),
-                        ServerType.World => ReadWorldInformation(packet),
-                        _ => throw new NotImplementedException()
-                    };
-
-                    if (ServerInfo != null)
-                    {
-                        SendAuthenticationResult(CoreAuthenticationResultType.Success);
-                    }
-                }
+                _handlerInvoker.Invoke(packetHeader, this, packet);
             }
             catch (Exception e)
             {
@@ -66,78 +43,11 @@ namespace Rhisis.LoginServer.CoreServer
         {
             _serviceProvider = serviceProvider;
             _logger = _serviceProvider.GetService<ILogger<CoreServerClient>>();
-            _coreServer = _serviceProvider.GetService<ICoreServer>();
+            _handlerInvoker = _serviceProvider.GetRequiredService<IHandlerInvoker>();
 
             using var packet = new NetPacket();
             packet.WriteByte((byte)CorePacketType.Welcome);
             Send(packet);
-        }
-
-        private void SendAuthenticationResult(CoreAuthenticationResultType result)
-        {
-            using var packet = new NetPacket();
-
-            packet.WriteByte((byte)CorePacketType.AuthenticationResult);
-            packet.WriteByte((byte)result);
-
-            Send(packet);
-        }
-
-        private ServerDescriptor ReadClusterInformation(INetPacketStream packet)
-        {
-            var serverId = packet.ReadByte();
-
-            if (_coreServer.Clusters.Any(x => x.Id == serverId))
-            {
-                SendAuthenticationResult(CoreAuthenticationResultType.FailedClusterExists);
-
-                throw new InvalidOperationException($"Cluster with id '{serverId}' already exists.");
-            }
-
-            var name = packet.ReadString();
-            var host = packet.ReadString();
-            var port = packet.ReadUInt16();
-
-            return new Cluster
-            {
-                Id = serverId,
-                Name = name,
-                Host = host,
-                Port = port
-            };
-        }
-
-        private ServerDescriptor ReadWorldInformation(INetPacketStream packet)
-        {
-            var serverId = packet.ReadByte();
-            var clusterServerId = packet.ReadByte();
-
-            Cluster cluster = _coreServer.Clusters.FirstOrDefault(x => x.Id == clusterServerId);
-
-            if (cluster is null)
-            {
-                SendAuthenticationResult(CoreAuthenticationResultType.FailedUnknownServer);
-                throw new InvalidOperationException($"Cannot find cluster with id '{clusterServerId}'.");
-            }
-
-            if (cluster.Channels.Any(x => x.Id == serverId))
-            {
-                SendAuthenticationResult(CoreAuthenticationResultType.FailedWorldExists);
-                throw new InvalidOperationException($"World channel with id '{serverId}' already exists.");
-            }
-
-            var name = packet.ReadString();
-            var host = packet.ReadString();
-            var port = packet.ReadUInt16();
-
-            return new WorldChannel
-            {
-                Id = serverId,
-                ClusterId = clusterServerId,
-                Name = name,
-                Host = host,
-                Port = port
-            };
         }
     }
 }

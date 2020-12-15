@@ -10,6 +10,11 @@ namespace Rhisis.LoginServer.Client
         uint SessionId { get; }
 
         /// <summary>
+        /// Gets the client's logged user id.
+        /// </summary>
+        int UserId { get; }
+
+        /// <summary>
         /// Gets the client's logged username.
         /// </summary>
         string Username { get; }
@@ -25,9 +30,10 @@ namespace Rhisis.LoginServer.Client
         void Disconnect();
 
         /// <summary>
-        /// Sets the client's username.
+        /// Sets the client's username and id.
         /// </summary>
         /// <param name="username"></param>
-        void SetClientUsername(string username);
+        /// <param name="userId"></param>
+        void SetClientUsername(string username, int userId);
     }
 }

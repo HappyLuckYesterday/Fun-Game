@@ -20,6 +20,12 @@ namespace Rhisis.ClusterServer.Client
         public uint SessionId { get; }
 
         /// <inheritdoc />
+        public int UserId { get; set; }
+
+        /// <inheritdoc />
+        public string Username { get; set; }
+
+        /// <inheritdoc />
         public int LoginProtectValue { get; set; }
 
         /// <summary>

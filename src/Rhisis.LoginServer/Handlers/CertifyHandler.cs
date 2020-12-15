@@ -94,7 +94,7 @@ namespace Rhisis.LoginServer.Handlers
                     IEnumerable<Cluster> clusters = _coreServer.Clusters.OrderBy(x => x.Id);
 
                     _loginPacketFactory.SendServerList(client, certifyPacket.Username, clusters);
-                    client.SetClientUsername(certifyPacket.Username);
+                    client.SetClientUsername(certifyPacket.Username, user.Id);
                     _logger.LogInformation($"User '{client.Username}' logged succesfully from {client.Socket.RemoteEndPoint}.");
                     break;
                 default:
