@@ -1,7 +1,10 @@
 ﻿using Rhisis.LoginServer.Client;
+using Rhisis.LoginServer.CoreServer;
 using Rhisis.Network;
+using Rhisis.Network.Core;
 using Rhisis.Network.Packets.Login;
 using Sylver.HandlerInvoker.Attributes;
+using Sylver.Network.Data;
 using System;
 
 namespace Rhisis.LoginServer.Handlers
@@ -10,10 +13,12 @@ namespace Rhisis.LoginServer.Handlers
     public class CloseExistingConnectionHandler
     {
         private readonly ILoginServer _loginServer;
+        private readonly ICoreServer _coreServer;
 
-        public CloseExistingConnectionHandler(ILoginServer loginServer)
+        public CloseExistingConnectionHandler(ILoginServer loginServer, ICoreServer coreServer)
         {
             _loginServer = loginServer;
+            _coreServer = coreServer;
         }
 
         /// <summary>
@@ -31,7 +36,11 @@ namespace Rhisis.LoginServer.Handlers
                 throw new InvalidOperationException($"Cannot find user with username '{closeConnectionPacket.Username}'.");
             }
 
-            // TODO: disconnect client from server and ISC.
+            using var packet = new NetPacket();
+            packet.Write((byte)CorePacketType.DisconnectUserFromCluster);
+            packet.WriteInt32(otherConnectedClient.UserId);
+
+            _coreServer.SendToClusters(packet);
         }
     }
 }

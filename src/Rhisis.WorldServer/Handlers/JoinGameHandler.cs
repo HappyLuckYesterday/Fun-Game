@@ -80,11 +80,13 @@ namespace Rhisis.WorldServer.Handlers
         [HandlerAction(PacketType.JOIN)]
         public void OnJoin(IPlayer player, JoinPacket packet)
         {
-            DbCharacter character = _database.Characters.Include(x => x.User).FirstOrDefault(x => x.Id == packet.PlayerId);
+            DbCharacter character = _database.Characters
+                .Include(x => x.User)
+                .FirstOrDefault(x => x.Id == packet.PlayerId);
 
-            if (character == null)
+            if (character is null)
             {
-                throw new ArgumentNullException($"Cannot find character with id: {packet.PlayerId}.");
+                throw new InvalidOperationException($"Cannot find character with id: {packet.PlayerId}.");
             }
 
             if (character.IsDeleted)
@@ -185,7 +187,7 @@ namespace Rhisis.WorldServer.Handlers
 
                     IMapRevivalRegion revivalRegion = realPlayer.Map.GetNearRevivalRegion(realPlayer.Position);
 
-                    if (revivalRegion == null)
+                    if (revivalRegion is null)
                     {
                         throw new InvalidOperationException("Cannot find nearest revival region.");
                     }
@@ -194,7 +196,7 @@ namespace Rhisis.WorldServer.Handlers
                     {
                         IMap revivalMap = _mapManager.GetMap(revivalRegion.MapId);
 
-                        if (revivalMap == null)
+                        if (revivalMap is null)
                         {
                             throw new InvalidOperationException($"Failed to find map with id: {revivalMap.Id}'.");
                         }

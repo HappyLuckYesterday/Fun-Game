@@ -20,6 +20,9 @@ namespace Rhisis.LoginServer.Client
         public uint SessionId { get; }
 
         /// <inheritdoc />
+        public int UserId { get; private set; }
+
+        /// <inheritdoc />
         public string Username { get; private set; }
 
         /// <inheritdoc />
@@ -58,12 +61,13 @@ namespace Rhisis.LoginServer.Client
         }
 
         /// <inheritdoc />
-        public void SetClientUsername(string username)
+        public void SetClientUsername(string username, int userId)
         {
             if (!string.IsNullOrEmpty(Username))
                 throw new InvalidOperationException("Client username already set.");
 
             Username = username;
+            UserId = userId;
         }
 
         /// <inheritdoc />
