@@ -1,4 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
+using Rhisis.Game.Common;
 using System.Collections.Generic;
 
 namespace Rhisis.Game.Abstractions.Features
@@ -12,8 +13,8 @@ namespace Rhisis.Game.Abstractions.Features
         /// Adds a buff.
         /// </summary>
         /// <param name="buff">Buff to add.</param>
-        /// <returns>True if the buff has been added and applied; false otherwise.</returns>
-        bool Add(IBuff buff);
+        /// <returns>The buff result type.</returns>
+        BuffResultType Add(IBuff buff);
 
         /// <summary>
         /// Removes a buff.

@@ -6,7 +6,6 @@ using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
-using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Protocol.Snapshots.Skills;
 using Rhisis.Network;
 using Rhisis.Network.Snapshots;
@@ -111,16 +110,16 @@ namespace Rhisis.Game.Systems
                 }
             }
 
-            //if (skill.Data.Type == SkillType.Magic)
-            //{
-            //    BuffSkill buffSkill = target.Buffs.OfType<BuffSkill>().FirstOrDefault(x => x.SkillId == skill.SkillId);
+            if (skill.Data.Type == SkillType.Magic)
+            {
+                BuffSkill buffSkill = target.Buffs.OfType<BuffSkill>().FirstOrDefault(x => x.SkillId == skill.Id);
 
-            //    if (buffSkill != null && buffSkill.SkillLevel > skill.Level)
-            //    {
-            //        _textPacketFactory.SendDefinedText(player, DefineText.TID_GAME_DONOTUSEBUFF);
-            //        return false;
-            //    }
-            //}
+                if (buffSkill != null && buffSkill.SkillLevel > skill.Level)
+                {
+                    SendDefinedText(player, DefineText.TID_GAME_DONOTUSEBUFF);
+                    return false;
+                }
+            }
 
             if (skill.Data.Handed.HasValue)
             {
@@ -189,7 +188,6 @@ namespace Rhisis.Game.Systems
             }
             else
             {
-
                 using var snapshot = new UseSkillSnapshot(caster, target, skill, skillCastingTime, skillUseType);
                 SendPacketToVisible(caster, snapshot, sendToPlayer: true);
 
@@ -363,12 +361,15 @@ namespace Rhisis.Game.Systems
                     {
                         RemainingTime = buffTime
                     };
-                    bool buffAdded = target.Buffs.Add(buff);
+                    var buffState = target.Buffs.Add(buff);
 
-                    if (buffAdded)
+                    if (buffState != BuffResultType.None)
                     {
-                        ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
-                        ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam2, skill.LevelData.DestParam2Value);
+                        if (buffState == BuffResultType.Added)
+                        {
+                            ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
+                            ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam2, skill.LevelData.DestParam2Value);
+                        }
 
                         using var skillStateSnapshot = new SetSkillStateSnapshot(target, skill, buff.RemainingTime);
                         SendPacketToVisible(target, skillStateSnapshot, sendToPlayer: true);

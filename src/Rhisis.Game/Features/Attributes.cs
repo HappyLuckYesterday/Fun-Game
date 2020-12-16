@@ -118,7 +118,7 @@ namespace Rhisis.Game.Features
         {
             if (_mover is IPlayer player)
             {
-                using var updateAttributeSnapshot = new UpdateParamPointSnapshot(player, attribute, value);
+                using var updateAttributeSnapshot = new UpdateDestParamSnapshot(player, attribute, value);
 
                 player.Connection.Send(updateAttributeSnapshot);
             }
