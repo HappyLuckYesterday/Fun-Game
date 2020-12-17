@@ -63,6 +63,8 @@ namespace Rhisis.Game.Features.Chat.Commands
                 player.ChangeJob(job.Id);
             }
 
+            player.UpdateCache();
+
             using var snapshot = new SetExperienceSnapshot(player);
             player.Send(snapshot);
             player.SendToVisible(snapshot);

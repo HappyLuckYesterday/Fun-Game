@@ -131,5 +131,10 @@ namespace Rhisis.Game.Abstractions.Entities
         /// </summary>
         /// <param name="newJob">New job.</param>
         void ChangeJob(DefineJob.Job newJob);
+
+        /// <summary>
+        /// Updates the player cache information.
+        /// </summary>
+        void UpdateCache();
     }
 }

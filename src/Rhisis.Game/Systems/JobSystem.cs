@@ -55,6 +55,7 @@ namespace Rhisis.Game.Systems
                 new CreateSfxObjectSnapshot(player, DefineSpecialEffects.XI_GEN_LEVEL_UP01));
 
             SendPacketToVisible(player, snapshots, sendToPlayer: true);
+            player.UpdateCache();
         }
 
         public int GetJobMinLevel(DefineJob.Job job)
