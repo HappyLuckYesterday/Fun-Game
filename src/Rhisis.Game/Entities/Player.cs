@@ -2,14 +2,17 @@
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Behavior;
+using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Abstractions.Map;
+using Rhisis.Game.Abstractions.Messaging;
 using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
+using Rhisis.Game.Protocol.Messages;
 using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;
@@ -24,6 +27,8 @@ namespace Rhisis.Game.Entities
         private readonly Lazy<IFollowSystem> _followSystem;
         private readonly Lazy<ITeleportSystem> _teleportSystem;
         private readonly Lazy<IJobSystem> _jobSystem;
+        private readonly Lazy<IPlayerCache> _playerCache;
+        private readonly Lazy<IMessaging> _messaging;
 
         public IGameConnection Connection { get; set; }
 
@@ -140,6 +145,8 @@ namespace Rhisis.Game.Entities
             _followSystem = new Lazy<IFollowSystem>(() => Systems.GetService<IFollowSystem>());
             _teleportSystem = new Lazy<ITeleportSystem>(() => Systems.GetService<ITeleportSystem>());
             _jobSystem = new Lazy<IJobSystem>(() => Systems.GetService<IJobSystem>());
+            _playerCache = new Lazy<IPlayerCache>(() => Systems.GetService<IPlayerCache>());
+            _messaging = new Lazy<IMessaging>(() => Systems.GetService<IMessaging>());
         }
 
         public void Follow(IWorldObject worldObject) => _followSystem.Value.Follow(this, worldObject);
@@ -151,6 +158,37 @@ namespace Rhisis.Game.Entities
         public void Teleport(Vector3 position, int mapId, bool sendToPlayer = true) => _teleportSystem.Value.Teleport(this, position, mapId, sendToPlayer);
 
         public void ChangeJob(DefineJob.Job newJob) => _jobSystem.Value.ChangeJob(this, newJob);
+
+        public void UpdateCache()
+        {
+            CachedPlayer player = _playerCache.Value.GetCachedPlayer(CharacterId);
+
+            if (player is null)
+            {
+                throw new InvalidOperationException($"Failed to retrieve cached player information.");
+            }
+
+            bool cacheUpdated = false;
+
+            if (player.Level != Level)
+            {
+                player.Level = Level;
+                cacheUpdated = true;
+            }
+
+            if (player.Job != Job.Id)
+            {
+                player.Job = Job.Id;
+                cacheUpdated = true;
+            }
+
+            if (cacheUpdated)
+            {
+                player.Version++;
+                _playerCache.Value.SetCachedPlayer(player);
+                _messaging.Value.Publish(new PlayerCacheUpdate(CharacterId));
+            }
+        }
 
         public bool Equals(IWorldObject other) => Id == other.Id;
 

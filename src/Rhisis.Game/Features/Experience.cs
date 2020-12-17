@@ -49,6 +49,7 @@ namespace Rhisis.Game.Features
 
             if (hasLevelUp)
             {
+                _player.UpdateCache();
                 _player.Health.RegenerateAll();
                 SendLevelUpPackets();
             }
