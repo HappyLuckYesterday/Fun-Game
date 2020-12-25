@@ -53,6 +53,11 @@ namespace Rhisis.Game.Features
             }
 
             _buffs.Add(buff);
+
+            foreach (KeyValuePair<DefineAttributes, int> attribute in buff.Attributes)
+            {
+                Owner.Attributes.Increase(attribute.Key, attribute.Value);
+            }
             
             return BuffResultType.Added;
         }

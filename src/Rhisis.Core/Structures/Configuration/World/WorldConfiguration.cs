@@ -119,6 +119,12 @@ namespace Rhisis.Core.Structures.Configuration.World
         public MessengerConfiguration Messenger { get; set; } = new MessengerConfiguration();
 
         /// <summary>
+        /// Gets or sets the NPC buff configuration settings.
+        /// </summary>
+        [DataMember(Name = "npcBuff")]
+        public NpcBuffConfigurationSection NpcBuff { get; set; } = new NpcBuffConfigurationSection();
+
+        /// <summary>
         /// Creates a new <see cref="WorldConfiguration"/> instance.
         /// </summary>
         public WorldConfiguration()

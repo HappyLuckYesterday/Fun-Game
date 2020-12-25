@@ -25,5 +25,12 @@ namespace Rhisis.Game.Abstractions.Systems
         /// <param name="skill">Skill to use.</param>
         /// <returns>True if the player can use the skill; false otherwise.</returns>
         bool CanUseSkill(IPlayer player, IMover target, ISkill skill);
+
+        /// <summary>
+        /// Applies a buff to the given target.
+        /// </summary>
+        /// <param name="target">Target to apply the buff.</param>
+        /// <param name="buff">Buff to apply.</param>
+        void ApplyBuff(IMover target, IBuff buff);
     }
 }

@@ -144,6 +144,17 @@ namespace Rhisis.Game.Systems
             return true;
         }
 
+        public void ApplyBuff(IMover target, IBuff buff)
+        {
+            var buffState = target.Buffs.Add(buff);
+
+            if (buffState != BuffResultType.None && buff is IBuffSkill buffSkill)
+            {
+                using var skillStateSnapshot = new SetSkillStateSnapshot(target, buffSkill.SkillId, buffSkill.SkillLevel, buff.RemainingTime);
+                SendPacketToVisible(target, skillStateSnapshot, sendToPlayer: true);
+            }
+        }
+
         /// <summary>
         /// Casts a melee skill on a target.
         /// </summary>
@@ -318,7 +329,7 @@ namespace Rhisis.Game.Systems
                         caster.Delayer.DelayActionMilliseconds(castingTime, () =>
                         {
                             _logger.LogTrace($"{target} healed by {caster} !");
-                            ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
+                            ApplyHealSkill(caster, target, skill);
                         });
                     }
                 }
@@ -329,7 +340,7 @@ namespace Rhisis.Game.Systems
                 {
                     caster.Delayer.DelayActionMilliseconds(castingTime, () =>
                     {
-                        ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
+                        ApplyHealSkill(caster, target, skill);
                     });
                 }
             }
@@ -361,19 +372,8 @@ namespace Rhisis.Game.Systems
                     {
                         RemainingTime = buffTime
                     };
-                    var buffState = target.Buffs.Add(buff);
 
-                    if (buffState != BuffResultType.None)
-                    {
-                        if (buffState == BuffResultType.Added)
-                        {
-                            ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam1, skill.LevelData.DestParam1Value);
-                            ApplySkillParameters(caster, target, skill, skill.LevelData.DestParam2, skill.LevelData.DestParam2Value);
-                        }
-
-                        using var skillStateSnapshot = new SetSkillStateSnapshot(target, skill, buff.RemainingTime);
-                        SendPacketToVisible(target, skillStateSnapshot, sendToPlayer: true);
-                    }
+                    ApplyBuff(target, buff);
                 });
             }
 
@@ -400,33 +400,23 @@ namespace Rhisis.Game.Systems
             return (int)(value / 10f * attributeValue + skillLevel * (attributeValue / 50f));
         }
 
-        private void ApplySkillParameters(IMover caster, IMover target, ISkill skill, DefineAttributes attribute, int value)
+        private void ApplyHealSkill(IMover caster, IMover target, ISkill skill)
         {
-            switch (attribute)
+            if (skill.Data.ReferTarget1 == SkillReferTargetType.Heal || skill.Data.ReferTarget2 == SkillReferTargetType.Heal)
             {
-                case DefineAttributes.HP:
-                    if (skill.Data.ReferTarget1 == SkillReferTargetType.Heal || skill.Data.ReferTarget2 == SkillReferTargetType.Heal)
-                    {
-                        var hpValues = new int[]
-                        {
-                            skill.Data.ReferTarget1 == SkillReferTargetType.Heal ? GetReferBonus(caster, skill.Data.ReferStat1, skill.Data.ReferValue1, skill.Level) : 0,
-                            skill.Data.ReferTarget2 == SkillReferTargetType.Heal ? GetReferBonus(caster, skill.Data.ReferStat2, skill.Data.ReferValue2, skill.Level) : 0
-                        };
+                var hpValues = new int[]
+                {
+                    skill.Data.ReferTarget1 == SkillReferTargetType.Heal ? GetReferBonus(caster, skill.Data.ReferStat1, skill.Data.ReferValue1, skill.Level) : 0,
+                    skill.Data.ReferTarget2 == SkillReferTargetType.Heal ? GetReferBonus(caster, skill.Data.ReferStat2, skill.Data.ReferValue2, skill.Level) : 0
+                };
 
-                        var recoveredHp = skill.LevelData.DestParam1Value + hpValues.Sum();
+                var recoveredHp = skill.LevelData.DestParam1Value + hpValues.Sum();
 
-                        if (recoveredHp > 0)
-                        {
-                            target.Health.Hp += recoveredHp;
-                        }
-                    }
-                    break;
-                default:
-                    target.Attributes.Increase(attribute, value);
-                    break;
+                if (recoveredHp > 0)
+                {
+                    target.Health.Hp += recoveredHp;
+                }
             }
         }
-
-
     }
 }
