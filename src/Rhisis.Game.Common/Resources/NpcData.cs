@@ -61,6 +61,11 @@ namespace Rhisis.Game.Common.Resources
         public bool HasDialog => Dialog != null;
 
         /// <summary>
+        /// Gets or sets a value that indicates if the NPC can buff.
+        /// </summary>
+        public bool CanBuff { get; set; }
+
+        /// <summary>
         /// Creates a new <see cref="NpcData"/> instance.
         /// </summary>
         /// <param name="id">Npc id</param>

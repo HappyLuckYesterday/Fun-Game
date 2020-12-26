@@ -57,14 +57,19 @@ namespace Rhisis.Game.Resources.Loaders
 
                         var npcId = npcStatement.Name;
                         var npcName = npcId;
+                        var canBuff = false;
 
                         foreach (IStatement npcInfoStatement in npcBlock.Statements)
                         {
-                            if (npcInfoStatement is Instruction instruction && npcInfoStatement.Name == "SetName")
+                            if (npcInfoStatement is Instruction instruction)
                             {
-                                if (instruction.Parameters.Count > 0)
+                                if (npcInfoStatement.Name == "SetName" && instruction.Parameters.Count > 0)
                                 {
                                     npcName = _texts[instruction.Parameters.First().ToString()];
+                                }
+                                if (npcInfoStatement.Name == "AddMenu")
+                                {
+                                    canBuff = instruction.Parameters.FirstOrDefault() == "MMI_NPC_BUFF";
                                 }
                             }
                         }
@@ -79,7 +84,10 @@ namespace Rhisis.Game.Resources.Loaders
                             dialogSet.TryGetValue(npcId, out dialogData);
                         }
 
-                        var npc = new NpcData(npcId, npcName, shop, dialogData);
+                        var npc = new NpcData(npcId, npcName, shop, dialogData)
+                        {
+                            CanBuff = canBuff
+                        };
 
                         if (npcData.ContainsKey(npc.Id))
                         {

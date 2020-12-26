@@ -11,22 +11,24 @@ namespace Rhisis.Game
     [DebuggerDisplay("Buff '{SkillName}' Lv.{SkillLevel}")]
     public class BuffSkill : Buff, IBuffSkill
     {
-        private readonly SkillData _skillData;
-
         public override BuffType Type => BuffType.Skill;
 
         public int? DatabaseId { get; }
 
-        public int SkillId => _skillData.Id;
+        public int SkillId => SkillData.Id;
 
-        public string SkillName => _skillData.Name;
+        public string SkillName => SkillData.Name;
 
         public int SkillLevel { get; }
+
+        public SkillData SkillData { get; }
+
+        public SkillLevelData SkillLevelData => SkillData.SkillLevels[SkillLevel];
 
         public BuffSkill(IMover owner, IDictionary<DefineAttributes, int> attributes, SkillData skillData, int skillLevel, int? databaseId = null) 
             : base(owner, attributes)
         {
-            _skillData = skillData;
+            SkillData = skillData;
             SkillLevel = skillLevel;
             DatabaseId = databaseId;
         }

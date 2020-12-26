@@ -37,6 +37,83 @@
     },
     "messenger": {
       "maximumFriends": 200
+    },
+    "npcBuff": {
+      "default": {
+        "min": 1,
+        "max": 20,
+        "buffs": [
+          {
+            "skillId": "SI_ASS_HEAL_PATIENCE",
+            "level": 7,
+            "time": 3600
+          },
+          {
+            "skillId": "SI_ASS_CHEER_HEAPUP",
+            "level": 7,
+            "time": 3600
+          }
+        ]
+      },
+      "additionnal": [
+        {
+          "name": "MaFl_Helper_ver12",
+          "min": 1,
+          "max": 60,
+          "buffs": [
+            {
+              "skillId": "SI_ASS_HEAL_PATIENCE",
+              "level": 7,
+              "time": 3600
+            },
+            {
+              "skillId": "SI_ASS_CHEER_QUICKSTEP",
+              "level": 7,
+              "time": 3600
+            },
+            {
+              "skillId": "SI_ASS_CHEER_HASTE",
+              "level": 7,
+              "time": 3600
+            },
+            {
+              "skillId": "SI_ASS_CHEER_CATSREFLEX",
+              "level": 7,
+              "time": 3600
+            },
+            {
+              "skillId": "SI_ASS_CHEER_CANNONBALL",
+              "level": 7,
+              "time": 3600
+            },
+            {
+              "skillId": "SI_ASS_CHEER_MENTALSIGN",
+              "level": 7,
+              "time": 3600
+            },
+            {
+              "skillId": "SI_ASS_CHEER_HEAPUP",
+              "level": 7,
+              "time": 3600
+            },
+            {
+              "skillId": "SI_ASS_CHEER_BEEFUP",
+              "level": 7,
+              "time": 3600
+            },
+            {
+              "skillId": "SI_ASS_CHEER_ACCURACY",
+              "level": 7,
+              "time": 3600
+            },
+            {
+              "skillId": "SI_RIN_SUP_PROTECT",
+              "level": 3,
+              "time": 360
+            }
+          ]
+        }
+      ]
     }
   },
   "coreServer": {

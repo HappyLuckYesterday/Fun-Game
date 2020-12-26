@@ -47,6 +47,11 @@ namespace Rhisis.Game.Abstractions.Entities
         bool HasDialog => Dialog != null;
 
         /// <summary>
+        /// Gets a value that indicates if the NPC can buff.
+        /// </summary>
+        bool CanBuff => Data?.CanBuff ?? false;
+
+        /// <summary>
         /// Gets the NPC quests.
         /// </summary>
         IEnumerable<IQuestScript> Quests { get; }

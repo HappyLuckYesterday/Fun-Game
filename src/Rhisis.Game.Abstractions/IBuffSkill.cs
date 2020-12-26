@@ -1,4 +1,6 @@
-﻿namespace Rhisis.Game.Abstractions
+﻿using Rhisis.Game.Common.Resources;
+
+namespace Rhisis.Game.Abstractions
 {
     public interface IBuffSkill : IBuff
     {
@@ -21,5 +23,15 @@
         /// Gets the buff skill level.
         /// </summary>
         int SkillLevel { get; }
+
+        /// <summary>
+        /// Gets the buff skill data.
+        /// </summary>
+        SkillData SkillData { get; }
+
+        /// <summary>
+        /// Gets the buff skill level data.
+        /// </summary>
+        SkillLevelData SkillLevelData { get; }
     }
 }
