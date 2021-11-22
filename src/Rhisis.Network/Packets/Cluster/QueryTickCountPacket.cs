@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.Cluster
 {
@@ -7,7 +7,7 @@ namespace Rhisis.Network.Packets.Cluster
     {
         public uint Time { get; private set; }
 
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             Time = packet.Read<uint>();
         }

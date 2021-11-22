@@ -1,4 +1,4 @@
-﻿using Rhisis.LoginServer.Client;
+﻿using Rhisis.LoginServer.Abstractions;
 using Rhisis.LoginServer.Packets;
 using Rhisis.Network;
 using Rhisis.Network.Packets;

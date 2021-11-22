@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 using System;
 
 namespace Rhisis.Network.Packets
@@ -20,7 +20,7 @@ namespace Rhisis.Network.Packets
         public virtual bool IsTimeOut { get; private set; }
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             try
             {

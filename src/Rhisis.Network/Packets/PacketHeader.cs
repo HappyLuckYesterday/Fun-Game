@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets
 {
@@ -14,7 +14,7 @@ namespace Rhisis.Network.Packets
         public int HashData { get; private set; }
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             Header = packet.Read<byte>();
             HashLength = packet.Read<int>();

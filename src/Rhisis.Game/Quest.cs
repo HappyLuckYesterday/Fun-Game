@@ -1,6 +1,6 @@
 ﻿using Rhisis.Game.Abstractions;
 using Rhisis.Game.Common.Resources.Quests;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +45,7 @@ namespace Rhisis.Game
             DatabaseQuestId = questDatabaseId;
         }
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(ILitePacketStream packet)
         {
             packet.Write<short>((short)State); // state
             packet.Write<short>(0); // time limit

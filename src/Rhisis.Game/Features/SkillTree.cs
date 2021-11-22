@@ -6,7 +6,7 @@ using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Protocol.Snapshots.Skills;
 using Rhisis.Network.Snapshots;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -90,7 +90,7 @@ namespace Rhisis.Game.Features
             SkillPoints = 0;
         }
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(ILitePacketStream packet)
         {
             var skillCount = _skills.Count();
             var otherSkillCount = (int)DefineJob.JobMax.MAX_SKILLS - skillCount;

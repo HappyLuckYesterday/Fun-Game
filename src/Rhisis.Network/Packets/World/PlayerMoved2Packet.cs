@@ -1,4 +1,4 @@
-﻿using Sylver.Network.Data;
+﻿using LiteNetwork.Protocol.Abstractions;
 using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Protocol;
 
@@ -72,7 +72,7 @@ namespace Rhisis.Network.Packets.World
         public long TickCount { get; private set; }
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             BeginPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
             DestinationPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());

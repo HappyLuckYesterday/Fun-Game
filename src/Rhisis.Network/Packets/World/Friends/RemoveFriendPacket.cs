@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.World.Friends
 {
@@ -19,7 +19,7 @@ namespace Rhisis.Network.Packets.World.Friends
         public int FriendId { get; private set; }
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             CurrentPlayerId = packet.ReadInt32();
             FriendId = packet.ReadInt32();

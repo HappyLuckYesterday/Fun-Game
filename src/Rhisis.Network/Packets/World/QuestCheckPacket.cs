@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.World
 {
@@ -16,7 +16,7 @@ namespace Rhisis.Network.Packets.World
         public bool Checked { get; private set; }
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             QuestId = packet.Read<int>();
             Checked = packet.Read<bool>();

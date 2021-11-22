@@ -1,6 +1,6 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.World.GuildCombat
 {
@@ -17,7 +17,7 @@ namespace Rhisis.Network.Packets.World.GuildCombat
         public uint? Penya { get; private set; }
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             GuildCombatType = (GuildCombatType)packet.Read<int>();
             Penya = GuildCombatType == GuildCombatType.GC_IN_APP ? (uint?)packet.Read<uint>() : null;

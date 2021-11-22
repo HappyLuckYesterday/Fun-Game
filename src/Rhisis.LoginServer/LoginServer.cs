@@ -1,48 +1,30 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Rhisis.Core.Structures.Configuration;
-using Rhisis.Database;
-using Rhisis.LoginServer.Client;
-using Rhisis.LoginServer.Packets;
-using Rhisis.Network;
-using Sylver.HandlerInvoker;
-using Sylver.Network.Server;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.LoginServer.Abstractions;
 using System;
 using System.Linq;
 
 namespace Rhisis.LoginServer
 {
-    public sealed class LoginServer : NetServer<LoginClient>, ILoginServer
+    public sealed class LoginServer : LiteServer<LoginClient>, ILoginServer
     {
-        private const int ClientBufferSize = 128;
-        private const int ClientBacklog = 50;
         private readonly ILogger<LoginServer> _logger;
-        private readonly LoginConfiguration _loginConfiguration;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IRhisisDatabase _database;
 
         /// <summary>
         /// Creates a new <see cref="LoginServer"/> instance.
         /// </summary>
+        /// <param name="serverOptions">Server options.</param>
         /// <param name="logger">Logger</param>
-        /// <param name="loginConfiguration">Login server configuration.</param>
-        /// <param name="serviceProvider">Service provider.</param>
-        public LoginServer(ILogger<LoginServer> logger, IOptions<LoginConfiguration> loginConfiguration, 
-            IServiceProvider serviceProvider, IRhisisDatabase database)
+        /// <param name="database"></param>
+        public LoginServer(LiteServerOptions serverOptions, ILogger<LoginServer> logger, IRhisisDatabase database)
+            : base(serverOptions)
         {
             _logger = logger;
-            _loginConfiguration = loginConfiguration.Value;
-            _serviceProvider = serviceProvider;
             _database = database;
-            PacketProcessor = new FlyffPacketProcessor();
-            ServerConfiguration = new NetServerConfiguration("0.0.0.0", 
-                _loginConfiguration.Port, 
-                ClientBacklog, 
-                ClientBufferSize);
         }
 
-        /// <inheritdoc />
         protected override void OnBeforeStart()
         {
             if (!_database.IsAlive())
@@ -51,40 +33,14 @@ namespace Rhisis.LoginServer
             }
         }
 
-        /// <inheritdoc />
         protected override void OnAfterStart()
         {
-            //TODO: Implement this log inside OnStarted method when will be available.
-            _logger.LogInformation($"{nameof(LoginServer)} is started and listen on {ServerConfiguration.Host}:{ServerConfiguration.Port}.");
+            _logger.LogInformation($"{nameof(LoginServer)} is started and listen on {Options.Host}:{Options.Port}.");
         }
 
-        /// <inheritdoc />
-        protected override void OnClientConnected(LoginClient client)
-        {
-            _logger.LogInformation($"New client connected to {nameof(LoginServer)} from {client.Socket.RemoteEndPoint}.");
-
-            client.Initialize(this, 
-                _serviceProvider.GetRequiredService<ILogger<LoginClient>>(), 
-                _serviceProvider.GetRequiredService<IHandlerInvoker>(),
-                _serviceProvider.GetRequiredService<ILoginPacketFactory>());
-        }
-
-        /// <inheritdoc />
-        protected override void OnClientDisconnected(LoginClient client)
-        {
-            if (string.IsNullOrEmpty(client.Username))
-                _logger.LogInformation($"Unknown client disconnected from {client.Socket.RemoteEndPoint}.");
-            else
-                _logger.LogInformation($"Client '{client.Username}' disconnected from {client.Socket.RemoteEndPoint}.");
-        }
-
-        /// <inheritdoc />
         public ILoginClient GetClientByUsername(string username)
-            => Clients.FirstOrDefault(x =>
-                x.IsConnected &&
-                x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+            => ConnectedUsers.FirstOrDefault(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
 
-        /// <inheritdoc />
-        public bool IsClientConnected(string username) => GetClientByUsername(username) != null;
+        public bool IsClientConnected(string username) => GetClientByUsername(username) is not null;
     }
 }

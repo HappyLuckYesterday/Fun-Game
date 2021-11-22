@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Rhisis.Database;
+using Rhisis.Infrastructure.Persistance;
 using System;
 
 namespace Rhisis.Testing.Abstract

@@ -1,7 +1,7 @@
-﻿using Rhisis.LoginServer.Client;
+﻿using LiteNetwork.Protocol.Abstractions;
+using Rhisis.LoginServer.Abstractions;
 using Rhisis.Network;
 using Sylver.HandlerInvoker.Attributes;
-using Sylver.Network.Data;
 
 namespace Rhisis.LoginServer.Handlers
 {
@@ -14,7 +14,7 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="client"></param>
         /// <param name="_"></param>
         [HandlerAction(PacketType.ERROR)]
-        public void Execute(ILoginClient client, INetPacketStream _)
+        public void Execute(ILoginClient client, ILitePacketStream _)
         {
             client.Disconnect();
         }

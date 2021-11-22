@@ -1,4 +1,4 @@
-﻿using Rhisis.Database.Entities;
+﻿using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Game.Common;
 using System.Collections.Generic;
 using System.Linq;

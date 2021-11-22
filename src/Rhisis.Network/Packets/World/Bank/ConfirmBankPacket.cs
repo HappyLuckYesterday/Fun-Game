@@ -1,13 +1,13 @@
 ﻿using System;
 using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.World.Bank
 {
     public class ConfirmBankPacket : IPacketDeserializer
     {
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             throw new NotImplementedException();
         }

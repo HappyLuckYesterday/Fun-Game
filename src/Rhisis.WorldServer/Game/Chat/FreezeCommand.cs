@@ -6,6 +6,7 @@ using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Network.Snapshots;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.WorldServer.Abstractions;
 
 namespace Rhisis.WorldServer.Game.Chat
 {

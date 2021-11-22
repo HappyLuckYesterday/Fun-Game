@@ -5,7 +5,7 @@ using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -72,7 +72,7 @@ namespace Rhisis.Game
 
         public bool IsCoolTimeElapsed() => _nextSkillUsageTime < Time.GetElapsedTime();
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(ILitePacketStream packet)
         {
             packet.Write(Id);
             packet.Write(Level);

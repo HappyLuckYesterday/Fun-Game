@@ -1,6 +1,6 @@
 ﻿using System;
 using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.World
 {
@@ -27,7 +27,7 @@ namespace Rhisis.Network.Packets.World
         public bool Forward { get; private set; }
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             X = packet.Read<float>();
             Y = packet.Read<float>();

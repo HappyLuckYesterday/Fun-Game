@@ -1,4 +1,4 @@
-﻿using Sylver.Network.Data;
+﻿using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Game.Abstractions.Protocol
 {
@@ -11,6 +11,6 @@ namespace Rhisis.Game.Abstractions.Protocol
         /// Deserializes the current packet stream.
         /// </summary>
         /// <param name="packet">Packet stream.</param>
-        void Deserialize(INetPacketStream packet);
+        void Deserialize(ILitePacketStream packet);
     }
 }

@@ -1,5 +1,5 @@
-﻿using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+﻿using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Game.Abstractions.Protocol;
 
 namespace Rhisis.Network.Packets.World
 {
@@ -41,7 +41,7 @@ namespace Rhisis.Network.Packets.World
         public float DamagePower { get; private set; }
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             Id = packet.Read<int>();
             MagicPower = packet.Read<int>();

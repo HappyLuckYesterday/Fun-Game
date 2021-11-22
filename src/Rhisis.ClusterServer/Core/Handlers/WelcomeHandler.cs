@@ -1,31 +1,36 @@
-﻿using Rhisis.Network.Core;
+﻿using LiteNetwork.Protocol;
+using LiteNetwork.Protocol.Abstractions;
+using Microsoft.Extensions.Options;
+using Rhisis.Core.Structures.Configuration;
+using Rhisis.Network.Core;
 using Sylver.HandlerInvoker.Attributes;
-using Sylver.Network.Data;
 
 namespace Rhisis.ClusterServer.Core.Handlers
 {
     [Handler]
     public class WelcomeHandler
     {
-        private readonly IClusterServer _clusterServer;
+        private readonly IOptions<ClusterConfiguration> _clusterOptions;
+        private readonly IOptions<CoreConfiguration> _coreOptions;
 
-        public WelcomeHandler(IClusterServer clusterServer)
+        public WelcomeHandler(IOptions<ClusterConfiguration> clusterOptions, IOptions<CoreConfiguration> coreOptions)
         {
-            _clusterServer = clusterServer;
+            _clusterOptions = clusterOptions;
+            _coreOptions = coreOptions;
         }
 
         [HandlerAction(CorePacketType.Welcome)]
-        public void OnExecute(ClusterCoreClient client, INetPacketStream _)
+        public void OnExecute(ClusterCoreClient client, ILitePacketStream _)
         {
-            using var packet = new NetPacket();
+            using var packet = new LitePacket();
 
             packet.WriteByte(value: (byte)CorePacketType.Authenticate);
-            packet.WriteString(_clusterServer.CoreConfiguration.Password);
+            packet.WriteString(_coreOptions.Value.Password);
             packet.WriteByte((byte)ServerType.Cluster);
-            packet.WriteByte((byte)_clusterServer.ClusterConfiguration.Id);
-            packet.WriteString(_clusterServer.ClusterConfiguration.Name);
-            packet.WriteString(_clusterServer.ClusterConfiguration.Host);
-            packet.WriteUInt16((ushort)_clusterServer.ClusterConfiguration.Port);
+            packet.WriteByte((byte)_clusterOptions.Value.Id);
+            packet.WriteString(_clusterOptions.Value.Name);
+            packet.WriteString(_clusterOptions.Value.Host);
+            packet.WriteUInt16((ushort)_clusterOptions.Value.Port);
 
             client.Send(packet);
         }

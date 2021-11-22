@@ -1,53 +1,38 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using LiteNetwork.Client;
+using LiteNetwork.Protocol.Abstractions;
 using Microsoft.Extensions.Logging;
 using Rhisis.Network.Core;
 using Sylver.HandlerInvoker;
-using Sylver.Network.Client;
-using Sylver.Network.Data;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rhisis.ClusterServer.Core
 {
-    public class ClusterCoreClient : NetClient, IHostedService
+    public class ClusterCoreClient : LiteClient
     {
         private readonly ILogger<ClusterCoreClient> _logger;
         private readonly IHandlerInvoker _handlerInvoker;
 
-        public ClusterCoreClient(ILogger<ClusterCoreClient> logger, IClusterServer clusterServer, IHandlerInvoker handlerInvoker)
+        public ClusterCoreClient(LiteClientOptions options, ILogger<ClusterCoreClient> logger, IHandlerInvoker handlerInvoker, IServiceProvider serviceProvider = null) 
+            : base(options, serviceProvider)
         {
             _logger = logger;
             _handlerInvoker = handlerInvoker;
-            ClientConfiguration = new NetClientConfiguration(clusterServer.CoreConfiguration.Host,
-                clusterServer.CoreConfiguration.Port, 
-                32, new NetClientRetryConfiguration(NetClientRetryOption.Limited, 10));
         }
 
-        public override void HandleMessage(INetPacketStream packet)
+        public override Task HandleMessageAsync(ILitePacketStream incomingPacketStream)
         {
             try
             {
-                var packetHeader = (CorePacketType)packet.ReadByte();
+                var packetHeader = (CorePacketType)incomingPacketStream.ReadByte();
 
-                _handlerInvoker.Invoke(packetHeader, this, packet);
+                _handlerInvoker.Invoke(packetHeader, this, incomingPacketStream);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "An error occured while processing core packet.");
             }
-        }
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            Connect();
-
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            Disconnect();
 
             return Task.CompletedTask;
         }

@@ -13,7 +13,7 @@ using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Common.Resources.Dialogs;
 using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.Game.Features.Chat;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -76,12 +76,12 @@ namespace Rhisis.Game.Entities
 
         public bool Equals(IWorldObject other) => Id == other.Id;
 
-        public void Send(INetPacketStream packet)
+        public void Send(ILitePacketStream packet)
         {
             throw new InvalidOperationException("A NPC cannot send a packet to itself.");
         }
 
-        public void SendToVisible(INetPacketStream packet)
+        public void SendToVisible(ILitePacketStream packet)
         {
             IEnumerable<IPlayer> visiblePlayers = VisibleObjects.OfType<IPlayer>();
 

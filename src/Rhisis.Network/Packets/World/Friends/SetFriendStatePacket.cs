@@ -1,6 +1,6 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.World.Friends
 {
@@ -20,7 +20,7 @@ namespace Rhisis.Network.Packets.World.Friends
         public MessengerStatusType Status { get; private set; }
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             PlayerId = packet.ReadInt32();
             Status = (MessengerStatusType)packet.ReadInt32();

@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.World.Mailbox
 {
@@ -37,7 +37,7 @@ namespace Rhisis.Network.Packets.World.Mailbox
 
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             ItemSlot = packet.Read<byte>();
             ItemQuantity = packet.Read<short>();

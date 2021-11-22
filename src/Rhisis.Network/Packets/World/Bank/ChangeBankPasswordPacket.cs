@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.World.Bank
 {
@@ -26,7 +26,7 @@ namespace Rhisis.Network.Packets.World.Bank
         public uint ItemId { get; private set; }
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             OldPassword = packet.Read<string>();
             NewPassword = packet.Read<string>();

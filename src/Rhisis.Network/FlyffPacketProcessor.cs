@@ -1,20 +1,19 @@
-﻿using Sylver.Network.Data;
+﻿using LiteNetwork.Protocol;
+using LiteNetwork.Protocol.Abstractions;
 using System;
 
 namespace Rhisis.Network
 {
-    public class FlyffPacketProcessor : IPacketProcessor
+    public class FlyffPacketProcessor : LitePacketProcessor
     {
         /// <summary>
         /// Gets the FlyFF packet header size.
         /// </summary>
-        public int HeaderSize => 13;
+        public override int HeaderSize => 13;
 
-        /// <inheritdoc />
-        public bool IncludeHeader => false;
+        public override bool IncludeHeader => false;
 
-        /// <inheritdoc />
-        public int GetMessageLength(byte[] buffer)
+        public override int GetMessageLength(byte[] buffer)
         {
             if (buffer[0] == FFPacket.Header)
             {
@@ -28,7 +27,6 @@ namespace Rhisis.Network
             return 0;
         }
 
-        /// <inheritdoc />
-        public INetPacketStream CreatePacket(byte[] buffer) => new FFPacket(buffer);
+        public override ILitePacketStream CreatePacket(byte[] buffer) => new FFPacket(buffer);
     }
 }

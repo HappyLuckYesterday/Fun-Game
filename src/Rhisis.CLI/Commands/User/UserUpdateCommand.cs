@@ -7,8 +7,8 @@ using Rhisis.Core.Cryptography;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Game.Common;
 
 namespace Rhisis.CLI.Commands.User

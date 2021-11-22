@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 using System.Collections.Generic;
 
 namespace Rhisis.Network.Packets.World
@@ -22,7 +22,7 @@ namespace Rhisis.Network.Packets.World
         public IReadOnlyDictionary<int, int> Skills => _skills;
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             while (!packet.IsEndOfStream)
             {

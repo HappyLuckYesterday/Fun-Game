@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.World
 {
@@ -26,7 +26,7 @@ namespace Rhisis.Network.Packets.World
         public ushort Intelligence { get; private set; }
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             Strength = (ushort)packet.Read<int>();
             Stamina = (ushort)packet.Read<int>();

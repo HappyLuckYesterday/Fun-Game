@@ -1,6 +1,6 @@
 ﻿using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +31,7 @@ namespace Rhisis.Game.Features
             return _levels[level];
         }
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(ILitePacketStream packet)
         {
             packet.Write(Count);
 

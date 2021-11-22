@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.World.Taskbar
 {
@@ -11,7 +11,7 @@ namespace Rhisis.Network.Packets.World.Taskbar
         public int SlotIndex { get; private set; }
 
         /// <inheritdoc />
-        public virtual void Deserialize(INetPacketStream packet)
+        public virtual void Deserialize(ILitePacketStream packet)
         {
             SlotIndex = packet.Read<byte>();
         }

@@ -69,7 +69,7 @@ namespace Rhisis.Game.Resources.Loaders
                                 }
                                 if (npcInfoStatement.Name == "AddMenu")
                                 {
-                                    canBuff = instruction.Parameters.FirstOrDefault() == "MMI_NPC_BUFF";
+                                    canBuff = instruction.Parameters.FirstOrDefault()?.ToString().Equals("MMI_NPC_BUFF") ?? false;
                                 }
                             }
                         }

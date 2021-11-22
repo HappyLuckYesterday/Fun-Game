@@ -1,8 +1,8 @@
-﻿using Rhisis.Core;
+﻿using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Core;
 using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Sylver.Network.Data;
 
 namespace Rhisis.Game.Abstractions
 {
@@ -84,6 +84,6 @@ namespace Rhisis.Game.Abstractions
         /// </summary>
         /// <param name="packet">Current packet stream.</param>
         /// <param name="itemIndex">Item storage index.</param>
-        void Serialize(INetPacketStream packet, int itemIndex);
+        void Serialize(ILitePacketStream packet, int itemIndex);
     }
 }

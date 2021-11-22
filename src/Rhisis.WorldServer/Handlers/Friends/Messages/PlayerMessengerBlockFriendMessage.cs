@@ -2,6 +2,7 @@
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Messages;
+using Rhisis.WorldServer.Abstractions;
 using Sylver.HandlerInvoker.Attributes;
 using System.Linq;
 

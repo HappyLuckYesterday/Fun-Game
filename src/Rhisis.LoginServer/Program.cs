@@ -1,16 +1,23 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using LiteNetwork;
+using LiteNetwork.Hosting;
+using LiteNetwork.Protocol.Abstractions;
+using LiteNetwork.Server.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Database;
 using Rhisis.Game.Abstractions.Protocol;
-using Rhisis.LoginServer.CoreServer;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.LoginServer.Abstractions;
+using Rhisis.LoginServer.Core;
+using Rhisis.LoginServer.Core.Abstractions;
 using Rhisis.LoginServer.Packets;
+using Rhisis.Network;
 using Sylver.HandlerInvoker;
-using Sylver.Network.Data;
+using System;
 using System.Threading.Tasks;
 
 namespace Rhisis.LoginServer
@@ -28,6 +35,7 @@ namespace Rhisis.LoginServer
                     configApp.AddJsonFile(ConfigurationConstants.LoginServerPath, optional: false);
                     configApp.AddJsonFile(ConfigurationConstants.CoreServerPath, optional: false);
                     configApp.AddJsonFile(ConfigurationConstants.DatabasePath, optional: false);
+                    configApp.AddEnvironmentVariables();
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
@@ -35,17 +43,9 @@ namespace Rhisis.LoginServer
                     services.Configure<LoginConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.LoginServer));
                     services.Configure<CoreConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.CoreServer));
 
-                    services.AddDatabase(hostContext.Configuration);
+                    services.AddPersistance(hostContext.Configuration);
                     services.AddHandlers();
-
-                    // Login Server
-                    services.AddSingleton<ILoginServer, LoginServer>();
                     services.AddSingleton<ILoginPacketFactory, LoginPacketFactory>();
-                    services.AddSingleton<IHostedService, LoginServerService>();
-
-                    // Core Server
-                    services.AddSingleton<ICoreServer, CoreServer.CoreServer>();
-                    services.AddSingleton<IHostedService, CoreServerService>();
                 })
                 .ConfigureLogging(builder =>
                 {
@@ -57,12 +57,45 @@ namespace Rhisis.LoginServer
                         CaptureMessageProperties = true
                     });
                 })
+                .ConfigureLiteNetwork((context, builder) =>
+                {
+                    // Login Server
+                    builder.AddLiteServer<ILoginServer, LoginServer, LoginClient>(options =>
+                    {
+                        var serverOptions = context.Configuration.GetSection(ConfigurationConstants.LoginServer).Get<LoginConfiguration>();
+
+                        if (serverOptions is null)
+                        {
+                            throw new InvalidProgramException($"Failed to load login server settings.");
+                        }
+
+                        options.Host = serverOptions.Host;
+                        options.Port = serverOptions.Port;
+                        options.PacketProcessor = new FlyffPacketProcessor();
+                        options.ReceiveStrategy = ReceiveStrategyType.Queued;
+                    });
+
+                    // Core Server
+                    builder.AddLiteServer<ICoreServer, CoreServer, CoreServerClient>(options =>
+                    {
+                        var serverConfiguration = context.Configuration.GetSection(ConfigurationConstants.CoreServer).Get<CoreConfiguration>();
+
+                        if (serverConfiguration is null)
+                        {
+                            throw new InvalidProgramException($"Failed to load core server settings.");
+                        }
+
+                        options.Host = serverConfiguration.Host;
+                        options.Port = serverConfiguration.Port;
+                        options.ReceiveStrategy = ReceiveStrategyType.Queued;
+                    });
+                })
                 .UseConsoleLifetime()
                 .SetConsoleCulture(culture)
                 .Build();
 
             await host
-                .AddHandlerParameterTransformer<INetPacketStream, IPacketDeserializer>((source, dest) =>
+                .AddHandlerParameterTransformer<ILitePacketStream, IPacketDeserializer>((source, dest) =>
                 {
                     dest?.Deserialize(source);
                     return dest;

@@ -1,7 +1,7 @@
-﻿using Rhisis.Core.Structures;
+﻿using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Common;
-using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;
 
@@ -100,12 +100,12 @@ namespace Rhisis.Game.Abstractions.Entities
         /// Sends a packet to the current object.
         /// </summary>
         /// <param name="packet"></param>
-        void Send(INetPacketStream packet);
+        void Send(ILitePacketStream packet);
 
         /// <summary>
         /// Sends a packet to every visible objects.
         /// </summary>
         /// <param name="packet"></param>
-        void SendToVisible(INetPacketStream packet);
+        void SendToVisible(ILitePacketStream packet);
     }
 }

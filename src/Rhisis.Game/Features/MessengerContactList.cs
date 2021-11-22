@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Features;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -40,7 +40,7 @@ namespace Rhisis.Game.Abstractions.Components
 
         public IContact Get(int contactId) => _contacts.FirstOrDefault(x => x.Id == contactId);
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(ILitePacketStream packet)
         {
             packet.WriteInt32(Count);
 

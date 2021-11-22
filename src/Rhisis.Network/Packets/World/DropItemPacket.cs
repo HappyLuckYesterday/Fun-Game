@@ -1,4 +1,4 @@
-﻿using Sylver.Network.Data;
+﻿using LiteNetwork.Protocol.Abstractions;
 using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Protocol;
 
@@ -27,7 +27,7 @@ namespace Rhisis.Network.Packets.World
         public Vector3 Position { get; private set; }
 
         /// <inhertidoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             ItemType = packet.Read<uint>();
             ItemUniqueId = packet.Read<int>();

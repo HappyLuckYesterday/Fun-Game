@@ -1,7 +1,7 @@
-﻿using Rhisis.ClusterServer.Client;
+﻿using LiteNetwork.Protocol.Abstractions;
+using Rhisis.ClusterServer.Abstractions;
 using Rhisis.Network.Core;
 using Sylver.HandlerInvoker.Attributes;
-using Sylver.Network.Data;
 using System;
 
 namespace Rhisis.ClusterServer.Core.Handlers
@@ -17,10 +17,10 @@ namespace Rhisis.ClusterServer.Core.Handlers
         }
 
         [HandlerAction(CorePacketType.DisconnectUserFromCluster)]
-        public void OnExecute(ClusterCoreClient client, INetPacketStream packet)
+        public void OnExecute(ClusterCoreClient _, ILitePacketStream packet)
         {
             int userId = packet.ReadInt32();
-            IClusterClient clusterClient = _clusterServer.GetClientByUserId(userId);
+            IClusterUser clusterClient = _clusterServer.GetClientByUserId(userId);
 
             if (clusterClient is null)
             {

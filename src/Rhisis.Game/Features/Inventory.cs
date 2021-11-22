@@ -9,7 +9,7 @@ using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Network;
 using Rhisis.Network.Snapshots;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -238,7 +238,7 @@ namespace Rhisis.Game.Features
             }
         }
 
-        public void Serialize(INetPacketStream packet) => _container.Serialize(packet);
+        public void Serialize(ILitePacketStream packet) => _container.Serialize(packet);
 
         public IEnumerator<IItem> GetEnumerator() => _container.GetEnumerator();
 

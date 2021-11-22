@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.World
 {
@@ -17,7 +17,7 @@ namespace Rhisis.Network.Packets.World
         public Dictionary<uint, int> PlayerDictionary { get; private set; }
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             PlayerDictionary = new Dictionary<uint, int>();
             Size = packet.Read<uint>();

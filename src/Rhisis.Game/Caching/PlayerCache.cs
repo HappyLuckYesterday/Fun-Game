@@ -1,5 +1,5 @@
 ﻿using Rhisis.Core.DependencyInjection;
-using Rhisis.Database;
+using Rhisis.Infrastructure.Persistance;
 using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Common;
 using System;

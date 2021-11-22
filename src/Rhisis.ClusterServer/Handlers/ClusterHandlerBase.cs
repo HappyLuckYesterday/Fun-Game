@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Rhisis.ClusterServer.Structures;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.Infrastructure.Persistance.Entities;
 using System.Collections.Generic;
 using System.Linq;
 

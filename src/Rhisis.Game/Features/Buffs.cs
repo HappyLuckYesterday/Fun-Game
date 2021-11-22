@@ -3,7 +3,7 @@ using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Common;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -127,7 +127,7 @@ namespace Rhisis.Game.Features
             }
         }
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(ILitePacketStream packet)
         {
             IEnumerable<IBuff> activeBuffs = _buffs.Where(x => !x.HasExpired);
 

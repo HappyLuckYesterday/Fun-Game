@@ -1,6 +1,6 @@
 ﻿using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Features;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Game.Features
 {
@@ -20,7 +20,7 @@ namespace Rhisis.Game.Features
             Items = new MultipleTaskbarContainer<IShortcut>(GameConstants.MaxTaskbarItemLevels, GameConstants.MaxTaskbarItems);
         }
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(ILitePacketStream packet)
         {
             Applets.Serialize(packet);
             Items.Serialize(packet);

@@ -10,7 +10,7 @@ using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Protocol.Snapshots.Quests;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -127,7 +127,7 @@ namespace Rhisis.Game.Features
             }
         }
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(ILitePacketStream packet)
         {
             packet.Write((byte)ActiveQuests.Count());
             foreach (IQuest quest in ActiveQuests)

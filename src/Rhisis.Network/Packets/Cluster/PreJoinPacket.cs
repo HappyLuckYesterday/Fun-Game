@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.Cluster
 {
@@ -13,7 +13,7 @@ namespace Rhisis.Network.Packets.Cluster
 
         public int BankCode { get; private set; }
 
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             Username = packet.Read<string>();
             CharacterId = packet.Read<int>();

@@ -2,8 +2,8 @@
 using Rhisis.Network;
 using Rhisis.Core.IO;
 using System.Linq;
-using Rhisis.ClusterServer.Client;
 using Rhisis.ClusterServer.Structures;
+using Rhisis.ClusterServer.Abstractions;
 
 namespace Rhisis.ClusterServer.Packets
 {
@@ -13,7 +13,7 @@ namespace Rhisis.ClusterServer.Packets
     public class ClusterPacketFactory : IClusterPacketFactory
     {
         /// <inheritdoc />
-        public void SendWelcome(IClusterClient client)
+        public void SendWelcome(IClusterUser client)
         {
             using (var packet = new FFPacket())
             {
@@ -25,7 +25,7 @@ namespace Rhisis.ClusterServer.Packets
         }
 
         /// <inheritdoc />
-        public void SendPong(IClusterClient client, int time)
+        public void SendPong(IClusterUser client, int time)
         {
             using (var packet = new FFPacket())
             {
@@ -37,7 +37,7 @@ namespace Rhisis.ClusterServer.Packets
         }
 
         /// <inheritdoc />
-        public void SendQueryTickCount(IClusterClient client, uint time)
+        public void SendQueryTickCount(IClusterUser client, uint time)
         {
             using (var packet = new FFPacket())
             {
@@ -51,7 +51,7 @@ namespace Rhisis.ClusterServer.Packets
         }
 
         /// <inheritdoc />
-        public void SendClusterError(IClusterClient client, ErrorType errorType)
+        public void SendClusterError(IClusterUser client, ErrorType errorType)
         {
             using (var packet = new FFPacket())
             {
@@ -63,7 +63,7 @@ namespace Rhisis.ClusterServer.Packets
         }
 
         /// <inheritdoc />
-        public void SendJoinWorld(IClusterClient client)
+        public void SendJoinWorld(IClusterUser client)
         {
             using (var packet = new FFPacket())
             {
@@ -74,7 +74,7 @@ namespace Rhisis.ClusterServer.Packets
         }
 
         /// <inheritdoc />
-        public void SendLoginNumPad(IClusterClient client, int loginProtectValue)
+        public void SendLoginNumPad(IClusterUser client, int loginProtectValue)
         {
             using (var packet = new FFPacket())
             {
@@ -86,7 +86,7 @@ namespace Rhisis.ClusterServer.Packets
         }
 
         /// <inheritdoc />
-        public void SendLoginProtect(IClusterClient client, int loginProtectValue)
+        public void SendLoginProtect(IClusterUser client, int loginProtectValue)
         {
             using (var packet = new FFPacket())
             {
@@ -99,7 +99,7 @@ namespace Rhisis.ClusterServer.Packets
         }
 
         /// <inheritdoc />
-        public void SendPlayerList(IClusterClient client, int authenticationKey, IEnumerable<ClusterCharacter> characters)
+        public void SendPlayerList(IClusterUser client, int authenticationKey, IEnumerable<ClusterCharacter> characters)
         {
             using (var packet = new FFPacket())
             {
@@ -151,7 +151,7 @@ namespace Rhisis.ClusterServer.Packets
         }
 
         /// <inheritdoc />
-        public void SendWorldAddress(IClusterClient client, string address)
+        public void SendWorldAddress(IClusterUser client, string address)
         {
             using (var packet = new FFPacket())
             {

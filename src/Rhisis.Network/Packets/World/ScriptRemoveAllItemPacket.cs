@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.World
 {
@@ -14,7 +14,7 @@ namespace Rhisis.Network.Packets.World
         /// Creates a new <see cref="ScriptRemoveAllItemPacket"/> object.
         /// </summary>
         /// <param name="packet">Incoming packet</param>
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             ItemId = packet.Read<uint>();
         }

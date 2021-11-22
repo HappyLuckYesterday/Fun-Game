@@ -1,7 +1,7 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources.Quests;
-using Rhisis.Scripting.Quests;
+using Rhisis.Infrastructure.Scripting.Quests;
 using System;
 using System.Collections.Generic;
 using System.IO;

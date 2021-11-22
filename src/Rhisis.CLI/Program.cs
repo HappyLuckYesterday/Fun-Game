@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Rhisis.CLI.Services;
-using Rhisis.Database;
+using Rhisis.Infrastructure.Persistance;
 
 namespace Rhisis.CLI
 {

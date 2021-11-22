@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using LiteNetwork.Protocol.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Behavior;
@@ -13,7 +14,6 @@ using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Protocol.Messages;
-using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -192,9 +192,9 @@ namespace Rhisis.Game.Entities
 
         public bool Equals(IWorldObject other) => Id == other.Id;
 
-        public void Send(INetPacketStream packet) => Connection.Send(packet);
+        public void Send(ILitePacketStream packet) => Connection.Send(packet);
 
-        public void SendToVisible(INetPacketStream packet)
+        public void SendToVisible(ILitePacketStream packet)
         {
             IEnumerable<IPlayer> visiblePlayers = VisibleObjects.OfType<IPlayer>();
 

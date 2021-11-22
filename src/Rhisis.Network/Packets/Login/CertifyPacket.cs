@@ -2,7 +2,7 @@
 using Rhisis.Core.Cryptography;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.Login
 {
@@ -21,7 +21,7 @@ namespace Rhisis.Network.Packets.Login
             _configuration = loginConfiguration.Value;
         }
 
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             BuildVersion = packet.Read<string>();
             Username = packet.Read<string>();

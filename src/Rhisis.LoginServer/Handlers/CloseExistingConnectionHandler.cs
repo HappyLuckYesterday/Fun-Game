@@ -1,10 +1,10 @@
-﻿using Rhisis.LoginServer.Client;
-using Rhisis.LoginServer.CoreServer;
+﻿using LiteNetwork.Protocol;
+using Rhisis.LoginServer.Abstractions;
+using Rhisis.LoginServer.Core.Abstractions;
 using Rhisis.Network;
 using Rhisis.Network.Core;
 using Rhisis.Network.Packets.Login;
 using Sylver.HandlerInvoker.Attributes;
-using Sylver.Network.Data;
 using System;
 
 namespace Rhisis.LoginServer.Handlers
@@ -36,7 +36,7 @@ namespace Rhisis.LoginServer.Handlers
                 throw new InvalidOperationException($"Cannot find user with username '{closeConnectionPacket.Username}'.");
             }
 
-            using var packet = new NetPacket();
+            using var packet = new LitePacket();
             packet.Write((byte)CorePacketType.DisconnectUserFromCluster);
             packet.WriteInt32(otherConnectedClient.UserId);
 

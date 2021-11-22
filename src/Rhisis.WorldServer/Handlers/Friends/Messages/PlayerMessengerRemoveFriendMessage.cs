@@ -1,9 +1,10 @@
-﻿using Rhisis.Database;
+﻿using Rhisis.Infrastructure.Persistance;
 using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Protocol.Messages;
 using Sylver.HandlerInvoker.Attributes;
 using System.Linq;
+using Rhisis.WorldServer.Abstractions;
 
 namespace Rhisis.WorldServer.Handlers.Friends.Messages
 {

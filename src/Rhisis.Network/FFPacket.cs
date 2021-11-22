@@ -1,4 +1,4 @@
-﻿using Sylver.Network.Data;
+﻿using LiteNetwork.Protocol;
 using System.IO;
 using System.Text;
 
@@ -7,7 +7,7 @@ namespace Rhisis.Network
     /// <summary>
     /// Represents a FlyFF packet.
     /// </summary>
-    public class FFPacket : NetPacketStream
+    public class FFPacket : LitePacketStream
     {
         /// <summary>
         /// Gets the FlyFF packet header constant value.

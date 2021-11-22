@@ -5,7 +5,7 @@ using Rhisis.Game.Protocol.Packets.Friends;
 using Rhisis.Game.Protocol.Snapshots.Friends;
 using Rhisis.Network;
 using Rhisis.Network.Snapshots;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 using System;
 
 namespace Rhisis.Game.Abstractions.Components
@@ -112,7 +112,7 @@ namespace Rhisis.Game.Abstractions.Components
             }
         }
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(ILitePacketStream packet)
         {
             packet.WriteInt32((int)Status);
             Friends.Serialize(packet);

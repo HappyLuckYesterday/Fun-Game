@@ -1,6 +1,6 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.World
 {
@@ -17,7 +17,7 @@ namespace Rhisis.Network.Packets.World
         public TargetModeType TargetMode { get; private set; }
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             TargetId = packet.Read<uint>();
             TargetMode = (TargetModeType)packet.Read<byte>();

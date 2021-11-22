@@ -1,4 +1,4 @@
-﻿using Sylver.Network.Data;
+﻿using LiteNetwork.Protocol.Abstractions;
 using Rhisis.Game.Common;
 using Rhisis.Game.Abstractions.Protocol;
 
@@ -37,7 +37,7 @@ namespace Rhisis.Network.Packets.World
         public int ProjectileId { get; private set; }
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             AttackMessage = (ObjectMessageType)packet.Read<uint>();
             TargetObjectId = packet.Read<uint>();

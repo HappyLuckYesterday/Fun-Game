@@ -1,4 +1,4 @@
-﻿using Rhisis.ClusterServer.Client;
+﻿using Rhisis.ClusterServer.Abstractions;
 using Rhisis.ClusterServer.Packets;
 using Rhisis.Network;
 using Rhisis.Network.Packets.Cluster;
@@ -17,7 +17,7 @@ namespace Rhisis.ClusterServer.Handlers
         }
 
         [HandlerAction(PacketType.QUERYTICKCOUNT)]
-        public void OnQueryTickCount(IClusterClient client, QueryTickCountPacket packet)
+        public void OnQueryTickCount(IClusterUser client, QueryTickCountPacket packet)
         {
             _clusterPacketFactory.SendQueryTickCount(client, packet.Time);
         }

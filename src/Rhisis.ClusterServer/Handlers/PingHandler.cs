@@ -1,4 +1,4 @@
-﻿using Rhisis.ClusterServer.Client;
+﻿using Rhisis.ClusterServer.Abstractions;
 using Rhisis.ClusterServer.Packets;
 using Rhisis.Network;
 using Rhisis.Network.Packets;
@@ -17,7 +17,7 @@ namespace Rhisis.ClusterServer.Handlers
         }
 
         [HandlerAction(PacketType.PING)]
-        public void OnPing(IClusterClient client, PingPacket pingPacket)
+        public void OnPing(IClusterUser client, PingPacket pingPacket)
         {
             if (!pingPacket.IsTimeOut)
             {

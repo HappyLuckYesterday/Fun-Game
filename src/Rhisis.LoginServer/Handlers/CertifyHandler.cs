@@ -2,10 +2,10 @@
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Common;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
-using Rhisis.LoginServer.Client;
-using Rhisis.LoginServer.CoreServer;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.Infrastructure.Persistance.Entities;
+using Rhisis.LoginServer.Abstractions;
+using Rhisis.LoginServer.Core.Abstractions;
 using Rhisis.LoginServer.Packets;
 using Rhisis.Network;
 using Rhisis.Network.Core.Servers;
@@ -95,7 +95,7 @@ namespace Rhisis.LoginServer.Handlers
 
                     _loginPacketFactory.SendServerList(client, certifyPacket.Username, clusters);
                     client.SetClientUsername(certifyPacket.Username, user.Id);
-                    _logger.LogInformation($"User '{client.Username}' logged succesfully from {client.Socket.RemoteEndPoint}.");
+                    _logger.LogInformation($"User '{client.Username}' logged succesfully.");
                     break;
                 default:
                     break;
@@ -110,7 +110,7 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="reason">Authentication error reason.</param>
         private void AuthenticationFailed(ILoginClient client, ErrorType error, string reason)
         {
-            _logger.LogWarning($"Unable to authenticate user from {client.Socket.RemoteEndPoint}. Reason: {reason}");
+            _logger.LogWarning($"Unable to authenticate user. Reason: {reason}");
             _loginPacketFactory.SendLoginError(client, error);
         }
 

@@ -1,6 +1,6 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Database;
+using Rhisis.Infrastructure.Persistance;
 using System;
 using System.Threading;
 

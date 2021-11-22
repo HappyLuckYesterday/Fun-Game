@@ -2,7 +2,7 @@
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Diagnostics;
 
@@ -138,7 +138,7 @@ namespace Rhisis.Game
             Data = null;
         }
 
-        public void Serialize(INetPacketStream packet, int itemIndex)
+        public void Serialize(ILitePacketStream packet, int itemIndex)
         {
             packet.Write(itemIndex);
             packet.Write(Id);
@@ -164,7 +164,7 @@ namespace Rhisis.Game
             packet.Write(0); // m_bTranformVisPet
         }
 
-        public void Serialize(INetPacketStream packet) => Serialize(packet, Index);
+        public void Serialize(ILitePacketStream packet) => Serialize(packet, Index);
 
         public IItem Clone()
         {

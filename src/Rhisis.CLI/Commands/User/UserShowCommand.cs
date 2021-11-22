@@ -5,8 +5,8 @@ using McMaster.Extensions.CommandLineUtils;
 using Microsoft.EntityFrameworkCore;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.Infrastructure.Persistance.Entities;
 
 namespace Rhisis.CLI.Commands.User
 {

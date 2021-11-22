@@ -2,7 +2,7 @@
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Common;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -282,7 +282,7 @@ namespace Rhisis.Game.Abstractions.Components
             }
         }
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(ILitePacketStream packet)
         {
             for (int i = 0; i < MaxCapacity; i++)
             {

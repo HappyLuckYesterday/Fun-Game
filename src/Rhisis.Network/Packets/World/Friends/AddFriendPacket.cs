@@ -1,6 +1,6 @@
 ﻿using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;
-using Sylver.Network.Data;
+using LiteNetwork.Protocol.Abstractions;
 
 namespace Rhisis.Network.Packets.World.Friends
 {
@@ -40,7 +40,7 @@ namespace Rhisis.Network.Packets.World.Friends
         public DefineJob.Job FriendJob { get; private set; }
 
         /// <inheritdoc />
-        public void Deserialize(INetPacketStream packet)
+        public void Deserialize(ILitePacketStream packet)
         {
             SenderId = packet.ReadUInt32();
             FriendId = packet.ReadUInt32();
