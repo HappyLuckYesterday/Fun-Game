@@ -8,4 +8,8 @@
     <PackageReference Include="LiteNetwork" Version="1.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -4,7 +4,7 @@
     "port": 5400,
     "id": 2,
     "clusterId": 1,
-    "name": "Channel 1 (Docker)",
+    "name": "Channel 1",
     "systems": {},
     "maps": [
       "WI_WORLD_MADRIGAL",
