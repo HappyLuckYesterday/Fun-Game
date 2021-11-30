@@ -8,7 +8,7 @@ using Rhisis.Network.Snapshots;
 using LiteNetwork.Protocol.Abstractions;
 using System;
 
-namespace Rhisis.Game.Abstractions.Components
+namespace Rhisis.Game.Features
 {
     public class Messenger : GameFeature, IMessenger
     {

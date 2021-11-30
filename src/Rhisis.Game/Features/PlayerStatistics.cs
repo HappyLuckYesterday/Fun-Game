@@ -1,10 +1,9 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
-using Rhisis.Game.Features;
 using Rhisis.Network.Snapshots;
 using System;
 
-namespace Rhisis.Game.Abstractions.Components
+namespace Rhisis.Game.Features
 {
     public class PlayerStatistics : Statistics, IPlayerStatistics
     {

@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Features;
+using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;

@@ -10,7 +10,7 @@ using Rhisis.Network;
 using Rhisis.Network.Snapshots;
 using System;
 
-namespace Rhisis.Game.Abstractions.Components
+namespace Rhisis.Game.Features
 {
     public class Health : GameFeature, IHealth
     {

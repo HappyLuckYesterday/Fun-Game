@@ -6,6 +6,7 @@ using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
+using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;

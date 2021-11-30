@@ -7,7 +7,7 @@ using Rhisis.Game.Common.Resources.Dialogs;
 using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.Game.Protocol.Snapshots;
 using Rhisis.Network;
-using Rhisis.Network.Packets.World;
+using Rhisis.Protocol.Packets.Client.World;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Collections.Generic;

@@ -6,7 +6,6 @@ using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources.Quests;
-using Rhisis.Game.Entities;
 using Rhisis.Network.Snapshots;
 
 namespace Rhisis.Game.Behavior.Default

@@ -11,7 +11,7 @@ using Rhisis.Game.Common.Resources;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.World.Systems.Initializers
+namespace Rhisis.Game.Systems.Initializers
 {
     [Injectable]
     public sealed class PlayerSkillInitializer : IPlayerInitializer
@@ -55,7 +55,7 @@ namespace Rhisis.World.Systems.Initializers
                             join s in player.SkillTree on
                              new { x.SkillId, x.CharacterId }
                              equals
-                             new { SkillId = s.Id, CharacterId = (s.Owner as IPlayer).CharacterId }
+                             new { SkillId = s.Id, (s.Owner as IPlayer).CharacterId }
                             select new { DbSkill = x, PlayerSkill = s };
 
             var updatedSkillIds = new HashSet<int>();

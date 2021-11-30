@@ -4,7 +4,6 @@ using Rhisis.Core.IO;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
-using Rhisis.Game.Entities;
 
 namespace Rhisis.Game.Systems
 {

@@ -1,6 +1,6 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Network;
-using Rhisis.Network.Packets.World;
+using Rhisis.Protocol.Packets.Client.World;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 

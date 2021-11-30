@@ -1,7 +1,8 @@
 ﻿using Rhisis.Game.Abstractions.Caching;
+using Rhisis.Network;
 using System;
 
-namespace Rhisis.Network.Snapshots
+namespace Rhisis.Game.Protocol.Snapshots
 {
     public class QueryPlayerDataSnapshot : FFSnapshot
     {

@@ -9,7 +9,7 @@ using Rhisis.Network.Snapshots;
 using System;
 using System.Linq;
 
-namespace Rhisis.Game.Features.Chat.Commands
+namespace Rhisis.WorldServer.Game.Chat
 {
     // /level [job] [level] (legend)
     [ChatCommand("/level", AuthorityType.GameMaster)]
@@ -24,7 +24,7 @@ namespace Rhisis.Game.Features.Chat.Commands
             _gameResources = gameResources;
             _jobSystem = jobSystem;
         }
-        
+
         public void Execute(IPlayer player, object[] parameters)
         {
             if (parameters.Length < 2)

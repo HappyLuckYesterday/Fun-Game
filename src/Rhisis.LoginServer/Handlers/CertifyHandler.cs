@@ -9,7 +9,7 @@ using Rhisis.LoginServer.Core.Abstractions;
 using Rhisis.LoginServer.Packets;
 using Rhisis.Network;
 using Rhisis.Network.Core.Servers;
-using Rhisis.Network.Packets.Login;
+using Rhisis.Protocol.Packets.Client.Login;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Collections.Generic;

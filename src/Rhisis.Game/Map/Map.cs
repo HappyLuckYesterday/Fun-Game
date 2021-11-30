@@ -5,7 +5,6 @@ using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Factories;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Common;
-using Rhisis.Game.Entities;
 using Rhisis.Game.IO.World;
 using System;
 using System.Collections.Generic;

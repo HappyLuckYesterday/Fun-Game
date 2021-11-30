@@ -6,6 +6,7 @@ using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
+using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Messaging;

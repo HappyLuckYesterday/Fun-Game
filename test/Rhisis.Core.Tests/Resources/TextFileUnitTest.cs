@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Xunit;
 
-namespace Rhisis.Core.Test.Resources
+namespace Rhisis.Core.Tests.Resources
 {
     public class TextFileUnitTest
     {
@@ -47,7 +47,7 @@ namespace Rhisis.Core.Test.Resources
 
             string text = textFile.GetText(TextKeyWithTabs);
             Assert.Equal(TextValueWithTabs, text);
-            
+
             textFile.Dispose();
         }
 

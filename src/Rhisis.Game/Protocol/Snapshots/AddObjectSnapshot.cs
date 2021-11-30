@@ -1,11 +1,11 @@
 ﻿using Rhisis.Core.Extensions;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Entities;
+using Rhisis.Network;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.Network.Snapshots
+namespace Rhisis.Game.Protocol.Snapshots
 {
     public class AddObjectSnapshot : FFSnapshot
     {

@@ -3,7 +3,7 @@ using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Network;
-using Rhisis.Network.Packets.World.Taskbar;
+using Rhisis.Protocol.Packets.Client.World.Taskbar;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 

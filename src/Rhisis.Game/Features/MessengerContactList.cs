@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.Game.Abstractions.Components
+namespace Rhisis.Game.Features
 {
     public class MessengerContactList : GameFeature, IContactList
     {

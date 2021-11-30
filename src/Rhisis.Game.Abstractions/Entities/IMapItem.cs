@@ -1,8 +1,7 @@
 ﻿using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Map;
 
-namespace Rhisis.Game.Entities
+namespace Rhisis.Game.Abstractions.Entities
 {
     /// <summary>
     /// Describes the map item entity.

@@ -11,7 +11,7 @@ using Rhisis.Game.Common.Resources.Quests;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.World.Systems.Initializers
+namespace Rhisis.Game.Systems.Initializers
 {
     [Injectable]
     public sealed class PlayerQuestInitializer : IPlayerInitializer

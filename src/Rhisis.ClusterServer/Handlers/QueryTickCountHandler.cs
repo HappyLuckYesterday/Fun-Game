@@ -1,7 +1,7 @@
 ﻿using Rhisis.ClusterServer.Abstractions;
 using Rhisis.ClusterServer.Packets;
 using Rhisis.Network;
-using Rhisis.Network.Packets.Cluster;
+using Rhisis.Protocol.Packets.Client.Cluster;
 using Sylver.HandlerInvoker.Attributes;
 
 namespace Rhisis.ClusterServer.Handlers

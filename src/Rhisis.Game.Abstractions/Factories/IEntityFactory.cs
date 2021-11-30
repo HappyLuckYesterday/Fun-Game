@@ -2,7 +2,6 @@
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Common;
-using Rhisis.Game.Entities;
 
 namespace Rhisis.Game.Abstractions.Factories
 {

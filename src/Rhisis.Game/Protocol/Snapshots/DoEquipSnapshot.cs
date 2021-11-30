@@ -1,8 +1,9 @@
 ﻿using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Network;
 using System;
 
-namespace Rhisis.Network.Snapshots
+namespace Rhisis.Game.Protocol.Snapshots
 {
     public class DoEquipSnapshot : FFSnapshot
     {

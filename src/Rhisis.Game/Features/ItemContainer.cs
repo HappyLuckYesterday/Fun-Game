@@ -7,8 +7,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Game.Abstractions;
 
-namespace Rhisis.Game.Abstractions.Components
+namespace Rhisis.Game.Features
 {
     public class ItemContainer<TItem> : IItemContainer
         where TItem : class, IItem

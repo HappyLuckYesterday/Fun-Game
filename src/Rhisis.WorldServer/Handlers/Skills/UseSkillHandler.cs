@@ -3,12 +3,12 @@ using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Snapshots.Skills;
 using Rhisis.Network;
-using Rhisis.Network.Packets.World;
+using Rhisis.Protocol.Packets.Client.World;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Linq;
 
-namespace Rhisis.WorldServer.Handlers
+namespace Rhisis.WorldServer.Handlers.Skills
 {
     [Handler]
     public class UseSkillHandler

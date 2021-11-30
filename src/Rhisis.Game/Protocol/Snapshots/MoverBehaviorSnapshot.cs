@@ -1,8 +1,9 @@
 ﻿using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Common;
+using Rhisis.Network;
 
-namespace Rhisis.Network.Snapshots
+namespace Rhisis.Game.Protocol.Snapshots
 {
     public class MoverBehaviorSnapshot : FFSnapshot
     {

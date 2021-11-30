@@ -9,7 +9,7 @@ using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Network;
 using Rhisis.Network.Core.Servers;
-using Rhisis.Network.Packets.Cluster;
+using Rhisis.Protocol.Packets.Client.Cluster;
 using Sylver.HandlerInvoker.Attributes;
 using System.Collections.Generic;
 using System.Linq;

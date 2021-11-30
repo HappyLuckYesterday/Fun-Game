@@ -8,7 +8,6 @@ using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources.Quests;
-using Rhisis.Game.Entities;
 using Rhisis.Game.Protocol.Snapshots.Quests;
 using LiteNetwork.Protocol.Abstractions;
 using System;

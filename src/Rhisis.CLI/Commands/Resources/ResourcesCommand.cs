@@ -1,5 +1,5 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
-using Rhisis.CLI.Commands.Game.Quests;
+using Rhisis.CLI.Commands.Resources.Quests;
 
 namespace Rhisis.CLI.Commands.Resources
 {

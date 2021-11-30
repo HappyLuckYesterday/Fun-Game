@@ -11,7 +11,6 @@ using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Game.Entities;
 using Rhisis.Network;
 using Rhisis.Network.Snapshots;
 using System.Linq;

@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Features;
+using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Abstractions.Map;
 
 namespace Rhisis.Game.Abstractions.Entities

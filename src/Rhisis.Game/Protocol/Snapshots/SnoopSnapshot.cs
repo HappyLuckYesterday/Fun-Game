@@ -1,4 +1,6 @@
-﻿namespace Rhisis.Network.Snapshots
+﻿using Rhisis.Network;
+
+namespace Rhisis.Game.Protocol.Snapshots
 {
     public class SnoopSnapshot : FFSnapshot
     {

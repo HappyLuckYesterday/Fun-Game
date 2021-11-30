@@ -4,7 +4,7 @@ using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Systems;
 using System.Linq;
 
-namespace Rhisis.World.Systems
+namespace Rhisis.Game.Systems
 {
     [Injectable]
     public sealed class RegionTriggerSystem : IRegionTriggerSystem

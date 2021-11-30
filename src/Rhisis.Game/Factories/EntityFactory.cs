@@ -8,7 +8,6 @@ using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Behavior;
-using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Factories;
 using Rhisis.Game.Abstractions.Map;

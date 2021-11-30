@@ -1,8 +1,7 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Common;
 
-namespace Rhisis.Game.Abstractions.Features
+namespace Rhisis.Game.Abstractions.Features.Battle
 {
     /// <summary>
     /// Provides a mechanism to manage the battle features.

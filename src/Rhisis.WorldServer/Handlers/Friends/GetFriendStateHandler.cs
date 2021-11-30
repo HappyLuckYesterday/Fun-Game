@@ -3,7 +3,7 @@ using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Common;
 using Rhisis.Network;
-using Rhisis.Network.Packets.World.Friends;
+using Rhisis.Protocol.Packets.Client.World.Friends;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Collections.Generic;

@@ -10,6 +10,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
+    <ProjectReference Include="..\Rhisis.Game.Common\Rhisis.Game.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Packets\Server\" />
   </ItemGroup>
 
 </Project>

@@ -11,7 +11,6 @@ using Rhisis.Game;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Behavior;
 using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Messaging;
@@ -25,12 +24,12 @@ using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Protocol.Packets;
 using Rhisis.Game.Protocol.Snapshots.Friends;
 using Rhisis.Network;
-using Rhisis.Network.Packets.World;
 using Rhisis.Network.Snapshots;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Protocol.Packets.Client.World;
 
 namespace Rhisis.WorldServer.Handlers
 {
