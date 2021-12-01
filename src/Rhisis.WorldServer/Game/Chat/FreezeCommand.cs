@@ -3,7 +3,7 @@ using System;
 using Rhisis.Game.Common;
 using Rhisis.Game.Abstractions.Features.Chat;
 using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Network.Snapshots;
+using Rhisis.Game.Protocol.Snapshots;
 using System.Collections.Generic;
 using System.Linq;
 using Rhisis.WorldServer.Abstractions;

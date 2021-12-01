@@ -1,5 +1,4 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
-using Rhisis.CLI.Commands.Game.Quests;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.Infrastructure.Scripting.Quests;

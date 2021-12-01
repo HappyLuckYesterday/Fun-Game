@@ -2,8 +2,8 @@
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Protocol.Snapshots;
-using Rhisis.Network;
-using Rhisis.Network.Snapshots;
+using Rhisis.Protocol;
+using Rhisis.Game.Protocol.Snapshots;
 using System.Collections.Generic;
 using System.Linq;
 

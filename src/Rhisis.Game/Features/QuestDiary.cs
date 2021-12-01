@@ -9,12 +9,11 @@ using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.Game.Protocol.Snapshots.Quests;
-using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Protocol.Abstractions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Rhisis.Game.Features
 {
@@ -126,7 +125,7 @@ namespace Rhisis.Game.Features
             }
         }
 
-        public void Serialize(ILitePacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             packet.Write((byte)ActiveQuests.Count());
             foreach (IQuest quest in ActiveQuests)

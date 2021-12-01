@@ -1,10 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Internal;
+﻿using LiteNetwork.Protocol.Abstractions;
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Common;
-using LiteNetwork.Protocol.Abstractions;
-using System;
+using Rhisis.Protocol.Abstractions;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -127,7 +126,7 @@ namespace Rhisis.Game.Features
             }
         }
 
-        public void Serialize(ILitePacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             IEnumerable<IBuff> activeBuffs = _buffs.Where(x => !x.HasExpired);
 

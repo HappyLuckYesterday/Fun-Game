@@ -5,7 +5,7 @@ using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Network.Snapshots;
+using Rhisis.Game.Protocol.Snapshots;
 using System;
 using System.Collections.Generic;
 

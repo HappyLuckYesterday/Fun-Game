@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Rhisis.Network.Core.Servers
+namespace Rhisis.Protocol.Core.Servers
 {
     /// <summary>
     /// Defines the cluster server data structure.

@@ -1,15 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.IO;
 using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Components;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Factories;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
-using Rhisis.Network;
-using Rhisis.Network.Snapshots;
-using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Game.Protocol.Snapshots;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Abstractions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -238,7 +237,7 @@ namespace Rhisis.Game.Features
             }
         }
 
-        public void Serialize(ILitePacketStream packet) => _container.Serialize(packet);
+        public void Serialize(IFFPacket packet) => _container.Serialize(packet);
 
         public IEnumerator<IItem> GetEnumerator() => _container.GetEnumerator();
 

@@ -1,6 +1,6 @@
 ﻿using Sylver.Network.Client;
 
-namespace Rhisis.Network.Core
+namespace Rhisis.Protocol.Core
 {
     /// <summary>
     /// Defines a mechanism to connect to the core server.

@@ -5,7 +5,7 @@ using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Protocol.Abstractions;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -72,7 +72,7 @@ namespace Rhisis.Game
 
         public bool IsCoolTimeElapsed() => _nextSkillUsageTime < Time.GetElapsedTime();
 
-        public void Serialize(ILitePacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             packet.Write(Id);
             packet.Write(Level);

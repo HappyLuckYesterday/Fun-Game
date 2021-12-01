@@ -14,7 +14,7 @@ using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Resources.Loaders;
 using Rhisis.Infrastructure.Persistance;
-using Rhisis.Network.Core.Servers;
+using Rhisis.Protocol.Core.Servers;
 using Rhisis.WorldServer.Abstractions;
 using Sylver.HandlerInvoker;
 using System;

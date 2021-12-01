@@ -1,6 +1,6 @@
 ﻿using LiteNetwork.Protocol.Abstractions;
 using Rhisis.ClusterServer.Abstractions;
-using Rhisis.Network.Core;
+using Rhisis.Protocol.Core;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 

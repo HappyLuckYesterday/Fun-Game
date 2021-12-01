@@ -2,7 +2,7 @@
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Snapshots.Skills;
-using Rhisis.Network;
+using Rhisis.Protocol;
 using Rhisis.Protocol.Packets.Client.World;
 using Sylver.HandlerInvoker.Attributes;
 using System;

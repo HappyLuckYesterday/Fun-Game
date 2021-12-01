@@ -1,7 +1,7 @@
 ﻿using Rhisis.Game;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Features.Chat;
-using Rhisis.Network;
+using Rhisis.Protocol;
 using Rhisis.Protocol.Packets.Client.World;
 using Sylver.HandlerInvoker.Attributes;
 using System;

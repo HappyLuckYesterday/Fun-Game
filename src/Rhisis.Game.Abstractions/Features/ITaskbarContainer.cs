@@ -1,4 +1,4 @@
-﻿using Rhisis.Game.Abstractions.Protocol;
+﻿using Rhisis.Protocol.Abstractions;
 using System.Collections.Generic;
 
 namespace Rhisis.Game.Abstractions.Features

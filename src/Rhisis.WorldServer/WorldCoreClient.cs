@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Network.Core;
+using Rhisis.Protocol.Core;
 using System;
 using System.Threading.Tasks;
 

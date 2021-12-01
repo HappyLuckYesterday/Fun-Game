@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Rhisis.Protocol.Abstractions;
 
 namespace Rhisis.Game.Entities
 {
@@ -76,12 +77,9 @@ namespace Rhisis.Game.Entities
 
         public bool Equals(IWorldObject other) => Id == other.Id;
 
-        public void Send(ILitePacketStream packet)
-        {
-            throw new InvalidOperationException("A NPC cannot send a packet to itself.");
-        }
+        public void Send(IFFPacket packet) => throw new InvalidOperationException("A NPC cannot send a packet to itself.");
 
-        public void SendToVisible(ILitePacketStream packet)
+        public void SendToVisible(IFFPacket packet)
         {
             IEnumerable<IPlayer> visiblePlayers = VisibleObjects.OfType<IPlayer>();
 

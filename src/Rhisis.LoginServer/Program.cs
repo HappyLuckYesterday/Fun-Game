@@ -9,13 +9,13 @@ using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.LoginServer.Abstractions;
 using Rhisis.LoginServer.Core;
 using Rhisis.LoginServer.Core.Abstractions;
 using Rhisis.LoginServer.Packets;
-using Rhisis.Network;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Abstractions;
 using Sylver.HandlerInvoker;
 using System;
 using System.Threading.Tasks;
@@ -97,7 +97,12 @@ namespace Rhisis.LoginServer
             await host
                 .AddHandlerParameterTransformer<ILitePacketStream, IPacketDeserializer>((source, dest) =>
                 {
-                    dest?.Deserialize(source);
+                    if (source is not IFFPacket packet)
+                    {
+                        throw new InvalidCastException("Failed to convert a lite packet stream into a Flyff packet stream.");
+                    }
+
+                    dest?.Deserialize(packet);
                     return dest;
                 })
                 .RunAsync();

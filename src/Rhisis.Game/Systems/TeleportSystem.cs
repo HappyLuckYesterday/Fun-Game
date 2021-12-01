@@ -4,8 +4,8 @@ using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
-using Rhisis.Network;
-using Rhisis.Network.Snapshots;
+using Rhisis.Protocol;
+using Rhisis.Game.Protocol.Snapshots;
 using System;
 
 namespace Rhisis.Game.Systems

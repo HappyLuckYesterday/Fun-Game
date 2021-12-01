@@ -6,8 +6,8 @@ using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Protocol.Snapshots.Skills;
-using Rhisis.Network;
-using Rhisis.Network.Snapshots;
+using Rhisis.Protocol;
+using Rhisis.Game.Protocol.Snapshots;
 using System.Collections.Generic;
 
 namespace Rhisis.Game.Systems

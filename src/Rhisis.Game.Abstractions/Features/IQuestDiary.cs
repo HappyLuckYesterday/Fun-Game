@@ -1,5 +1,5 @@
-﻿using Rhisis.Game.Abstractions.Protocol;
-using Rhisis.Game.Common.Resources.Quests;
+﻿using Rhisis.Game.Common.Resources.Quests;
+using Rhisis.Protocol.Abstractions;
 using System.Collections.Generic;
 
 namespace Rhisis.Game.Abstractions.Features

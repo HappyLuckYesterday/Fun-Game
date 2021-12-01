@@ -2,7 +2,7 @@
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Protocol.Abstractions;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -45,7 +45,7 @@ namespace Rhisis.Game
 
         public override int GetHashCode() => (int)Id;
 
-        public override void Serialize(ILitePacketStream packet)
+        public override void Serialize(IFFPacket packet)
         {
             packet.WriteInt16((short)Type);
             packet.WriteInt16((short)SkillId);

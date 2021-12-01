@@ -2,7 +2,7 @@
 using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Common;
-using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Protocol.Abstractions;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -36,7 +36,7 @@ namespace Rhisis.Game
 
         public bool Equals([AllowNull] IBuff other) => Id == other?.Id;
 
-        public virtual void Serialize(ILitePacketStream packet)
+        public virtual void Serialize(IFFPacket packet)
         {
             // Nothing to do.
         }

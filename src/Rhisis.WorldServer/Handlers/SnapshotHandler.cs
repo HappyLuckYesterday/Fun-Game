@@ -1,7 +1,7 @@
 ﻿using LiteNetwork.Protocol.Abstractions;
 using Microsoft.Extensions.Logging;
 using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Network;
+using Rhisis.Protocol;
 using Sylver.HandlerInvoker;
 using Sylver.HandlerInvoker.Attributes;
 using System;

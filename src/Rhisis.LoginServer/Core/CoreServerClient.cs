@@ -2,8 +2,8 @@
 using LiteNetwork.Protocol.Abstractions;
 using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
-using Rhisis.Network.Core;
-using Rhisis.Network.Core.Servers;
+using Rhisis.Protocol.Core;
+using Rhisis.Protocol.Core.Servers;
 using Sylver.HandlerInvoker;
 using System;
 using System.Threading.Tasks;

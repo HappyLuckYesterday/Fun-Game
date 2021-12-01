@@ -1,6 +1,6 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;
+using Rhisis.Protocol.Abstractions;
 using System;
 using System.Collections.Generic;
 

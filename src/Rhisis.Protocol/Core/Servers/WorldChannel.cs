@@ -1,4 +1,4 @@
-﻿namespace Rhisis.Network.Core.Servers
+﻿namespace Rhisis.Protocol.Core.Servers
 {
     /// <summary>
     /// Defines the world channel data structure.

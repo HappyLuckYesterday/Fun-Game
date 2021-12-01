@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Network;
+using Rhisis.Protocol;
 using System;
 
 namespace Rhisis.Game.Protocol.Snapshots

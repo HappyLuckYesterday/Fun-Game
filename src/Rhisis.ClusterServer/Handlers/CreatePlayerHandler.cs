@@ -10,7 +10,7 @@ using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
-using Rhisis.Network;
+using Rhisis.Protocol;
 using Rhisis.Protocol.Packets.Client.Cluster;
 using Sylver.HandlerInvoker.Attributes;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-﻿using Rhisis.Network;
+﻿using Rhisis.Protocol;
 
 namespace Rhisis.Game.Protocol.Packets
 {

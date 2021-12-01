@@ -1,8 +1,7 @@
-﻿using LiteNetwork.Protocol.Abstractions;
-using Rhisis.Core;
-using Rhisis.Game.Abstractions.Protocol;
+﻿using Rhisis.Core;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
+using Rhisis.Protocol.Abstractions;
 
 namespace Rhisis.Game.Abstractions
 {
@@ -84,6 +83,6 @@ namespace Rhisis.Game.Abstractions
         /// </summary>
         /// <param name="packet">Current packet stream.</param>
         /// <param name="itemIndex">Item storage index.</param>
-        void Serialize(ILitePacketStream packet, int itemIndex);
+        void Serialize(IFFPacket packet, int itemIndex);
     }
 }

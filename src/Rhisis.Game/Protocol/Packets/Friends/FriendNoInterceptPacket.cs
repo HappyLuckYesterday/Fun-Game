@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Common;
-using Rhisis.Network;
+using Rhisis.Protocol;
 
 namespace Rhisis.Game.Protocol.Packets.Friends
 {

@@ -1,7 +1,7 @@
 ﻿using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Common;
-using Rhisis.Network;
+using Rhisis.Protocol;
 
 namespace Rhisis.Game.Protocol.Snapshots
 {

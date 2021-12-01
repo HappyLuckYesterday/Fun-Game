@@ -1,5 +1,5 @@
 ﻿using Rhisis.Core.Common;
-using Rhisis.Game.Abstractions.Protocol;
+using Rhisis.Protocol.Abstractions;
 
 namespace Rhisis.Game.Abstractions
 {

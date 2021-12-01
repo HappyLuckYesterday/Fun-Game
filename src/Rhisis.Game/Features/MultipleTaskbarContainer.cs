@@ -1,6 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Features;
-using Rhisis.Game.Abstractions.Protocol;
-using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Protocol.Abstractions;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +30,7 @@ namespace Rhisis.Game.Features
             return _levels[level];
         }
 
-        public void Serialize(ILitePacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             packet.Write(Count);
 

@@ -13,9 +13,9 @@ using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Game;
-using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Infrastructure.Persistance;
-using Rhisis.Network;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Abstractions;
 using Rhisis.WorldServer.Abstractions;
 using Sylver.HandlerInvoker;
 using System;
@@ -94,7 +94,12 @@ namespace Rhisis.WorldServer
             await host
                 .AddHandlerParameterTransformer<ILitePacketStream, IPacketDeserializer>((source, dest) =>
                 {
-                    dest?.Deserialize(source);
+                    if (source is not IFFPacket packet)
+                    {
+                        throw new InvalidCastException("Failed to convert a lite packet stream into a Flyff packet stream.");
+                    }
+
+                    dest?.Deserialize(packet);
                     return dest;
                 })
                 .RunAsync();

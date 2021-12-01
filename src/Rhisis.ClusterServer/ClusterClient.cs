@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Rhisis.ClusterServer.Abstractions;
 using Rhisis.ClusterServer.Packets;
 using Rhisis.Core.Helpers;
-using Rhisis.Network;
+using Rhisis.Protocol;
 using Sylver.HandlerInvoker;
 using System;
 using System.Net.Sockets;

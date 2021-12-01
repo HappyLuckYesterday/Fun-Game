@@ -1,7 +1,7 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
+using Rhisis.Protocol.Abstractions;
 using System;
 
 namespace Rhisis.Game.Abstractions

@@ -11,8 +11,8 @@ using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Network;
-using Rhisis.Network.Snapshots;
+using Rhisis.Protocol;
+using Rhisis.Game.Protocol.Snapshots;
 using System.Linq;
 
 namespace Rhisis.Game.Behavior.Default

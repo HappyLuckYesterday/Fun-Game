@@ -1,6 +1,6 @@
 ﻿using Rhisis.ClusterServer.Abstractions;
 using Rhisis.ClusterServer.Structures;
-using Rhisis.Network;
+using Rhisis.Protocol;
 using System.Collections.Generic;
 
 namespace Rhisis.ClusterServer.Packets

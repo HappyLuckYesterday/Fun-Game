@@ -1,5 +1,5 @@
 ﻿using LiteNetwork.Protocol.Abstractions;
-using Rhisis.Network.Core.Servers;
+using Rhisis.Protocol.Core.Servers;
 using System.Collections.Generic;
 
 namespace Rhisis.LoginServer.Core.Abstractions

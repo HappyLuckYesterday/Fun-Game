@@ -2,7 +2,7 @@
 using LiteNetwork.Protocol.Abstractions;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Network.Core;
+using Rhisis.Protocol.Core;
 using Sylver.HandlerInvoker.Attributes;
 
 namespace Rhisis.ClusterServer.Core.Handlers

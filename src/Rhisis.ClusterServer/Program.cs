@@ -13,11 +13,11 @@ using Rhisis.ClusterServer.Core;
 using Rhisis.ClusterServer.Packets;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Resources;
 using Rhisis.Infrastructure.Persistance;
-using Rhisis.Network;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Abstractions;
 using Sylver.HandlerInvoker;
 using System;
 using System.Threading.Tasks;
@@ -98,7 +98,12 @@ namespace Rhisis.ClusterServer
             await host
                 .AddHandlerParameterTransformer<ILitePacketStream, IPacketDeserializer>((source, dest) =>
                 {
-                    dest?.Deserialize(source);
+                    if (source is not IFFPacket packet)
+                    {
+                        throw new InvalidCastException("Failed to convert a lite packet stream into a Flyff packet stream.");
+                    }
+
+                    dest?.Deserialize(packet);
                     return dest;
                 })
                 .RunAsync();

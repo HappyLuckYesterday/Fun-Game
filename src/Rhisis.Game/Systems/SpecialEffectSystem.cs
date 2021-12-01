@@ -3,7 +3,7 @@ using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
-using Rhisis.Network.Snapshots;
+using Rhisis.Game.Protocol.Snapshots;
 
 namespace Rhisis.Game.Systems
 {

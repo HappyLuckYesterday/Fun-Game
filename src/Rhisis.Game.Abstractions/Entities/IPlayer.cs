@@ -2,9 +2,9 @@
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Abstractions.Features.Battle;
 using Rhisis.Game.Abstractions.Features.Chat;
-using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
+using Rhisis.Protocol.Abstractions;
 using System;
 
 namespace Rhisis.Game.Abstractions.Entities

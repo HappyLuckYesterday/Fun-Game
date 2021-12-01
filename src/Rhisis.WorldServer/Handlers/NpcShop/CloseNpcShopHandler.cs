@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Network;
+using Rhisis.Protocol;
 using Sylver.HandlerInvoker.Attributes;
 
 namespace Rhisis.WorldServer.Handlers.NpcShop

@@ -6,7 +6,7 @@ using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
-using Rhisis.Network.Snapshots;
+using Rhisis.Game.Protocol.Snapshots;
 using System;
 using System.Collections.Generic;
 

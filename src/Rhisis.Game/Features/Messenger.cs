@@ -3,10 +3,11 @@ using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets.Friends;
 using Rhisis.Game.Protocol.Snapshots.Friends;
-using Rhisis.Network;
-using Rhisis.Network.Snapshots;
+using Rhisis.Protocol;
+using Rhisis.Game.Protocol.Snapshots;
 using LiteNetwork.Protocol.Abstractions;
 using System;
+using Rhisis.Protocol.Abstractions;
 
 namespace Rhisis.Game.Features
 {
@@ -112,7 +113,7 @@ namespace Rhisis.Game.Features
             }
         }
 
-        public void Serialize(ILitePacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             packet.WriteInt32((int)Status);
             Friends.Serialize(packet);

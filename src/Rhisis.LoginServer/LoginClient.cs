@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Core.Helpers;
 using Rhisis.LoginServer.Abstractions;
 using Rhisis.LoginServer.Packets;
-using Rhisis.Network;
+using Rhisis.Protocol;
 using Sylver.HandlerInvoker;
 using System;
 using System.Net.Sockets;

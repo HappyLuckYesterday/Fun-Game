@@ -1,6 +1,6 @@
 ﻿using Rhisis.LoginServer.Abstractions;
 using Rhisis.LoginServer.Packets;
-using Rhisis.Network;
+using Rhisis.Protocol;
 using Rhisis.Protocol.Packets.Client;
 using Sylver.HandlerInvoker.Attributes;
 

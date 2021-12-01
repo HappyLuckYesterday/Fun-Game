@@ -1,8 +1,8 @@
 ﻿using LiteNetwork.Protocol;
 using Rhisis.LoginServer.Abstractions;
 using Rhisis.LoginServer.Core.Abstractions;
-using Rhisis.Network;
-using Rhisis.Network.Core;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Core;
 using Rhisis.Protocol.Packets.Client.Login;
 using Sylver.HandlerInvoker.Attributes;
 using System;

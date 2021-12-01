@@ -11,7 +11,7 @@ using Rhisis.Game.Common.Resources.Dialogs;
 using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.Game.Protocol.Snapshots;
 using Rhisis.Game.Protocol.Snapshots.Quests;
-using Rhisis.Network;
+using Rhisis.Protocol;
 using System;
 using System.Collections.Generic;
 using System.Linq;

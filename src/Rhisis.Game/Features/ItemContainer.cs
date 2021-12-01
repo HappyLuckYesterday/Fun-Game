@@ -1,13 +1,12 @@
 ﻿using Rhisis.Core.Extensions;
-using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Features;
 using Rhisis.Game.Common;
-using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Protocol.Abstractions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Rhisis.Game.Abstractions;
 
 namespace Rhisis.Game.Features
 {
@@ -283,7 +282,7 @@ namespace Rhisis.Game.Features
             }
         }
 
-        public void Serialize(ILitePacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             for (int i = 0; i < MaxCapacity; i++)
             {

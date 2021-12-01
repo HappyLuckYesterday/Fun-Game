@@ -1,6 +1,6 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Game.Abstractions;
-using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Protocol.Abstractions;
 
 namespace Rhisis.Game
 {
@@ -49,7 +49,7 @@ namespace Rhisis.Game
         /// Serializes this shortcut into the give packet stream.
         /// </summary>
         /// <param name="packet">Packet stream.</param>
-        public void Serialize(ILitePacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             packet.Write(Slot);
             packet.Write((uint)Type);

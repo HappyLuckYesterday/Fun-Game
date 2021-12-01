@@ -7,12 +7,12 @@ using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Caching;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Messaging;
-using Rhisis.Game.Abstractions.Protocol;
 using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Protocol.Packets;
-using Rhisis.Network;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Abstractions;
 using Rhisis.WorldServer.Abstractions;
 using Sylver.HandlerInvoker;
 using Sylver.HandlerInvoker.Exceptions;
@@ -49,16 +49,8 @@ namespace Rhisis.WorldServer
             _messaging = messaging;
         }
 
-        /// <summary>
-        /// Initialize the client and send welcome packet.
-        /// </summary>
-        public void Initialize(IServiceProvider serviceProvider)
-        {
-            using var welcomePacket = new WelcomePacket(SessionId);
-            Send(welcomePacket);
-        }
+        public void Send(IFFPacket packet) => base.Send(packet);
 
-        /// <inheritdoc />
         public override Task HandleMessageAsync(ILitePacketStream packet)
         {
             uint packetHeaderNumber = 0;
@@ -151,6 +143,9 @@ namespace Rhisis.WorldServer
         protected override void OnConnected()
         {
             _logger.LogInformation("New client connected from {0}.", Socket.RemoteEndPoint);
+
+            using var welcomePacket = new WelcomePacket(SessionId);
+            Send(welcomePacket);
         }
 
         protected override void OnDisconnected()

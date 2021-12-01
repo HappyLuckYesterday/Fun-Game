@@ -1,7 +1,7 @@
-﻿using LiteNetwork.Protocol.Abstractions;
-using Rhisis.Core.Structures;
+﻿using Rhisis.Core.Structures;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Common;
+using Rhisis.Protocol.Abstractions;
 using System;
 using System.Collections.Generic;
 
@@ -100,12 +100,12 @@ namespace Rhisis.Game.Abstractions.Entities
         /// Sends a packet to the current object.
         /// </summary>
         /// <param name="packet"></param>
-        void Send(ILitePacketStream packet);
+        void Send(IFFPacket packet);
 
         /// <summary>
         /// Sends a packet to every visible objects.
         /// </summary>
         /// <param name="packet"></param>
-        void SendToVisible(ILitePacketStream packet);
+        void SendToVisible(IFFPacket packet);
     }
 }

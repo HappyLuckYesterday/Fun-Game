@@ -1,4 +1,4 @@
-﻿namespace Rhisis.Network.Core
+﻿namespace Rhisis.Protocol.Core
 {
     /// <summary>
     /// Defines core server/client authentication result types.

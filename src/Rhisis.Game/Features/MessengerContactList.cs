@@ -1,5 +1,5 @@
 ﻿using Rhisis.Game.Abstractions.Features;
-using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Protocol.Abstractions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -40,7 +40,7 @@ namespace Rhisis.Game.Features
 
         public IContact Get(int contactId) => _contacts.FirstOrDefault(x => x.Id == contactId);
 
-        public void Serialize(ILitePacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             packet.WriteInt32(Count);
 

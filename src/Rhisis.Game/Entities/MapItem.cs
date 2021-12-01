@@ -4,7 +4,7 @@ using Rhisis.Game.Abstractions;
 using Rhisis.Game.Abstractions.Entities;
 using Rhisis.Game.Abstractions.Map;
 using Rhisis.Game.Common;
-using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Protocol.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -79,14 +79,8 @@ namespace Rhisis.Game.Entities
         public bool Equals(IWorldObject other) => Id == other.Id;
 
 
-        public void Send(ILitePacketStream packet)
-        {
-            throw new InvalidOperationException($"Cannot send a packet to a map item.");
-        }
+        public void Send(IFFPacket packet) => throw new InvalidOperationException($"Cannot send a packet to a map item.");
 
-        public void SendToVisible(ILitePacketStream packet)
-        {
-            throw new NotImplementedException();
-        }
+        public void SendToVisible(IFFPacket packet) => throw new NotImplementedException();
     }
 }

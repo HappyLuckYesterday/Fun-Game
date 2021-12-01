@@ -5,12 +5,13 @@ using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Protocol.Snapshots.Skills;
-using Rhisis.Network.Snapshots;
+using Rhisis.Game.Protocol.Snapshots;
 using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Protocol.Abstractions;
 
 namespace Rhisis.Game.Features
 {
@@ -90,7 +91,7 @@ namespace Rhisis.Game.Features
             SkillPoints = 0;
         }
 
-        public void Serialize(ILitePacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             var skillCount = _skills.Count();
             var otherSkillCount = (int)DefineJob.JobMax.MAX_SKILLS - skillCount;

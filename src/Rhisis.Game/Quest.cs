@@ -4,6 +4,7 @@ using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Protocol.Abstractions;
 
 namespace Rhisis.Game
 {
@@ -45,7 +46,7 @@ namespace Rhisis.Game
             DatabaseQuestId = questDatabaseId;
         }
 
-        public void Serialize(ILitePacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             packet.Write<short>((short)State); // state
             packet.Write<short>(0); // time limit
