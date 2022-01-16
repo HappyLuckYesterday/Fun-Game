@@ -1,5 +1,5 @@
-﻿using Rhisis.Core.Extensions;
-using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
+using Rhisis.Core.Extensions;
 using System.IO;
 using System.Linq;
 

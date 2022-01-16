@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Rhisis.Game.Abstractions.Map;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions.Map;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Map;
 using Rhisis.Game.Resources;
 

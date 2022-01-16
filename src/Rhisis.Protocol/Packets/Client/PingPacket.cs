@@ -1,4 +1,4 @@
-﻿using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 using System;
 
 namespace Rhisis.Protocol.Packets.Client
@@ -22,7 +22,7 @@ namespace Rhisis.Protocol.Packets.Client
         {
             try
             {
-                Time = packet.Read<int>();
+                Time = packet.ReadInt32();
                 IsTimeOut = false;
             }
             catch (Exception)

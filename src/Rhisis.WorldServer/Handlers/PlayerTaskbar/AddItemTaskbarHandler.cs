@@ -1,7 +1,7 @@
 ﻿using Rhisis.Game;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Packets.Client.World.Taskbar;
 using Sylver.HandlerInvoker.Attributes;

@@ -1,6 +1,5 @@
-﻿using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features.Battle;
-using Rhisis.Game.Common;
+﻿using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features.Battle;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Packets.Client.World;
 using Sylver.HandlerInvoker.Attributes;

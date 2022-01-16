@@ -1,17 +1,16 @@
-﻿using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
-using Rhisis.Game.Abstractions.Resources;
+﻿using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Game.Protocol.Snapshots.Skills;
-using Rhisis.Game.Protocol.Snapshots;
-using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Protocol.Snapshots.Skills;
+using Rhisis.Protocol.Snapshots;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Rhisis.Protocol.Abstractions;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game.Features
 {

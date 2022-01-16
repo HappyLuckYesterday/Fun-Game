@@ -1,4 +1,4 @@
-﻿using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.Login
 {
@@ -10,8 +10,8 @@ namespace Rhisis.Protocol.Packets.Client.Login
 
         public void Deserialize(IFFPacket packet)
         {
-            Username = packet.Read<string>();
-            Password = packet.Read<string>();
+            Username = packet.ReadString();
+            Password = packet.ReadString();
         }
     }
 }

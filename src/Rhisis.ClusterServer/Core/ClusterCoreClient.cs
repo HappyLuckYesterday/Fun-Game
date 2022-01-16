@@ -24,7 +24,7 @@ namespace Rhisis.ClusterServer.Core
         {
             try
             {
-                var packetHeader = (CorePacketType)incomingPacketStream.ReadByte();
+                var packetHeader = (LoginCorePacketType)incomingPacketStream.ReadByte();
 
                 _handlerInvoker.Invoke(packetHeader, this, incomingPacketStream);
             }

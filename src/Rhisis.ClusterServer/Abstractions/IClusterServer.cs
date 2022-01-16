@@ -1,5 +1,4 @@
-﻿using Rhisis.Core.Structures.Configuration;
-using System;
+﻿using System;
 
 namespace Rhisis.ClusterServer.Abstractions
 {

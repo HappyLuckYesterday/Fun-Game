@@ -6,7 +6,6 @@ using Rhisis.CLI.Services;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Configuration.Models;
-using Rhisis.Infrastructure.Persistance;
 
 namespace Rhisis.CLI.Commands.Database
 {

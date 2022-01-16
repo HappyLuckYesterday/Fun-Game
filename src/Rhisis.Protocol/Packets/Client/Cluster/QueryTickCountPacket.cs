@@ -1,4 +1,4 @@
-﻿using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.Cluster
 {
@@ -8,7 +8,7 @@ namespace Rhisis.Protocol.Packets.Client.Cluster
 
         public void Deserialize(IFFPacket packet)
         {
-            Time = packet.Read<uint>();
+            Time = packet.ReadUInt32();
         }
     }
 }

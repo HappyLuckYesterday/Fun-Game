@@ -1,4 +1,4 @@
-﻿using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.World
 {
@@ -22,9 +22,9 @@ namespace Rhisis.Protocol.Packets.Client.World
         /// <inheritdoc />
         public void Deserialize(IFFPacket packet)
         {
-            ItemType = packet.Read<byte>();
-            SourceSlot = packet.Read<byte>();
-            DestinationSlot = packet.Read<byte>();
+            ItemType = packet.ReadByte();
+            SourceSlot = packet.ReadByte();
+            DestinationSlot = packet.ReadByte();
         }
     }
 }

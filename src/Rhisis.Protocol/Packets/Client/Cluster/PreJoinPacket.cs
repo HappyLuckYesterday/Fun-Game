@@ -1,4 +1,4 @@
-﻿using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.Cluster
 {
@@ -14,10 +14,10 @@ namespace Rhisis.Protocol.Packets.Client.Cluster
 
         public void Deserialize(IFFPacket packet)
         {
-            Username = packet.Read<string>();
-            CharacterId = packet.Read<int>();
-            CharacterName = packet.Read<string>();
-            BankCode = packet.Read<int>();
+            Username = packet.ReadString();
+            CharacterId = packet.ReadInt32();
+            CharacterName = packet.ReadString();
+            BankCode = packet.ReadInt32();
         }
     }
 }

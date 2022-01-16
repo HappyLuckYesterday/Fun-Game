@@ -1,4 +1,4 @@
-﻿using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.World.Taskbar
 {
@@ -12,7 +12,7 @@ namespace Rhisis.Protocol.Packets.Client.World.Taskbar
         /// <inheritdoc />
         public override void Deserialize(IFFPacket packet)
         {
-            SlotLevelIndex = packet.Read<byte>();
+            SlotLevelIndex = packet.ReadByte();
             base.Deserialize(packet);
         }
     }

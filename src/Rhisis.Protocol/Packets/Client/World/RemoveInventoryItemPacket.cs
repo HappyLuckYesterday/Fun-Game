@@ -1,4 +1,4 @@
-﻿using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.World
 {
@@ -20,8 +20,8 @@ namespace Rhisis.Protocol.Packets.Client.World
         /// <param name="packet">Incoming packet</param>
         public void Deserialize(IFFPacket packet)
         {
-            ItemIndex = packet.Read<int>();
-            Quantity = packet.Read<int>();
+            ItemIndex = packet.ReadInt32();
+            Quantity = packet.ReadInt32();
         }
     }
 }

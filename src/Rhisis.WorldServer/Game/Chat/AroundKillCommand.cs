@@ -1,6 +1,6 @@
 using Rhisis.Game.Common;
-using Rhisis.Game.Abstractions.Features.Chat;
-using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Abstractions.Features.Chat;
+using Rhisis.Abstractions.Entities;
 using System;
 
 namespace Rhisis.WorldServer.Game.Chat

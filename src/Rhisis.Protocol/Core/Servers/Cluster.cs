@@ -5,7 +5,7 @@ namespace Rhisis.Protocol.Core.Servers
     /// <summary>
     /// Defines the cluster server data structure.
     /// </summary>
-    public class Cluster : ServerDescriptor
+    public class Cluster : BaseServer
     {
         /// <summary>
         /// Gets the server type.

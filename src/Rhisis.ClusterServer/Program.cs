@@ -13,14 +13,14 @@ using Rhisis.ClusterServer.Core;
 using Rhisis.ClusterServer.Packets;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Resources;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Abstractions;
 using Sylver.HandlerInvoker;
 using System;
 using System.Threading.Tasks;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.ClusterServer
 {

@@ -1,5 +1,5 @@
-﻿using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Abstractions.Caching;
+using Rhisis.Abstractions.Entities;
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Messages;
 using Rhisis.WorldServer.Abstractions;

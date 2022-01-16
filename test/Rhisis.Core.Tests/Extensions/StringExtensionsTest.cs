@@ -1,5 +1,4 @@
 ﻿using Rhisis.Core.Extensions;
-using System;
 using Xunit;
 
 namespace Rhisis.Core.Tests.Extensions

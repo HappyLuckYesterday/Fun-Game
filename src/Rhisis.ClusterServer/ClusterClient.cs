@@ -73,8 +73,8 @@ namespace Rhisis.ClusterServer
 
             try
             {
-                packet.Read<uint>(); // DPID: Always 0xFFFFFFFF (uint.MaxValue)
-                packetHeaderNumber = packet.Read<uint>();
+                packet.ReadUInt32(); // DPID: Always 0xFFFFFFFF (uint.MaxValue)
+                packetHeaderNumber = packet.ReadUInt32();
 
 #if DEBUG
                 _logger.LogTrace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, Socket.RemoteEndPoint);

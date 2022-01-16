@@ -2,7 +2,6 @@
 using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
 using Rhisis.CLI.Services;
-using Rhisis.Core.Common;
 using Rhisis.Core.Cryptography;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Helpers;

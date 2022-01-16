@@ -1,5 +1,4 @@
 ﻿using NLua;
-using Rhisis.Core.Common;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Helpers;
 using Rhisis.Game.Common;

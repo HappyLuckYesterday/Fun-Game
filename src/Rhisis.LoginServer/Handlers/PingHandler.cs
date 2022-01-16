@@ -22,7 +22,7 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="client">Client.</param>
         /// <param name="pingPacket">Ping packet.</param>
         [HandlerAction(PacketType.PING)]
-        public void OnPing(ILoginClient client, PingPacket pingPacket)
+        public void OnPing(ILoginUser client, PingPacket pingPacket)
         {
             if (!pingPacket.IsTimeOut)
             {

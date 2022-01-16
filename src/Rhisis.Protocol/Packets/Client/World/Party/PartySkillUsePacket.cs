@@ -1,4 +1,4 @@
-﻿using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.World.Party
 {
@@ -18,8 +18,8 @@ namespace Rhisis.Protocol.Packets.Client.World.Party
         /// <inheritdoc />
         public void Deserialize(IFFPacket packet)
         {
-            PlayerId = packet.Read<uint>();
-            SkillId = packet.Read<int>();
+            PlayerId = packet.ReadUInt32();
+            SkillId = packet.ReadInt32();
         }
     }
 }

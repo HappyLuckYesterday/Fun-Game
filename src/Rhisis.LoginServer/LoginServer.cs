@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Rhisis.LoginServer
 {
-    public sealed class LoginServer : LiteServer<LoginClient>, ILoginServer
+    public sealed class LoginServer : LiteServer<LoginUser>, ILoginServer
     {
         private readonly ILogger<LoginServer> _logger;
         private readonly IRhisisDatabase _database;
@@ -38,7 +38,7 @@ namespace Rhisis.LoginServer
             _logger.LogInformation($"{nameof(LoginServer)} is started and listen on {Options.Host}:{Options.Port}.");
         }
 
-        public ILoginClient GetClientByUsername(string username)
+        public ILoginUser GetClientByUsername(string username)
             => ConnectedUsers.FirstOrDefault(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
 
         public bool IsClientConnected(string username) => GetClientByUsername(username) is not null;

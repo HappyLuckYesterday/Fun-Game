@@ -1,6 +1,6 @@
-﻿using Rhisis.Game.Abstractions.Caching;
+﻿using Rhisis.Abstractions.Caching;
 using Rhisis.Game.Protocol.Messages;
-using Rhisis.Game.Protocol.Snapshots;
+using Rhisis.Protocol.Snapshots;
 using Rhisis.WorldServer.Abstractions;
 using Sylver.HandlerInvoker.Attributes;
 using System;

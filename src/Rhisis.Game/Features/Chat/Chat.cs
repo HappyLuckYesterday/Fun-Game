@@ -1,7 +1,7 @@
 ﻿using Rhisis.Core.DependencyInjection;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features.Chat;
-using Rhisis.Game.Protocol.Snapshots;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features.Chat;
+using Rhisis.Protocol.Snapshots;
 
 namespace Rhisis.Game.Features.Chat
 {

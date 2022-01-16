@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
+using Rhisis.Abstractions.Protocol;
 using Rhisis.Core.Cryptography;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Protocol.Abstractions;
 
 namespace Rhisis.Protocol.Packets.Client.Login
 {
@@ -22,20 +22,20 @@ namespace Rhisis.Protocol.Packets.Client.Login
 
         public void Deserialize(IFFPacket packet)
         {
-            BuildVersion = packet.Read<string>();
-            Username = packet.Read<string>();
+            BuildVersion = packet.ReadString();
+            Username = packet.ReadString();
             Password = null;
 
             if (_configuration.PasswordEncryption)
             {
-                byte[] encryptedPassword = packet.Read<byte>(16 * 42);
+                byte[] encryptedPassword = packet.ReadBytes(16 * 42);
                 byte[] encryptionKey = Aes.BuildEncryptionKeyFromString(_configuration.EncryptionKey, 16);
 
                 Password = Aes.DecryptByteArray(encryptedPassword, encryptionKey);
             }
             else
             {
-                Password = packet.Read<string>();
+                Password = packet.ReadString();
             }
         }
     }

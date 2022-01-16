@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Structures;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Map;
-using Rhisis.Game.Abstractions.Systems;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Map;
+using Rhisis.Abstractions.Systems;
 using Rhisis.Game.Common;
-using Rhisis.Game.Protocol.Snapshots;
 using System;
 using System.Collections.Generic;
 

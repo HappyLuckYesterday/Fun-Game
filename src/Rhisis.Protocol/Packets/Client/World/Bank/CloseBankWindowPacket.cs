@@ -1,5 +1,5 @@
 ﻿using System;
-using Rhisis.Protocol.Abstractions;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.World.Bank
 {

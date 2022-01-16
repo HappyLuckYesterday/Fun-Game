@@ -1,6 +1,6 @@
 ﻿using System;
+using Rhisis.Abstractions.Protocol;
 using Rhisis.Game.Common;
-using Rhisis.Protocol.Abstractions;
 
 namespace Rhisis.Protocol.Packets.Client.World
 {
@@ -21,11 +21,11 @@ namespace Rhisis.Protocol.Packets.Client.World
 
         public void Deserialize(IFFPacket packet)
         {
-            Type = packet.Read<ushort>();
-            SkillIndex = packet.Read<ushort>();
-            TargetObjectId = packet.Read<uint>();
-            UseType = (SkillUseType)packet.Read<int>();
-            Control = Convert.ToBoolean(packet.Read<int>());
+            Type = packet.ReadUInt16();
+            SkillIndex = packet.ReadUInt16();
+            TargetObjectId = packet.ReadUInt32();
+            UseType = (SkillUseType)packet.ReadInt32();
+            Control = Convert.ToBoolean(packet.ReadInt32());
         }
     }
 }

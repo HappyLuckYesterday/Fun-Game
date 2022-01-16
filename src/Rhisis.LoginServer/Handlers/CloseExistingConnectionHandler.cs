@@ -1,6 +1,5 @@
 ﻿using LiteNetwork.Protocol;
 using Rhisis.LoginServer.Abstractions;
-using Rhisis.LoginServer.Core.Abstractions;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Core;
 using Rhisis.Protocol.Packets.Client.Login;
@@ -13,9 +12,9 @@ namespace Rhisis.LoginServer.Handlers
     public class CloseExistingConnectionHandler
     {
         private readonly ILoginServer _loginServer;
-        private readonly ICoreServer _coreServer;
+        private readonly ILoginCoreServer _coreServer;
 
-        public CloseExistingConnectionHandler(ILoginServer loginServer, ICoreServer coreServer)
+        public CloseExistingConnectionHandler(ILoginServer loginServer, ILoginCoreServer coreServer)
         {
             _loginServer = loginServer;
             _coreServer = coreServer;
@@ -27,7 +26,7 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="client">Client.</param>
         /// <param name="closeConnectionPacket">Close connection packet.</param>
         [HandlerAction(PacketType.CLOSE_EXISTING_CONNECTION)]
-        public void Execute(ILoginClient _, CloseConnectionPacket closeConnectionPacket)
+        public void Execute(ILoginUser _, CloseConnectionPacket closeConnectionPacket)
         {
             var otherConnectedClient = _loginServer.GetClientByUsername(closeConnectionPacket.Username);
 
@@ -37,7 +36,7 @@ namespace Rhisis.LoginServer.Handlers
             }
 
             using var packet = new LitePacket();
-            packet.Write((byte)CorePacketType.DisconnectUserFromCluster);
+            packet.Write((byte)LoginCorePacketType.DisconnectUserFromCluster);
             packet.WriteInt32(otherConnectedClient.UserId);
 
             _coreServer.SendToClusters(packet);

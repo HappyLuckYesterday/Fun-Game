@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Structures;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Factories;
-using Rhisis.Game.Abstractions.Map;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Factories;
+using Rhisis.Abstractions.Map;
 using Rhisis.Game.Common;
 using Rhisis.Game.IO.World;
 using System;

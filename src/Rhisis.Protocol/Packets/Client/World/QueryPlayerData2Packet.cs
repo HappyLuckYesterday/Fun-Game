@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Rhisis.Protocol.Abstractions;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.World
 {
@@ -19,9 +19,9 @@ namespace Rhisis.Protocol.Packets.Client.World
         public void Deserialize(IFFPacket packet)
         {
             PlayerDictionary = new Dictionary<uint, int>();
-            Size = packet.Read<uint>();
+            Size = packet.ReadUInt32();
             for (uint i = 0; i < Size; i++)
-                PlayerDictionary.Add(packet.Read<uint>(), packet.Read<int>());
+                PlayerDictionary.Add(packet.ReadUInt32(), packet.ReadInt32());
         }
     }
 }

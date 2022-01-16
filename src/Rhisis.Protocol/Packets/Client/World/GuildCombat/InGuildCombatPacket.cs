@@ -1,5 +1,5 @@
-﻿using Rhisis.Game.Common;
-using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
+using Rhisis.Game.Common;
 
 namespace Rhisis.Protocol.Packets.Client.World.GuildCombat
 {
@@ -18,8 +18,8 @@ namespace Rhisis.Protocol.Packets.Client.World.GuildCombat
         /// <inheritdoc />
         public void Deserialize(IFFPacket packet)
         {
-            GuildCombatType = (GuildCombatType)packet.Read<int>();
-            Penya = GuildCombatType == GuildCombatType.GC_IN_APP ? (uint?)packet.Read<uint>() : null;
+            GuildCombatType = (GuildCombatType)packet.ReadInt32();
+            Penya = GuildCombatType == GuildCombatType.GC_IN_APP ? (uint?)packet.ReadUInt32() : null;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Abstractions.Entities;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Packets.Client.World.Taskbar;
 using Sylver.HandlerInvoker.Attributes;

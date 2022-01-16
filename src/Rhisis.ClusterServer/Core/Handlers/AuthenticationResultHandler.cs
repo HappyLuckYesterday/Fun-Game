@@ -16,7 +16,7 @@ namespace Rhisis.ClusterServer.Core.Handlers
             _logger = logger;
         }
 
-        [HandlerAction(CorePacketType.AuthenticationResult)]
+        [HandlerAction(LoginCorePacketType.AuthenticationResult)]
         public void OnExecute(ClusterCoreClient _, ILitePacketStream packet)
         {
             var result = (CoreAuthenticationResultType)packet.ReadByte();

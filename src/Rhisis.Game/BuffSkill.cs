@@ -1,8 +1,8 @@
-﻿using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Protocol;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Protocol.Abstractions;
 using System.Collections.Generic;
 using System.Diagnostics;
 

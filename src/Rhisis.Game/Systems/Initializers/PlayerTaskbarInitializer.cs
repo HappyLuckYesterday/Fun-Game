@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.Common;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
 using System.Collections.Generic;
 using System.Linq;
 

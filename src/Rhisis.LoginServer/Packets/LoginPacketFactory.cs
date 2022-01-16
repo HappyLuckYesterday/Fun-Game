@@ -8,7 +8,7 @@ namespace Rhisis.LoginServer.Packets
 {
     public class LoginPacketFactory : ILoginPacketFactory
     {
-        public void SendWelcome(ILoginClient client, uint sessionId)
+        public void SendWelcome(ILoginUser client, uint sessionId)
         {
             using var packet = new FFPacket();
             packet.WriteHeader(PacketType.WELCOME);
@@ -17,7 +17,7 @@ namespace Rhisis.LoginServer.Packets
             client.Send(packet);
         }
 
-        public void SendPong(ILoginClient client, int time)
+        public void SendPong(ILoginUser client, int time)
         {
             using var packet = new FFPacket();
             packet.WriteHeader(PacketType.PING);
@@ -26,7 +26,7 @@ namespace Rhisis.LoginServer.Packets
             client.Send(packet);
         }
 
-        public void SendLoginError(ILoginClient client, ErrorType error)
+        public void SendLoginError(ILoginUser client, ErrorType error)
         {
             using var packet = new FFPacket();
             packet.WriteHeader(PacketType.ERROR);
@@ -35,7 +35,7 @@ namespace Rhisis.LoginServer.Packets
             client.Send(packet);
         }
 
-        public void SendServerList(ILoginClient client, string username, IEnumerable<Cluster> clusters)
+        public void SendServerList(ILoginUser client, string username, IEnumerable<Cluster> clusters)
         {
             using var packet = new FFPacket();
             packet.WriteHeader(PacketType.SRVR_LIST);

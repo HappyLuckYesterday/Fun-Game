@@ -4,7 +4,7 @@ using Rhisis.ClusterServer.Abstractions;
 using Rhisis.ClusterServer.Packets;
 using Rhisis.ClusterServer.Structures;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Game.Abstractions.Caching;
+using Rhisis.Abstractions.Caching;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;

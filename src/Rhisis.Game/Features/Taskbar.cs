@@ -1,7 +1,6 @@
-﻿using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Features;
-using LiteNetwork.Protocol.Abstractions;
-using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions;
+using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game.Features
 {

@@ -1,4 +1,4 @@
-﻿using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.World.Duel
 {
@@ -12,7 +12,7 @@ namespace Rhisis.Protocol.Packets.Client.World.Duel
         /// <inheritdoc />
         public void Deserialize(IFFPacket packet)
         {
-            PlayerId = packet.Read<uint>();
+            PlayerId = packet.ReadUInt32();
         }
     }
 }

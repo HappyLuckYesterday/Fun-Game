@@ -1,4 +1,4 @@
-﻿using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Abstractions.Entities;
 using Rhisis.Game.Common;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Packets.Client.World;

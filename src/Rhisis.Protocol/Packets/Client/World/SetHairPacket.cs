@@ -1,5 +1,5 @@
 ﻿using System;
-using Rhisis.Protocol.Abstractions;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.World
 {
@@ -33,11 +33,11 @@ namespace Rhisis.Protocol.Packets.Client.World
         /// <inheritdoc />
         public void Deserialize(IFFPacket packet)
         {
-            HairId = packet.Read<byte>();
-            R = packet.Read<byte>();
-            G = packet.Read<byte>();
-            B = packet.Read<byte>();
-            UseCoupon = Convert.ToBoolean(packet.Read<int>());
+            HairId = packet.ReadByte();
+            R = packet.ReadByte();
+            G = packet.ReadByte();
+            B = packet.ReadByte();
+            UseCoupon = Convert.ToBoolean(packet.ReadInt32());
         }
     }
 }

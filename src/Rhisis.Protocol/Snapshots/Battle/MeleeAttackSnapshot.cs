@@ -1,0 +1,19 @@
+﻿using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features.Battle;
+using Rhisis.Game.Common;
+
+namespace Rhisis.Protocol.Snapshots.Battle
+{
+    public class MeleeAttackSnapshot : FFSnapshot
+    {
+        public MeleeAttackSnapshot(IMover attacker, IMover target, AttackType attackType, AttackFlags attackFlags)
+            : base(SnapshotType.MELEE_ATTACK, attacker.Id)
+        {
+            int motion = (int)attackType.ToObjectMessageType();
+            Write(motion);
+            Write(target.Id);
+            Write(0);
+            Write((int)attackFlags);
+        }
+    }
+}

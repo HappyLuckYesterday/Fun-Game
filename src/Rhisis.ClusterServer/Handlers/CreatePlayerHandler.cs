@@ -5,7 +5,7 @@ using Rhisis.ClusterServer.Packets;
 using Rhisis.ClusterServer.Structures;
 using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Infrastructure.Persistance;

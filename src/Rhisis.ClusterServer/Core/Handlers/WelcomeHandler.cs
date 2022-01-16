@@ -19,12 +19,12 @@ namespace Rhisis.ClusterServer.Core.Handlers
             _coreOptions = coreOptions;
         }
 
-        [HandlerAction(CorePacketType.Welcome)]
+        [HandlerAction(LoginCorePacketType.Welcome)]
         public void OnExecute(ClusterCoreClient client, ILitePacketStream _)
         {
             using var packet = new LitePacket();
 
-            packet.WriteByte(value: (byte)CorePacketType.Authenticate);
+            packet.WriteByte(value: (byte)LoginCorePacketType.Authenticate);
             packet.WriteString(_coreOptions.Value.Password);
             packet.WriteByte((byte)ServerType.Cluster);
             packet.WriteByte((byte)_clusterOptions.Value.Id);

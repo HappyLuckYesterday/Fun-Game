@@ -1,6 +1,6 @@
 ﻿using Rhisis.Infrastructure.Persistance;
-using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Abstractions.Caching;
+using Rhisis.Abstractions.Entities;
 using Rhisis.Game.Protocol.Messages;
 using Sylver.HandlerInvoker.Attributes;
 using System.Linq;

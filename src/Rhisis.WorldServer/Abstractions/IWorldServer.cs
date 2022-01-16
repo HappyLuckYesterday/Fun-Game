@@ -1,5 +1,5 @@
 ﻿using LiteNetwork.Protocol.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Abstractions.Entities;
 using System;
 using System.Collections.Generic;
 

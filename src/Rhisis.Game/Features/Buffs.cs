@@ -1,9 +1,8 @@
-﻿using LiteNetwork.Protocol.Abstractions;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
+﻿using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Protocol;
 using Rhisis.Game.Common;
-using Rhisis.Protocol.Abstractions;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;

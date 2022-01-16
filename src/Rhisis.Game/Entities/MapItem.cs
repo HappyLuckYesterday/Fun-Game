@@ -1,13 +1,13 @@
 ﻿using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Map;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Map;
 using Rhisis.Game.Common;
-using Rhisis.Protocol.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game.Entities
 {

@@ -1,7 +1,7 @@
-﻿using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features.Chat;
-using Rhisis.Game.Abstractions.Messaging;
+﻿using Rhisis.Abstractions.Caching;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features.Chat;
+using Rhisis.Abstractions.Messaging;
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Protocol.Packets;

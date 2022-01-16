@@ -1,13 +1,12 @@
-﻿using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
+﻿using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets.Friends;
-using Rhisis.Game.Protocol.Snapshots.Friends;
+using Rhisis.Protocol.Snapshots.Friends;
 using Rhisis.Protocol;
-using Rhisis.Game.Protocol.Snapshots;
-using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Protocol.Snapshots;
 using System;
-using Rhisis.Protocol.Abstractions;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game.Features
 {

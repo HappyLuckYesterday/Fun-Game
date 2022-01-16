@@ -1,5 +1,5 @@
-﻿using Rhisis.Protocol.Abstractions;
-using Rhisis.Core.Structures;
+﻿using Rhisis.Core.Structures;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.World
 {
@@ -28,10 +28,10 @@ namespace Rhisis.Protocol.Packets.Client.World
         /// <inhertidoc />
         public void Deserialize(IFFPacket packet)
         {
-            ItemType = packet.Read<uint>();
-            ItemUniqueId = packet.Read<int>();
-            ItemQuantity = packet.Read<short>();
-            Position = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
+            ItemType = packet.ReadUInt32();
+            ItemUniqueId = packet.ReadInt32();
+            ItemQuantity = packet.ReadInt16();
+            Position = new Vector3(packet.ReadSingle(), packet.ReadSingle(), packet.ReadSingle());
         }
     }
 }

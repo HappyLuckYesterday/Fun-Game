@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Map;
-using Rhisis.Game.Abstractions.Systems;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Map;
+using Rhisis.Abstractions.Systems;
 using System;
 using System.Collections.Generic;
 using System.Linq;

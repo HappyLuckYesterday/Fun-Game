@@ -1,4 +1,4 @@
-﻿using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.World.Mailbox
 {
@@ -12,7 +12,7 @@ namespace Rhisis.Protocol.Packets.Client.World.Mailbox
         /// <inheritdoc />
         public void Deserialize(IFFPacket packet)
         {
-            MailId = packet.Read<int>();
+            MailId = packet.ReadInt32();
         }
     }
 }

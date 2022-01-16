@@ -1,5 +1,5 @@
-﻿using Rhisis.Game.Common;
-using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
+using Rhisis.Game.Common;
 
 namespace Rhisis.Protocol.Packets.Client.World
 {
@@ -28,10 +28,10 @@ namespace Rhisis.Protocol.Packets.Client.World
         /// <inheritdoc />
         public void Deserialize(IFFPacket packet)
         {
-            AttackMessage = (ObjectMessageType)packet.Read<uint>();
-            ObjectId = packet.Read<uint>();
-            Power = packet.Read<int>();
-            ProjectileId = packet.Read<int>();
+            AttackMessage = (ObjectMessageType)packet.ReadUInt32();
+            ObjectId = packet.ReadUInt32();
+            Power = packet.ReadInt32();
+            ProjectileId = packet.ReadInt32();
         }
     }
 }

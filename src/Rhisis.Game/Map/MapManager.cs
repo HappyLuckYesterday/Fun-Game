@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Game.Abstractions.Map;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions.Map;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.IO;
 using Rhisis.Game.IO.Dyo;
 using Rhisis.Game.IO.Rgn;

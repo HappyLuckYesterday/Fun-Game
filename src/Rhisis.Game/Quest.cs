@@ -1,10 +1,9 @@
-﻿using Rhisis.Game.Abstractions;
+﻿using Rhisis.Abstractions;
 using Rhisis.Game.Common.Resources.Quests;
-using LiteNetwork.Protocol.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rhisis.Protocol.Abstractions;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game
 {

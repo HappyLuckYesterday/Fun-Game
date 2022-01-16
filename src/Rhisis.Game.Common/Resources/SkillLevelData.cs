@@ -1,5 +1,4 @@
-﻿using Rhisis.Game.Common;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.Serialization;
 
 namespace Rhisis.Game.Common.Resources

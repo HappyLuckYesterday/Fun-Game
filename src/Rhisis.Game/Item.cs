@@ -1,10 +1,10 @@
 ﻿using Rhisis.Core.Extensions;
-using Rhisis.Game.Abstractions;
+using Rhisis.Abstractions;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Protocol.Abstractions;
 using System;
 using System.Diagnostics;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game
 {

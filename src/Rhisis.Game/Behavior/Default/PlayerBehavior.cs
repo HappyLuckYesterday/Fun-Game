@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Options;
 using Rhisis.Core.IO;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Game.Abstractions.Behavior;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Map;
+using Rhisis.Abstractions.Behavior;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Map;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources.Quests;
-using Rhisis.Game.Protocol.Snapshots;
+using Rhisis.Protocol.Snapshots;
 
 namespace Rhisis.Game.Behavior.Default
 {

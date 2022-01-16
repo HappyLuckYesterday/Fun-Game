@@ -1,6 +1,5 @@
 ﻿using LiteNetwork.Protocol.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Sylver.Network.Common;
+using Rhisis.Abstractions.Entities;
 
 namespace Rhisis.WorldServer.Abstractions
 {

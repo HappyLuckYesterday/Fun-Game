@@ -1,4 +1,4 @@
-﻿using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.World
 {
@@ -75,19 +75,19 @@ namespace Rhisis.Protocol.Packets.Client.World
         /// <inheritdoc />
         public void Deserialize(IFFPacket packet)
         {
-            WorldId = packet.Read<int>();
-            PlayerId = packet.Read<int>();
-            AuthenticationKey = packet.Read<int>();
-            PartyId = packet.Read<int>();
-            GuildId = packet.Read<int>();
-            GuildWarId = packet.Read<int>();
-            IdOfMulti = packet.Read<int>(); // what is this?
-            Slot = packet.Read<byte>();
-            PlayerName = packet.Read<string>();
-            Username = packet.Read<string>();
-            Password = packet.Read<string>();
-            MessengerState = packet.Read<int>();
-            MessengerCount = packet.Read<int>();
+            WorldId = packet.ReadInt32();
+            PlayerId = packet.ReadInt32();
+            AuthenticationKey = packet.ReadInt32();
+            PartyId = packet.ReadInt32();
+            GuildId = packet.ReadInt32();
+            GuildWarId = packet.ReadInt32();
+            IdOfMulti = packet.ReadInt32(); // what is this?
+            Slot = packet.ReadByte();
+            PlayerName = packet.ReadString();
+            Username = packet.ReadString();
+            Password = packet.ReadString();
+            MessengerState = packet.ReadInt32();
+            MessengerCount = packet.ReadInt32();
         }
     }
 }

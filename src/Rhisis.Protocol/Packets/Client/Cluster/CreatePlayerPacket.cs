@@ -1,5 +1,5 @@
-﻿using Rhisis.Game.Common;
-using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
+using Rhisis.Game.Common;
 
 namespace Rhisis.Protocol.Packets.Client.Cluster
 {
@@ -84,20 +84,20 @@ namespace Rhisis.Protocol.Packets.Client.Cluster
         /// <inheritdoc/>
         public void Deserialize(IFFPacket packet)
         {
-            Username = packet.Read<string>();
-            Password = packet.Read<string>();
-            Slot = packet.Read<byte>();
-            CharacterName = packet.Read<string>();
-            FaceId = packet.Read<byte>();
-            CostumeId = packet.Read<byte>();
-            SkinSet = packet.Read<byte>();
-            HairMeshId = packet.Read<byte>();
-            HairColor = packet.Read<uint>();
-            Gender = packet.Read<byte>();
-            Job = (DefineJob.Job)packet.Read<byte>();
-            HeadMesh = packet.Read<byte>();
-            BankPassword = packet.Read<int>();
-            AuthenticationKey = packet.Read<int>();
+            Username = packet.ReadString();
+            Password = packet.ReadString();
+            Slot = packet.ReadByte();
+            CharacterName = packet.ReadString();
+            FaceId = packet.ReadByte();
+            CostumeId = packet.ReadByte();
+            SkinSet = packet.ReadByte();
+            HairMeshId = packet.ReadByte();
+            HairColor = packet.ReadUInt32();
+            Gender = packet.ReadByte();
+            Job = (DefineJob.Job)packet.ReadByte();
+            HeadMesh = packet.ReadByte();
+            BankPassword = packet.ReadInt32();
+            AuthenticationKey = packet.ReadInt32();
         }
     }
 }

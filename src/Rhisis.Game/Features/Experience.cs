@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Game.Protocol.Snapshots;
+using Rhisis.Protocol.Snapshots;
 using System;
 using System.Collections.Generic;
 

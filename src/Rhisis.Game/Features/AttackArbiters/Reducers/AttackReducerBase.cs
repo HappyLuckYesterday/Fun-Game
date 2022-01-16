@@ -1,5 +1,5 @@
 ﻿using Rhisis.Core.Helpers;
-using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Abstractions.Entities;
 using Rhisis.Game.Common;
 using System;
 

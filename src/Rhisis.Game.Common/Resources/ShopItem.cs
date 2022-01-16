@@ -1,5 +1,4 @@
-﻿using Rhisis.Game.Common;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Rhisis.Game.Common.Resources
 {

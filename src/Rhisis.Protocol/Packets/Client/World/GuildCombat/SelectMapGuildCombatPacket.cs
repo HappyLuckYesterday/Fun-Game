@@ -1,4 +1,4 @@
-﻿using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.World.GuildCombat
 {
@@ -12,7 +12,7 @@ namespace Rhisis.Protocol.Packets.Client.World.GuildCombat
         /// <inheritdoc />
         public void Deserialize(IFFPacket packet)
         {
-            Map = packet.Read<int>();
+            Map = packet.ReadInt32();
         }
     }
 }

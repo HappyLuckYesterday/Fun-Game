@@ -12,7 +12,7 @@ namespace Rhisis.LoginServer.Abstractions
         /// </summary>
         /// <param name="username">Client username</param>
         /// <returns></returns>
-        ILoginClient GetClientByUsername(string username);
+        ILoginUser GetClientByUsername(string username);
 
         /// <summary>
         /// Verify if a client is connected to the login server.

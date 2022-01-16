@@ -1,20 +1,20 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
-using Rhisis.Game.Abstractions.Behavior;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
-using Rhisis.Game.Abstractions.Features.Battle;
-using Rhisis.Game.Abstractions.Map;
-using Rhisis.Game.Abstractions.Systems;
+using Rhisis.Abstractions.Behavior;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Features.Battle;
+using Rhisis.Abstractions.Map;
+using Rhisis.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Components;
-using Rhisis.Protocol.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game.Entities
 {

@@ -1,4 +1,4 @@
-﻿using Rhisis.Game.Abstractions.Features;
+﻿using Rhisis.Abstractions.Features;
 
 namespace Rhisis.Game.Features
 {

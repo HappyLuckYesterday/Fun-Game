@@ -1,5 +1,5 @@
-﻿using Rhisis.Game.Abstractions.Behavior;
-using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Abstractions.Behavior;
+using Rhisis.Abstractions.Entities;
 using System;
 
 namespace Rhisis.Game.Behavior.Default

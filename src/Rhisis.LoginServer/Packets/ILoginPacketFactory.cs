@@ -12,21 +12,21 @@ namespace Rhisis.LoginServer.Packets
         /// </summary>
         /// <param name="client">Client</param>
         /// <param name="sessionId">Session id</param>
-        void SendWelcome(ILoginClient client, uint sessionId);
+        void SendWelcome(ILoginUser client, uint sessionId);
 
         /// <summary>
         /// Send a pong response to the client.
         /// </summary>
         /// <param name="client">Client</param>
         /// <param name="time">Current time</param>
-        void SendPong(ILoginClient client, int time);
+        void SendPong(ILoginUser client, int time);
 
         /// <summary>
         /// Sends a login error.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="error"></param>
-        void SendLoginError(ILoginClient client, ErrorType error);
+        void SendLoginError(ILoginUser client, ErrorType error);
 
         /// <summary>
         /// Sends the available server list.
@@ -34,6 +34,6 @@ namespace Rhisis.LoginServer.Packets
         /// <param name="client"></param>
         /// <param name="username"></param>
         /// <param name="clusters"></param>
-        void SendServerList(ILoginClient client, string username, IEnumerable<Cluster> clusters);
+        void SendServerList(ILoginUser client, string username, IEnumerable<Cluster> clusters);
     }
 }

@@ -33,13 +33,13 @@ namespace Rhisis.WorldServer
         {
             try
             {
-                var packetHeader = (CorePacketType)incomingPacketStream.ReadByte();
+                var packetHeader = (LoginCorePacketType)incomingPacketStream.ReadByte();
 
-                if (packetHeader == CorePacketType.Welcome)
+                if (packetHeader == LoginCorePacketType.Welcome)
                 {
                     SendServerInformation();
                 }
-                else if (packetHeader == CorePacketType.AuthenticationResult)
+                else if (packetHeader == LoginCorePacketType.AuthenticationResult)
                 {
                     OnAuthenticationResult(incomingPacketStream);
                 }
@@ -56,7 +56,7 @@ namespace Rhisis.WorldServer
         {
             using var packet = new LitePacket();
 
-            packet.WriteByte((byte)CorePacketType.Authenticate);
+            packet.WriteByte((byte)LoginCorePacketType.Authenticate);
             packet.WriteString(_coreOptions.Value.Password);
             packet.WriteByte((byte)ServerType.World);
             packet.WriteByte((byte)_serverOptions.Value.Id);

@@ -1,19 +1,19 @@
 ﻿using Microsoft.Extensions.Options;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Factories;
-using Rhisis.Game.Abstractions.Features;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Factories;
+using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources.Quests;
-using Rhisis.Game.Protocol.Snapshots.Quests;
-using Rhisis.Protocol.Abstractions;
+using Rhisis.Protocol.Snapshots.Quests;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game.Features
 {

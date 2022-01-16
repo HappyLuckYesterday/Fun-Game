@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Core.Extensions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Systems;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources.Dialogs;
 using Rhisis.Game.Common.Resources.Quests;
-using Rhisis.Game.Protocol.Snapshots;
+using Rhisis.Protocol.Snapshots;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Packets.Client.World;
 using Sylver.HandlerInvoker.Attributes;

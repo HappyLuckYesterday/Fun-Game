@@ -1,5 +1,5 @@
-﻿using Rhisis.Protocol.Abstractions;
-using Rhisis.Core.Common;
+﻿using Rhisis.Core.Common;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.World.Taskbar
 {
@@ -48,14 +48,14 @@ namespace Rhisis.Protocol.Packets.Client.World.Taskbar
         /// <inheritdoc />
         public virtual void Deserialize(IFFPacket packet)
         {
-            SlotIndex = packet.Read<byte>();
-            Type = (ShortcutType)packet.Read<uint>();
-            ObjectId = packet.Read<uint>();
-            ObjectType = (ShortcutObjectType)packet.Read<uint>();
-            ObjectIndex = packet.Read<uint>();
-            UserId = packet.Read<uint>();
-            ObjectData = packet.Read<uint>();
-            Text = Type == ShortcutType.Chat ? packet.Read<string>() : string.Empty;
+            SlotIndex = packet.ReadByte();
+            Type = (ShortcutType)packet.ReadUInt32();
+            ObjectId = packet.ReadUInt32();
+            ObjectType = (ShortcutObjectType)packet.ReadUInt32();
+            ObjectIndex = packet.ReadUInt32();
+            UserId = packet.ReadUInt32();
+            ObjectData = packet.ReadUInt32();
+            Text = Type == ShortcutType.Chat ? packet.ReadString() : string.Empty;
         }
     }
 }

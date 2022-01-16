@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Common.Resources.Dialogs;
 using Rhisis.Game.IO.Include;

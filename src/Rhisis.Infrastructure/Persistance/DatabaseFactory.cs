@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Infrastructure.Persistance;
 using System;
 
 namespace Rhisis.Infrastructure.Persistance

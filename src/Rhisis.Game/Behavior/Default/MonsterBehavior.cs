@@ -3,16 +3,16 @@ using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Behavior;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Factories;
-using Rhisis.Game.Abstractions.Features.Battle;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Behavior;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Factories;
+using Rhisis.Abstractions.Features.Battle;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Protocol;
-using Rhisis.Game.Protocol.Snapshots;
+using Rhisis.Protocol.Snapshots;
 using System.Linq;
 
 namespace Rhisis.Game.Behavior.Default

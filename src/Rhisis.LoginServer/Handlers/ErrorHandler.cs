@@ -14,7 +14,7 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="client"></param>
         /// <param name="_"></param>
         [HandlerAction(PacketType.ERROR)]
-        public void Execute(ILoginClient client, ILitePacketStream _)
+        public void Execute(ILoginUser client, ILitePacketStream _)
         {
             client.Disconnect();
         }

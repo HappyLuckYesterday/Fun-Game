@@ -1,14 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.IO;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Systems;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Protocol.Abstractions;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game
 {

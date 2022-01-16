@@ -16,7 +16,7 @@ namespace Rhisis.ClusterServer.Core.Handlers
             _clusterServer = clusterServer;
         }
 
-        [HandlerAction(CorePacketType.DisconnectUserFromCluster)]
+        [HandlerAction(LoginCorePacketType.DisconnectUserFromCluster)]
         public void OnExecute(ClusterCoreClient _, ILitePacketStream packet)
         {
             int userId = packet.ReadInt32();

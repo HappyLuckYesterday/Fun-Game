@@ -1,6 +1,6 @@
 ﻿using LiteNetwork.Protocol.Abstractions;
 using Microsoft.Extensions.Logging;
-using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Abstractions.Entities;
 using Rhisis.Protocol;
 using Sylver.HandlerInvoker;
 using Sylver.HandlerInvoker.Attributes;
@@ -33,11 +33,11 @@ namespace Rhisis.WorldServer.Handlers
         [HandlerAction(PacketType.SNAPSHOT)]
         public void OnSnapshot(IPlayer player, ILitePacketStream packet)
         {
-            var snapshotCount = packet.Read<byte>();
+            var snapshotCount = packet.ReadByte();
 
             while (snapshotCount > 0)
             {
-                var snapshotHeaderNumber = packet.Read<short>();
+                var snapshotHeaderNumber = packet.ReadInt16();
 
                 try
                 {

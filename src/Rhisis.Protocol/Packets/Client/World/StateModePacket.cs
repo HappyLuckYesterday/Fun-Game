@@ -1,5 +1,5 @@
-﻿using Rhisis.Game.Common;
-using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
+using Rhisis.Game.Common;
 
 namespace Rhisis.Protocol.Packets.Client.World
 {
@@ -18,8 +18,8 @@ namespace Rhisis.Protocol.Packets.Client.World
         /// <inheritdoc />
         public void Deserialize(IFFPacket packet)
         {
-            StateMode = (StateMode)packet.Read<int>();
-            Flag = (StateModeBaseMotion)packet.Read<byte>();
+            StateMode = (StateMode)packet.ReadInt32();
+            Flag = (StateModeBaseMotion)packet.ReadByte();
         }
     }
 }

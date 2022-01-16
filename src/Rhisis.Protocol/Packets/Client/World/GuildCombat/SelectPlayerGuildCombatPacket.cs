@@ -1,4 +1,4 @@
-﻿using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.World.GuildCombat
 {
@@ -27,14 +27,14 @@ namespace Rhisis.Protocol.Packets.Client.World.GuildCombat
         /// <inheritdoc />
         public void Deserialize(IFFPacket packet)
         {
-            Window = packet.Read<int>() == 1;
+            Window = packet.ReadInt32() == 1;
             if (!Window)
             {
-                DefenderId = packet.Read<uint>();
-                Size = packet.Read<int>();
+                DefenderId = packet.ReadUInt32();
+                Size = packet.ReadInt32();
                 SelectPlayer = new uint?[Size.Value];
                 for (int i = 0; i < Size.Value; i++)
-                    SelectPlayer[i] = packet.Read<uint>();
+                    SelectPlayer[i] = packet.ReadUInt32();
             }
             else
             {

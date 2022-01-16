@@ -1,9 +1,9 @@
-﻿using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Abstractions.Entities;
 using Rhisis.Game.Common;
-using Rhisis.Game.Protocol.Snapshots;
-using Rhisis.Protocol.Abstractions;
+using Rhisis.Protocol.Snapshots;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game
 {

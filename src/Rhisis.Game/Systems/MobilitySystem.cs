@@ -1,7 +1,7 @@
 ﻿using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Structures;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Systems;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Systems;
 using Rhisis.Game.Common;
 using System;
 

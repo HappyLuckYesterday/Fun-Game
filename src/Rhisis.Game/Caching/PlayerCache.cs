@@ -1,6 +1,6 @@
 ﻿using Rhisis.Core.DependencyInjection;
 using Rhisis.Infrastructure.Persistance;
-using Rhisis.Game.Abstractions.Caching;
+using Rhisis.Abstractions.Caching;
 using Rhisis.Game.Common;
 using System;
 using System.Linq;

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using NLua;
 using Rhisis.Core.Extensions;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.Infrastructure.Scripting;

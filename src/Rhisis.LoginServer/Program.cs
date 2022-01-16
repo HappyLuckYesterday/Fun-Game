@@ -7,15 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
+using Rhisis.Abstractions.Protocol;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.LoginServer.Abstractions;
-using Rhisis.LoginServer.Core;
-using Rhisis.LoginServer.Core.Abstractions;
 using Rhisis.LoginServer.Packets;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Abstractions;
 using Sylver.HandlerInvoker;
 using System;
 using System.Threading.Tasks;
@@ -60,7 +58,7 @@ namespace Rhisis.LoginServer
                 .ConfigureLiteNetwork((context, builder) =>
                 {
                     // Login Server
-                    builder.AddLiteServer<ILoginServer, LoginServer, LoginClient>(options =>
+                    builder.AddLiteServer<ILoginServer, LoginServer, LoginUser>(options =>
                     {
                         var serverOptions = context.Configuration.GetSection(ConfigurationConstants.LoginServer).Get<LoginConfiguration>();
 
@@ -76,7 +74,7 @@ namespace Rhisis.LoginServer
                     });
 
                     // Core Server
-                    builder.AddLiteServer<ICoreServer, CoreServer, CoreServerClient>(options =>
+                    builder.AddLiteServer<ILoginCoreServer, LoginCoreServer, LoginCoreUser>(options =>
                     {
                         var serverConfiguration = context.Configuration.GetSection(ConfigurationConstants.CoreServer).Get<CoreConfiguration>();
 

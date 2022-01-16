@@ -1,5 +1,5 @@
 ﻿using LiteNetwork.Protocol;
-using Rhisis.Protocol.Abstractions;
+using Rhisis.Abstractions.Protocol;
 using System.IO;
 using System.Text;
 

@@ -1,5 +1,5 @@
-﻿using Rhisis.Game.Abstractions.Features;
-using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Protocol;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;

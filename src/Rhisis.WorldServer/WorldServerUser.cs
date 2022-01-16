@@ -3,16 +3,15 @@ using LiteNetwork.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Helpers;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Messaging;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Caching;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Messaging;
 using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Protocol.Packets;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Abstractions;
 using Rhisis.WorldServer.Abstractions;
 using Sylver.HandlerInvoker;
 using Sylver.HandlerInvoker.Exceptions;
@@ -20,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.WorldServer
 {
@@ -49,7 +49,7 @@ namespace Rhisis.WorldServer
             _messaging = messaging;
         }
 
-        public void Send(IFFPacket packet) => base.Send(packet);
+        public void Send(IFFPacket packet) => base.Send(packet.Buffer);
 
         public override Task HandleMessageAsync(ILitePacketStream packet)
         {
@@ -65,8 +65,8 @@ namespace Rhisis.WorldServer
 
             try
             {
-                packet.Read<uint>(); // DPID: Always 0xFFFFFFFF (uint.MaxValue)
-                packetHeaderNumber = packet.Read<uint>();
+                packet.ReadUInt32(); // DPID: Always 0xFFFFFFFF (uint.MaxValue)
+                packetHeaderNumber = packet.ReadUInt32();
                 packetType = (PacketType)packetHeaderNumber;
 #if DEBUG
                 _logger.LogTrace("[{0}] Received {1} packet from {2}.", Player, packetType, Socket.RemoteEndPoint);

@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
-    <ProjectReference Include="..\Rhisis.Game.Abstractions\Rhisis.Game.Abstractions.csproj" />
+    <ProjectReference Include="..\Rhisis.Abstractions\Rhisis.Abstractions.csproj" />
     <ProjectReference Include="..\Rhisis.Game.Common\Rhisis.Game.Common.csproj" />
     <ProjectReference Include="..\Rhisis.Infrastructure\Rhisis.Infrastructure.csproj" />
     <ProjectReference Include="..\Rhisis.Protocol\Rhisis.Protocol.csproj" />

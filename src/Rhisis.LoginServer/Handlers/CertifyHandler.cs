@@ -5,7 +5,6 @@ using Rhisis.Core.Structures.Configuration;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.LoginServer.Abstractions;
-using Rhisis.LoginServer.Core.Abstractions;
 using Rhisis.LoginServer.Packets;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Core.Servers;
@@ -23,7 +22,7 @@ namespace Rhisis.LoginServer.Handlers
         private readonly ILogger<CertifyHandler> _logger;
         private readonly LoginConfiguration _loginConfiguration;
         private readonly ILoginServer _loginServer;
-        private readonly ICoreServer _coreServer;
+        private readonly ILoginCoreServer _coreServer;
         private readonly IRhisisDatabase _database;
         private readonly ILoginPacketFactory _loginPacketFactory;
 
@@ -36,7 +35,7 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="database">Database service.</param>
         /// <param name="coreServer">Core server.</param>
         /// <param name="loginPacketFactory">Login server packet factory.</param>
-        public CertifyHandler(ILogger<CertifyHandler> logger, IOptions<LoginConfiguration> loginConfiguration, ILoginServer loginServer, ICoreServer coreServer, IRhisisDatabase database, ILoginPacketFactory loginPacketFactory)
+        public CertifyHandler(ILogger<CertifyHandler> logger, IOptions<LoginConfiguration> loginConfiguration, ILoginServer loginServer, ILoginCoreServer coreServer, IRhisisDatabase database, ILoginPacketFactory loginPacketFactory)
         {
             _logger = logger;
             _loginConfiguration = loginConfiguration.Value;
@@ -52,7 +51,7 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="client">Client.</param>
         /// <param name="certifyPacket">Certify packet.</param>
         [HandlerAction(PacketType.CERTIFY)]
-        public void Execute(ILoginClient client, CertifyPacket certifyPacket)
+        public void Execute(ILoginUser client, CertifyPacket certifyPacket)
         {
             if (certifyPacket.BuildVersion != _loginConfiguration.BuildVersion)
             {
@@ -72,10 +71,10 @@ namespace Rhisis.LoginServer.Handlers
                     AuthenticationFailed(client, ErrorType.FLYFF_PASSWORD, "bad password");
                     break;
                 case AuthenticationResult.AccountSuspended:
-                    // TODO
+                    AuthenticationFailed(client, ErrorType.FLYFF_PERMIT, "account suspended.");
                     break;
                 case AuthenticationResult.AccountTemporarySuspended:
-                    // TODO
+                    AuthenticationFailed(client, ErrorType.FLYFF_PERMIT, "account temporary suspended.");
                     break;
                 case AuthenticationResult.AccountDeleted:
                     AuthenticationFailed(client, ErrorType.ILLEGAL_ACCESS, "logged in with deleted account");
@@ -108,7 +107,7 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="client">Client.</param>
         /// <param name="error">Authentication error type.</param>
         /// <param name="reason">Authentication error reason.</param>
-        private void AuthenticationFailed(ILoginClient client, ErrorType error, string reason)
+        private void AuthenticationFailed(ILoginUser client, ErrorType error, string reason)
         {
             _logger.LogWarning($"Unable to authenticate user. Reason: {reason}");
             _loginPacketFactory.SendLoginError(client, error);
@@ -120,7 +119,7 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="user">Database user.</param>
         /// <param name="password">Password</param>
         /// <returns>Authentication result</returns>
-        private AuthenticationResult Authenticate(DbUser user, string password)
+        private static AuthenticationResult Authenticate(DbUser user, string password)
         {
             if (user is null)
             {

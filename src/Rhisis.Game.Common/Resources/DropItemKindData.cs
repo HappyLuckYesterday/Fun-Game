@@ -1,6 +1,4 @@
-﻿using Rhisis.Game.Common;
-
-namespace Rhisis.Game.Common.Resources
+﻿namespace Rhisis.Game.Common.Resources
 {
     public class DropItemKindData
     {

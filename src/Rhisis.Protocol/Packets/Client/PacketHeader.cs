@@ -1,4 +1,4 @@
-﻿using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client
 {
@@ -14,10 +14,10 @@ namespace Rhisis.Protocol.Packets.Client
 
         public void Deserialize(IFFPacket packet)
         {
-            Header = packet.Read<byte>();
-            HashLength = packet.Read<int>();
-            Length = packet.Read<int>();
-            HashData = packet.Read<int>();
+            Header = packet.ReadByte();
+            HashLength = packet.ReadInt32();
+            Length = packet.ReadInt32();
+            HashData = packet.ReadInt32();
         }
     }
 }

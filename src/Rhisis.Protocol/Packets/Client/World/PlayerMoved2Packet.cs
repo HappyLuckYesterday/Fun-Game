@@ -1,5 +1,5 @@
-﻿using Rhisis.Protocol.Abstractions;
-using Rhisis.Core.Structures;
+﻿using Rhisis.Core.Structures;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Protocol.Packets.Client.World
 {
@@ -73,19 +73,19 @@ namespace Rhisis.Protocol.Packets.Client.World
         /// <inheritdoc />
         public void Deserialize(IFFPacket packet)
         {
-            BeginPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
-            DestinationPosition = new Vector3(packet.Read<float>(), packet.Read<float>(), packet.Read<float>());
-            Angle = packet.Read<float>();
-            AngleX = packet.Read<float>();
-            AccPower = packet.Read<float>();
-            TurnAngle = packet.Read<float>();
-            State = packet.Read<uint>();
-            StateFlag = packet.Read<uint>();
-            Motion = packet.Read<uint>();
-            MotionEx = packet.Read<int>();
-            Loop = packet.Read<int>();
-            MotionOption = packet.Read<uint>();
-            TickCount = packet.Read<long>();
+            BeginPosition = new Vector3(packet.ReadSingle(), packet.ReadSingle(), packet.ReadSingle());
+            DestinationPosition = new Vector3(packet.ReadSingle(), packet.ReadSingle(), packet.ReadSingle());
+            Angle = packet.ReadSingle();
+            AngleX = packet.ReadSingle();
+            AccPower = packet.ReadSingle();
+            TurnAngle = packet.ReadSingle();
+            State = packet.ReadUInt32();
+            StateFlag = packet.ReadUInt32();
+            Motion = packet.ReadUInt32();
+            MotionEx = packet.ReadInt32();
+            Loop = packet.ReadInt32();
+            MotionOption = packet.ReadUInt32();
+            TickCount = packet.ReadInt64();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Rhisis.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 using System.Collections.Generic;
 
 namespace Rhisis.Protocol.Packets.Client.World
@@ -25,8 +25,8 @@ namespace Rhisis.Protocol.Packets.Client.World
         {
             while (!packet.IsEndOfStream)
             {
-                int skillId = packet.Read<int>();
-                int skillLevel = packet.Read<int>();
+                int skillId = packet.ReadInt32();
+                int skillLevel = packet.ReadInt32();
 
                 if (skillId != -1)
                 {

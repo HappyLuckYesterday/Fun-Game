@@ -1,4 +1,4 @@
-﻿using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Abstractions.Entities;
 using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Protocol.Packets;
 using Rhisis.WorldServer.Abstractions;
