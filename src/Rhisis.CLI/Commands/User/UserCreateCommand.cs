@@ -98,7 +98,7 @@ namespace Rhisis.CLI.Commands.User
             {
                 using IRhisisDatabase database = _databaseFactory.CreateDatabaseInstance(dbConfig);
                 
-                if (database.Users.Any(x => x.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase)))
+                if (database.Users.Any(x => x.Username.ToLower() == user.Username.ToLower()))
                 {
                     Console.WriteLine($"User '{user.Username}' is already used.");
                     return;
@@ -110,7 +110,7 @@ namespace Rhisis.CLI.Commands.User
                     return;
                 }
 
-                if (database.Users.Any(x => x.Email.Equals(user.Email, StringComparison.OrdinalIgnoreCase)))
+                if (database.Users.Any(x => x.Email.ToLower()  == user.Email.ToLower()))
                 {
                     Console.WriteLine($"Email '{user.Email}' is already used.");
                     return;
