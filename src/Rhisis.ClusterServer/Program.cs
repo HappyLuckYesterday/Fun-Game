@@ -8,19 +8,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
+using Rhisis.Abstractions.Protocol;
+using Rhisis.Abstractions.Resources;
 using Rhisis.ClusterServer.Abstractions;
 using Rhisis.ClusterServer.Core;
-using Rhisis.ClusterServer.Packets;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Resources;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Protocol;
 using Sylver.HandlerInvoker;
 using System;
 using System.Threading.Tasks;
-using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.ClusterServer
 {
@@ -49,7 +48,6 @@ namespace Rhisis.ClusterServer
                     services.AddPersistance(hostContext.Configuration);
                     services.AddHandlers();
                     services.AddSingleton<IGameResources, GameResources>();
-                    services.AddSingleton<IClusterPacketFactory, ClusterPacketFactory>();
                 })
                 .ConfigureLogging(builder =>
                 {
@@ -63,7 +61,7 @@ namespace Rhisis.ClusterServer
                 })
                 .ConfigureLiteNetwork((context, builder) =>
                 {
-                    builder.AddLiteServer<IClusterServer, ClusterServer, ClusterClient>(options =>
+                    builder.AddLiteServer<IClusterServer, ClusterServer, ClusterUser>(options =>
                     {
                         var serverOptions = context.Configuration.GetSection(ConfigurationConstants.ClusterServer).Get<ClusterConfiguration>();
 

@@ -1,2 +1,2 @@
 title Rhisis - World Server
-dotnet run --project ../src/Rhisis.World/Rhisis.World.csproj --configuration Debug
+dotnet run --project ../src/Rhisis.WorldServer/Rhisis.WorldServer.csproj --configuration Debug

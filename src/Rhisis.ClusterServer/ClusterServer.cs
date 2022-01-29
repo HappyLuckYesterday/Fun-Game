@@ -16,7 +16,7 @@ namespace Rhisis.ClusterServer
     /// <summary>
     /// Cluster server.
     /// </summary>
-    public class ClusterServer : LiteServer<ClusterClient>, IClusterServer
+    public class ClusterServer : LiteServer<ClusterUser>, IClusterServer
     {
         private readonly ILogger<ClusterServer> _logger;
         private readonly IOptions<ClusterConfiguration> _clusterConfiguration;

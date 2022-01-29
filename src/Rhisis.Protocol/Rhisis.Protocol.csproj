@@ -14,8 +14,4 @@
     <ProjectReference Include="..\Rhisis.Game.Common\Rhisis.Game.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Packets\Server\" />
-  </ItemGroup>
-
 </Project>

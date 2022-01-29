@@ -12,7 +12,6 @@ using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.LoginServer.Abstractions;
-using Rhisis.LoginServer.Packets;
 using Rhisis.Protocol;
 using Sylver.HandlerInvoker;
 using System;
@@ -43,7 +42,6 @@ namespace Rhisis.LoginServer
 
                     services.AddPersistance(hostContext.Configuration);
                     services.AddHandlers();
-                    services.AddSingleton<ILoginPacketFactory, LoginPacketFactory>();
                 })
                 .ConfigureLogging(builder =>
                 {

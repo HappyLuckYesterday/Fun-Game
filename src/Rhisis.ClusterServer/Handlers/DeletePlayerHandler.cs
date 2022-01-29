@@ -1,14 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.ClusterServer.Abstractions;
-using Rhisis.ClusterServer.Packets;
-using Rhisis.ClusterServer.Structures;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Packets.Client.Cluster;
 using Sylver.HandlerInvoker.Attributes;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.ClusterServer.Handlers
@@ -17,17 +14,15 @@ namespace Rhisis.ClusterServer.Handlers
     public class DeletePlayerHandler : ClusterHandlerBase
     {
         private readonly ILogger<DeletePlayerHandler> _logger;
-        private readonly IClusterPacketFactory _clusterPacketFactory;
 
-        public DeletePlayerHandler(ILogger<DeletePlayerHandler> logger, IRhisisDatabase database, IClusterPacketFactory clusterPacketFactory)
+        public DeletePlayerHandler(ILogger<DeletePlayerHandler> logger, IRhisisDatabase database)
             : base(database)
         {
             _logger = logger;
-            _clusterPacketFactory = clusterPacketFactory;
         }
 
         [HandlerAction(PacketType.DEL_PLAYER)]
-        public void Execute(IClusterUser client, DeletePlayerPacket packet)
+        public void Execute(IClusterUser user, DeletePlayerPacket packet)
         {
             DbUser dbUser = Database.Users.FirstOrDefault(x => x.Username == packet.Username && x.Password == packet.Password);
 
@@ -35,7 +30,7 @@ namespace Rhisis.ClusterServer.Handlers
             {
                 _logger.LogWarning($"[SECURITY] Unable to create new character for user '{packet.Username}'. " +
                     "Reason: bad presented credentials compared to the database.");
-                client.Disconnect();
+                user.Disconnect();
                 return;
             }
 
@@ -43,7 +38,8 @@ namespace Rhisis.ClusterServer.Handlers
             {
                 _logger.LogWarning($"Unable to delete character id '{packet.CharacterId}' for user '{packet.Username}'. " +
                     "Reason: passwords entered do not match.");
-                _clusterPacketFactory.SendClusterError(client, ErrorType.WRONG_PASSWORD);
+                SendError(user, ErrorType.WRONG_PASSWORD);
+
                 return;
             }
 
@@ -54,7 +50,7 @@ namespace Rhisis.ClusterServer.Handlers
             {
                 _logger.LogWarning($"[SECURITY] Unable to delete character id '{packet.CharacterId}' for user '{packet.Username}'. " +
                     "Reason: user doesn't have any character with this id.");
-                client.Disconnect();
+                user.Disconnect();
                 return;
             }
 
@@ -72,9 +68,7 @@ namespace Rhisis.ClusterServer.Handlers
 
             _logger.LogInformation($"Character '{characterToDelete.Name}' has been deleted successfully for user '{packet.Username}'.");
 
-            IEnumerable<ClusterCharacter> dbCharacters = GetCharacters(dbUser.Id);
-
-            _clusterPacketFactory.SendPlayerList(client, packet.AuthenticationKey, dbCharacters);
+            SendPlayerList(user, packet.AuthenticationKey);
         }
     }
 }

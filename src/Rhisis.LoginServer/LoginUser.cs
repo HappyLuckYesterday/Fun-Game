@@ -3,8 +3,8 @@ using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Helpers;
 using Rhisis.LoginServer.Abstractions;
-using Rhisis.LoginServer.Packets;
 using Rhisis.Protocol;
+using Rhisis.Protocol.Packets.Server;
 using Sylver.HandlerInvoker;
 using System;
 using System.Net.Sockets;
@@ -14,28 +14,28 @@ namespace Rhisis.LoginServer
 {
     public sealed class LoginUser : LiteServerUser, ILoginUser
     {
+        private const string UnknownUsername = "UNKNOWN";
+
         private readonly ILoginServer _server;
         private readonly ILogger<LoginUser> _logger;
         private readonly IHandlerInvoker _handlerInvoker;
-        private readonly ILoginPacketFactory _loginPacketFactory;
 
         public uint SessionId { get; } = RandomHelper.GenerateSessionKey();
 
         public int UserId { get; private set; }
 
-        public string Username { get; private set; } = "UNKNOWN";
+        public string Username { get; private set; } = UnknownUsername;
 
         public bool IsConnected => !string.IsNullOrEmpty(Username);
 
         /// <summary>
         /// Creates a new <see cref="LoginUser"/> instance.
         /// </summary>
-        public LoginUser(ILoginServer server, ILogger<LoginUser> logger, IHandlerInvoker handlerInvoker, ILoginPacketFactory loginPacketFactory)
+        public LoginUser(ILoginServer server, ILogger<LoginUser> logger, IHandlerInvoker handlerInvoker)
         {
             _server = server;
             _logger = logger;
             _handlerInvoker = handlerInvoker;
-            _loginPacketFactory = loginPacketFactory;
         }
 
         public void Disconnect() => Disconnect(null);
@@ -52,7 +52,7 @@ namespace Rhisis.LoginServer
 
         public void SetClientUsername(string username, int userId)
         {
-            if (!string.IsNullOrEmpty(Username))
+            if (!Username.Equals(UnknownUsername, StringComparison.OrdinalIgnoreCase))
             {
                 throw new InvalidOperationException("Client username already set.");
             }
@@ -110,7 +110,9 @@ namespace Rhisis.LoginServer
         protected override void OnConnected()
         {
             _logger.LogInformation($"New client connected from {Socket.RemoteEndPoint}.");
-            _loginPacketFactory.SendWelcome(this, SessionId);
+
+            using var welcomePacket = new WelcomePacket(SessionId);
+            Send(welcomePacket);
         }
 
         protected override void OnDisconnected()

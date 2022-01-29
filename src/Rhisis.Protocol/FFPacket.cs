@@ -82,39 +82,5 @@ namespace Rhisis.Protocol
 
             return base.Buffer;
         }
-
-        /// <summary>
-        /// Start a new merged packet.
-        /// </summary>
-        /// <param name="moverId"></param>
-        /// <param name="command"></param>
-        /// <param name="mainCommand"></param>
-        public void StartNewMergedPacket(uint moverId, object command, uint mainCommand)
-        {
-            var packet = (uint)command;
-
-            if (_mergedPacketCount == 0)
-            {
-                Write((int)mainCommand);
-                Write(0);
-                Write(++_mergedPacketCount);
-            }
-            else
-            {
-                Seek(13, SeekOrigin.Begin);
-                Write(++_mergedPacketCount);
-                Seek(0, SeekOrigin.End);
-            }
-
-            Write(moverId);
-            Write((short)packet);
-        }
-
-        /// <summary>
-        /// Start a new merged packet.
-        /// </summary>
-        /// <param name="moverId"></param>
-        /// <param name="command"></param>
-        public void StartNewMergedPacket(uint moverId, object command) => StartNewMergedPacket(moverId, command, 0xFFFFFF00);
     }
 }

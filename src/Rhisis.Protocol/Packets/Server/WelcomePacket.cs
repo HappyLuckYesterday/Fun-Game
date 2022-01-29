@@ -1,11 +1,9 @@
-﻿using Rhisis.Protocol;
-
-namespace Rhisis.Game.Protocol.Packets
+﻿namespace Rhisis.Protocol.Packets.Server
 {
     public class WelcomePacket : FFPacket
     {
         public WelcomePacket(uint sessionId)
-            : base(PacketType.WELCOME)
+             : base(PacketType.WELCOME)
         {
             WriteUInt32(sessionId);
         }

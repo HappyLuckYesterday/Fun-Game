@@ -2,9 +2,9 @@
 using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
 using Rhisis.ClusterServer.Abstractions;
-using Rhisis.ClusterServer.Packets;
 using Rhisis.Core.Helpers;
 using Rhisis.Protocol;
+using Rhisis.Protocol.Packets.Server;
 using Sylver.HandlerInvoker;
 using System;
 using System.Net.Sockets;
@@ -12,11 +12,10 @@ using System.Threading.Tasks;
 
 namespace Rhisis.ClusterServer
 {
-    public sealed class ClusterClient : LiteServerUser, IClusterUser
+    public sealed class ClusterUser : LiteServerUser, IClusterUser
     {
-        private readonly ILogger<ClusterClient> _logger;
+        private readonly ILogger<ClusterUser> _logger;
         private readonly IHandlerInvoker _handlerInvoker;
-        private readonly IClusterPacketFactory _clusterPacketFactory;
         private readonly IClusterServer _server;
 
         public uint SessionId { get; } = RandomHelper.GenerateSessionKey();
@@ -28,18 +27,16 @@ namespace Rhisis.ClusterServer
         public int LoginProtectValue { get; set; } = new Random().Next(0, 1000);
 
         /// <summary>
-        /// Creates a new <see cref="ClusterClient"/> instance.
+        /// Creates a new <see cref="ClusterUser"/> instance.
         /// </summary>
         /// <param name="server">Cluster server.</param>
         /// <param name="logger">Logger.</param>
         /// <param name="handlerInvoker">Handler invoker.</param>
-        /// <param name="clusterPacketFactory">Cluster packet factory.</param>
-        public ClusterClient(IClusterServer server, ILogger<ClusterClient> logger, IHandlerInvoker handlerInvoker, IClusterPacketFactory clusterPacketFactory)
+        public ClusterUser(IClusterServer server, ILogger<ClusterUser> logger, IHandlerInvoker handlerInvoker)
         {
             _server = server;
             _logger = logger;
             _handlerInvoker = handlerInvoker;
-            _clusterPacketFactory = clusterPacketFactory;
         }
 
         public void Disconnect() => _server.DisconnectUser(Id);
@@ -110,7 +107,8 @@ namespace Rhisis.ClusterServer
         {
             _logger.LogInformation($"New client connected to cluster server from {Socket.RemoteEndPoint}.");
 
-            _clusterPacketFactory.SendWelcome(this);
+            using var welcomePacket = new WelcomePacket(SessionId);
+            Send(welcomePacket);
         }
 
         protected override void OnDisconnected()

@@ -1,7 +1,7 @@
 ﻿using Rhisis.LoginServer.Abstractions;
-using Rhisis.LoginServer.Packets;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Packets.Client;
+using Rhisis.Protocol.Packets.Server;
 using Sylver.HandlerInvoker.Attributes;
 
 namespace Rhisis.LoginServer.Handlers
@@ -9,24 +9,18 @@ namespace Rhisis.LoginServer.Handlers
     [Handler]
     public class PingHandler
     {
-        private readonly ILoginPacketFactory _loginPacketFactory;
-
-        public PingHandler(ILoginPacketFactory loginPacketFactory)
-        {
-            _loginPacketFactory = loginPacketFactory;
-        }
-
         /// <summary>
         /// Handles the PING packet.
         /// </summary>
-        /// <param name="client">Client.</param>
-        /// <param name="pingPacket">Ping packet.</param>
+        /// <param name="user">Client.</param>
+        /// <param name="packet">Ping packet.</param>
         [HandlerAction(PacketType.PING)]
-        public void OnPing(ILoginUser client, PingPacket pingPacket)
+        public void OnPing(ILoginUser user, PingPacket packet)
         {
-            if (!pingPacket.IsTimeOut)
+            if (!packet.IsTimeOut)
             {
-                _loginPacketFactory.SendPong(client, pingPacket.Time);
+                using var pongPacket = new PongPacket(packet.Time);
+                user.Send(pongPacket);
             }
         }
     }

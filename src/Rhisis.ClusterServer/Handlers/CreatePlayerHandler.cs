@@ -1,17 +1,18 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Resources;
 using Rhisis.ClusterServer.Abstractions;
-using Rhisis.ClusterServer.Packets;
-using Rhisis.ClusterServer.Structures;
 using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Packets.Client.Cluster;
+using Rhisis.Protocol.Packets.Server;
+using Rhisis.Protocol.Packets.Server.Cluster;
 using Sylver.HandlerInvoker.Attributes;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,20 +24,18 @@ namespace Rhisis.ClusterServer.Handlers
     {
         private readonly ILogger<CreatePlayerHandler> _logger;
         private readonly IOptions<ClusterConfiguration> _clusterOptions;
-        private readonly IClusterPacketFactory _clusterPacketFactory;
         private readonly IGameResources _gameResources;
 
-        public CreatePlayerHandler(ILogger<CreatePlayerHandler> logger, IOptions<ClusterConfiguration> clusterOptions, IRhisisDatabase database, IClusterPacketFactory clusterPacketFactory, IGameResources gameResources)
+        public CreatePlayerHandler(ILogger<CreatePlayerHandler> logger, IOptions<ClusterConfiguration> clusterOptions, IRhisisDatabase database, IGameResources gameResources)
             : base(database)
         {
             _logger = logger;
             _clusterOptions = clusterOptions;
-            _clusterPacketFactory = clusterPacketFactory;
             _gameResources = gameResources;
         }
 
         [HandlerAction(PacketType.CREATE_PLAYER)]
-        public void OnCreatePlayer(IClusterUser client, CreatePlayerPacket packet)
+        public void OnCreatePlayer(IClusterUser user, CreatePlayerPacket packet)
         {
             DbUser dbUser = Database.Users.FirstOrDefault(x => x.Username == packet.Username && x.Password == packet.Password);
 
@@ -44,7 +43,7 @@ namespace Rhisis.ClusterServer.Handlers
             {
                 _logger.LogWarning($"[SECURITY] Unable to create new character for user '{packet.Username}' " +
                     "Reason: bad presented credentials compared to the database.");
-                client.Disconnect();
+                user.Disconnect();
                 return;
             }
 
@@ -54,7 +53,8 @@ namespace Rhisis.ClusterServer.Handlers
                         $"Unable to create new character for user '{packet.Username}' " +
                         $"Reason: character name '{packet.CharacterName}' already exists.");
 
-                _clusterPacketFactory.SendClusterError(client, ErrorType.USER_EXISTS);
+                SendError(user, ErrorType.USER_EXISTS);
+
                 return;
             }
 
@@ -64,7 +64,7 @@ namespace Rhisis.ClusterServer.Handlers
             if (!_gameResources.Jobs.TryGetValue(packet.Job, out JobData jobData))
             {
                 _logger.LogError($"Cannot find job data for job '{packet.Job}' for user '{dbUser.Username}'.");
-                client.Disconnect();
+                user.Disconnect();
                 return;
             }
 
@@ -149,9 +149,7 @@ namespace Rhisis.ClusterServer.Handlers
 
             _logger.LogInformation($"Character '{newCharacter.Name}' has been created successfully for user '{dbUser.Username}'.");
 
-            IEnumerable<ClusterCharacter> characters = GetCharacters(dbUser.Id);
-
-            _clusterPacketFactory.SendPlayerList(client, packet.AuthenticationKey, characters);
+            SendPlayerList(user, packet.AuthenticationKey);
         }
     }
 }
