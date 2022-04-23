@@ -1,7 +1,8 @@
-﻿using Rhisis.Protocol.Core.Servers;
+﻿using Rhisis.Abstractions.Server;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using ClusterInfo = Rhisis.Protocol.Core.Servers.Cluster;
+using ClusterInfo = Rhisis.Abstractions.Server.Cluster;
 
 namespace Rhisis.Protocol.Packets.Server.Login
 {
@@ -23,7 +24,7 @@ namespace Rhisis.Protocol.Packets.Server.Login
                 WriteString(cluster.Host);
                 WriteInt32(0);
                 WriteInt32(0);
-                WriteInt32(1);
+                WriteInt32(Convert.ToInt32(cluster.IsEnabled));
                 WriteInt32(0);
 
                 foreach (WorldChannel world in cluster.Channels)
@@ -33,9 +34,9 @@ namespace Rhisis.Protocol.Packets.Server.Login
                     WriteString(world.Name);
                     WriteString(world.Host);
                     WriteInt32(0);
-                    WriteInt32(0);
-                    WriteInt32(1);
-                    WriteInt32(100); // Capacity
+                    WriteInt32(world.ConnectedUsers);
+                    WriteInt32(Convert.ToInt32(world.IsEnabled));
+                    WriteInt32(world.MaximumUsers);
                 }
             }
         }

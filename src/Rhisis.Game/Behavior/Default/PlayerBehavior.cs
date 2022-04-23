@@ -14,9 +14,9 @@ namespace Rhisis.Game.Behavior.Default
     public class PlayerBehavior : IBehavior
     {
         private readonly IPlayer _player;
-        private readonly WorldConfiguration _worldServerConfiguration;
+        private readonly WorldOptions _worldServerConfiguration;
 
-        public PlayerBehavior(IPlayer player, IOptions<WorldConfiguration> worldServerConfiguration)
+        public PlayerBehavior(IPlayer player, IOptions<WorldOptions> worldServerConfiguration)
         {
             _player = player;
             _worldServerConfiguration = worldServerConfiguration.Value;

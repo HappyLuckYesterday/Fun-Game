@@ -6,7 +6,7 @@ namespace Rhisis.Core.Structures.Configuration.World
     /// Represents the world server's rates configuration section.
     /// </summary>
     [DataContract]
-    public class WorldRates
+    public class WorldRatesOptions
     {
         public const int DefaultGoldRate = 1;
         public const int DefaultExperienceRate = 1;
@@ -31,9 +31,9 @@ namespace Rhisis.Core.Structures.Configuration.World
         public int Drop { get; set; }
 
         /// <summary>
-        /// Creates a new <see cref="WorldRates"/> instance.
+        /// Creates a new <see cref="WorldRatesOptions"/> instance.
         /// </summary>
-        public WorldRates()
+        public WorldRatesOptions()
         {
             Gold = DefaultGoldRate;
             Experience = DefaultExperienceRate;

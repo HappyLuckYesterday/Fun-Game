@@ -1,35 +1,36 @@
-﻿using LiteNetwork.Protocol;
-using LiteNetwork.Protocol.Abstractions;
-using LiteNetwork.Server;
+﻿using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
+using Rhisis.Abstractions.Server;
 using Rhisis.Protocol.Core;
-using Rhisis.Protocol.Core.Servers;
 using Sylver.HandlerInvoker;
 using System;
 using System.Threading.Tasks;
 
 namespace Rhisis.LoginServer
 {
-    public class LoginCoreUser : LiteServerUser
+    public class CoreUser : LiteServerUser
     {
-        private readonly ILogger<LoginCoreUser> _logger;
+        private readonly ILogger<CoreUser> _logger;
         private readonly IHandlerInvoker _handlerInvoker;
 
-        public ServerType ServerType => ServerInfo?.ServerType ?? ServerType.Unknown;
+        public Cluster Cluster { get; }
 
-        public BaseServer ServerInfo { get; internal set; }
-
-        public LoginCoreUser(ILogger<LoginCoreUser> logger, IHandlerInvoker handlerInvoker)
+        public CoreUser(ILogger<CoreUser> logger, IHandlerInvoker handlerInvoker)
         {
             _logger = logger;
             _handlerInvoker = handlerInvoker;
+            Cluster = new()
+            {
+                Name = "Unknown"
+            };
         }
 
-        public override Task HandleMessageAsync(ILitePacketStream packet)
+        public override Task HandleMessageAsync(byte[] packetBuffer)
         {
             try
             {
-                var packetHeader = (LoginCorePacketType)packet.ReadByte();
+                using var packet = new CorePacket(packetBuffer);
+                var packetHeader = (CorePacketType)packet.ReadByte();
 
                 _handlerInvoker.Invoke(packetHeader, this, packet);
             }
@@ -44,14 +45,14 @@ namespace Rhisis.LoginServer
         {
             _logger.LogTrace($"New incoming server connection from {Socket.RemoteEndPoint}.");
 
-            using var packet = new LitePacket();
-            packet.WriteByte((byte)LoginCorePacketType.Welcome);
+            using var packet = new CorePacket();
+            packet.WriteByte((byte)CorePacketType.Welcome);
             Send(packet);
         }
 
         protected override void OnDisconnected()
         {
-            _logger.LogTrace($"Server '{ServerInfo.Name}' disconnected.");
+            _logger.LogTrace($"Server '{Cluster.Name}' disconnected.");
         }
     }
 }

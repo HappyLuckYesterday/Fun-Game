@@ -8,7 +8,7 @@ namespace Rhisis.Core.Structures.Configuration
     /// Reprensents the Login server configuration structure.
     /// </summary>
     [DataContract]
-    public class LoginConfiguration
+    public class LoginOptions
     {
         /// <summary>
         /// Gets or sets the host.

@@ -286,10 +286,10 @@ namespace Rhisis.Game.Features
         {
             for (int i = 0; i < MaxCapacity; i++)
             {
-                packet.Write(_itemsMask[i]);
+                packet.WriteInt32(_itemsMask[i]);
             }
 
-            packet.Write((byte)Count);
+            packet.WriteByte((byte)Count);
 
             for (int i = 0; i < MaxCapacity; i++)
             {
@@ -297,14 +297,14 @@ namespace Rhisis.Game.Features
 
                 if (item != null && item.Id != -1)
                 {
-                    packet.Write((byte)i);
+                    packet.WriteByte((byte)i);
                     item.Serialize(packet);
                 }
             }
 
             for (int i = 0; i < MaxCapacity; i++)
             {
-                packet.Write(_items[i]?.Slot ?? -1);
+                packet.WriteInt32(_items[i]?.Slot ?? -1);
             }
         }
 

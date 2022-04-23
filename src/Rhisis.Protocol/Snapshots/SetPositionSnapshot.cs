@@ -7,10 +7,10 @@ namespace Rhisis.Protocol.Snapshots
         public SetPositionSnapshot(IPlayer player)
             : base(SnapshotType.SETPOS, player.Id)
         {
-            Write(player.Position.X);
-            Write(player.Position.Y);
-            Write(player.Position.Z);
-            Write(player.Map.Id);
+            WriteSingle(player.Position.X);
+            WriteSingle(player.Position.Y);
+            WriteSingle(player.Position.Z);
+            WriteInt32(player.Map.Id);
         }
     }
 }

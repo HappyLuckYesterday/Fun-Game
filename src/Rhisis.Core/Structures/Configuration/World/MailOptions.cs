@@ -5,7 +5,7 @@ namespace Rhisis.Core.Structures.Configuration.World
     /// <summary>
     /// Represents the mail configuration section.
     /// </summary>
-    public class MailConfiguration
+    public class MailOptions
     {
         public const int DefaultMailShippingCost = 500;
 
@@ -16,9 +16,9 @@ namespace Rhisis.Core.Structures.Configuration.World
         public uint MailShippingCost { get; set; }
 
         /// <summary>
-        /// Creates a new <see cref="MailConfiguration"/> instance.
+        /// Creates a new <see cref="MailOptions"/> instance.
         /// </summary>
-        public MailConfiguration()
+        public MailOptions()
         {
             MailShippingCost = DefaultMailShippingCost;
         }

@@ -3,7 +3,7 @@
 namespace Rhisis.Core.Structures.Configuration.World
 {
     [DataContract]
-    public class WorldDrops
+    public class WorldDropsOptions
     {
         public const int DefaultOwnershipTime = 7;
         public const int DefaultDespawnTime = 120;
@@ -21,9 +21,9 @@ namespace Rhisis.Core.Structures.Configuration.World
         public int DespawnTime { get; set; }
 
         /// <summary>
-        /// Creates a new <see cref="WorldDrops"/> instance.
+        /// Creates a new <see cref="WorldDropsOptions"/> instance.
         /// </summary>
-        public WorldDrops()
+        public WorldDropsOptions()
         {
             OwnershipTime = DefaultOwnershipTime;
             DespawnTime = DefaultDespawnTime;

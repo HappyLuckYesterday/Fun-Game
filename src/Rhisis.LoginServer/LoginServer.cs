@@ -1,4 +1,5 @@
-﻿using LiteNetwork.Server;
+﻿using LiteNetwork;
+using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.LoginServer.Abstractions;
@@ -16,10 +17,11 @@ namespace Rhisis.LoginServer
         /// Creates a new <see cref="LoginServer"/> instance.
         /// </summary>
         /// <param name="serverOptions">Server options.</param>
+        /// <param name="serviceProvider">Service provider.</param>
         /// <param name="logger">Logger</param>
         /// <param name="database"></param>
-        public LoginServer(LiteServerOptions serverOptions, ILogger<LoginServer> logger, IRhisisDatabase database)
-            : base(serverOptions)
+        public LoginServer(LiteServerOptions serverOptions, IServiceProvider serviceProvider, ILogger<LoginServer> logger, IRhisisDatabase database)
+            : base(serverOptions, serviceProvider)
         {
             _logger = logger;
             _database = database;
@@ -36,6 +38,11 @@ namespace Rhisis.LoginServer
         protected override void OnAfterStart()
         {
             _logger.LogInformation($"{nameof(LoginServer)} is started and listen on {Options.Host}:{Options.Port}.");
+        }
+
+        protected override void OnError(LiteConnection connection, Exception exception)
+        {
+            _logger.LogError(exception, "An error occured.");
         }
 
         public ILoginUser GetClientByUsername(string username)

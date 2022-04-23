@@ -9,11 +9,11 @@ namespace Rhisis.Protocol.Snapshots.Skills
         public UseSkillSnapshot(IMover mover, IMover target, ISkill skill, int castingTime, SkillUseType skillUseType)
              : base(SnapshotType.USESKILL, mover.Id)
         {
-            Write(skill.Id);
-            Write(skill.Level);
-            Write(target.Id);
-            Write((int)skillUseType);
-            Write(castingTime);
+            WriteInt32(skill.Id);
+            WriteInt32(skill.Level);
+            WriteUInt32(target.Id);
+            WriteInt32((int)skillUseType);
+            WriteInt32(castingTime);
         }
     }
 }

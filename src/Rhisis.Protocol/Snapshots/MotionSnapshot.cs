@@ -8,7 +8,7 @@ namespace Rhisis.Protocol.Snapshots
         public MotionSnapshot(IMover mover, ObjectMessageType objectMessageType)
             : base(SnapshotType.MOTION, mover.Id)
         {
-            Write((int)objectMessageType);
+            WriteInt32((int)objectMessageType);
         }
     }
 }

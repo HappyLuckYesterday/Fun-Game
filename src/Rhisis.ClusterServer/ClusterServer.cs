@@ -1,11 +1,9 @@
 ﻿using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Rhisis.ClusterServer.Abstractions;
-using Rhisis.ClusterServer.Core;
-using Rhisis.Core.Structures.Configuration;
-using Rhisis.Abstractions.Caching;
 using Rhisis.Abstractions.Resources;
+using Rhisis.ClusterServer.Abstractions;
+using Rhisis.Core.Structures.Configuration;
 using Rhisis.Game.Resources.Loaders;
 using Rhisis.Infrastructure.Persistance;
 using System;
@@ -19,11 +17,9 @@ namespace Rhisis.ClusterServer
     public class ClusterServer : LiteServer<ClusterUser>, IClusterServer
     {
         private readonly ILogger<ClusterServer> _logger;
-        private readonly IOptions<ClusterConfiguration> _clusterConfiguration;
+        private readonly IOptions<ClusterOptions> _clusterConfiguration;
         private readonly IGameResources _gameResources;
         private readonly IRhisisDatabase _database;
-        private readonly IRhisisCacheManager _rhisisCacheManager;
-        private readonly ClusterCoreClient _clusterCoreClient;
 
         /// <summary>
         /// Creates a new <see cref="ClusterServer"/> instance.
@@ -33,36 +29,23 @@ namespace Rhisis.ClusterServer
         /// <param name="clusterConfiguration">Cluster Server configuration.</param>
         /// <param name="gameResources">Game resources.</param>
         /// <param name="database">Database access.</param>
-        /// <param name="rhisisCacheManager">Cache manager.</param>
-        /// <param name="clusterCoreClient">Cluster Core client.</param>
-        public ClusterServer(LiteServerOptions options, 
-            ILogger<ClusterServer> logger, 
-            IOptions<ClusterConfiguration> clusterConfiguration, 
-            IGameResources gameResources, 
-            IRhisisDatabase database, 
-            IRhisisCacheManager rhisisCacheManager,
-            ClusterCoreClient clusterCoreClient)
-            : base(options)
+        /// <param name="serviceProvider">Service provider.</param>
+        public ClusterServer(LiteServerOptions options,
+            ILogger<ClusterServer> logger,
+            IOptions<ClusterOptions> clusterConfiguration,
+            IGameResources gameResources,
+            IRhisisDatabase database,
+            IServiceProvider serviceProvider)
+            : base(options, serviceProvider)
         {
             _logger = logger;
             _clusterConfiguration = clusterConfiguration;
             _gameResources = gameResources;
             _database = database;
-            _rhisisCacheManager = rhisisCacheManager;
-            _clusterCoreClient = clusterCoreClient;
         }
 
         protected override void OnBeforeStart()
         {
-            try
-            {
-                _rhisisCacheManager.ClearAllCaches();
-            }
-            catch (Exception e)
-            {
-                _logger.LogWarning(e, $"Failed to clear cluster cache.");
-            }
-
             if (!_database.IsAlive())
             {
                 throw new InvalidProgramException($"Cannot start {nameof(ClusterServer)}. Failed to reach database.");
@@ -74,7 +57,6 @@ namespace Rhisis.ClusterServer
         protected override void OnAfterStart()
         {
             _logger.LogInformation($"'{_clusterConfiguration.Value.Name}' cluster server is started and listening on {Options.Host}:{Options.Port}.");
-            _clusterCoreClient.ConnectAsync().Wait();
         }
 
         public IClusterUser GetClientByUserId(int userId)

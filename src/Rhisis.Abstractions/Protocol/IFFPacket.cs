@@ -80,8 +80,6 @@ namespace Rhisis.Abstractions.Protocol
 
         void WriteBytes(byte[] values);
 
-        void Write<T>(T value);
-
         long Seek(long offset, SeekOrigin loc);
     }
 }

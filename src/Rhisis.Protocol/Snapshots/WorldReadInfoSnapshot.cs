@@ -7,10 +7,10 @@ namespace Rhisis.Protocol.Snapshots
         public WorldReadInfoSnapshot(IWorldObject worldObject)
             : base(SnapshotType.WORLD_READINFO, worldObject.Id)
         {
-            Write(worldObject.Map.Id);
-            Write(worldObject.Position.X);
-            Write(worldObject.Position.Y);
-            Write(worldObject.Position.Z);
+            WriteInt32(worldObject.Map.Id);
+            WriteSingle(worldObject.Position.X);
+            WriteSingle(worldObject.Position.Y);
+            WriteSingle(worldObject.Position.Z);
         }
     }
 }

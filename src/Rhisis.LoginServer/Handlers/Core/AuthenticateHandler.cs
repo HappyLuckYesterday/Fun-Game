@@ -1,12 +1,8 @@
-﻿using LiteNetwork.Protocol;
-using LiteNetwork.Protocol.Abstractions;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
+using Rhisis.Abstractions.Server;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.LoginServer.Abstractions;
 using Rhisis.Protocol.Core;
-using Rhisis.Protocol.Core.Servers;
 using Sylver.HandlerInvoker.Attributes;
-using System;
 using System.Linq;
 
 namespace Rhisis.LoginServer.Core.Handlers
@@ -14,17 +10,15 @@ namespace Rhisis.LoginServer.Core.Handlers
     [Handler]
     public class AuthenticateHandler
     {
-        private readonly ILoginCoreServer _coreServer;
-        private readonly IOptions<CoreConfiguration> _coreOptions;
+        private readonly IOptions<CoreOptions> _coreOptions;
 
-        public AuthenticateHandler(ILoginCoreServer coreServer, IOptions<CoreConfiguration> coreOptions)
+        public AuthenticateHandler(IOptions<CoreOptions> coreOptions)
         {
-            _coreServer = coreServer;
             _coreOptions = coreOptions;
         }
 
-        [HandlerAction(LoginCorePacketType.Authenticate)]
-        public void OnExecute(LoginCoreUser coreClient, ILitePacketStream packet)
+        [HandlerAction(CorePacketType.Authenticate)]
+        public void OnExecute(CoreUser coreClient, CorePacket packet)
         {
             var corePassword = packet.ReadString();
 
@@ -34,83 +28,44 @@ namespace Rhisis.LoginServer.Core.Handlers
                 return;
             }
 
-            var serverType = (ServerType)packet.ReadByte();
+            coreClient.Cluster.Id = packet.ReadInt32();
+            coreClient.Cluster.Name = packet.ReadString();
+            coreClient.Cluster.Host = packet.ReadString();
+            coreClient.Cluster.Port = packet.ReadUInt16();
+            var channelsCount = packet.ReadByte();
 
-            coreClient.ServerInfo = serverType switch
+            for (int i = 0; i < channelsCount; i++)
             {
-                ServerType.Cluster => ReadClusterInformation(coreClient, packet),
-                ServerType.World => ReadWorldInformation(coreClient, packet),
-                _ => throw new NotImplementedException()
-            };
+                var channel = new WorldChannel()
+                {
+                    Id = packet.ReadInt32(),
+                    Name = packet.ReadString(),
+                    Host = packet.ReadString(),
+                    Port = packet.ReadUInt16(),
+                    MaximumUsers = packet.ReadInt32(),
+                    ConnectedUsers = packet.ReadInt32()
+                };
 
-            if (coreClient.ServerInfo != null)
+                if (coreClient.Cluster.Channels.Any(x => x.Name == channel.Name))
+                {
+                    SendAuthenticationResult(coreClient, CoreAuthenticationResultType.FailedWorldExists);
+                    continue;
+                }
+
+                coreClient.Cluster.Channels.Add(channel);
+            }
+
+            if (coreClient.Cluster != null)
             {
                 SendAuthenticationResult(coreClient, CoreAuthenticationResultType.Success);
             }
         }
 
-        private BaseServer ReadClusterInformation(LoginCoreUser client, ILitePacketStream packet)
+        private static void SendAuthenticationResult(CoreUser client, CoreAuthenticationResultType result)
         {
-            var serverId = packet.ReadByte();
+            using var packet = new CorePacket();
 
-            if (_coreServer.Clusters.Any(x => x.Id == serverId))
-            {
-                SendAuthenticationResult(client, CoreAuthenticationResultType.FailedClusterExists);
-
-                throw new InvalidOperationException($"Cluster with id '{serverId}' already exists.");
-            }
-
-            var name = packet.ReadString();
-            var host = packet.ReadString();
-            var port = packet.ReadUInt16();
-
-            return new Cluster
-            {
-                Id = serverId,
-                Name = name,
-                Host = host,
-                Port = port
-            };
-        }
-
-        private BaseServer ReadWorldInformation(LoginCoreUser client, ILitePacketStream packet)
-        {
-            var serverId = packet.ReadByte();
-            var clusterServerId = packet.ReadByte();
-
-            Cluster cluster = _coreServer.Clusters.FirstOrDefault(x => x.Id == clusterServerId);
-
-            if (cluster is null)
-            {
-                SendAuthenticationResult(client, CoreAuthenticationResultType.FailedUnknownServer);
-                throw new InvalidOperationException($"Cannot find cluster with id '{clusterServerId}'.");
-            }
-
-            if (cluster.Channels.Any(x => x.Id == serverId))
-            {
-                SendAuthenticationResult(client, CoreAuthenticationResultType.FailedWorldExists);
-                throw new InvalidOperationException($"World channel with id '{serverId}' already exists.");
-            }
-
-            var name = packet.ReadString();
-            var host = packet.ReadString();
-            var port = packet.ReadUInt16();
-
-            return new WorldChannel
-            {
-                Id = serverId,
-                ClusterId = clusterServerId,
-                Name = name,
-                Host = host,
-                Port = port
-            };
-        }
-
-        private static void SendAuthenticationResult(LoginCoreUser client, CoreAuthenticationResultType result)
-        {
-            using var packet = new LitePacket();
-
-            packet.WriteByte((byte)LoginCorePacketType.AuthenticationResult);
+            packet.WriteByte((byte)CorePacketType.AuthenticationResult);
             packet.WriteByte((byte)result);
 
             client.Send(packet);

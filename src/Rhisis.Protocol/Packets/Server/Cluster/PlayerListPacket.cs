@@ -17,7 +17,7 @@ namespace Rhisis.Protocol.Packets.Server.Cluster
                 WriteInt32(character.Slot);
                 WriteInt32(1); // this number represents the selected character in the window
                 WriteInt32(character.MapId);
-                Write(0x0B + (byte)character.Gender); // Model id
+                WriteInt32(0x0B + (byte)character.Gender); // Model id
                 WriteString(character.Name);
                 WriteSingle(character.PositionX);
                 WriteSingle(character.PositionY);

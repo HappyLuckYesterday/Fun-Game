@@ -7,8 +7,8 @@ namespace Rhisis.Protocol.Snapshots
         public ChangeFaceSnapshot(IPlayer player, uint faceId)
             : base(SnapshotType.CHANGEFACE, player.Id)
         {
-            Write(player.CharacterId);
-            Write(faceId);
+            WriteInt32(player.CharacterId);
+            WriteUInt32(faceId);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Rhisis.Protocol.Snapshots.Skills
             : base(SnapshotType.DOUSESKILLPOINT, player.Id)
         {
             player.SkillTree.Serialize(this);
-            Write((int)player.SkillTree.SkillPoints);
+            WriteInt32(player.SkillTree.SkillPoints);
         }
     }
 }

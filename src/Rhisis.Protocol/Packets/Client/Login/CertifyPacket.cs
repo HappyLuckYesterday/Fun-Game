@@ -7,7 +7,7 @@ namespace Rhisis.Protocol.Packets.Client.Login
 {
     public class CertifyPacket : IPacketDeserializer
     {
-        private readonly LoginConfiguration _configuration;
+        private readonly LoginOptions _configuration;
 
         public virtual string BuildVersion { get; private set; }
 
@@ -15,7 +15,7 @@ namespace Rhisis.Protocol.Packets.Client.Login
 
         public virtual string Password { get; private set; }
 
-        public CertifyPacket(IOptions<LoginConfiguration> loginConfiguration)
+        public CertifyPacket(IOptions<LoginOptions> loginConfiguration)
         {
             _configuration = loginConfiguration.Value;
         }

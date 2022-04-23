@@ -1,7 +1,7 @@
-﻿using LiteNetwork.Protocol.Abstractions;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Rhisis.Abstractions.Entities;
 using Rhisis.Abstractions.Map;
+using Rhisis.Abstractions.Protocol;
 using Rhisis.Game.Common;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Snapshots;
@@ -23,7 +23,7 @@ namespace Rhisis.WorldServer.Handlers
         }
 
         [HandlerAction(PacketType.REVIVAL_TO_LODESTAR)]
-        public void OnRevivalToLodestar(IPlayer player, ILitePacketStream _)
+        public void OnRevivalToLodestar(IPlayer player, IFFPacket _)
         {
             if (!player.Health.IsDead)
             {

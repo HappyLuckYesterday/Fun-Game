@@ -22,11 +22,11 @@ namespace Rhisis.WorldServer.Handlers
     public class BuffPangHandler
     {
         private readonly ILogger<BuffPangHandler> _logger;
-        private readonly IOptions<WorldConfiguration> _worldConfiguration;
+        private readonly IOptions<WorldOptions> _worldConfiguration;
         private readonly IGameResources _gameResources;
         private readonly ISkillSystem _skillSystem;
 
-        public BuffPangHandler(ILogger<BuffPangHandler> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, ISkillSystem skillSystem)
+        public BuffPangHandler(ILogger<BuffPangHandler> logger, IOptions<WorldOptions> worldConfiguration, IGameResources gameResources, ISkillSystem skillSystem)
         {
             _logger = logger;
             _worldConfiguration = worldConfiguration;
@@ -37,7 +37,7 @@ namespace Rhisis.WorldServer.Handlers
         [HandlerAction(PacketType.NPC_BUFF)]
         public void OnNpcBuff(IPlayer player, NpcBuffPacket packet)
         {
-            NpcBuffConfiguration buffConfiguration = _worldConfiguration.Value.NpcBuff.Get(packet.NpcKey);
+            NpcBuffOptions buffConfiguration = _worldConfiguration.Value.NpcBuff.Get(packet.NpcKey);
 
             if (buffConfiguration is null)
             {

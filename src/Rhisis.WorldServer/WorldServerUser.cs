@@ -1,17 +1,15 @@
-﻿using LiteNetwork.Protocol.Abstractions;
-using LiteNetwork.Server;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Rhisis.Core.Helpers;
 using Rhisis.Abstractions;
 using Rhisis.Abstractions.Caching;
 using Rhisis.Abstractions.Entities;
 using Rhisis.Abstractions.Messaging;
+using Rhisis.Abstractions.Protocol;
 using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Protocol.Messages;
-using Rhisis.Game.Protocol.Packets;
 using Rhisis.Protocol;
+using Rhisis.Protocol.Packets.Server;
 using Rhisis.WorldServer.Abstractions;
 using Sylver.HandlerInvoker;
 using Sylver.HandlerInvoker.Exceptions;
@@ -19,18 +17,14 @@ using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.WorldServer
 {
-    public sealed class WorldServerUser : LiteServerUser, IWorldServerUser, IGameConnection
+    public sealed class WorldServerUser : FFUserConnection, IWorldServerUser, IGameConnection
     {
-        private readonly ILogger<WorldServerUser> _logger;
         private readonly IHandlerInvoker _handlerInvoker;
         private readonly IPlayerCache _playerCache;
         private readonly IMessaging _messaging;
-
-        public uint SessionId { get; } = RandomHelper.GenerateSessionKey();
 
         public IPlayer Player { get; }
 
@@ -38,26 +32,24 @@ namespace Rhisis.WorldServer
         /// Creates a new <see cref="WorldServerUser"/> instance.
         /// </summary>
         public WorldServerUser(ILogger<WorldServerUser> logger, IHandlerInvoker handlerInvoker, IPlayerCache playerCache, IMessaging messaging)
+            : base(logger)
         {
             Player = new Player
             {
                 Connection = this
             };
-            _logger = logger;
             _handlerInvoker = handlerInvoker;
             _playerCache = playerCache;
             _messaging = messaging;
         }
 
-        public void Send(IFFPacket packet) => base.Send(packet.Buffer);
-
-        public override Task HandleMessageAsync(ILitePacketStream packet)
+        public override Task HandleMessageAsync(byte[] packetBuffer)
         {
             uint packetHeaderNumber = 0;
 
             if (Socket is null)
             {
-                _logger.LogTrace($"Skip to handle world packet from null socket. Reason: user is not connected.");
+                Logger.LogTrace($"Skip to handle world packet from null socket. Reason: user is not connected.");
                 return Task.CompletedTask;
             }
 
@@ -65,11 +57,13 @@ namespace Rhisis.WorldServer
 
             try
             {
+                using var packet = new FFPacket(packetBuffer);
+
                 packet.ReadUInt32(); // DPID: Always 0xFFFFFFFF (uint.MaxValue)
                 packetHeaderNumber = packet.ReadUInt32();
                 packetType = (PacketType)packetHeaderNumber;
 #if DEBUG
-                _logger.LogTrace("[{0}] Received {1} packet from {2}.", Player, packetType, Socket.RemoteEndPoint);
+                Logger.LogTrace("[{0}] Received {1} packet from {2}.", Player, packetType, Socket.RemoteEndPoint);
 #endif
                 _handlerInvoker.Invoke(packetType, Player, packet);
             }
@@ -77,26 +71,26 @@ namespace Rhisis.WorldServer
             {
                 if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
                 {
-                    _logger.LogTrace("[{0}] Received an unimplemented World packet {1} (0x{2}) from {3}.", Player, Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
+                    Logger.LogTrace("[{0}] Received an unimplemented World packet {1} (0x{2}) from {3}.", Player, Enum.GetName(typeof(PacketType), packetHeaderNumber), packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
                 }
                 else
                 {
-                    _logger.LogTrace("[{0}] Received an unknown World packet 0x{1} from {2}.", Player, packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
+                    Logger.LogTrace("[{0}] Received an unknown World packet 0x{1} from {2}.", Player, packetHeaderNumber.ToString("X4"), Socket.RemoteEndPoint);
                 }
             }
             catch (Exception exception)
             {
                 if (packetType == PacketType.WELCOME)
                 {
-                    _logger.LogError(exception, $"[{Player}] Failed to read incoming packet header. {Environment.NewLine}");
+                    Logger.LogError(exception, $"[{Player}] Failed to read incoming packet header. {Environment.NewLine}");
                 }
                 else
                 {
-                    _logger.LogError(exception, $"[{Player}] An error occured while handling '{packetType}'{Environment.NewLine}.");
+                    Logger.LogError(exception, $"[{Player}] An error occured while handling '{packetType}'{Environment.NewLine}.");
 
                     if (exception.InnerException != null)
                     {
-                        _logger.LogDebug(exception.InnerException?.StackTrace);
+                        Logger.LogDebug(exception.InnerException?.StackTrace);
                     }
                 }
             }
@@ -104,45 +98,48 @@ namespace Rhisis.WorldServer
             return Task.CompletedTask;
         }
 
-        public override void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            if (Player is not null)
+            if (disposing)
             {
-                var cachePlayer = _playerCache.GetCachedPlayer(Player.CharacterId);
-
-                if (cachePlayer is not null)
+                if (Player is not null)
                 {
-                    cachePlayer.Level = Player.Level;
-                    cachePlayer.Job = Player.Job.Id;
-                    cachePlayer.MessengerStatus = MessengerStatusType.Offline;
-                    cachePlayer.IsOnline = false;
-                    cachePlayer.Version = 1;
+                    var cachePlayer = _playerCache.GetCachedPlayer(Player.CharacterId);
 
-                    _playerCache.SetCachedPlayer(cachePlayer);
-                    _messaging.Publish(new PlayerDisconnected(Player.CharacterId));
-                }
+                    if (cachePlayer is not null)
+                    {
+                        cachePlayer.Level = Player.Level;
+                        cachePlayer.Job = Player.Job.Id;
+                        cachePlayer.MessengerStatus = MessengerStatusType.Offline;
+                        cachePlayer.IsOnline = false;
+                        cachePlayer.Version = 1;
 
-                Player.Spawned = false;
+                        _playerCache.SetCachedPlayer(cachePlayer);
+                        _messaging.Publish(new PlayerDisconnected(Player.CharacterId));
+                    }
 
-                if (Player.MapLayer is not null)
-                {
-                    Player.MapLayer.RemovePlayer(Player);
-                }
+                    Player.Spawned = false;
 
-                var initializers = Player.Systems.GetService<IEnumerable<IPlayerInitializer>>();
+                    if (Player.MapLayer is not null)
+                    {
+                        Player.MapLayer.RemovePlayer(Player);
+                    }
 
-                foreach (IPlayerInitializer initializer in initializers)
-                {
-                    initializer.Save(Player);
+                    var initializers = Player.Systems.GetService<IEnumerable<IPlayerInitializer>>();
+
+                    foreach (IPlayerInitializer initializer in initializers)
+                    {
+                        initializer.Save(Player);
+                    }
                 }
             }
 
-            base.Dispose();
+            base.Dispose(disposing);
         }
 
         protected override void OnConnected()
         {
-            _logger.LogInformation("New client connected from {0}.", Socket.RemoteEndPoint);
+            Logger.LogInformation("New client connected from {0}.", Socket.RemoteEndPoint);
 
             using var welcomePacket = new WelcomePacket(SessionId);
             Send(welcomePacket);
@@ -150,7 +147,7 @@ namespace Rhisis.WorldServer
 
         protected override void OnDisconnected()
         {
-            _logger.LogInformation("Client disconnected from {0}.", Socket.RemoteEndPoint);
+            Logger.LogInformation("Client disconnected from {0}.", Socket.RemoteEndPoint);
         }
     }
 }

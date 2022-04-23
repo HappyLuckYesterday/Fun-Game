@@ -7,7 +7,7 @@ namespace Rhisis.Protocol.Snapshots
         public SetLevelSnapshot(IPlayer player, int level)
             : base(SnapshotType.SETLEVEL, player.Id)
         {
-            Write((short)level);
+            WriteInt16((short)level);
         }
     }
 }

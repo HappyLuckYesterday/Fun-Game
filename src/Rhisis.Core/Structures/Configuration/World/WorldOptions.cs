@@ -9,7 +9,7 @@ namespace Rhisis.Core.Structures.Configuration.World
     /// Represents the World Server configuration structure.
     /// </summary>
     [DataContract]
-    public class WorldConfiguration
+    public class WorldOptions
     {
         /// <summary>
         /// Gets or sets the host.
@@ -74,49 +74,49 @@ namespace Rhisis.Core.Structures.Configuration.World
         /// Gets or sets the world server's rates.
         /// </summary>
         [DataMember(Name = "rates")]
-        public WorldRates Rates { get; set; } = new WorldRates();
+        public WorldRatesOptions Rates { get; set; } = new WorldRatesOptions();
 
         /// <summary>
         /// Gets or sets the world drops configuration.
         /// </summary>
         [DataMember(Name = "drops")]
-        public WorldDrops Drops { get; set; } = new WorldDrops();
+        public WorldDropsOptions Drops { get; set; } = new WorldDropsOptions();
 
         /// <summary>
         /// Gets or sets the mails configuration.
         /// </summary>
         [DataMember(Name = "mails")]
-        public MailConfiguration Mails { get; set; } = new MailConfiguration();
+        public MailOptions Mails { get; set; } = new MailOptions();
 
         /// <summary>
         /// Gets or sets the mails configuration.
         /// </summary>
         [DataMember(Name = "perin")]
-        public PerinConfiguration Perin { get; set; } = new PerinConfiguration();
+        public PerinOptions Perin { get; set; } = new PerinOptions();
 
         /// <summary>
         /// Gets or sets the Style Customization settings.
         /// </summary>
         [DataMember(Name = "customization")]
-        public StyleCustomization Customization { get; set; } = new StyleCustomization();
+        public StyleCustomizationOptions Customization { get; set; } = new StyleCustomizationOptions();
 
         /// <summary>
         /// Gets or sets the Party Configuration settings.
         /// </summary>
         [DataMember(Name = "party")]
-        public PartyConfiguration PartyConfiguration { get; set; } = new PartyConfiguration();
+        public PartyOptions PartyConfiguration { get; set; } = new PartyOptions();
 
         /// <summary>
         /// Gets or sets the death configuration settings.
         /// </summary>
         [DataMember(Name = "death")]
-        public DeathConfiguration Death { get; set; } = new DeathConfiguration();
+        public DeathOptions Death { get; set; } = new DeathOptions();
 
         /// <summary>
         /// Gets or sets the messenger configuration settings.
         /// </summary>
         [DataMember(Name = "messenger")]
-        public MessengerConfiguration Messenger { get; set; } = new MessengerConfiguration();
+        public MessengerOptions Messenger { get; set; } = new MessengerOptions();
 
         /// <summary>
         /// Gets or sets the NPC buff configuration settings.
@@ -125,9 +125,14 @@ namespace Rhisis.Core.Structures.Configuration.World
         public NpcBuffConfigurationSection NpcBuff { get; set; } = new NpcBuffConfigurationSection();
 
         /// <summary>
-        /// Creates a new <see cref="WorldConfiguration"/> instance.
+        /// Gets or sets the cluster cache configuration.
         /// </summary>
-        public WorldConfiguration()
+        public ClusterCacheOptions ClusterCache { get; set; } = new ClusterCacheOptions();
+
+        /// <summary>
+        /// Creates a new <see cref="WorldOptions"/> instance.
+        /// </summary>
+        public WorldOptions()
         {
             Systems = new Dictionary<string, bool>();
         }

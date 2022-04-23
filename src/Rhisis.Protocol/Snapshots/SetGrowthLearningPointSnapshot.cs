@@ -7,8 +7,8 @@ namespace Rhisis.Protocol.Snapshots
         public SetGrowthLearningPointSnapshot(IPlayer player)
             : base(SnapshotType.SET_GROWTH_LEARNING_POINT, player.Id)
         {
-            Write((long)player.Statistics.AvailablePoints);
-            Write((long)0);
+            WriteInt64(player.Statistics.AvailablePoints);
+            WriteInt64(0);
         }
     }
 }

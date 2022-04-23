@@ -15,9 +15,9 @@ namespace Rhisis.WorldServer.Handlers.Customization
     [Handler]
     public class SetHairHandler
     {
-        private readonly WorldConfiguration _worldServerConfiguration;
+        private readonly WorldOptions _worldServerConfiguration;
 
-        public SetHairHandler(IOptions<WorldConfiguration> worldServerConfiguration)
+        public SetHairHandler(IOptions<WorldOptions> worldServerConfiguration)
         {
             _worldServerConfiguration = worldServerConfiguration.Value;
         }

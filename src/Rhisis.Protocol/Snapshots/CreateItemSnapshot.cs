@@ -8,11 +8,11 @@ namespace Rhisis.Protocol.Snapshots
         public CreateItemSnapshot(IPlayer player, IItem item)
             : base(SnapshotType.CREATEITEM, player.Id)
         {
-            Write<byte>(0);
+            WriteByte(0);
             item.Serialize(this, -1);
-            Write<byte>(1);
-            Write((byte)item.Index);
-            Write((short)item.Quantity);
+            WriteByte(1);
+            WriteByte((byte)item.Index);
+            WriteInt16((short)item.Quantity);
         }
     }
 }

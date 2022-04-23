@@ -1,11 +1,13 @@
 ﻿using LiteNetwork.Protocol;
-using LiteNetwork.Protocol.Abstractions;
 using System;
 
 namespace Rhisis.Protocol
 {
     public class FlyffPacketProcessor : LitePacketProcessor
     {
+        private const byte HeaderNumber = 0x5E;
+        private const byte PacketHeaderSize = sizeof(byte) + sizeof(int);
+
         /// <summary>
         /// Gets the FlyFF packet header size.
         /// </summary>
@@ -27,6 +29,17 @@ namespace Rhisis.Protocol
             return 0;
         }
 
-        public override ILitePacketStream CreatePacket(byte[] buffer) => new FFPacket(buffer);
+        public override byte[] AppendHeader(byte[] buffer)
+        {
+            int contentLength = buffer.Length;
+            byte[] contentLengthBuffer = BitConverter.GetBytes(contentLength);
+            byte[] packetBuffer = new byte[PacketHeaderSize + buffer.Length];
+
+            packetBuffer[0] = HeaderNumber;
+            Array.Copy(contentLengthBuffer, 0, packetBuffer, 1, sizeof(int));
+            Array.Copy(buffer, 0, packetBuffer, PacketHeaderSize, contentLength);
+
+            return packetBuffer;
+        }
     }
 }

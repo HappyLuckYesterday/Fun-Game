@@ -8,7 +8,7 @@ namespace Rhisis.Protocol.Snapshots
         public ModifyModeSnapshot(IPlayer player, ModeType mode)
             : base(SnapshotType.MODIFYMODE, player.Id)
         {
-            Write((uint)mode);
+            WriteUInt32((uint)mode);
         }
     }
 }

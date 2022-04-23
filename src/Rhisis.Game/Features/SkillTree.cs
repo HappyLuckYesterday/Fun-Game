@@ -102,8 +102,8 @@ namespace Rhisis.Game.Features
 
             for (var i = 0; i < otherSkillCount; i++)
             {
-                packet.Write(-1);
-                packet.Write(0);
+                packet.WriteInt32(-1);
+                packet.WriteInt32(0);
             }
         }
 

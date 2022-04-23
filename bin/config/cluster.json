@@ -1,8 +1,7 @@
 {
-  "clusterServer": {
+  "cluster": {
     "host": "127.0.0.1",
     "port": 28000,
-    "id": 1,
     "name": "Rhisis",
     "enableLoginProtect": false,
     "defaultCharacter": {
@@ -30,11 +29,15 @@
         "startShoes": 512,
         "startHat": -1
       }
+    },
+    "cache": {
+      "host": "127.0.0.1",
+      "port": 16000
+    },
+    "core": {
+      "host": "127.0.0.1",
+      "port": 15000,
+      "password": "098f6bcd4621d373cade4e832627b4f6"
     }
-  },
-  "coreServer": {
-    "host": "127.0.0.1",
-    "port": 15000,
-    "password": "098f6bcd4621d373cade4e832627b4f6"
   }
 }

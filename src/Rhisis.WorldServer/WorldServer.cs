@@ -1,20 +1,19 @@
 ﻿using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Rhisis.Core.Structures.Configuration;
-using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Abstractions.Behavior;
-using Rhisis.Abstractions.Caching;
 using Rhisis.Abstractions.Entities;
 using Rhisis.Abstractions.Features.Chat;
 using Rhisis.Abstractions.Map;
 using Rhisis.Abstractions.Messaging;
+using Rhisis.Abstractions.Protocol;
 using Rhisis.Abstractions.Resources;
+using Rhisis.Core.Structures.Configuration;
+using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Resources.Loaders;
 using Rhisis.Infrastructure.Persistance;
-using Rhisis.Protocol.Core.Servers;
 using Rhisis.WorldServer.Abstractions;
 using Sylver.HandlerInvoker;
 using System;
@@ -26,14 +25,13 @@ namespace Rhisis.WorldServer
     public sealed partial class WorldServer : LiteServer<WorldServerUser>, IWorldServer
     {
         private readonly ILogger<WorldServer> _logger;
-        private readonly IOptions<WorldConfiguration> _worldConfiguration;
-        private readonly IOptions<CoreConfiguration> _coreConfiguration;
+        private readonly IOptions<WorldOptions> _worldConfiguration;
+        private readonly IOptions<CoreOptions> _coreConfiguration;
         private readonly IGameResources _gameResources;
         private readonly IMapManager _mapManager;
         private readonly IBehaviorManager _behaviorManager;
         private readonly IChatCommandManager _chatCommandManager;
         private readonly IRhisisDatabase _database;
-        private readonly IRhisisCacheManager _cacheManager;
         private readonly IMessaging _messaging;
         private readonly IHandlerInvoker _handlerInvoker;
 
@@ -44,14 +42,13 @@ namespace Rhisis.WorldServer
         /// </summary>
         public WorldServer(LiteServerOptions serverOptions, 
             ILogger<WorldServer> logger, 
-            IOptions<WorldConfiguration> worldConfiguration, 
-            IOptions<CoreConfiguration> coreConfiguration,
+            IOptions<WorldOptions> worldConfiguration, 
+            IOptions<CoreOptions> coreConfiguration,
             IGameResources gameResources, 
             IMapManager mapManager, 
             IBehaviorManager behaviorManager, 
             IChatCommandManager chatCommandManager, 
             IRhisisDatabase database, 
-            IRhisisCacheManager cacheManager, 
             IMessaging messaging, 
             IHandlerInvoker handlerInvoker)
             : base(serverOptions)
@@ -64,7 +61,6 @@ namespace Rhisis.WorldServer
             _behaviorManager = behaviorManager;
             _chatCommandManager = chatCommandManager;
             _database = database;
-            _cacheManager = cacheManager;
             _messaging = messaging;
             _handlerInvoker = handlerInvoker;
         }
@@ -107,27 +103,6 @@ namespace Rhisis.WorldServer
         {
             _logger.LogInformation("'{0}' world server is started and listenening on {1}:{2}.",
                 _worldConfiguration.Value.Name, Options.Host, Options.Port);
-
-            IRhisisCache cache = _cacheManager.GetCache(CacheType.ClusterWorldChannels);
-
-            cache.Set(_worldConfiguration.Value.Id.ToString(), new WorldChannel
-            {
-                ClusterId = _worldConfiguration.Value.ClusterId,
-                Host = _worldConfiguration.Value.Host,
-                Port = _worldConfiguration.Value.Port,
-                Id = _worldConfiguration.Value.Id,
-                Name = _worldConfiguration.Value.Name
-            });
-        }
-
-        protected override void OnBeforeStop()
-        {
-            IRhisisCache cache = _cacheManager.GetCache(CacheType.ClusterWorldChannels);
-
-            if (cache.Contains(_worldConfiguration.Value.Id.ToString()))
-            {
-                cache.Delete(_worldConfiguration.Value.Id.ToString());
-            }
         }
 
         public IPlayer GetPlayerEntity(uint id) => ConnectedUsers.FirstOrDefault(x => x.Player.Id == id)?.Player;
@@ -177,6 +152,14 @@ namespace Rhisis.WorldServer
         private void OnPlayerCacheUpdateMessage(PlayerCacheUpdate message)
         {
             _handlerInvoker.Invoke(typeof(PlayerCacheUpdate), message);
+        }
+
+        public void SendToAll(IFFPacket packet)
+        {
+            foreach (IPlayer player in ConnectedPlayers)
+            {
+                player.Send(packet);
+            }
         }
     }
 }

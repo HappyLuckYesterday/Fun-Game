@@ -16,8 +16,8 @@ namespace Rhisis.Game.Protocol.Packets
         {
             short snapshotCount = (short)snapshots.Sum(x => x.Count);
 
-            Write(0); // Not used.
-            Write(snapshotCount); // Snapshot amount.
+            WriteInt32(0); // Not used.
+            WriteInt16(snapshotCount); // Snapshot amount.
 
             foreach (IFFSnapshot snapshot in snapshots)
             {

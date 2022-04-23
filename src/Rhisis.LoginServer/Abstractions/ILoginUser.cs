@@ -1,4 +1,5 @@
 ﻿using LiteNetwork.Protocol.Abstractions;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.LoginServer.Abstractions
 {
@@ -46,6 +47,6 @@ namespace Rhisis.LoginServer.Abstractions
         /// Sends a packet to the current client.
         /// </summary>
         /// <param name="packet"></param>
-        void Send(ILitePacketStream packet);
+        void Send(IFFPacket packet);
     }
 }

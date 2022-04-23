@@ -23,10 +23,10 @@ namespace Rhisis.ClusterServer.Handlers
     public class CreatePlayerHandler : ClusterHandlerBase
     {
         private readonly ILogger<CreatePlayerHandler> _logger;
-        private readonly IOptions<ClusterConfiguration> _clusterOptions;
+        private readonly IOptions<ClusterOptions> _clusterOptions;
         private readonly IGameResources _gameResources;
 
-        public CreatePlayerHandler(ILogger<CreatePlayerHandler> logger, IOptions<ClusterConfiguration> clusterOptions, IRhisisDatabase database, IGameResources gameResources)
+        public CreatePlayerHandler(ILogger<CreatePlayerHandler> logger, IOptions<ClusterOptions> clusterOptions, IRhisisDatabase database, IGameResources gameResources)
             : base(database)
         {
             _logger = logger;

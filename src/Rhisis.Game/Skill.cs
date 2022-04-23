@@ -74,8 +74,8 @@ namespace Rhisis.Game
 
         public void Serialize(IFFPacket packet)
         {
-            packet.Write(Id);
-            packet.Write(Level);
+            packet.WriteInt32(Id);
+            packet.WriteInt32(Level);
         }
 
         public bool Equals([AllowNull] ISkill otherSkill) => Id == otherSkill?.Id && Owner.Id == otherSkill?.Owner.Id;

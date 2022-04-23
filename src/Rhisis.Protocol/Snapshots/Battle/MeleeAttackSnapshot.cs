@@ -10,10 +10,10 @@ namespace Rhisis.Protocol.Snapshots.Battle
             : base(SnapshotType.MELEE_ATTACK, attacker.Id)
         {
             int motion = (int)attackType.ToObjectMessageType();
-            Write(motion);
-            Write(target.Id);
-            Write(0);
-            Write((int)attackFlags);
+            WriteInt32(motion);
+            WriteUInt32(target.Id);
+            WriteInt32(0);
+            WriteInt32((int)attackFlags);
         }
     }
 }

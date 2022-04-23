@@ -8,19 +8,19 @@ namespace Rhisis.Protocol.Snapshots
         public CreateSfxObjectSnapshot(IWorldObject worldObject, DefineSpecialEffects specialEffect, bool followObject = true)
             : base(SnapshotType.CREATESFXOBJ, worldObject.Id)
         {
-            Write((int)specialEffect);
+            WriteInt32((int)specialEffect);
 
             if (followObject)
             {
-                Write(0f);
-                Write(0f);
-                Write(0f);
+                WriteSingle(0f);
+                WriteSingle(0f);
+                WriteSingle(0f);
             }
             else
             {
-                Write(worldObject.Position.X);
-                Write(worldObject.Position.Y);
-                Write(worldObject.Position.Z);
+                WriteSingle(worldObject.Position.X);
+                WriteSingle(worldObject.Position.Y);
+                WriteSingle(worldObject.Position.Z);
             }
         }
     }

@@ -9,8 +9,8 @@ namespace Rhisis.Protocol.Snapshots
             : base(SnapshotType.MOVERDEATH, mover.Id)
         {
             var objMsgType = (int)attackType.ToObjectMessageType();
-            Write(objMsgType);
-            Write(killer.Id);
+            WriteInt32(objMsgType);
+            WriteUInt32(killer.Id);
         }
     }
 }

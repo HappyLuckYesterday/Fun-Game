@@ -5,9 +5,10 @@ namespace Rhisis.Core.Structures.Configuration.Models
 {
     public class WorldServerConfigurationModel
     {
-        [JsonProperty(PropertyName = ConfigurationConstants.WorldServer)]
-        public WorldConfiguration WorldConfiguration { get; set; }
-        [JsonProperty(PropertyName = ConfigurationConstants.CoreServer)]
-        public CoreConfiguration CoreConfiguration { get; set; }
+        [JsonProperty(PropertyName = ConfigurationSections.World)]
+        public WorldOptions WorldConfiguration { get; set; }
+
+        [JsonProperty(PropertyName = ConfigurationSections.Core)]
+        public CoreOptions CoreConfiguration { get; set; }
     }
 }

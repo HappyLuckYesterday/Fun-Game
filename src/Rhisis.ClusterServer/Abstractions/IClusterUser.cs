@@ -1,4 +1,4 @@
-﻿using LiteNetwork.Protocol.Abstractions;
+﻿using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.ClusterServer.Abstractions
 {
@@ -34,6 +34,6 @@ namespace Rhisis.ClusterServer.Abstractions
         /// Sends a packet to the current user.
         /// </summary>
         /// <param name="packet"></param>
-        void Send(ILitePacketStream packet);
+        void Send(IFFPacket packet);
     }
 }

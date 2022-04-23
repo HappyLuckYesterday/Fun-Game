@@ -1,5 +1,4 @@
-﻿using LiteNetwork.Protocol.Abstractions;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Rhisis.Protocol.Core;
 using Sylver.HandlerInvoker.Attributes;
 using System;
@@ -16,8 +15,8 @@ namespace Rhisis.ClusterServer.Core.Handlers
             _logger = logger;
         }
 
-        [HandlerAction(LoginCorePacketType.AuthenticationResult)]
-        public void OnExecute(ClusterCoreClient _, ILitePacketStream packet)
+        [HandlerAction(CorePacketType.AuthenticationResult)]
+        public void OnExecute(ClusterCoreClient _, CorePacket packet)
         {
             var result = (CoreAuthenticationResultType)packet.ReadByte();
 

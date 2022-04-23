@@ -3,7 +3,7 @@
 namespace Rhisis.Core.Structures.Configuration.World
 {
     [DataContract]
-    public class PartyConfiguration
+    public class PartyOptions
     {
         public const int DefaultMaxPartyMemberCount = 8;
 
@@ -13,9 +13,9 @@ namespace Rhisis.Core.Structures.Configuration.World
         public int MaxPartyMemberCount { get; set; }
         
         /// <summary>
-        /// Creates a new <see cref="PartyConfiguration"/> instance.
+        /// Creates a new <see cref="PartyOptions"/> instance.
         /// </summary>
-        public PartyConfiguration()
+        public PartyOptions()
         {
             MaxPartyMemberCount = DefaultMaxPartyMemberCount;
         }

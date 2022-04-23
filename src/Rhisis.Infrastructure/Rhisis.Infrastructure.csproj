@@ -6,14 +6,13 @@
 
   <ItemGroup>
     <Folder Include="Logging\" />
-    <Folder Include="Caching\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="EntityFrameworkCore.DataEncryption" Version="3.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.1">
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -26,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Rhisis.Abstractions\Rhisis.Abstractions.csproj" />
     <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
     <ProjectReference Include="..\Rhisis.Game.Common\Rhisis.Game.Common.csproj" />
   </ItemGroup>

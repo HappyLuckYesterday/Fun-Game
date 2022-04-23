@@ -1,6 +1,5 @@
 ﻿using LiteNetwork;
 using LiteNetwork.Hosting;
-using LiteNetwork.Protocol.Abstractions;
 using LiteNetwork.Server.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,8 +36,8 @@ namespace Rhisis.LoginServer
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddOptions();
-                    services.Configure<LoginConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.LoginServer));
-                    services.Configure<CoreConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.CoreServer));
+                    services.Configure<LoginOptions>(hostContext.Configuration.GetSection(ConfigurationSections.Login));
+                    services.Configure<CoreOptions>(hostContext.Configuration.GetSection(ConfigurationSections.Core));
 
                     services.AddPersistance(hostContext.Configuration);
                     services.AddHandlers();
@@ -56,9 +55,9 @@ namespace Rhisis.LoginServer
                 .ConfigureLiteNetwork((context, builder) =>
                 {
                     // Login Server
-                    builder.AddLiteServer<ILoginServer, LoginServer, LoginUser>(options =>
+                    builder.AddLiteServer<ILoginServer, LoginServer>(options =>
                     {
-                        var serverOptions = context.Configuration.GetSection(ConfigurationConstants.LoginServer).Get<LoginConfiguration>();
+                        var serverOptions = context.Configuration.GetSection(ConfigurationSections.Login).Get<LoginOptions>();
 
                         if (serverOptions is null)
                         {
@@ -72,9 +71,9 @@ namespace Rhisis.LoginServer
                     });
 
                     // Core Server
-                    builder.AddLiteServer<ILoginCoreServer, LoginCoreServer, LoginCoreUser>(options =>
+                    builder.AddLiteServer<ICoreServer, CoreServer>(options =>
                     {
-                        var serverConfiguration = context.Configuration.GetSection(ConfigurationConstants.CoreServer).Get<CoreConfiguration>();
+                        var serverConfiguration = context.Configuration.GetSection(ConfigurationSections.Core).Get<CoreOptions>();
 
                         if (serverConfiguration is null)
                         {
@@ -91,7 +90,7 @@ namespace Rhisis.LoginServer
                 .Build();
 
             await host
-                .AddHandlerParameterTransformer<ILitePacketStream, IPacketDeserializer>((source, dest) =>
+                .AddHandlerParameterTransformer<IFFPacket, IPacketDeserializer>((source, dest) =>
                 {
                     if (source is not IFFPacket packet)
                     {

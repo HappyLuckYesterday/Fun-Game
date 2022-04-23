@@ -1,7 +1,6 @@
 ﻿using LiteNetwork;
 using LiteNetwork.Client.Hosting;
 using LiteNetwork.Hosting;
-using LiteNetwork.Protocol.Abstractions;
 using LiteNetwork.Server.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,10 +10,12 @@ using NLog.Extensions.Logging;
 using Rhisis.Abstractions.Protocol;
 using Rhisis.Abstractions.Resources;
 using Rhisis.ClusterServer.Abstractions;
+using Rhisis.ClusterServer.Cache;
 using Rhisis.ClusterServer.Core;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Game.Resources;
+using Rhisis.Infrastructure.Caching;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Protocol;
 using Sylver.HandlerInvoker;
@@ -41,11 +42,9 @@ namespace Rhisis.ClusterServer
                 {
                     services.AddOptions();
                     services.AddMemoryCache();
-
-                    services.Configure<ClusterConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.ClusterServer));
-                    services.Configure<CoreConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.CoreServer));
-
+                    services.Configure<ClusterOptions>(hostContext.Configuration.GetSection(ConfigurationSections.Cluster));
                     services.AddPersistance(hostContext.Configuration);
+                    services.AddCache();
                     services.AddHandlers();
                     services.AddSingleton<IGameResources, GameResources>();
                 })
@@ -61,9 +60,9 @@ namespace Rhisis.ClusterServer
                 })
                 .ConfigureLiteNetwork((context, builder) =>
                 {
-                    builder.AddLiteServer<IClusterServer, ClusterServer, ClusterUser>(options =>
+                    builder.AddLiteServer<IClusterServer, ClusterServer>(options =>
                     {
-                        var serverOptions = context.Configuration.GetSection(ConfigurationConstants.ClusterServer).Get<ClusterConfiguration>();
+                        var serverOptions = context.Configuration.GetSection(ConfigurationSections.Cluster).Get<ClusterOptions>();
 
                         if (serverOptions is null)
                         {
@@ -75,17 +74,42 @@ namespace Rhisis.ClusterServer
                         options.PacketProcessor = new FlyffPacketProcessor();
                         options.ReceiveStrategy = ReceiveStrategyType.Queued;
                     });
-                    builder.AddLiteClient<ClusterCoreClient>(options =>
+
+                    builder.AddLiteServer<IClusterCacheServer, ClusterCacheServer>(options =>
                     {
-                        var serverOptions = context.Configuration.GetSection(ConfigurationConstants.CoreServer).Get<CoreConfiguration>();
+                        var serverOptions = context.Configuration.GetSection(ConfigurationSections.Cluster).Get<ClusterOptions>();
 
                         if (serverOptions is null)
                         {
-                            throw new InvalidProgramException($"Failed to load cluster core server settings.");
+                            throw new InvalidProgramException($"Failed to load cluster server settings.");
                         }
 
-                        options.Host = serverOptions.Host;
-                        options.Port = serverOptions.Port;
+                        if (serverOptions.Cache is null)
+                        {
+                            throw new InvalidOperationException("Failed to load cluster cache server settings.");
+                        }
+
+                        options.Host = serverOptions.Cache.Host;
+                        options.Port = serverOptions.Cache.Port;
+                        options.ReceiveStrategy = ReceiveStrategyType.Queued;
+                    });
+
+                    builder.AddLiteClient<ClusterCoreClient>(options =>
+                    {
+                        var serverOptions = context.Configuration.GetSection(ConfigurationSections.Cluster).Get<ClusterOptions>();
+
+                        if (serverOptions is null)
+                        {
+                            throw new InvalidProgramException($"Failed to load cluster server settings.");
+                        }
+
+                        if (serverOptions.Core is null)
+                        {
+                            throw new InvalidOperationException("Failed to load core server settings.");
+                        }
+
+                        options.Host = serverOptions.Core.Host;
+                        options.Port = serverOptions.Core.Port;
                         options.ReceiveStrategy = ReceiveStrategyType.Queued;
                     });
                 })
@@ -94,7 +118,7 @@ namespace Rhisis.ClusterServer
                 .Build();
 
             await host
-                .AddHandlerParameterTransformer<ILitePacketStream, IPacketDeserializer>((source, dest) =>
+                .AddHandlerParameterTransformer<FFPacket, IPacketDeserializer>((source, dest) =>
                 {
                     if (source is not IFFPacket packet)
                     {

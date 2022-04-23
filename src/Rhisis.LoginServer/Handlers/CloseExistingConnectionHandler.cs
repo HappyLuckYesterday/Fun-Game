@@ -1,5 +1,4 @@
-﻿using LiteNetwork.Protocol;
-using Rhisis.LoginServer.Abstractions;
+﻿using Rhisis.LoginServer.Abstractions;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Core;
 using Rhisis.Protocol.Packets.Client.Login;
@@ -12,9 +11,9 @@ namespace Rhisis.LoginServer.Handlers
     public class CloseExistingConnectionHandler
     {
         private readonly ILoginServer _loginServer;
-        private readonly ILoginCoreServer _coreServer;
+        private readonly ICoreServer _coreServer;
 
-        public CloseExistingConnectionHandler(ILoginServer loginServer, ILoginCoreServer coreServer)
+        public CloseExistingConnectionHandler(ILoginServer loginServer, ICoreServer coreServer)
         {
             _loginServer = loginServer;
             _coreServer = coreServer;
@@ -35,8 +34,8 @@ namespace Rhisis.LoginServer.Handlers
                 throw new InvalidOperationException($"Cannot find user with username '{closeConnectionPacket.Username}'.");
             }
 
-            using var packet = new LitePacket();
-            packet.Write((byte)LoginCorePacketType.DisconnectUserFromCluster);
+            using var packet = new CorePacket();
+            packet.WriteByte((byte)CorePacketType.DisconnectUserFromCluster);
             packet.WriteInt32(otherConnectedClient.UserId);
 
             _coreServer.SendToClusters(packet);

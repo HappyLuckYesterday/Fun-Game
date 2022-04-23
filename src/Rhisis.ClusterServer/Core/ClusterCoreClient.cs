@@ -1,5 +1,4 @@
 ﻿using LiteNetwork.Client;
-using LiteNetwork.Protocol.Abstractions;
 using Microsoft.Extensions.Logging;
 using Rhisis.Protocol.Core;
 using Sylver.HandlerInvoker;
@@ -20,19 +19,19 @@ namespace Rhisis.ClusterServer.Core
             _handlerInvoker = handlerInvoker;
         }
 
-        public override Task HandleMessageAsync(ILitePacketStream incomingPacketStream)
+        public override Task HandleMessageAsync(byte[] packetBuffer)
         {
             try
             {
-                var packetHeader = (LoginCorePacketType)incomingPacketStream.ReadByte();
+                using var packet = new CorePacket(packetBuffer);
+                var packetHeader = (CorePacketType)packet.ReadByte();
 
-                _handlerInvoker.Invoke(packetHeader, this, incomingPacketStream);
+                _handlerInvoker.Invoke(packetHeader, this, packet);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "An error occured while processing core packet.");
             }
-
 
             return Task.CompletedTask;
         }

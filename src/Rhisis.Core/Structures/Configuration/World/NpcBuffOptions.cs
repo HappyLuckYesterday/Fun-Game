@@ -2,7 +2,7 @@
 
 namespace Rhisis.Core.Structures.Configuration.World
 {
-    public class NpcBuffConfiguration
+    public class NpcBuffOptions
     {
         /// <summary>
         /// Gets or sets the buffing NPC name.

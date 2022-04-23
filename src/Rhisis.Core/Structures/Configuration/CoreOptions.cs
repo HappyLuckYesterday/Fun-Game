@@ -8,7 +8,7 @@ namespace Rhisis.Core.Structures.Configuration
     /// Represents the Core server configuration structure.
     /// </summary>
     [DataContract]
-    public class CoreConfiguration
+    public class CoreOptions
     {
         /// <summary>
         /// Gets or sets the host.

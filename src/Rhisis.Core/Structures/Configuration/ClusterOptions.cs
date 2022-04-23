@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Rhisis.Core.Structures.Configuration
 {
@@ -8,7 +9,7 @@ namespace Rhisis.Core.Structures.Configuration
     /// Represents the Cluster Server configuration structure.
     /// </summary>
     [DataContract]
-    public class ClusterConfiguration
+    public class ClusterOptions
     {
         /// <summary>
         /// Gets or sets the host.
@@ -27,11 +28,11 @@ namespace Rhisis.Core.Structures.Configuration
         public int Port { get; set; }
 
         /// <summary>
-        /// Gets or sets the cluster server id.
+        /// Gets or sets the server id.
         /// </summary>
-        [DataMember]
+        [DataMember(Name = "id")]
         [DefaultValue(1)]
-        [Display(Name = "Cluster server unique id", Order = 2)]
+        [Display(Name = "Cluster server id", Order = 2)]
         public int Id { get; set; }
 
         /// <summary>
@@ -53,6 +54,16 @@ namespace Rhisis.Core.Structures.Configuration
         /// Gets or sets the default character configuration.
         /// </summary>
         [DataMember]
-        public DefaultCharacter DefaultCharacter { get; set; } = new DefaultCharacter();
+        public DefaultCharacter DefaultCharacter { get; set; } = new();
+
+        /// <summary>
+        /// Gets or sets the cluster cache options.
+        /// </summary>
+        public ClusterCacheOptions Cache { get; set; } = new();
+
+        /// <summary>
+        /// Gets or sets the cluster core options.
+        /// </summary>
+        public CoreOptions Core { get; set; } = new();
     }
 }

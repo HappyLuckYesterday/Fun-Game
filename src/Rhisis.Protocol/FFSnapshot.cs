@@ -39,8 +39,8 @@ namespace Rhisis.Protocol
         public FFSnapshot()
             : base(PacketType.SNAPSHOT)
         {
-            Write(0);
-            Write(Count);
+            WriteInt32(0);
+            WriteInt16(Count);
         }
 
         /// <summary>
@@ -64,10 +64,10 @@ namespace Rhisis.Protocol
         public FFSnapshot(SnapshotType snapshot, uint objectId)
             : base(PacketType.SNAPSHOT)
         {
-            Write(0); // Not used.
-            Write(++Count); // Snapshot amount.
-            Write(objectId);
-            Write((short)((uint)snapshot));
+            WriteInt32(0); // Not used.
+            WriteInt16(++Count); // Snapshot amount.
+            WriteUInt32(objectId);
+            WriteInt16((short)((uint)snapshot));
         }
 
         public IFFSnapshot Merge(IFFSnapshot snapshot)
@@ -75,7 +75,7 @@ namespace Rhisis.Protocol
             Count += snapshot.Count;
 
             Seek(SnapshotAmountOffset, SeekOrigin.Begin);
-            Write(Count);
+            WriteInt16(Count);
             Seek(0, SeekOrigin.End);
 
             byte[] snapshotData = GetSnapshotContent(snapshot);

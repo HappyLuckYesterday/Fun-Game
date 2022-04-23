@@ -1,6 +1,4 @@
-﻿using LiteNetwork.Protocol;
-using LiteNetwork.Protocol.Abstractions;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Protocol.Core;
 using Sylver.HandlerInvoker.Attributes;
@@ -10,27 +8,27 @@ namespace Rhisis.ClusterServer.Core.Handlers
     [Handler]
     public class WelcomeHandler
     {
-        private readonly IOptions<ClusterConfiguration> _clusterOptions;
-        private readonly IOptions<CoreConfiguration> _coreOptions;
+        private readonly IOptions<ClusterOptions> _clusterOptions;
 
-        public WelcomeHandler(IOptions<ClusterConfiguration> clusterOptions, IOptions<CoreConfiguration> coreOptions)
+        public WelcomeHandler(IOptions<ClusterOptions> clusterOptions)
         {
             _clusterOptions = clusterOptions;
-            _coreOptions = coreOptions;
         }
 
-        [HandlerAction(LoginCorePacketType.Welcome)]
-        public void OnExecute(ClusterCoreClient client, ILitePacketStream _)
+        [HandlerAction(CorePacketType.Welcome)]
+        public void OnExecute(ClusterCoreClient client, CorePacket _)
         {
-            using var packet = new LitePacket();
+            using var packet = new CorePacket();
 
-            packet.WriteByte(value: (byte)LoginCorePacketType.Authenticate);
-            packet.WriteString(_coreOptions.Value.Password);
-            packet.WriteByte((byte)ServerType.Cluster);
-            packet.WriteByte((byte)_clusterOptions.Value.Id);
+            packet.WriteByte(value: (byte)CorePacketType.Authenticate);
+            packet.WriteString(_clusterOptions.Value.Core.Password);
+            packet.WriteInt32(_clusterOptions.Value.Id);
             packet.WriteString(_clusterOptions.Value.Name);
             packet.WriteString(_clusterOptions.Value.Host);
             packet.WriteUInt16((ushort)_clusterOptions.Value.Port);
+
+            // TODO: serialize world servers
+            packet.WriteByte(0); // world channel count
 
             client.Send(packet);
         }

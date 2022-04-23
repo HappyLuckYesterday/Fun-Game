@@ -24,9 +24,9 @@ namespace Rhisis.Game.Features
         {
             Applets.Serialize(packet);
             Items.Serialize(packet);
-            packet.Write(0);
+            packet.WriteInt32(0);
             //ActionSlot.Serialize(packet);
-            packet.Write(ActionPoints);
+            packet.WriteInt32(ActionPoints);
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Rhisis.Core.Structures.Configuration.World
     /// <summary>
     /// Represents the perin configuration section.
     /// </summary>
-    public class PerinConfiguration
+    public class PerinOptions
     {
         public const int DefaultPerinValue = 100000000;
 
@@ -16,9 +16,9 @@ namespace Rhisis.Core.Structures.Configuration.World
         public int PerinValue { get; set; }
 
         /// <summary>
-        /// Creates a new <see cref="PerinConfiguration"/> instance.
+        /// Creates a new <see cref="PerinOptions"/> instance.
         /// </summary>
-        public PerinConfiguration()
+        public PerinOptions()
         {
             PerinValue = DefaultPerinValue;
         }

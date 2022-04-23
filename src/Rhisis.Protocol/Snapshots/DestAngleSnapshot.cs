@@ -7,8 +7,8 @@ namespace Rhisis.Protocol.Snapshots
         public DestAngleSnapshot(IMover mover, bool left = false)
             : base(SnapshotType.DESTANGLE, mover.Id)
         {
-            Write(mover.Angle);
-            Write(left);
+            WriteSingle(mover.Angle);
+            WriteBoolean(left);
         }
     }
 }

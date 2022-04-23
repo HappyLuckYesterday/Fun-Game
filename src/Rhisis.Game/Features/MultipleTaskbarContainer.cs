@@ -32,7 +32,7 @@ namespace Rhisis.Game.Features
 
         public void Serialize(IFFPacket packet)
         {
-            packet.Write(Count);
+            packet.WriteInt32(Count);
 
             for (int level = 0; level < Capacity; level++)
             {
@@ -42,7 +42,7 @@ namespace Rhisis.Game.Features
                 {
                     if (shortcut != null)
                     {
-                        packet.Write(level);
+                        packet.WriteInt32(level);
                         shortcut.Serialize(packet);
                     }
                 }

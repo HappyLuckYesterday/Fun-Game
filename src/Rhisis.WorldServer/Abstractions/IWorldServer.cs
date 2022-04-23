@@ -1,5 +1,5 @@
-﻿using LiteNetwork.Protocol.Abstractions;
-using Rhisis.Abstractions.Entities;
+﻿using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Protocol;
 using System;
 using System.Collections.Generic;
 
@@ -52,6 +52,6 @@ namespace Rhisis.WorldServer.Abstractions
         /// Sends a packet to every connected users.
         /// </summary>
         /// <param name="packet"></param>
-        void SendToAll(ILitePacketStream packet);
+        void SendToAll(IFFPacket packet);
     }
 }

@@ -8,25 +8,25 @@ namespace Rhisis.Protocol.Snapshots
         public DialogOptionSnapshot(IWorldObject worldObject, DialogOptions option)
             : base(SnapshotType.RUNSCRIPTFUNC, worldObject.Id)
         {
-            Write((short)option);
+            WriteInt16((short)option);
         }
 
         public DialogOptionSnapshot(IWorldObject worldObject, DialogOptions option, string dialogText, int questId = 0)
             : base(SnapshotType.RUNSCRIPTFUNC, worldObject.Id)
         {
-            Write((short)option);
-            Write(dialogText);
-            Write(questId);
+            WriteInt16((short)option);
+            WriteString(dialogText);
+            WriteInt32(questId);
         }
 
         public DialogOptionSnapshot(IWorldObject worldObject, DialogOptions option, string dialogLinkTitle, string dialogLinkKey, int questId = 0)
             : base(SnapshotType.RUNSCRIPTFUNC, worldObject.Id)
         {
-            Write((short)option);
-            Write(dialogLinkTitle);
-            Write(dialogLinkKey);
-            Write(0);
-            Write(questId);
+            WriteInt16((short)option);
+            WriteString(dialogLinkTitle);
+            WriteString(dialogLinkKey);
+            WriteInt32(0);
+            WriteInt32(questId);
         }
     }
 }

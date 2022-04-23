@@ -40,8 +40,8 @@ namespace Rhisis.CLI.Commands.Database
             if (string.IsNullOrEmpty(DatabaseConfigurationFile))
                 DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
 
-            var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile, ConfigurationConstants.DatabaseConfiguration);
-            var dbConfiguration = new ObjectConfigurationFiller<DatabaseConfiguration>(databaseConfiguration);
+            var databaseConfiguration = ConfigurationHelper.Load<DatabaseOptions>(DatabaseConfigurationFile, ConfigurationConstants.DatabaseConfiguration);
+            var dbConfiguration = new ObjectConfigurationFiller<DatabaseOptions>(databaseConfiguration);
 
             dbConfiguration.Fill();
 

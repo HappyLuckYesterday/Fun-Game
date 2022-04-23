@@ -10,11 +10,11 @@ namespace Rhisis.Protocol.Snapshots.Quests
         public QuestCheckedSnapshot(IPlayer player, IEnumerable<IQuest> checkedQuests)
             : base(SnapshotType.QUEST_CHECKED, player.Id)
         {
-            Write((byte)checkedQuests.Count());
+            WriteByte((byte)checkedQuests.Count());
 
             foreach (IQuest quest in checkedQuests)
             {
-                Write((short)quest.Id);
+                WriteInt16((short)quest.Id);
             }
         }
     }

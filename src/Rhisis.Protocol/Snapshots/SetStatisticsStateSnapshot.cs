@@ -7,12 +7,12 @@ namespace Rhisis.Protocol.Snapshots
         public SetStatisticsStateSnapshot(IPlayer player)
             : base(SnapshotType.SETSTATE, player.Id)
         {
-            Write(player.Statistics.Strength);
-            Write(player.Statistics.Stamina);
-            Write(player.Statistics.Dexterity);
-            Write(player.Statistics.Intelligence);
-            Write(0);
-            Write<uint>(player.Statistics.AvailablePoints);
+            WriteInt32(player.Statistics.Strength);
+            WriteInt32(player.Statistics.Stamina);
+            WriteInt32(player.Statistics.Dexterity);
+            WriteInt32(player.Statistics.Intelligence);
+            WriteInt32(0);
+            WriteUInt32(player.Statistics.AvailablePoints);
         }
     }
 }

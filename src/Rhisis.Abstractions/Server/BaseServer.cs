@@ -1,19 +1,14 @@
-﻿namespace Rhisis.Protocol.Core.Servers
+﻿namespace Rhisis.Abstractions.Server
 {
     /// <summary>
     /// Defines the basic server description data structure.
     /// </summary>
-    public abstract class BaseServer
+    public class BaseServer
     {
         /// <summary>
         /// Gets or sets the server id.
         /// </summary>
         public int Id { get; set; }
-
-        /// <summary>
-        /// Gets the server type.
-        /// </summary>
-        public abstract ServerType ServerType { get; }
 
         /// <summary>
         /// Gets or sets the server host.
@@ -29,5 +24,10 @@
         /// Gets or sets the server's name.
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets a boolean value that indicates if the server is enabled.
+        /// </summary>
+        public bool IsEnabled { get; set; } = true;
     }
 }

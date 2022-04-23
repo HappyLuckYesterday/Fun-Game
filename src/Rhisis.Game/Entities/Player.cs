@@ -185,6 +185,7 @@ namespace Rhisis.Game.Entities
             if (cacheUpdated)
             {
                 player.Version++;
+                // TODO: review cache system
                 _playerCache.Value.SetCachedPlayer(player);
                 _messaging.Value.Publish(new PlayerCacheUpdate(CharacterId));
             }

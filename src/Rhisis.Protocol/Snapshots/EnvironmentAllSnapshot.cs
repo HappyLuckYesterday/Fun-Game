@@ -8,7 +8,7 @@ namespace Rhisis.Protocol.Snapshots
         public EnvironmentAllSnapshot(IPlayer player, SeasonType season)
             : base(SnapshotType.ENVIRONMENTALL, player.Id)
         {
-            Write((int)season);
+            WriteInt32((int)season);
         }
     }
 }

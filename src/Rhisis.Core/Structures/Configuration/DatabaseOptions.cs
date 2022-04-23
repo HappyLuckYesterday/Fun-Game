@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace Rhisis.Core.Structures.Configuration
 {
     [DataContract]
-    public sealed class DatabaseConfiguration
+    public sealed class DatabaseOptions
     {
         /// <summary>
         /// Gets or sets the database host.

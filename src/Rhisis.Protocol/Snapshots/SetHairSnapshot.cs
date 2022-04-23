@@ -7,10 +7,10 @@ namespace Rhisis.Protocol.Snapshots
         public SetHairSnapshot(IPlayer player, byte hairId, byte r, byte g, byte b)
             : base(SnapshotType.SET_HAIR, player.Id)
         {
-            Write(hairId);
-            Write(r);
-            Write(g);
-            Write(b);
+            WriteByte(hairId);
+            WriteByte(r);
+            WriteByte(g);
+            WriteByte(b);
         }
     }
 }

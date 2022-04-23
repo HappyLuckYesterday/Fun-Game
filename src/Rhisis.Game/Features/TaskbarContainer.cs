@@ -26,7 +26,7 @@ namespace Rhisis.Game.Features
 
         public void Serialize(IFFPacket packet)
         {
-            packet.Write(Count);
+            packet.WriteInt32(Count);
 
             for (int i = 0; i < Capacity; i++)
             {

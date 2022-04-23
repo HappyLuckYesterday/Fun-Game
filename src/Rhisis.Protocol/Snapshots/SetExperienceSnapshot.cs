@@ -7,12 +7,12 @@ namespace Rhisis.Protocol.Snapshots
         public SetExperienceSnapshot(IPlayer player)
             : base(SnapshotType.SETEXPERIENCE, player.Id)
         {
-            Write(player.Experience.Amount);
-            Write((short)player.Level);
-            Write(0);
-            Write((int)player.SkillTree.SkillPoints);
-            Write(long.MaxValue); // death exp
-            Write((short)player.DeathLevel);
+            WriteInt64(player.Experience.Amount);
+            WriteInt16((short)player.Level);
+            WriteInt32(0);
+            WriteInt32(player.SkillTree.SkillPoints);
+            WriteInt64(long.MaxValue); // death exp
+            WriteInt16((short)player.DeathLevel);
         }
     }
 }

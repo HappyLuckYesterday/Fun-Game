@@ -55,7 +55,7 @@ namespace Rhisis.CLI.Commands.User
 
         public void OnExecute()
         {
-            var dbConfig = new DatabaseConfiguration
+            var dbConfig = new DatabaseOptions
             {
                 Host = ServerHost,
                 Username = User,

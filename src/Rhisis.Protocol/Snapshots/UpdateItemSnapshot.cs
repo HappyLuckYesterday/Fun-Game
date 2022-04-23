@@ -8,11 +8,11 @@ namespace Rhisis.Protocol.Snapshots
         public UpdateItemSnapshot(IPlayer player, UpdateItemType updateItemType, int itemIndex, int value)
             : base(SnapshotType.UPDATE_ITEM, player.Id)
         {
-            Write<byte>(0);
-            Write((byte)itemIndex);
-            Write((byte)updateItemType);
-            Write(value);
-            Write(0); // time
+            WriteByte(0);
+            WriteByte((byte)itemIndex);
+            WriteByte((byte)updateItemType);
+            WriteInt32(value);
+            WriteInt32(0); // time
         }
     }
 }

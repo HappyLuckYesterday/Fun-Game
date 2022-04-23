@@ -1,5 +1,5 @@
 {
-  "loginServer": {
+  "login": {
     "host": "127.0.0.1",
     "port": 23000,
     "buildVersion": "20100412",

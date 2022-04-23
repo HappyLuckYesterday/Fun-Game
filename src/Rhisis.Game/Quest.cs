@@ -1,9 +1,9 @@
 ﻿using Rhisis.Abstractions;
+using Rhisis.Abstractions.Protocol;
 using Rhisis.Game.Common.Resources.Quests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game
 {
@@ -47,14 +47,14 @@ namespace Rhisis.Game
 
         public void Serialize(IFFPacket packet)
         {
-            packet.Write<short>((short)State); // state
-            packet.Write<short>(0); // time limit
-            packet.Write((short)Id);
+            packet.WriteInt16((short)State); // state
+            packet.WriteInt16(0); // time limit
+            packet.WriteInt16((short)Id);
 
-            packet.Write<short>(Monsters?.ElementAtOrDefault(0).Value ?? 0); // monster 1 killed
-            packet.Write<short>(Monsters?.ElementAtOrDefault(1).Value ?? 0); // monster 2 killed
-            packet.Write<byte>(Convert.ToByte(IsPatrolDone)); // patrol done
-            packet.Write<byte>(0); // dialog done
+            packet.WriteInt16(Monsters?.ElementAtOrDefault(0).Value ?? 0); // monster 1 killed
+            packet.WriteInt16(Monsters?.ElementAtOrDefault(1).Value ?? 0); // monster 2 killed
+            packet.WriteByte(Convert.ToByte(IsPatrolDone)); // patrol done
+            packet.WriteByte(0); // dialog done
         }
     }
 }

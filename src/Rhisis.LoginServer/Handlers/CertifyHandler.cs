@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Rhisis.Abstractions.Server;
 using Rhisis.Core.Common;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.LoginServer.Abstractions;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Core.Servers;
 using Rhisis.Protocol.Packets.Client.Login;
 using Rhisis.Protocol.Packets.Server;
 using Rhisis.Protocol.Packets.Server.Login;
@@ -21,9 +21,9 @@ namespace Rhisis.LoginServer.Handlers
     public class CertifyHandler
     {
         private readonly ILogger<CertifyHandler> _logger;
-        private readonly LoginConfiguration _loginConfiguration;
+        private readonly LoginOptions _loginConfiguration;
         private readonly ILoginServer _loginServer;
-        private readonly ILoginCoreServer _coreServer;
+        private readonly ICoreServer _coreServer;
         private readonly IRhisisDatabase _database;
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="loginServer">Login server instance.</param>
         /// <param name="database">Database service.</param>
         /// <param name="coreServer">Core server.</param>
-        public CertifyHandler(ILogger<CertifyHandler> logger, IOptions<LoginConfiguration> loginConfiguration, ILoginServer loginServer, ILoginCoreServer coreServer, IRhisisDatabase database)
+        public CertifyHandler(ILogger<CertifyHandler> logger, IOptions<LoginOptions> loginConfiguration, ILoginServer loginServer, ICoreServer coreServer, IRhisisDatabase database)
         {
             _logger = logger;
             _loginConfiguration = loginConfiguration.Value;

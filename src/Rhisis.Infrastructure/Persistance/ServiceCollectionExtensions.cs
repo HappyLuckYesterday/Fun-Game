@@ -10,7 +10,7 @@ namespace Rhisis.Infrastructure.Persistance
         public static IServiceCollection AddPersistance(this IServiceCollection services, IConfiguration configuration)
         {
             IConfigurationSection databaseConfigSection = configuration.GetSection(ConfigurationConstants.DatabaseConfiguration);
-            DatabaseConfiguration databaseConfiguration = databaseConfigSection.Get<DatabaseConfiguration>();
+            DatabaseOptions databaseConfiguration = databaseConfigSection.Get<DatabaseOptions>();
             var mysqlServerVersion = new MySqlServerVersion(databaseConfiguration.ServerVersion);
 
             services.AddDbContext<IRhisisDatabase, RhisisDatabaseContext>(options =>
@@ -23,7 +23,7 @@ namespace Rhisis.Infrastructure.Persistance
             }, ServiceLifetime.Transient);
 
             services.AddSingleton(databaseConfiguration); // TODO: remove this and use IOptions<> instead
-            services.Configure<DatabaseConfiguration>(databaseConfigSection);
+            services.Configure<DatabaseOptions>(databaseConfigSection);
 
             return services;
         }

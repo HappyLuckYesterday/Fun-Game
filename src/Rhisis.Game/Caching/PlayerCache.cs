@@ -1,7 +1,7 @@
-﻿using Rhisis.Core.DependencyInjection;
-using Rhisis.Infrastructure.Persistance;
-using Rhisis.Abstractions.Caching;
+﻿using Rhisis.Abstractions.Caching;
+using Rhisis.Core.DependencyInjection;
 using Rhisis.Game.Common;
+using Rhisis.Infrastructure.Persistance;
 using System;
 using System.Linq;
 
@@ -10,18 +10,18 @@ namespace Rhisis.Game.Caching
     [Injectable]
     internal sealed class PlayerCache : IPlayerCache
     {
-        private readonly IRhisisCache _playerCache;
+        private readonly IRhisisCache<CachedPlayer> _playerCache;
         private readonly IRhisisDatabase _database;
 
-        public PlayerCache(IRhisisCacheManager cacheManager, IRhisisDatabase database)
+        public PlayerCache(IRhisisCache<CachedPlayer> playerCache, IRhisisDatabase database)
         {
-            _playerCache = cacheManager.GetCache(CacheType.ClusterPlayers);
+            _playerCache = playerCache;
             _database = database;
         }
 
         public CachedPlayer GetCachedPlayer(int playerId)
         {
-            return _playerCache.Get<CachedPlayer>(playerId.ToString()) ?? LoadCachedPlayer(playerId);
+            return _playerCache.Get(playerId) ?? LoadCachedPlayer(playerId);
         }
 
         public CachedPlayer GetCachedPlayer(string playerName)
@@ -59,7 +59,7 @@ namespace Rhisis.Game.Caching
 
         public void SetCachedPlayer(CachedPlayer player)
         {
-            _playerCache.Set(player.Id.ToString(), player);
+            _playerCache.Set(player.Id, player);
         }
     }
 }

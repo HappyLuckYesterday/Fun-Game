@@ -7,7 +7,7 @@ namespace Rhisis.Protocol.Snapshots
         public WorldMessageSnapshot(IPlayer player, string message)
             : base(SnapshotType.WORLDMSG, player.Id)
         {
-            Write(message);
+            WriteString(message);
         }
     }
 }

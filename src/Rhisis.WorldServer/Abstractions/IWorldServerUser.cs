@@ -1,5 +1,5 @@
-﻿using LiteNetwork.Protocol.Abstractions;
-using Rhisis.Abstractions.Entities;
+﻿using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.WorldServer.Abstractions
 {
@@ -19,6 +19,6 @@ namespace Rhisis.WorldServer.Abstractions
         /// Sends the packet to the current user.
         /// </summary>
         /// <param name="packet"></param>
-        void Send(ILitePacketStream packet);
+        void Send(IFFPacket packet);
     }
 }

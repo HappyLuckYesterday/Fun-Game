@@ -8,16 +8,16 @@ namespace Rhisis.Protocol.Snapshots
         public AddDamageSnapshot(IMover mover, IMover attacker, AttackFlags attackFlags, int damage)
             : base(SnapshotType.DAMAGE, mover.Id)
         {
-            Write(attacker.Id);
-            Write(damage);
-            Write((int)attackFlags);
+            WriteUInt32(attacker.Id);
+            WriteInt32(damage);
+            WriteInt32((int)attackFlags);
 
             if (attackFlags.HasFlag(AttackFlags.AF_FLYING))
             {
-                Write(mover.DestinationPosition.X);
-                Write(mover.DestinationPosition.Y);
-                Write(mover.DestinationPosition.Z);
-                Write(mover.Angle);
+                WriteSingle(mover.DestinationPosition.X);
+                WriteSingle(mover.DestinationPosition.Y);
+                WriteSingle(mover.DestinationPosition.Z);
+                WriteSingle(mover.Angle);
             }
         }
     }

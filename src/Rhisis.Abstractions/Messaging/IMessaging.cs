@@ -12,6 +12,10 @@ namespace Rhisis.Abstractions.Messaging
         /// </summary>
         event EventHandler Disconnected;
 
+        void PublishToCluster<TMessage>(TMessage message);
+
+        void PublishToPlayer<TMessage>(TMessage message, int playerId);
+
         /// <summary>
         /// Publishes a new message into the given messaging queue name named as the given message type name.
         /// </summary>

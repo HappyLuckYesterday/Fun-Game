@@ -1,7 +1,5 @@
 ﻿using LiteNetwork;
-using LiteNetwork.Client.Hosting;
 using LiteNetwork.Hosting;
-using LiteNetwork.Protocol.Abstractions;
 using LiteNetwork.Server.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,8 +38,7 @@ namespace Rhisis.WorldServer
                 {
                     services.AddOptions();
                     services.AddMemoryCache();
-                    services.Configure<WorldConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.WorldServer));
-                    services.Configure<CoreConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.CoreServer));
+                    services.Configure<WorldOptions>(hostContext.Configuration.GetSection(ConfigurationSections.World));
                     services.AddPersistance(hostContext.Configuration);
                     services.AddHandlers();
                     services.AddInjectableServices();
@@ -59,9 +56,9 @@ namespace Rhisis.WorldServer
                 })
                 .ConfigureLiteNetwork((context, builder) =>
                 {
-                    builder.AddLiteServer<IWorldServer, WorldServer, WorldServerUser>(options =>
+                    builder.AddLiteServer<IWorldServer, WorldServer>(options =>
                     {
-                        var serverOptions = context.Configuration.GetSection(ConfigurationConstants.WorldServer).Get<WorldConfiguration>();
+                        var serverOptions = context.Configuration.GetSection(ConfigurationSections.World).Get<WorldOptions>();
 
                         if (serverOptions is null)
                         {
@@ -73,26 +70,26 @@ namespace Rhisis.WorldServer
                         options.PacketProcessor = new FlyffPacketProcessor();
                         options.ReceiveStrategy = ReceiveStrategyType.Queued;
                     });
-                    builder.AddLiteClient<WorldCoreClient>(options =>
-                    {
-                        var serverOptions = context.Configuration.GetSection(ConfigurationConstants.CoreServer).Get<CoreConfiguration>();
+                    //builder.AddLiteClient<WorldCoreClient>(options =>
+                    //{
+                    //    var serverOptions = context.Configuration.GetSection(ConfigurationConstants.CoreServer).Get<CoreOptions>();
 
-                        if (serverOptions is null)
-                        {
-                            throw new InvalidProgramException($"Failed to load world core server settings.");
-                        }
+                    //    if (serverOptions is null)
+                    //    {
+                    //        throw new InvalidProgramException($"Failed to load world core server settings.");
+                    //    }
 
-                        options.Host = serverOptions.Host;
-                        options.Port = serverOptions.Port;
-                        options.ReceiveStrategy = ReceiveStrategyType.Queued;
-                    });
+                    //    options.Host = serverOptions.Host;
+                    //    options.Port = serverOptions.Port;
+                    //    options.ReceiveStrategy = ReceiveStrategyType.Queued;
+                    //});
                 })
                 .UseConsoleLifetime()
                 .SetConsoleCulture(culture)
                 .Build();
 
             await host
-                .AddHandlerParameterTransformer<ILitePacketStream, IPacketDeserializer>((source, dest) =>
+                .AddHandlerParameterTransformer<IFFPacket, IPacketDeserializer>((source, dest) =>
                 {
                     if (source is not IFFPacket packet)
                     {

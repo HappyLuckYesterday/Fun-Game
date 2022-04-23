@@ -22,7 +22,7 @@ namespace Rhisis.Infrastructure.Persistance
                 .SetBasePath(Environment.CurrentDirectory)
                 .AddJsonFile(configurationPath, optional: false)
                 .Build();
-            DatabaseConfiguration dbConfiguration = configuration.GetSection(ConfigurationConstants.DatabaseConfiguration).Get<DatabaseConfiguration>();
+            DatabaseOptions dbConfiguration = configuration.GetSection(ConfigurationConstants.DatabaseConfiguration).Get<DatabaseOptions>();
 
             if (dbConfiguration == null)
             {
@@ -38,7 +38,7 @@ namespace Rhisis.Infrastructure.Persistance
         /// </summary>
         /// <param name="configuration">The database configuration to use</param>
         /// <returns>A new instance of an IDatabase implementation</returns>
-        public IRhisisDatabase CreateDatabaseInstance(DatabaseConfiguration configuration)
+        public IRhisisDatabase CreateDatabaseInstance(DatabaseOptions configuration)
         {
             var optionsBuilder = new DbContextOptionsBuilder().UseMySql(
                 BuildConnectionString(configuration),
@@ -52,7 +52,7 @@ namespace Rhisis.Infrastructure.Persistance
         /// </summary>
         /// <param name="databaseConfiguration">Database configuration.</param>
         /// <returns>MySQL connection string.</returns>
-        public static string BuildConnectionString(DatabaseConfiguration databaseConfiguration)
+        public static string BuildConnectionString(DatabaseOptions databaseConfiguration)
         {
             var sqlConnectionStringBuilder = new MySqlConnectionStringBuilder
             {

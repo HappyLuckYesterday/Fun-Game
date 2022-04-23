@@ -6,7 +6,7 @@ namespace Rhisis.Core.Structures.Configuration.World
     /// Represents the death configuration section.
     /// </summary>
     [DataContract]
-    public sealed class DeathConfiguration
+    public sealed class DeathOptions
     {
         /// <summary>
         /// Gets or sets a value that indicates if the death penality option is enabled.

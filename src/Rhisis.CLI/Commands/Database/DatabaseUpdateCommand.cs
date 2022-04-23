@@ -57,7 +57,7 @@ namespace Rhisis.CLI.Commands.Database
         {
             try
             {
-                var dbConfig = new DatabaseConfiguration
+                var dbConfig = new DatabaseOptions
                 {
                     Host = ServerHost,
                     Username = User,
@@ -75,7 +75,7 @@ namespace Rhisis.CLI.Commands.Database
             }
         }
 
-        private void TryMigration(DatabaseConfiguration databaseConfiguration)
+        private void TryMigration(DatabaseOptions databaseConfiguration)
         {
             const int MaxAttempts = 5;
             int attempts = 0;

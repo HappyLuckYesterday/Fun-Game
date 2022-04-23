@@ -51,17 +51,17 @@ namespace Rhisis.Game
         /// <param name="packet">Packet stream.</param>
         public void Serialize(IFFPacket packet)
         {
-            packet.Write(Slot);
-            packet.Write((uint)Type);
-            packet.Write((uint)ItemIndex.GetValueOrDefault());
-            packet.Write((uint)ObjectType);
-            packet.Write(ObjectIndex);
-            packet.Write(UserId);
-            packet.Write(ObjectData);
+            packet.WriteInt32(Slot);
+            packet.WriteUInt32((uint)Type);
+            packet.WriteUInt32((uint)ItemIndex.GetValueOrDefault());
+            packet.WriteUInt32((uint)ObjectType);
+            packet.WriteUInt32(ObjectIndex);
+            packet.WriteUInt32(UserId);
+            packet.WriteUInt32(ObjectData);
 
             if (Type == ShortcutType.Chat)
             {
-                packet.Write(Text);
+                packet.WriteString(Text);
             }
         }
     }

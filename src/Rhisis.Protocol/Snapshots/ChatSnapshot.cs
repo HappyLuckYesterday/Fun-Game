@@ -7,7 +7,7 @@ namespace Rhisis.Protocol.Snapshots
         public ChatSnapshot(IWorldObject worldObject, string text)
             : base(SnapshotType.CHAT, worldObject.Id)
         {
-            Write(text);
+            WriteString(text);
         }
     }
 }

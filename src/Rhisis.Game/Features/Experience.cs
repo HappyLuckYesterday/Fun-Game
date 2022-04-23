@@ -24,11 +24,11 @@ namespace Rhisis.Game.Features
 
         private readonly IPlayer _player;
         private readonly IGameResources _gameResources;
-        private readonly WorldConfiguration _worldServerConfiguration;
+        private readonly WorldOptions _worldServerConfiguration;
 
         public long Amount { get; private set; }
 
-        public Experience(IPlayer player, long initialExperience, IGameResources gameResources, IOptions<WorldConfiguration> worldServerConfiguration)
+        public Experience(IPlayer player, long initialExperience, IGameResources gameResources, IOptions<WorldOptions> worldServerConfiguration)
         {
             _player = player;
             Amount = initialExperience;

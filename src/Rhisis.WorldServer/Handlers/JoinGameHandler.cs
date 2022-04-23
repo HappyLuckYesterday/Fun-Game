@@ -42,7 +42,7 @@ namespace Rhisis.WorldServer.Handlers
         private readonly IMapManager _mapManager;
         private readonly IBehaviorManager _behaviorManager;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IOptions<WorldConfiguration> _configuration;
+        private readonly IOptions<WorldOptions> _configuration;
         private readonly IPlayerCache _playerCache;
         private readonly IMessaging _messaging;
 
@@ -58,7 +58,7 @@ namespace Rhisis.WorldServer.Handlers
         public JoinGameHandler(ILogger<JoinGameHandler> logger, IRhisisDatabase database, 
             IGameResources gameResources, IMapManager mapManager, 
             IBehaviorManager behaviorManager, IServiceProvider serviceProvider,
-            IOptions<WorldConfiguration> configuration, IPlayerCache playerCache, IMessaging messaging)
+            IOptions<WorldOptions> configuration, IPlayerCache playerCache, IMessaging messaging)
         {
             _logger = logger;
             _database = database;

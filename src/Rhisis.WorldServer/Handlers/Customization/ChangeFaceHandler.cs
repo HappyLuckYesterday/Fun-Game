@@ -14,9 +14,9 @@ namespace Rhisis.WorldServer.Handlers.Customization
     [Handler]
     public class ChangeFaceHandler
     {
-        private readonly WorldConfiguration _worldServerConfiguration;
+        private readonly WorldOptions _worldServerConfiguration;
 
-        public ChangeFaceHandler(IOptions<WorldConfiguration> worldServerConfiguration)
+        public ChangeFaceHandler(IOptions<WorldOptions> worldServerConfiguration)
         {
             _worldServerConfiguration = worldServerConfiguration.Value;
         }

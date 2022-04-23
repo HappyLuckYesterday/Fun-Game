@@ -23,9 +23,9 @@ namespace Rhisis.Game.Behavior.Default
         private readonly IMonster _monster;
         private readonly IEntityFactory _entityFactory;
         private readonly IGameResources _gameResources;
-        private readonly WorldConfiguration _worldServerConfiguration;
+        private readonly WorldOptions _worldServerConfiguration;
 
-        public MonsterBehavior(IMonster monster, IEntityFactory entityFactory, IGameResources gameResources, IOptions<WorldConfiguration> worldServerConfiguration)
+        public MonsterBehavior(IMonster monster, IEntityFactory entityFactory, IGameResources gameResources, IOptions<WorldOptions> worldServerConfiguration)
         {
             _monster = monster;
             _entityFactory = entityFactory;

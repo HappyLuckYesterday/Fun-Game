@@ -17,9 +17,9 @@ namespace Rhisis.ClusterServer.Handlers
     public class PreJoinHandler : ClusterHandlerBase
     {
         private readonly ILogger<PreJoinHandler> _logger;
-        private readonly IOptions<ClusterConfiguration> _clusterOptions;
+        private readonly IOptions<ClusterOptions> _clusterOptions;
 
-        public PreJoinHandler(ILogger<PreJoinHandler> logger, IOptions<ClusterConfiguration> clusterOptions, IRhisisDatabase database)
+        public PreJoinHandler(ILogger<PreJoinHandler> logger, IOptions<ClusterOptions> clusterOptions, IRhisisDatabase database)
             : base(database)
         {
             _logger = logger;

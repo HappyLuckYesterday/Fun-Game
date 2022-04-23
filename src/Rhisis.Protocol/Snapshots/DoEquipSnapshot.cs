@@ -11,13 +11,13 @@ namespace Rhisis.Protocol.Snapshots
         public DoEquipSnapshot(IPlayer player, IItem item, bool wasEquiped)
             : base(SnapshotType.DOEQUIP, player.Id)
         {
-            Write((byte)item.Index);
-            Write(0); // Guild id
-            Write(Convert.ToByte(wasEquiped));
-            Write(item.Id);
-            Write(item.Refines);
-            Write(0); // See ItemFlags enum
-            Write((int)item.Data.Parts);
+            WriteByte((byte)item.Index);
+            WriteInt32(0); // Guild id
+            WriteByte(Convert.ToByte(wasEquiped));
+            WriteInt32(item.Id);
+            WriteInt32(item.Refines);
+            WriteInt32(0); // See ItemFlags enum
+            WriteInt32((int)item.Data.Parts);
         }
     }
 }

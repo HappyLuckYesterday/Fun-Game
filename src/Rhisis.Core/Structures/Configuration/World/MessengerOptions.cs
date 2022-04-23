@@ -6,7 +6,7 @@ namespace Rhisis.Core.Structures.Configuration.World
     /// Represents the messenger configuration section.
     /// </summary>
     [DataContract]
-    public sealed class MessengerConfiguration
+    public sealed class MessengerOptions
     {
         /// <summary>
         /// Gets or sets the maximum allowed amount of friends in the messenger.

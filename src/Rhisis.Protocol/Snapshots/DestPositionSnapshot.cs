@@ -7,10 +7,10 @@ namespace Rhisis.Protocol.Snapshots
         public DestPositionSnapshot(IMover mover)
             : base(SnapshotType.DESTPOS, mover.Id)
         {
-            Write(mover.DestinationPosition.X);
-            Write(mover.DestinationPosition.Y);
-            Write(mover.DestinationPosition.Z);
-            Write<byte>(1);
+            WriteSingle(mover.DestinationPosition.X);
+            WriteSingle(mover.DestinationPosition.Y);
+            WriteSingle(mover.DestinationPosition.Z);
+            WriteByte(1);
         }
     }
 }

@@ -9,12 +9,12 @@ namespace Rhisis.Protocol.Snapshots
         public StateModeSnapshot(IWorldObject worldObject, StateModeBaseMotion flags, IItem item = null)
             : base(SnapshotType.STATEMODE, worldObject.Id)
         {
-            Write((int)worldObject.StateMode);
-            Write((byte)flags);
+            WriteInt32((int)worldObject.StateMode);
+            WriteByte((byte)flags);
 
             if (flags == StateModeBaseMotion.BASEMOTION_ON && item != null)
             {
-                Write(item.Id);
+                WriteInt32(item.Id);
             }
         }
     }

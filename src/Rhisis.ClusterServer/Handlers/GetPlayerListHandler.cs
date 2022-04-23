@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Abstractions.Caching;
+using Rhisis.Abstractions.Server;
 using Rhisis.ClusterServer.Abstractions;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Core.Servers;
 using Rhisis.Protocol.Packets.Client.Cluster;
 using Rhisis.Protocol.Packets.Server.Cluster;
 using Sylver.HandlerInvoker.Attributes;
@@ -21,8 +21,8 @@ namespace Rhisis.ClusterServer.Handlers
     public class GetPlayerListHandler : ClusterHandlerBase
     {
         private readonly ILogger<GetPlayerListHandler> _logger;
-        private readonly IOptions<ClusterConfiguration> _clusterOptions;
-        private readonly IRhisisCacheManager _cacheManager;
+        private readonly IOptions<ClusterOptions> _clusterOptions;
+        private readonly IRhisisCache<WorldChannel> _worldChannelCache;
 
         /// <summary>
         /// Creates a new <see cref="CharacterHandler"/> instance.
@@ -31,20 +31,20 @@ namespace Rhisis.ClusterServer.Handlers
         /// <param name="database">Rhisis database.</param>
         /// <param name="cacheManager">Cache manager.</param>
         public GetPlayerListHandler(ILogger<GetPlayerListHandler> logger, 
-            IOptions<ClusterConfiguration> clusterOptions,
+            IOptions<ClusterOptions> clusterOptions,
             IRhisisDatabase database,
-            IRhisisCacheManager cacheManager)
+            IRhisisCache<WorldChannel> worldChannelCache)
             : base(database)
         {
             _logger = logger;
             _clusterOptions = clusterOptions;
-            _cacheManager = cacheManager;
+            _worldChannelCache = worldChannelCache;
         }
 
         [HandlerAction(PacketType.GETPLAYERLIST)]
         public void Execute(IClusterUser user, GetPlayerListPacket packet)
         {
-            var selectedWorldServer = _cacheManager.GetCache(CacheType.ClusterWorldChannels).Get<WorldChannel>(packet.ServerId.ToString());
+            WorldChannel selectedWorldServer = _worldChannelCache.Get(packet.ServerId);
 
             if (selectedWorldServer is null)
             {

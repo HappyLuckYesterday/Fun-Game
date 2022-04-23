@@ -7,7 +7,7 @@ namespace Rhisis.Protocol.Snapshots.Skills
         public InitSkillPointSnapshot(IPlayer player, ushort skillPoints)
             : base(SnapshotType.INITSKILLPOINT, player.Id)
         {
-            Write((int)skillPoints);
+            WriteInt32((int)skillPoints);
         }
     }
 }

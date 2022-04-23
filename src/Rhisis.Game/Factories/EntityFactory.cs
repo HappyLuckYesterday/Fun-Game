@@ -35,9 +35,9 @@ namespace Rhisis.Game.Factories
         private readonly IGameResources _gameResources;
         private readonly IMapManager _mapManager;
         private readonly IBehaviorManager _behaviorManager;
-        private readonly WorldConfiguration _worldServerConfiguration;
+        private readonly WorldOptions _worldServerConfiguration;
 
-        public EntityFactory(ILogger<EntityFactory> logger, IServiceProvider serviceProvider, IGameResources gameResources, IMapManager mapManager, IBehaviorManager behaviorManager, IOptions<WorldConfiguration> worldServerConfiguration)
+        public EntityFactory(ILogger<EntityFactory> logger, IServiceProvider serviceProvider, IGameResources gameResources, IMapManager mapManager, IBehaviorManager behaviorManager, IOptions<WorldOptions> worldServerConfiguration)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;

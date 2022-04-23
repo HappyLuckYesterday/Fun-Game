@@ -1,5 +1,5 @@
-﻿using LiteNetwork.Protocol.Abstractions;
-using Rhisis.Protocol.Core.Servers;
+﻿using Rhisis.Abstractions.Server;
+using Rhisis.Protocol.Core;
 using System.Collections.Generic;
 
 namespace Rhisis.LoginServer.Abstractions
@@ -7,7 +7,7 @@ namespace Rhisis.LoginServer.Abstractions
     /// <summary>
     /// Provides an abstraction that represents the core server.
     /// </summary>
-    public interface ILoginCoreServer
+    public interface ICoreServer
     {
         /// <summary>
         /// Gets the connected cluster list.
@@ -18,6 +18,6 @@ namespace Rhisis.LoginServer.Abstractions
         /// Sends a packet to every connected clusters.
         /// </summary>
         /// <param name="packet">Packet to send.</param>
-        void SendToClusters(ILitePacketStream packet);
+        void SendToClusters(CorePacket packet);
     }
 }

@@ -1,8 +1,8 @@
 ﻿using LiteNetwork.Client;
-using LiteNetwork.Protocol;
-using LiteNetwork.Protocol.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Rhisis.Abstractions.Protocol;
+using Rhisis.Abstractions.Server;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Protocol.Core;
@@ -14,34 +14,36 @@ namespace Rhisis.WorldServer
     public class WorldCoreClient : LiteClient
     {
         private readonly ILogger<WorldCoreClient> _logger;
-        private readonly IOptions<WorldConfiguration> _serverOptions;
-        private readonly IOptions<CoreConfiguration> _coreOptions;
+        private readonly IOptions<WorldOptions> _worldOptions;
 
         public WorldCoreClient(LiteClientOptions options,
             ILogger<WorldCoreClient> logger,
-            IOptions<WorldConfiguration> serverOptions,
-            IOptions<CoreConfiguration> coreOptions,
+            IOptions<WorldOptions> worldOptions,
             IServiceProvider serviceProvider = null)
             : base(options, serviceProvider)
         {
             _logger = logger;
-            _serverOptions = serverOptions;
-            _coreOptions = coreOptions;
+            _worldOptions = worldOptions;
         }
 
-        public override Task HandleMessageAsync(ILitePacketStream incomingPacketStream)
+        public override Task HandleMessageAsync(byte[] packetBuffer)
         {
             try
             {
-                var packetHeader = (LoginCorePacketType)incomingPacketStream.ReadByte();
+                using var packet = new CorePacket(packetBuffer);
+                var packetHeader = (CorePacketType)packet.ReadByte();
 
-                if (packetHeader == LoginCorePacketType.Welcome)
+                if (packetHeader == CorePacketType.Welcome)
                 {
                     SendServerInformation();
                 }
-                else if (packetHeader == LoginCorePacketType.AuthenticationResult)
+                else if (packetHeader == CorePacketType.AuthenticationResult)
                 {
-                    OnAuthenticationResult(incomingPacketStream);
+                    OnAuthenticationResult(packet);
+                }
+                else
+                {
+                    // Invoke handler
                 }
             }
             catch (Exception e)
@@ -54,21 +56,21 @@ namespace Rhisis.WorldServer
 
         private void SendServerInformation()
         {
-            using var packet = new LitePacket();
+            using var packet = new CorePacket();
 
-            packet.WriteByte((byte)LoginCorePacketType.Authenticate);
-            packet.WriteString(_coreOptions.Value.Password);
+            packet.WriteByte((byte)CorePacketType.Authenticate);
+            packet.WriteString(_worldOptions.Value.ClusterCache.Password);
             packet.WriteByte((byte)ServerType.World);
-            packet.WriteByte((byte)_serverOptions.Value.Id);
-            packet.WriteByte((byte)_serverOptions.Value.ClusterId);
-            packet.WriteString(_serverOptions.Value.Name);
-            packet.WriteString(_serverOptions.Value.Host);
-            packet.WriteUInt16((ushort)_serverOptions.Value.Port);
+            packet.WriteByte((byte)_worldOptions.Value.Id);
+            packet.WriteByte((byte)_worldOptions.Value.ClusterId);
+            packet.WriteString(_worldOptions.Value.Name);
+            packet.WriteString(_worldOptions.Value.Host);
+            packet.WriteUInt16((ushort)_worldOptions.Value.Port);
 
             Send(packet);
         }
 
-        private void OnAuthenticationResult(ILitePacketStream packet)
+        private void OnAuthenticationResult(CorePacket packet)
         {
             var result = (CoreAuthenticationResultType)packet.ReadByte();
 

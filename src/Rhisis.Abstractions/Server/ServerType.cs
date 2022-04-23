@@ -1,4 +1,4 @@
-﻿namespace Rhisis.Protocol.Core
+﻿namespace Rhisis.Abstractions.Server
 {
     /// <summary>
     /// Defines the server types.

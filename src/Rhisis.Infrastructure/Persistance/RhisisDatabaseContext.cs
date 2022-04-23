@@ -63,7 +63,7 @@ namespace Rhisis.Infrastructure.Persistance
         /// </summary>
         /// <param name="options"></param>
         /// <param name="configuration"></param>
-        public RhisisDatabaseContext(DbContextOptions options, DatabaseConfiguration configuration = null)
+        public RhisisDatabaseContext(DbContextOptions options, DatabaseOptions configuration = null)
             : base(options)
         {
             if (configuration != null)

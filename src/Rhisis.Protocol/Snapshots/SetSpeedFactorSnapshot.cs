@@ -7,7 +7,7 @@ namespace Rhisis.Protocol.Snapshots
         public SetSpeedFactorSnapshot(IMover mover, float speedFactor)
             : base(SnapshotType.SET_SPEED_FACTOR, mover.Id)
         {
-            Write(speedFactor);
+            WriteSingle(speedFactor);
         }
     }
 }
