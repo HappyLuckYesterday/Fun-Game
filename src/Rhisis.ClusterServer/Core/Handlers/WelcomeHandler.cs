@@ -20,7 +20,7 @@ namespace Rhisis.ClusterServer.Core.Handlers
         {
             using var packet = new CorePacket();
 
-            packet.WriteByte(value: (byte)CorePacketType.Authenticate);
+            packet.WriteByte((byte)CorePacketType.AuthenticationRequest);
             packet.WriteString(_clusterOptions.Value.Core.Password);
             packet.WriteInt32(_clusterOptions.Value.Id);
             packet.WriteString(_clusterOptions.Value.Name);

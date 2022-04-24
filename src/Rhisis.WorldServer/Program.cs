@@ -1,4 +1,5 @@
 ﻿using LiteNetwork;
+using LiteNetwork.Client.Hosting;
 using LiteNetwork.Hosting;
 using LiteNetwork.Server.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,7 @@ using Rhisis.Game;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Protocol;
 using Rhisis.WorldServer.Abstractions;
+using Rhisis.WorldServer.ClusterCache;
 using Sylver.HandlerInvoker;
 using System;
 using System.Threading.Tasks;
@@ -70,19 +72,19 @@ namespace Rhisis.WorldServer
                         options.PacketProcessor = new FlyffPacketProcessor();
                         options.ReceiveStrategy = ReceiveStrategyType.Queued;
                     });
-                    //builder.AddLiteClient<WorldCoreClient>(options =>
-                    //{
-                    //    var serverOptions = context.Configuration.GetSection(ConfigurationConstants.CoreServer).Get<CoreOptions>();
+                    builder.AddLiteClient<IClusterCacheClient, ClusterCacheClient>(options =>
+                    {
+                        var serverOptions = context.Configuration.GetSection(ConfigurationSections.World).Get<WorldOptions>();
 
-                    //    if (serverOptions is null)
-                    //    {
-                    //        throw new InvalidProgramException($"Failed to load world core server settings.");
-                    //    }
+                        if (serverOptions is null)
+                        {
+                            throw new InvalidProgramException($"Failed to load world server settings.");
+                        }
 
-                    //    options.Host = serverOptions.Host;
-                    //    options.Port = serverOptions.Port;
-                    //    options.ReceiveStrategy = ReceiveStrategyType.Queued;
-                    //});
+                        options.Host = serverOptions.ClusterCache.Host;
+                        options.Port = serverOptions.ClusterCache.Port;
+                        options.ReceiveStrategy = ReceiveStrategyType.Queued;
+                    });
                 })
                 .UseConsoleLifetime()
                 .SetConsoleCulture(culture)

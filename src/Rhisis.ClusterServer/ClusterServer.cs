@@ -1,4 +1,5 @@
-﻿using LiteNetwork.Server;
+﻿using LiteNetwork;
+using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Abstractions.Resources;
@@ -57,6 +58,11 @@ namespace Rhisis.ClusterServer
         protected override void OnAfterStart()
         {
             _logger.LogInformation($"'{_clusterConfiguration.Value.Name}' cluster server is started and listening on {Options.Host}:{Options.Port}.");
+        }
+
+        protected override void OnError(LiteConnection connection, Exception exception)
+        {
+            _logger.LogError(exception, $"An exception occured in {typeof(ClusterServer).Name}.");
         }
 
         public IClusterUser GetClientByUserId(int userId)

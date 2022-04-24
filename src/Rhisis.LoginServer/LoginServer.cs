@@ -42,7 +42,7 @@ namespace Rhisis.LoginServer
 
         protected override void OnError(LiteConnection connection, Exception exception)
         {
-            _logger.LogError(exception, "An error occured.");
+            _logger.LogError(exception, $"An exception occured in {typeof(LoginServer).Name}.");
         }
 
         public ILoginUser GetClientByUsername(string username)

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Rhisis.Abstractions.Server;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Protocol.Core;
@@ -8,22 +9,25 @@ using System.Linq;
 namespace Rhisis.LoginServer.Core.Handlers
 {
     [Handler]
-    public class AuthenticateHandler
+    public class AuthenticationRequestHandler
     {
         private readonly IOptions<CoreOptions> _coreOptions;
+        private readonly ILogger<AuthenticationRequestHandler> _logger;
 
-        public AuthenticateHandler(IOptions<CoreOptions> coreOptions)
+        public AuthenticationRequestHandler(IOptions<CoreOptions> coreOptions, ILogger<AuthenticationRequestHandler> logger)
         {
             _coreOptions = coreOptions;
+            _logger = logger;
         }
 
-        [HandlerAction(CorePacketType.Authenticate)]
+        [HandlerAction(CorePacketType.AuthenticationRequest)]
         public void OnExecute(CoreUser coreClient, CorePacket packet)
         {
             var corePassword = packet.ReadString();
 
             if (!_coreOptions.Value.Password.ToLowerInvariant().Equals(corePassword.ToLowerInvariant()))
             {
+                _logger.LogError("Failed to authenticate cluster: wrong password.");
                 SendAuthenticationResult(coreClient, CoreAuthenticationResultType.FailedWrongPassword);
                 return;
             }
@@ -48,15 +52,17 @@ namespace Rhisis.LoginServer.Core.Handlers
 
                 if (coreClient.Cluster.Channels.Any(x => x.Name == channel.Name))
                 {
-                    SendAuthenticationResult(coreClient, CoreAuthenticationResultType.FailedWorldExists);
+                    _logger.LogError($"Failed to authenticate cluster '{channel.Name}': Cluster with same name already exists.");
+                    SendAuthenticationResult(coreClient, CoreAuthenticationResultType.FailedClusterExists);
                     continue;
                 }
 
                 coreClient.Cluster.Channels.Add(channel);
             }
 
-            if (coreClient.Cluster != null)
+            if (coreClient.Cluster is not null)
             {
+                _logger.LogInformation($"Cluster '{coreClient.Cluster.Name}' successfuly connected to core server.");
                 SendAuthenticationResult(coreClient, CoreAuthenticationResultType.Success);
             }
         }

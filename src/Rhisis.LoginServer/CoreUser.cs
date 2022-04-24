@@ -41,6 +41,7 @@ namespace Rhisis.LoginServer
 
             return Task.CompletedTask;
         }
+
         protected override void OnConnected()
         {
             _logger.LogTrace($"New incoming server connection from {Socket.RemoteEndPoint}.");

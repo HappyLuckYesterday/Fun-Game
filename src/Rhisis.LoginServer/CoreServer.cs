@@ -1,4 +1,5 @@
-﻿using LiteNetwork.Server;
+﻿using LiteNetwork;
+using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
 using Rhisis.Abstractions.Server;
 using Rhisis.LoginServer.Abstractions;
@@ -24,6 +25,11 @@ namespace Rhisis.LoginServer
         protected override void OnAfterStart()
         {
             _logger.LogInformation($"CoreServer started and listening on port '{Options.Port}'.");
+        }
+
+        protected override void OnError(LiteConnection connection, Exception exception)
+        {
+            _logger.LogError(exception, $"An exception occured in {typeof(CoreServer).Name}.");
         }
 
         public void SendToClusters(CorePacket packet)

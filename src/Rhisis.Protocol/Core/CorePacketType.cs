@@ -6,10 +6,12 @@
     public enum CorePacketType : int
     {
         Welcome,
-        Authenticate,
+        AuthenticationRequest,
         AuthenticationResult,
         UpdateClusterWorldsList,
         UpdateCluster,
+        UpdateClusterWorldChannel,
+        RemoveClusterWorldChannel,
         DisconnectUserFromCluster,
         BroadcastMessage,
         PlayerConnectedToChannel,

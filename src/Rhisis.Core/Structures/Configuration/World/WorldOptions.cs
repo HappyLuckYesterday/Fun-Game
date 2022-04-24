@@ -50,6 +50,10 @@ namespace Rhisis.Core.Structures.Configuration.World
         [Display(Name = "World server name (Channel name)", Order = 4)]
         public string Name { get; set; }
 
+        [DataMember(Name = "maximumUsers")]
+        [Display(Name = "World server maximum users allowed.", Order = 5)]
+        public int MaximumUsers { get; set; }
+
         /// <summary>
         /// Gets or sets the enabled or disabled systems of the world server.
         /// </summary>
@@ -67,7 +71,7 @@ namespace Rhisis.Core.Structures.Configuration.World
         /// </summary>
         [DataMember(Name = "language")]
         [DefaultValue("en")]
-        [Display(Name = "World server language", Order = 5)]
+        [Display(Name = "World server language", Order = 6)]
         public string Language { get; set; }
 
         /// <summary>

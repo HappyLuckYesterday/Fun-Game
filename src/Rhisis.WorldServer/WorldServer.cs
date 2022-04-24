@@ -49,7 +49,7 @@ namespace Rhisis.WorldServer
             IBehaviorManager behaviorManager, 
             IChatCommandManager chatCommandManager, 
             IRhisisDatabase database, 
-            IMessaging messaging, 
+            //IMessaging messaging, 
             IHandlerInvoker handlerInvoker)
             : base(serverOptions)
         {
@@ -61,7 +61,7 @@ namespace Rhisis.WorldServer
             _behaviorManager = behaviorManager;
             _chatCommandManager = chatCommandManager;
             _database = database;
-            _messaging = messaging;
+            //_messaging = messaging;
             _handlerInvoker = handlerInvoker;
         }
 
@@ -90,13 +90,13 @@ namespace Rhisis.WorldServer
             _behaviorManager.Load();
             _mapManager.Load();
 
-            _messaging.Subscribe<PlayerConnected>(OnPlayerConnectedMessage);
-            _messaging.Subscribe<PlayerDisconnected>(OnPlayerDisconnected);
-            _messaging.Subscribe<PlayerMessengerStatusUpdate>(OnPlayerStatusUpdateMessage);
-            _messaging.Subscribe<PlayerMessengerRemoveFriend>(OnPlayerMessengerRemoveFriendMessage);
-            _messaging.Subscribe<PlayerMessengerBlockFriend>(OnPlayerMessengerBlockFriendMessage);
-            _messaging.Subscribe<PlayerMessengerMessage>(OnPlayerMessengerMessage);
-            _messaging.Subscribe<PlayerCacheUpdate>(OnPlayerCacheUpdateMessage);
+            //_messaging.Subscribe<PlayerConnected>(OnPlayerConnectedMessage);
+            //_messaging.Subscribe<PlayerDisconnected>(OnPlayerDisconnected);
+            //_messaging.Subscribe<PlayerMessengerStatusUpdate>(OnPlayerStatusUpdateMessage);
+            //_messaging.Subscribe<PlayerMessengerRemoveFriend>(OnPlayerMessengerRemoveFriendMessage);
+            //_messaging.Subscribe<PlayerMessengerBlockFriend>(OnPlayerMessengerBlockFriendMessage);
+            //_messaging.Subscribe<PlayerMessengerMessage>(OnPlayerMessengerMessage);
+            //_messaging.Subscribe<PlayerCacheUpdate>(OnPlayerCacheUpdateMessage);
         }
 
         protected override void OnAfterStart()

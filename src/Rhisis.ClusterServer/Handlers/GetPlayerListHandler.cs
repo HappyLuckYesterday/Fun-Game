@@ -22,6 +22,7 @@ namespace Rhisis.ClusterServer.Handlers
     {
         private readonly ILogger<GetPlayerListHandler> _logger;
         private readonly IOptions<ClusterOptions> _clusterOptions;
+        private readonly IClusterCacheServer _clusterCache;
         private readonly IRhisisCache<WorldChannel> _worldChannelCache;
 
         /// <summary>
@@ -33,18 +34,18 @@ namespace Rhisis.ClusterServer.Handlers
         public GetPlayerListHandler(ILogger<GetPlayerListHandler> logger, 
             IOptions<ClusterOptions> clusterOptions,
             IRhisisDatabase database,
-            IRhisisCache<WorldChannel> worldChannelCache)
+            IClusterCacheServer clusterCache)
             : base(database)
         {
             _logger = logger;
             _clusterOptions = clusterOptions;
-            _worldChannelCache = worldChannelCache;
+            _clusterCache = clusterCache;
         }
 
         [HandlerAction(PacketType.GETPLAYERLIST)]
         public void Execute(IClusterUser user, GetPlayerListPacket packet)
         {
-            WorldChannel selectedWorldServer = _worldChannelCache.Get(packet.ServerId);
+            WorldChannel selectedWorldServer = _clusterCache.WorldChannels.SingleOrDefault(x => x.Id == packet.ServerId);
 
             if (selectedWorldServer is null)
             {

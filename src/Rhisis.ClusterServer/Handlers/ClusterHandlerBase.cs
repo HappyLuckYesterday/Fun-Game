@@ -29,10 +29,10 @@ namespace Rhisis.ClusterServer.Handlers
         /// <returns>Collection of <see cref="ISelectableCharacter"/>.</returns>
         protected IEnumerable<ISelectableCharacter> GetCharacters(int userId)
         {
-            return Database.Characters.AsNoTracking()
-                .Include(x => x.Items)
-                    .ThenInclude(x => x.Item)
+            IEnumerable<ISelectableCharacter> characters = Database.Characters
+                .AsNoTracking()
                 .Where(x => x.UserId == userId && !x.IsDeleted)
+                .ToList()
                 .Select(x => new SelectableCharacter
                 {
                     Id = x.Id,
@@ -53,16 +53,29 @@ namespace Rhisis.ClusterServer.Handlers
                     Stamina = x.Stamina,
                     Intelligence = x.Intelligence,
                     Dexterity = x.Dexterity,
-                    EquipedItems = x.Items.AsQueryable()
-                        .Where(x => x.Slot > Inventory.InventorySize && x.StorageTypeId == (int)ItemStorageType.Inventory && !x.IsDeleted)
-                        .OrderBy(x => x.Slot)
-                        .Select(x => x.Item.GameItemId)
-                });
+                })
+                .ToList();
+
+            foreach (ISelectableCharacter character in characters)
+            {
+                character.EquipedItems = Database.ItemStorage
+                    .Include(x => x.Item)
+                    .Where(x =>
+                        x.CharacterId == character.Id &&
+                        x.Slot > Inventory.InventorySize &&
+                        x.StorageTypeId == (int)ItemStorageType.Inventory &&
+                        !x.IsDeleted)
+                    .OrderBy(x => x.Slot)
+                    .Select(x => x.Item.GameItemId)
+                    .ToList();
+            }
+
+            return characters;
         }
 
-        protected void SendPlayerList(IClusterUser user, int authenticationKey, IEnumerable<ISelectableCharacter> characters = null)
+        protected void SendPlayerList(IClusterUser user, int authenticationKey)
         {
-            IEnumerable<ISelectableCharacter> selectableCharacters = characters ?? GetCharacters(user.UserId);
+            IEnumerable<ISelectableCharacter> selectableCharacters = GetCharacters(user.UserId);
             using var playerListPacket = new PlayerListPacket(authenticationKey, selectableCharacters);
 
             user.Send(playerListPacket);

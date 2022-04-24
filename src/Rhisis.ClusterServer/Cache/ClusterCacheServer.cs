@@ -1,7 +1,9 @@
-﻿using LiteNetwork.Server;
+﻿using LiteNetwork;
+using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
 using Rhisis.Abstractions.Server;
 using Rhisis.ClusterServer.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,8 +15,8 @@ namespace Rhisis.ClusterServer.Cache
 
         public IEnumerable<WorldChannel> WorldChannels => ConnectedUsers.Select(x => x.Channel);
 
-        public ClusterCacheServer(LiteServerOptions options, ILogger<ClusterCacheServer> logger) 
-            : base(options)
+        public ClusterCacheServer(LiteServerOptions options, ILogger<ClusterCacheServer> logger, IServiceProvider serviceProvider) 
+            : base(options, serviceProvider)
         {
             _logger = logger;
         }
@@ -22,6 +24,11 @@ namespace Rhisis.ClusterServer.Cache
         protected override void OnAfterStart()
         {
             _logger.LogInformation($"Cluster cache server started and listening on port '{Options.Port}'.");
+        }
+
+        protected override void OnError(LiteConnection connection, Exception exception)
+        {
+            _logger.LogError(exception, $"An exception occured in {typeof(ClusterCacheServer).Name}.");
         }
     }
 }

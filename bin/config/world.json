@@ -2,7 +2,9 @@
   "world": {
     "host": "127.0.0.1",
     "port": 5400,
+    "id": 1,
     "name": "Channel 1",
+    "maximumUsers": 100,
     "language": "en",
     "clusterCache": {
       "host": "127.0.0.1",

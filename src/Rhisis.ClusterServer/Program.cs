@@ -94,7 +94,7 @@ namespace Rhisis.ClusterServer
                         options.ReceiveStrategy = ReceiveStrategyType.Queued;
                     });
 
-                    builder.AddLiteClient<ClusterCoreClient>(options =>
+                    builder.AddLiteClient<ICoreClient, ClusterCoreClient>(options =>
                     {
                         var serverOptions = context.Configuration.GetSection(ConfigurationSections.Cluster).Get<ClusterOptions>();
 

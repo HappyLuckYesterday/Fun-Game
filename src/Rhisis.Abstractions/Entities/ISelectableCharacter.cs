@@ -101,6 +101,6 @@ namespace Rhisis.Abstractions.Entities
         /// <summary>
         /// Gets the character equiped items ids.
         /// </summary>
-        public IEnumerable<int> EquipedItems { get; }
+        public IEnumerable<int> EquipedItems { get; set; }
     }
 }
