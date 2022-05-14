@@ -35,7 +35,7 @@ namespace Rhisis.WorldServer
         private readonly IMessaging _messaging;
         private readonly IHandlerInvoker _handlerInvoker;
 
-        public IEnumerable<IPlayer> ConnectedPlayers => ConnectedUsers.Select(x => x.Player);
+        public IEnumerable<IPlayer> ConnectedPlayers => Users.Cast<WorldServerUser>().Select(x => x.Player);
 
         /// <summary>
         /// Creates a new <see cref="WorldServer"/> instance.
@@ -50,8 +50,9 @@ namespace Rhisis.WorldServer
             IChatCommandManager chatCommandManager, 
             IRhisisDatabase database, 
             //IMessaging messaging, 
-            IHandlerInvoker handlerInvoker)
-            : base(serverOptions)
+            IHandlerInvoker handlerInvoker,
+            IServiceProvider serviceProvider)
+            : base(serverOptions, serviceProvider)
         {
             _logger = logger;
             _worldConfiguration = worldConfiguration;
@@ -105,15 +106,13 @@ namespace Rhisis.WorldServer
                 _worldConfiguration.Value.Name, Options.Host, Options.Port);
         }
 
-        public IPlayer GetPlayerEntity(uint id) => ConnectedUsers.FirstOrDefault(x => x.Player.Id == id)?.Player;
+        public IPlayer GetPlayerEntity(uint id) => ConnectedPlayers.FirstOrDefault(x => x.Id == id);
 
-        public IPlayer GetPlayerEntity(string name) 
-            => ConnectedUsers.FirstOrDefault(x => x.Player.Name.Equals(name, StringComparison.OrdinalIgnoreCase))?.Player;
+        public IPlayer GetPlayerEntity(string name) => ConnectedPlayers.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
-        public IPlayer GetPlayerEntityByCharacterId(uint id) 
-            => ConnectedUsers.FirstOrDefault(x => x.Player.CharacterId == id)?.Player;
+        public IPlayer GetPlayerEntityByCharacterId(uint id) => ConnectedPlayers.FirstOrDefault(x => x.CharacterId == id);
 
-        public uint GetOnlineConnectedPlayerNumber() => (uint)ConnectedUsers.Count();
+        public uint GetOnlineConnectedPlayerNumber() => (uint)Users.Count();
 
         private void OnPlayerConnectedMessage(PlayerConnected playerConnectedMessage)
         {

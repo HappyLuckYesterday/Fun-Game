@@ -14,7 +14,7 @@ namespace Rhisis.LoginServer
     {
         private readonly ILogger<CoreServer> _logger;
 
-        public IEnumerable<Cluster> Clusters => ConnectedUsers.Select(x => x.Cluster);
+        public IEnumerable<Cluster> Clusters => Users.Cast<CoreUser>().Select(x => x.Cluster);
 
         public CoreServer(LiteServerOptions serverOptions, ILogger<CoreServer> logger, IServiceProvider serviceProvider)
             : base(serverOptions, serviceProvider)
@@ -34,7 +34,7 @@ namespace Rhisis.LoginServer
 
         public void SendToClusters(CorePacket packet)
         {
-            SendTo(ConnectedUsers, packet.GetBuffer());
+            SendTo(Users, packet.GetBuffer());
         }
     }
 }

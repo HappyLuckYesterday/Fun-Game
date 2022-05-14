@@ -67,7 +67,7 @@ namespace Rhisis.ClusterServer
 
         public IClusterUser GetClientByUserId(int userId)
         {
-            return ConnectedUsers.FirstOrDefault(x => x.UserId == userId);
+            return Users.Cast<ClusterUser>().FirstOrDefault(x => x.UserId == userId);
         }
     }
 }

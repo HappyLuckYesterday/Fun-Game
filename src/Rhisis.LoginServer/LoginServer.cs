@@ -46,7 +46,7 @@ namespace Rhisis.LoginServer
         }
 
         public ILoginUser GetClientByUsername(string username)
-            => ConnectedUsers.FirstOrDefault(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+            => Users.Cast<LoginUser>().FirstOrDefault(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
 
         public bool IsClientConnected(string username) => GetClientByUsername(username) is not null;
     }

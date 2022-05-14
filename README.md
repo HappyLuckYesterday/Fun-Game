@@ -11,7 +11,7 @@
 <h4>Built with C# 9 and the <a href="https://dotnet.microsoft.com/download/dotnet-core" target="_blank">.NET 6</a>.</h4>
 
 <p>This project has been created for learning purposes about the network and game logic problematics on the server-side.<br>
-We choose to use the <a href="https://github.com/Eastrall/Sylver.Network">Sylver.Network</a> to manage our server connecitions because it provides a clients management system and also a robust packet management system entirely customisable.</p>
+We choose to use the <a href="https://github.com/Eastrall/LiteNetwork">LiteNetwork</a> to manage our server connecitions because it provides a clients management system and also a robust packet management system entirely customisable.</p>
 
 <h4 align="center">:warning: This project is not affiliated with Gala Lab. :warning:</h4><br>
 
@@ -46,12 +46,12 @@ We choose to use the <a href="https://github.com/Eastrall/Sylver.Network">Sylver
 
 - Language: `C#` 9 (latest)
 - Framework: `.NET 6`
-- Application type: `Console` with `Docker` support
+- Application type: `Console` **and** `Docker` support
 - Database type: `MySQL`
 - Configuration files type: `JSON`
 - Environment: `Visual Studio 2022`
 - External libraries used:
-	- [Sylver.Network][sylvernetwork]
+	- [LiteNetwork][litenetwork]
 	- [Sylver.HandlerInvoker](https://github.com/Eastrall/Sylver.HandlerInvoker)
 	- [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore)
 	- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
@@ -160,4 +160,4 @@ World cluster server host address: rhisis.cluster
 - Kinami
 - Sauce
 
-[sylvernetwork]: https://github.com/Eastrall/Sylver.Network
+[litenetwork]: https://github.com/Eastrall/LiteNetwork

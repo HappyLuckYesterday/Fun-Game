@@ -13,7 +13,7 @@ namespace Rhisis.ClusterServer.Cache
     {
         private readonly ILogger<ClusterCacheServer> _logger;
 
-        public IEnumerable<WorldChannel> WorldChannels => ConnectedUsers.Select(x => x.Channel);
+        public IEnumerable<WorldChannel> WorldChannels => Users.Cast<ClusterCacheUser>().Select(x => x.Channel);
 
         public ClusterCacheServer(LiteServerOptions options, ILogger<ClusterCacheServer> logger, IServiceProvider serviceProvider) 
             : base(options, serviceProvider)
