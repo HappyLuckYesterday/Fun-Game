@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Map;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Map;
+using Rhisis.Abstractions.Protocol;
 using Rhisis.Game.Common;
-using Rhisis.Network;
-using Rhisis.Network.Snapshots;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Snapshots;
 using Sylver.HandlerInvoker.Attributes;
-using Sylver.Network.Data;
 using System;
 
 namespace Rhisis.WorldServer.Handlers
@@ -23,7 +23,7 @@ namespace Rhisis.WorldServer.Handlers
         }
 
         [HandlerAction(PacketType.REVIVAL_TO_LODESTAR)]
-        public void OnRevivalToLodestar(IPlayer player, INetPacketStream _)
+        public void OnRevivalToLodestar(IPlayer player, IFFPacket _)
         {
             if (!player.Health.IsDead)
             {

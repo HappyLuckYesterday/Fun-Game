@@ -39,8 +39,8 @@ namespace Rhisis.CLI.Commands.Configure
         /// </summary>
         public void OnExecute()
         {
-            var coreServerConfiguration = ConfigurationHelper.Load<CoreConfiguration>(ConfigurationFile, ConfigurationConstants.CoreServer);
-            var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguration);
+            var coreServerConfiguration = ConfigurationHelper.Load<CoreOptions>(ConfigurationFile, ConfigurationConstants.CoreServer);
+            var coreConfiguration = new ObjectConfigurationFiller<CoreOptions>(coreServerConfiguration);
 
             Console.WriteLine("----- Core Server -----");
             coreConfiguration.Fill();

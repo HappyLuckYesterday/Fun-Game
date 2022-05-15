@@ -1,15 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Rhisis.Abstractions.Server;
 using Rhisis.Core.Common;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
-using Rhisis.LoginServer.Client;
-using Rhisis.LoginServer.CoreServer;
-using Rhisis.LoginServer.Packets;
-using Rhisis.Network;
-using Rhisis.Network.Core.Servers;
-using Rhisis.Network.Packets.Login;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.Infrastructure.Persistance.Entities;
+using Rhisis.LoginServer.Abstractions;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Packets.Client.Login;
+using Rhisis.Protocol.Packets.Server;
+using Rhisis.Protocol.Packets.Server.Login;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Collections.Generic;
@@ -21,11 +21,10 @@ namespace Rhisis.LoginServer.Handlers
     public class CertifyHandler
     {
         private readonly ILogger<CertifyHandler> _logger;
-        private readonly LoginConfiguration _loginConfiguration;
+        private readonly LoginOptions _loginConfiguration;
         private readonly ILoginServer _loginServer;
         private readonly ICoreServer _coreServer;
         private readonly IRhisisDatabase _database;
-        private readonly ILoginPacketFactory _loginPacketFactory;
 
         /// <summary>
         /// Creates a new <see cref="CertifyHandler"/> instance.
@@ -35,15 +34,13 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="loginServer">Login server instance.</param>
         /// <param name="database">Database service.</param>
         /// <param name="coreServer">Core server.</param>
-        /// <param name="loginPacketFactory">Login server packet factory.</param>
-        public CertifyHandler(ILogger<CertifyHandler> logger, IOptions<LoginConfiguration> loginConfiguration, ILoginServer loginServer, ICoreServer coreServer, IRhisisDatabase database, ILoginPacketFactory loginPacketFactory)
+        public CertifyHandler(ILogger<CertifyHandler> logger, IOptions<LoginOptions> loginConfiguration, ILoginServer loginServer, ICoreServer coreServer, IRhisisDatabase database)
         {
             _logger = logger;
             _loginConfiguration = loginConfiguration.Value;
             _loginServer = loginServer;
             _coreServer = coreServer;
             _database = database;
-            _loginPacketFactory = loginPacketFactory;
         }
 
         /// <summary>
@@ -52,7 +49,7 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="client">Client.</param>
         /// <param name="certifyPacket">Certify packet.</param>
         [HandlerAction(PacketType.CERTIFY)]
-        public void Execute(ILoginClient client, CertifyPacket certifyPacket)
+        public void Execute(ILoginUser client, CertifyPacket certifyPacket)
         {
             if (certifyPacket.BuildVersion != _loginConfiguration.BuildVersion)
             {
@@ -72,10 +69,10 @@ namespace Rhisis.LoginServer.Handlers
                     AuthenticationFailed(client, ErrorType.FLYFF_PASSWORD, "bad password");
                     break;
                 case AuthenticationResult.AccountSuspended:
-                    // TODO
+                    AuthenticationFailed(client, ErrorType.FLYFF_PERMIT, "account suspended.");
                     break;
                 case AuthenticationResult.AccountTemporarySuspended:
-                    // TODO
+                    AuthenticationFailed(client, ErrorType.FLYFF_PERMIT, "account temporary suspended.");
                     break;
                 case AuthenticationResult.AccountDeleted:
                     AuthenticationFailed(client, ErrorType.ILLEGAL_ACCESS, "logged in with deleted account");
@@ -93,9 +90,13 @@ namespace Rhisis.LoginServer.Handlers
 
                     IEnumerable<Cluster> clusters = _coreServer.Clusters.OrderBy(x => x.Id);
 
-                    _loginPacketFactory.SendServerList(client, certifyPacket.Username, clusters);
+                    using (var serverListPacket = new ServerListPacket(certifyPacket.Username, clusters))
+                    {
+                        client.Send(serverListPacket);
+                    }
+
                     client.SetClientUsername(certifyPacket.Username, user.Id);
-                    _logger.LogInformation($"User '{client.Username}' logged succesfully from {client.Socket.RemoteEndPoint}.");
+                    _logger.LogInformation($"User '{client.Username}' logged succesfully.");
                     break;
                 default:
                     break;
@@ -108,10 +109,12 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="client">Client.</param>
         /// <param name="error">Authentication error type.</param>
         /// <param name="reason">Authentication error reason.</param>
-        private void AuthenticationFailed(ILoginClient client, ErrorType error, string reason)
+        private void AuthenticationFailed(ILoginUser client, ErrorType error, string reason)
         {
-            _logger.LogWarning($"Unable to authenticate user from {client.Socket.RemoteEndPoint}. Reason: {reason}");
-            _loginPacketFactory.SendLoginError(client, error);
+            _logger.LogWarning($"Unable to authenticate user. Reason: {reason}");
+
+            using var errorPacket = new ErrorPacket(error);
+            client.Send(errorPacket);
         }
 
         /// <summary>
@@ -120,7 +123,7 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="user">Database user.</param>
         /// <param name="password">Password</param>
         /// <returns>Authentication result</returns>
-        private AuthenticationResult Authenticate(DbUser user, string password)
+        private static AuthenticationResult Authenticate(DbUser user, string password)
         {
             if (user is null)
             {

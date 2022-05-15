@@ -1,7 +1,7 @@
 ﻿using Rhisis.Game;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Network;
-using Rhisis.Network.Packets.World.Taskbar;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Packets.Client.World.Taskbar;
 using Sylver.HandlerInvoker.Attributes;
 
 namespace Rhisis.WorldServer.Handlers.PlayerTaskbar

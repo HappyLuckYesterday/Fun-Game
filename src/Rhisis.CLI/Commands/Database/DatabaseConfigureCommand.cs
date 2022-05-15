@@ -6,7 +6,6 @@ using Rhisis.CLI.Services;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Configuration.Models;
-using Rhisis.Database;
 
 namespace Rhisis.CLI.Commands.Database
 {
@@ -41,8 +40,8 @@ namespace Rhisis.CLI.Commands.Database
             if (string.IsNullOrEmpty(DatabaseConfigurationFile))
                 DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
 
-            var databaseConfiguration = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile, ConfigurationConstants.DatabaseConfiguration);
-            var dbConfiguration = new ObjectConfigurationFiller<DatabaseConfiguration>(databaseConfiguration);
+            var databaseConfiguration = ConfigurationHelper.Load<DatabaseOptions>(DatabaseConfigurationFile, ConfigurationConstants.DatabaseConfiguration);
+            var dbConfiguration = new ObjectConfigurationFiller<DatabaseOptions>(databaseConfiguration);
 
             dbConfiguration.Fill();
 

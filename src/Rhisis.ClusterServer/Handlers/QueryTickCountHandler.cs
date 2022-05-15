@@ -1,7 +1,8 @@
-﻿using Rhisis.ClusterServer.Client;
-using Rhisis.ClusterServer.Packets;
-using Rhisis.Network;
-using Rhisis.Network.Packets.Cluster;
+﻿using Rhisis.ClusterServer.Abstractions;
+using Rhisis.Core.IO;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Packets.Client.Cluster;
+using Rhisis.Protocol.Packets.Server.Cluster;
 using Sylver.HandlerInvoker.Attributes;
 
 namespace Rhisis.ClusterServer.Handlers
@@ -9,17 +10,12 @@ namespace Rhisis.ClusterServer.Handlers
     [Handler]
     public class QueryTickCountHandler
     {
-        private readonly IClusterPacketFactory _clusterPacketFactory;
-
-        public QueryTickCountHandler(IClusterPacketFactory clusterPacketFactory)
-        {
-            _clusterPacketFactory = clusterPacketFactory;
-        }
-
         [HandlerAction(PacketType.QUERYTICKCOUNT)]
-        public void OnQueryTickCount(IClusterClient client, QueryTickCountPacket packet)
+        public void OnQueryTickCount(IClusterUser user, QueryTickCountPacket packet)
         {
-            _clusterPacketFactory.SendQueryTickCount(client, packet.Time);
+            using var queryTickCountPacket = new ServerQueryTickCountPacket(packet.Time, Time.GetElapsedTime());
+
+            user.Send(queryTickCountPacket);
         }
     }
 }

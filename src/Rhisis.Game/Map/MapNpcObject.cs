@@ -1,4 +1,4 @@
-﻿using Rhisis.Game.Abstractions.Map;
+﻿using Rhisis.Abstractions.Map;
 
 namespace Rhisis.Game.Map
 {

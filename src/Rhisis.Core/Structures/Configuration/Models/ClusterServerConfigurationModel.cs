@@ -4,10 +4,10 @@ namespace Rhisis.Core.Structures.Configuration.Models
 {
     public class ClusterServerConfigurationModel
     {
-        [JsonProperty(PropertyName = ConfigurationConstants.ClusterServer)]
-        public ClusterConfiguration ClusterServerConfiguration { get; set; }
+        [JsonProperty(PropertyName = ConfigurationSections.Cluster)]
+        public ClusterOptions ClusterServerConfiguration { get; set; }
 
-        [JsonProperty(PropertyName = ConfigurationConstants.CoreServer)]
-        public CoreConfiguration CoreConfiguration { get; set; }
+        [JsonProperty(PropertyName = ConfigurationSections.Core)]
+        public CoreOptions CoreConfiguration { get; set; }
     }
 }

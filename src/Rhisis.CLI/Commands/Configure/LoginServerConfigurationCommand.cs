@@ -39,10 +39,10 @@ namespace Rhisis.CLI.Commands.Configure
         /// </summary>
         public void OnExecute()
         {
-            var loginServerConfiguration = ConfigurationHelper.Load<LoginConfiguration>(ConfigurationFile, ConfigurationConstants.LoginServer);
-            var coreServerConfiguration = ConfigurationHelper.Load<CoreConfiguration>(ConfigurationFile, ConfigurationConstants.CoreServer);
-            var loginConfiguration = new ObjectConfigurationFiller<LoginConfiguration>(loginServerConfiguration);
-            var coreConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreServerConfiguration);
+            var loginServerConfiguration = ConfigurationHelper.Load<LoginOptions>(ConfigurationFile, ConfigurationConstants.LoginServer);
+            var coreServerConfiguration = ConfigurationHelper.Load<CoreOptions>(ConfigurationFile, ConfigurationConstants.CoreServer);
+            var loginConfiguration = new ObjectConfigurationFiller<LoginOptions>(loginServerConfiguration);
+            var coreConfiguration = new ObjectConfigurationFiller<CoreOptions>(coreServerConfiguration);
 
             Console.WriteLine("----- Login Server -----");
             loginConfiguration.Fill();

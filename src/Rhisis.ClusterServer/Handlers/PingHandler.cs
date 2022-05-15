@@ -1,7 +1,7 @@
-﻿using Rhisis.ClusterServer.Client;
-using Rhisis.ClusterServer.Packets;
-using Rhisis.Network;
-using Rhisis.Network.Packets;
+﻿using Rhisis.ClusterServer.Abstractions;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Packets.Client;
+using Rhisis.Protocol.Packets.Server;
 using Sylver.HandlerInvoker.Attributes;
 
 namespace Rhisis.ClusterServer.Handlers
@@ -9,19 +9,13 @@ namespace Rhisis.ClusterServer.Handlers
     [Handler]
     public class PingHandler
     {
-        private readonly IClusterPacketFactory _clusterPacketFactory;
-
-        public PingHandler(IClusterPacketFactory clusterPacketFactory)
-        {
-            _clusterPacketFactory = clusterPacketFactory;
-        }
-
         [HandlerAction(PacketType.PING)]
-        public void OnPing(IClusterClient client, PingPacket pingPacket)
+        public void OnPing(IClusterUser user, PingPacket packet)
         {
-            if (!pingPacket.IsTimeOut)
+            if (!packet.IsTimeOut)
             {
-                _clusterPacketFactory.SendPong(client, pingPacket.Time);
+                using var pingPacket = new PongPacket(packet.Time);
+                user.Send(pingPacket);
             }
         }
     }

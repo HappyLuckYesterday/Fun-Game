@@ -1,9 +1,8 @@
-﻿using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Messaging;
+﻿using Rhisis.Abstractions.Caching;
+using Rhisis.Abstractions.Entities;
 using Rhisis.Game.Protocol.Messages;
-using Rhisis.Network;
-using Rhisis.Network.Packets.World.Friends;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Packets.Client.World.Friends;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Linq;
@@ -13,12 +12,10 @@ namespace Rhisis.WorldServer.Handlers.Friends
     [Handler]
     public class RemoveFriendHandler
     {
-        private readonly IMessaging _messaging;
         private readonly IPlayerCache _playerCache;
 
-        public RemoveFriendHandler(IMessaging messaging, IPlayerCache playerCache)
+        public RemoveFriendHandler(IPlayerCache playerCache)
         {
-            _messaging = messaging;
             _playerCache = playerCache;
         }
 
@@ -31,15 +28,15 @@ namespace Rhisis.WorldServer.Handlers.Friends
             }
 
             player.Messenger.RemoveFriend(packet.FriendId);
-            _messaging.Publish(new PlayerMessengerRemoveFriend(player.CharacterId, packet.FriendId));
+            //_messaging.Publish(new PlayerMessengerRemoveFriend(player.CharacterId, packet.FriendId));
 
-            CachedPlayer cachedPlayer = _playerCache.GetCachedPlayer(player.CharacterId);
+            CachedPlayer cachedPlayer = _playerCache.Get(player.CharacterId);
             CachedPlayerFriend playerFriend = cachedPlayer.Friends.FirstOrDefault(x => x.FriendId == packet.FriendId);
 
             if (cachedPlayer != null)
             {
                 cachedPlayer.Friends.Remove(playerFriend);
-                _playerCache.SetCachedPlayer(cachedPlayer);
+                _playerCache.Set(cachedPlayer);
             }
         }
     }

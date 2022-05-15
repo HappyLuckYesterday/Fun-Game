@@ -1,17 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
-using Rhisis.Game;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.Infrastructure.Persistance.Entities;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common.Resources.Quests;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.World.Systems.Initializers
+namespace Rhisis.Game.Systems.Initializers
 {
     [Injectable]
     public sealed class PlayerQuestInitializer : IPlayerInitializer

@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
 using Rhisis.Game.Common;
-using Rhisis.Network;
-using Rhisis.Network.Packets.World;
-using Rhisis.Network.Snapshots;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Snapshots;
+using Rhisis.Protocol.Packets.Client.World;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 
@@ -14,9 +14,9 @@ namespace Rhisis.WorldServer.Handlers.Customization
     [Handler]
     public class ChangeFaceHandler
     {
-        private readonly WorldConfiguration _worldServerConfiguration;
+        private readonly WorldOptions _worldServerConfiguration;
 
-        public ChangeFaceHandler(IOptions<WorldConfiguration> worldServerConfiguration)
+        public ChangeFaceHandler(IOptions<WorldOptions> worldServerConfiguration)
         {
             _worldServerConfiguration = worldServerConfiguration.Value;
         }

@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Rhisis.Core.DependencyInjection;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.Infrastructure.Persistance.Entities;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Caching;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
 using Rhisis.Game.Common;
 using System;
 using System.Collections.Generic;
@@ -35,7 +35,7 @@ namespace Rhisis.Game.Systems.Initializers
 
             foreach (DbFriend friend in friends)
             {
-                CachedPlayer cachedPlayer = _playerCache.GetCachedPlayer(friend.FriendId);
+                CachedPlayer cachedPlayer = _playerCache.Get(friend.FriendId);
 
                 var contact = new MessengerContact(cachedPlayer.Id,
                     cachedPlayer.Channel,

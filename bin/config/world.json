@@ -1,16 +1,21 @@
 {
-  "worldServer": {
+  "world": {
     "host": "127.0.0.1",
     "port": 5400,
-    "id": 2,
-    "clusterId": 1,
-    "name": "Channel 1 (Docker)",
+    "id": 1,
+    "name": "Channel 1",
+    "maximumUsers": 100,
+    "language": "en",
+    "clusterCache": {
+      "host": "127.0.0.1",
+      "port": 16000,
+      "password": "098f6bcd4621d373cade4e832627b4f6"
+    },
     "systems": {},
     "maps": [
       "WI_WORLD_MADRIGAL",
       "WI_DUNGEON_FL_MAS"
     ],
-    "language": "en",
     "rates": {
       "gold": 1,
       "experience": 1,
@@ -115,10 +120,5 @@
         }
       ]
     }
-  },
-  "coreServer": {
-    "host": "rhisis.loginserver",
-    "port": 15000,
-    "password": "098f6bcd4621d373cade4e832627b4f6"
-  }
+  }  
 }

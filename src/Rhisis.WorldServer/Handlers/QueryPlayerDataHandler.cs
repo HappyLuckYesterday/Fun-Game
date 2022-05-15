@@ -1,8 +1,8 @@
-﻿using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Network;
-using Rhisis.Network.Packets.World;
-using Rhisis.Network.Snapshots;
+﻿using Rhisis.Abstractions.Caching;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Snapshots;
+using Rhisis.Protocol.Packets.Client.World;
 using Sylver.HandlerInvoker.Attributes;
 
 namespace Rhisis.WorldServer.Handlers
@@ -20,13 +20,13 @@ namespace Rhisis.WorldServer.Handlers
         [HandlerAction(PacketType.QUERY_PLAYER_DATA)]
         public void OnExecute(IPlayer player, QueryPlayerDataPacket packet)
         {
-            var cachedPlayer = _playerCache.GetCachedPlayer((int)packet.PlayerId);
+            var cachedPlayer = _playerCache.Get((int)packet.PlayerId);
 
             if (cachedPlayer is null)
             {
                 if (player.CharacterId != packet.PlayerId)
                 {
-                    cachedPlayer = _playerCache.LoadCachedPlayer((int)packet.PlayerId);
+                    cachedPlayer = _playerCache.Load((int)packet.PlayerId);
                 }
             }
             else
@@ -41,7 +41,7 @@ namespace Rhisis.WorldServer.Handlers
                         cachedPlayer.IsOnline = true;
                         cachedPlayer.MessengerStatus = player.Messenger.Status;
 
-                        _playerCache.SetCachedPlayer(cachedPlayer);
+                        _playerCache.Set(cachedPlayer);
                     }
                 }
             }

@@ -1,23 +1,21 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Rhisis.Core.DependencyInjection.Extensions;
+﻿using Rhisis.Core.DependencyInjection.Extensions;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
-using Rhisis.Game.Abstractions.Behavior;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
-using Rhisis.Game.Abstractions.Features.Chat;
-using Rhisis.Game.Abstractions.Map;
-using Rhisis.Game.Abstractions.Systems;
+using Rhisis.Abstractions.Behavior;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Features.Chat;
+using Rhisis.Abstractions.Map;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Common.Resources.Dialogs;
 using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.Game.Features.Chat;
-using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game.Entities
 {
@@ -76,12 +74,9 @@ namespace Rhisis.Game.Entities
 
         public bool Equals(IWorldObject other) => Id == other.Id;
 
-        public void Send(INetPacketStream packet)
-        {
-            throw new InvalidOperationException("A NPC cannot send a packet to itself.");
-        }
+        public void Send(IFFPacket packet) => throw new InvalidOperationException("A NPC cannot send a packet to itself.");
 
-        public void SendToVisible(INetPacketStream packet)
+        public void SendToVisible(IFFPacket packet)
         {
             IEnumerable<IPlayer> visiblePlayers = VisibleObjects.OfType<IPlayer>();
 

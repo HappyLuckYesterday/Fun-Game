@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Game;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features.Chat;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features.Chat;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using System;

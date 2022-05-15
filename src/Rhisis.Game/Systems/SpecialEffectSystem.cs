@@ -1,9 +1,9 @@
 ﻿using Rhisis.Core.DependencyInjection;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Systems;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Systems;
 using Rhisis.Game.Common;
-using Rhisis.Network.Snapshots;
+using Rhisis.Protocol.Snapshots;
 
 namespace Rhisis.Game.Systems
 {

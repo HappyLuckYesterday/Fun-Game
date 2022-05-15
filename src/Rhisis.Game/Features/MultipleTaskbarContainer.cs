@@ -1,6 +1,5 @@
-﻿using Rhisis.Game.Abstractions.Features;
-using Rhisis.Game.Abstractions.Protocol;
-using Sylver.Network.Data;
+﻿using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Protocol;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,9 +30,9 @@ namespace Rhisis.Game.Features
             return _levels[level];
         }
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
-            packet.Write(Count);
+            packet.WriteInt32(Count);
 
             for (int level = 0; level < Capacity; level++)
             {
@@ -43,7 +42,7 @@ namespace Rhisis.Game.Features
                 {
                     if (shortcut != null)
                     {
-                        packet.Write(level);
+                        packet.WriteInt32(level);
                         shortcut.Serialize(packet);
                     }
                 }

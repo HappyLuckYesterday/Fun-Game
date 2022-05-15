@@ -1,13 +1,13 @@
 ﻿using Rhisis.Core.DependencyInjection;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Resources;
-using Rhisis.Game.Abstractions.Systems;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Resources;
+using Rhisis.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Game.Protocol.Snapshots.Skills;
-using Rhisis.Network;
-using Rhisis.Network.Snapshots;
+using Rhisis.Protocol.Snapshots.Skills;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Snapshots;
 using System.Collections.Generic;
 
 namespace Rhisis.Game.Systems

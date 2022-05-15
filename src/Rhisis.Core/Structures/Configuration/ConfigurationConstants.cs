@@ -16,19 +16,9 @@
         public const string RhisisDockerConfigurationKey = "RHISIS_CONFIGURATION";
 
         /// <summary>
-        /// Gets the CoreServer configuration key.
-        /// </summary>
-        public const string CoreServer = "coreServer";
-
-        /// <summary>
         /// Gets the CoreServer configuration path.
         /// </summary>
         public const string CoreServerPath = "./config/core.json";
-
-        /// <summary>
-        /// Gets the LoginServer configuration key.
-        /// </summary>
-        public const string LoginServer = "loginServer";
 
         /// <summary>
         /// Gets the LoginServer configuration file path.
@@ -36,19 +26,9 @@
         public const string LoginServerPath = "./config/login.json";
 
         /// <summary>
-        /// Gets the ClusterServer configuration key.
-        /// </summary>
-        public const string ClusterServer = "clusterServer";
-
-        /// <summary>
         /// Gets the ClusterServer configuration file path.
         /// </summary>
         public const string ClusterServerPath = "./config/cluster.json";
-
-        /// <summary>
-        /// Gets the WorldServer configuration key.
-        /// </summary>
-        public const string WorldServer = "worldServer";
         
         /// <summary>
         /// Gets the WorldClusterServer configuration key.

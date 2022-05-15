@@ -2,20 +2,16 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Behavior;
+using Rhisis.Abstractions.Caching;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Map;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Core.DependencyInjection.Extensions;
 using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
 using Rhisis.Game;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Behavior;
-using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Game.Abstractions.Components;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Map;
-using Rhisis.Game.Abstractions.Messaging;
-using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Components;
@@ -23,10 +19,12 @@ using Rhisis.Game.Entities;
 using Rhisis.Game.Features;
 using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Protocol.Packets;
-using Rhisis.Game.Protocol.Snapshots.Friends;
-using Rhisis.Network;
-using Rhisis.Network.Packets.World;
-using Rhisis.Network.Snapshots;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.Infrastructure.Persistance.Entities;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Packets.Client.World;
+using Rhisis.Protocol.Snapshots;
+using Rhisis.Protocol.Snapshots.Friends;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Collections.Generic;
@@ -43,9 +41,8 @@ namespace Rhisis.WorldServer.Handlers
         private readonly IMapManager _mapManager;
         private readonly IBehaviorManager _behaviorManager;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IOptions<WorldConfiguration> _configuration;
+        private readonly IOptions<WorldOptions> _configuration;
         private readonly IPlayerCache _playerCache;
-        private readonly IMessaging _messaging;
 
         /// <summary>
         /// Creates a new <see cref="JoinGameHandler"/> instance.
@@ -59,7 +56,7 @@ namespace Rhisis.WorldServer.Handlers
         public JoinGameHandler(ILogger<JoinGameHandler> logger, IRhisisDatabase database, 
             IGameResources gameResources, IMapManager mapManager, 
             IBehaviorManager behaviorManager, IServiceProvider serviceProvider,
-            IOptions<WorldConfiguration> configuration, IPlayerCache playerCache, IMessaging messaging)
+            IOptions<WorldOptions> configuration, IPlayerCache playerCache)
         {
             _logger = logger;
             _database = database;
@@ -69,7 +66,6 @@ namespace Rhisis.WorldServer.Handlers
             _serviceProvider = serviceProvider;
             _configuration = configuration;
             _playerCache = playerCache;
-            _messaging = messaging;
         }
 
         /// <summary>
@@ -221,7 +217,7 @@ namespace Rhisis.WorldServer.Handlers
                 Friends = player.Messenger.Friends.Select(x => new CachedPlayerFriend(x.Id, x.IsBlocked)).ToList()
             };
 
-            _playerCache.SetCachedPlayer(cachedPlayer);
+            _playerCache.Set(cachedPlayer);
 
             using (var joinPacket = new JoinCompletePacket())
             {
@@ -239,15 +235,7 @@ namespace Rhisis.WorldServer.Handlers
 
             player.MapLayer.AddPlayer(player);
             player.Spawned = true;
-
-            if (player.Messenger.Status != MessengerStatusType.Offline)
-            {
-                _messaging.Publish(new PlayerConnected
-                {
-                    Id = player.CharacterId,
-                    Status = player.Messenger.Status
-                });
-            }
+            player.OnConnected();
         }
     }
 }

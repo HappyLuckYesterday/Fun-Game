@@ -2,15 +2,15 @@
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Game;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Resources;
-using Rhisis.Game.Abstractions.Systems;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Resources;
+using Rhisis.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Game.Protocol.Snapshots.Skills;
-using Rhisis.Network;
-using Rhisis.Network.Packets.World;
-using Rhisis.Network.Snapshots;
+using Rhisis.Protocol.Snapshots;
+using Rhisis.Protocol.Snapshots.Skills;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Packets.Client.World;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Collections.Generic;
@@ -22,11 +22,11 @@ namespace Rhisis.WorldServer.Handlers
     public class BuffPangHandler
     {
         private readonly ILogger<BuffPangHandler> _logger;
-        private readonly IOptions<WorldConfiguration> _worldConfiguration;
+        private readonly IOptions<WorldOptions> _worldConfiguration;
         private readonly IGameResources _gameResources;
         private readonly ISkillSystem _skillSystem;
 
-        public BuffPangHandler(ILogger<BuffPangHandler> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, ISkillSystem skillSystem)
+        public BuffPangHandler(ILogger<BuffPangHandler> logger, IOptions<WorldOptions> worldConfiguration, IGameResources gameResources, ISkillSystem skillSystem)
         {
             _logger = logger;
             _worldConfiguration = worldConfiguration;
@@ -37,7 +37,7 @@ namespace Rhisis.WorldServer.Handlers
         [HandlerAction(PacketType.NPC_BUFF)]
         public void OnNpcBuff(IPlayer player, NpcBuffPacket packet)
         {
-            NpcBuffConfiguration buffConfiguration = _worldConfiguration.Value.NpcBuff.Get(packet.NpcKey);
+            NpcBuffOptions buffConfiguration = _worldConfiguration.Value.NpcBuff.Get(packet.NpcKey);
 
             if (buffConfiguration is null)
             {

@@ -1,19 +1,25 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using LiteNetwork;
+using LiteNetwork.Client.Hosting;
+using LiteNetwork.Hosting;
+using LiteNetwork.Server.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
+using Rhisis.Abstractions.Protocol;
+using Rhisis.Abstractions.Resources;
+using Rhisis.ClusterServer.Abstractions;
+using Rhisis.ClusterServer.Cache;
 using Rhisis.ClusterServer.Core;
-using Rhisis.ClusterServer.Packets;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Database;
-using Rhisis.Game.Abstractions.Protocol;
-using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Resources;
-using Rhisis.Redis;
+using Rhisis.Infrastructure.Caching;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.Protocol;
 using Sylver.HandlerInvoker;
-using Sylver.Network.Data;
+using System;
 using System.Threading.Tasks;
 
 namespace Rhisis.ClusterServer
@@ -30,26 +36,16 @@ namespace Rhisis.ClusterServer
                     configApp.SetBasePath(EnvironmentExtension.GetCurrentEnvironementDirectory());
                     configApp.AddJsonFile(ConfigurationConstants.ClusterServerPath, optional: false);
                     configApp.AddJsonFile(ConfigurationConstants.DatabasePath, optional: false);
+                    configApp.AddEnvironmentVariables();
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddOptions();
                     services.AddMemoryCache();
-
-                    services.Configure<ClusterConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.ClusterServer));
-                    services.Configure<CoreConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.CoreServer));
-
-                    services.AddDatabase(hostContext.Configuration);
+                    services.Configure<ClusterOptions>(hostContext.Configuration.GetSection(ConfigurationSections.Cluster));
+                    services.AddPersistance(hostContext.Configuration);
                     services.AddHandlers();
                     services.AddSingleton<IGameResources, GameResources>();
-
-                    // Cluster server configuration
-                    services.AddSingleton<IClusterServer, ClusterServer>();
-                    services.AddSingleton<IClusterPacketFactory, ClusterPacketFactory>();
-                    services.AddSingleton<IHostedService, ClusterServerService>();
-
-                    // Core server
-                    services.AddSingleton<IHostedService, ClusterCoreClient>();
                 })
                 .ConfigureLogging(builder =>
                 {
@@ -61,18 +57,74 @@ namespace Rhisis.ClusterServer
                         CaptureMessageProperties = true
                     });
                 })
-                .UseRedis((host, options) =>
+                .ConfigureLiteNetwork((context, builder) =>
                 {
-                    options.Host = "rhisis.redis";
+                    builder.AddLiteServer<IClusterServer, ClusterServer>(options =>
+                    {
+                        var serverOptions = context.Configuration.GetSection(ConfigurationSections.Cluster).Get<ClusterOptions>();
+
+                        if (serverOptions is null)
+                        {
+                            throw new InvalidProgramException($"Failed to load cluster server settings.");
+                        }
+
+                        options.Host = serverOptions.Host;
+                        options.Port = serverOptions.Port;
+                        options.PacketProcessor = new FlyffPacketProcessor();
+                        options.ReceiveStrategy = ReceiveStrategyType.Queued;
+                    });
+
+                    builder.AddLiteServer<IClusterCacheServer, ClusterCacheServer>(options =>
+                    {
+                        var serverOptions = context.Configuration.GetSection(ConfigurationSections.Cluster).Get<ClusterOptions>();
+
+                        if (serverOptions is null)
+                        {
+                            throw new InvalidProgramException($"Failed to load cluster server settings.");
+                        }
+
+                        if (serverOptions.Cache is null)
+                        {
+                            throw new InvalidOperationException("Failed to load cluster cache server settings.");
+                        }
+
+                        options.Host = serverOptions.Cache.Host;
+                        options.Port = serverOptions.Cache.Port;
+                        options.ReceiveStrategy = ReceiveStrategyType.Queued;
+                    });
+
+                    builder.AddLiteClient<ICoreClient, ClusterCoreClient>(options =>
+                    {
+                        var serverOptions = context.Configuration.GetSection(ConfigurationSections.Cluster).Get<ClusterOptions>();
+
+                        if (serverOptions is null)
+                        {
+                            throw new InvalidProgramException($"Failed to load cluster server settings.");
+                        }
+
+                        if (serverOptions.Core is null)
+                        {
+                            throw new InvalidOperationException("Failed to load core server settings.");
+                        }
+
+                        options.Host = serverOptions.Core.Host;
+                        options.Port = serverOptions.Core.Port;
+                        options.ReceiveStrategy = ReceiveStrategyType.Queued;
+                    });
                 })
                 .SetConsoleCulture(culture)
                 .UseConsoleLifetime()
                 .Build();
 
             await host
-                .AddHandlerParameterTransformer<INetPacketStream, IPacketDeserializer>((source, dest) =>
+                .AddHandlerParameterTransformer<FFPacket, IPacketDeserializer>((source, dest) =>
                 {
-                    dest?.Deserialize(source);
+                    if (source is not IFFPacket packet)
+                    {
+                        throw new InvalidCastException("Failed to convert a lite packet stream into a Flyff packet stream.");
+                    }
+
+                    dest?.Deserialize(packet);
                     return dest;
                 })
                 .RunAsync();

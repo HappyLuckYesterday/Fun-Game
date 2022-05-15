@@ -1,14 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.ClusterServer.Client;
-using Rhisis.ClusterServer.Packets;
-using Rhisis.ClusterServer.Structures;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
-using Rhisis.Network;
-using Rhisis.Network.Packets.Cluster;
+using Rhisis.ClusterServer.Abstractions;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.Infrastructure.Persistance.Entities;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Packets.Client.Cluster;
 using Sylver.HandlerInvoker.Attributes;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.ClusterServer.Handlers
@@ -17,33 +14,32 @@ namespace Rhisis.ClusterServer.Handlers
     public class DeletePlayerHandler : ClusterHandlerBase
     {
         private readonly ILogger<DeletePlayerHandler> _logger;
-        private readonly IClusterPacketFactory _clusterPacketFactory;
 
-        public DeletePlayerHandler(ILogger<DeletePlayerHandler> logger, IRhisisDatabase database, IClusterPacketFactory clusterPacketFactory)
+        public DeletePlayerHandler(ILogger<DeletePlayerHandler> logger, IRhisisDatabase database)
             : base(database)
         {
             _logger = logger;
-            _clusterPacketFactory = clusterPacketFactory;
         }
 
         [HandlerAction(PacketType.DEL_PLAYER)]
-        public void Execute(IClusterClient client, DeletePlayerPacket packet)
+        public void Execute(IClusterUser user, DeletePlayerPacket packet)
         {
             DbUser dbUser = Database.Users.FirstOrDefault(x => x.Username == packet.Username && x.Password == packet.Password);
 
             if (dbUser is null)
             {
-                _logger.LogWarning($"[SECURITY] Unable to create new character for user '{packet.Username}' from {client.Socket.RemoteEndPoint}. " +
+                _logger.LogWarning($"[SECURITY] Unable to create new character for user '{packet.Username}'. " +
                     "Reason: bad presented credentials compared to the database.");
-                client.Disconnect();
+                user.Disconnect();
                 return;
             }
 
             if (!string.Equals(packet.Password, packet.PasswordConfirmation, StringComparison.OrdinalIgnoreCase))
             {
-                _logger.LogWarning($"Unable to delete character id '{packet.CharacterId}' for user '{packet.Username}' from {client.Socket.RemoteEndPoint}. " +
+                _logger.LogWarning($"Unable to delete character id '{packet.CharacterId}' for user '{packet.Username}'. " +
                     "Reason: passwords entered do not match.");
-                _clusterPacketFactory.SendClusterError(client, ErrorType.WRONG_PASSWORD);
+                SendError(user, ErrorType.WRONG_PASSWORD);
+
                 return;
             }
 
@@ -52,15 +48,15 @@ namespace Rhisis.ClusterServer.Handlers
             // Check if character exist.
             if (characterToDelete is null)
             {
-                _logger.LogWarning($"[SECURITY] Unable to delete character id '{packet.CharacterId}' for user '{packet.Username}' from {client.Socket.RemoteEndPoint}. " +
+                _logger.LogWarning($"[SECURITY] Unable to delete character id '{packet.CharacterId}' for user '{packet.Username}'. " +
                     "Reason: user doesn't have any character with this id.");
-                client.Disconnect();
+                user.Disconnect();
                 return;
             }
 
             if (characterToDelete.IsDeleted)
             {
-                _logger.LogWarning($"[SECURITY] Unable to delete character id '{packet.CharacterId}' for user '{packet.Username}' from {client.Socket.RemoteEndPoint}. " +
+                _logger.LogWarning($"[SECURITY] Unable to delete character id '{packet.CharacterId}' for user '{packet.Username}'. " +
                        "Reason: character is already deleted.");
                 return;
             }
@@ -70,11 +66,9 @@ namespace Rhisis.ClusterServer.Handlers
             Database.Characters.Update(characterToDelete);
             Database.SaveChanges();
 
-            _logger.LogInformation($"Character '{characterToDelete.Name}' has been deleted successfully for user '{packet.Username}' from {client.Socket.RemoteEndPoint}.");
+            _logger.LogInformation($"Character '{characterToDelete.Name}' has been deleted successfully for user '{packet.Username}'.");
 
-            IEnumerable<ClusterCharacter> dbCharacters = GetCharacters(dbUser.Id);
-
-            _clusterPacketFactory.SendPlayerList(client, packet.AuthenticationKey, dbCharacters);
+            SendPlayerList(user, packet.AuthenticationKey);
         }
     }
 }

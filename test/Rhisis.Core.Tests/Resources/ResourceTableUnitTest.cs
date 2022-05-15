@@ -1,7 +1,7 @@
 ﻿using Rhisis.Game.IO;
 using Xunit;
 
-namespace Rhisis.Core.Test.Resources
+namespace Rhisis.Core.Tests.Resources
 {
     public class ResourceTableUnitTest
     {

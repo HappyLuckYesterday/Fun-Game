@@ -41,10 +41,10 @@ namespace Rhisis.CLI.Commands.Configure
         /// </summary>
         public void OnExecute()
         {
-            var worldServerConfiguration = ConfigurationHelper.Load<WorldConfiguration>(ConfigurationFile, ConfigurationConstants.WorldServer);
-            var coreConfiguration = ConfigurationHelper.Load<CoreConfiguration>(ConfigurationFile, ConfigurationConstants.CoreServer);
-            var worldConfiguration = new ObjectConfigurationFiller<WorldConfiguration>(worldServerConfiguration);
-            var coreServerConfiguration = new ObjectConfigurationFiller<CoreConfiguration>(coreConfiguration);
+            var worldServerConfiguration = ConfigurationHelper.Load<WorldOptions>(ConfigurationFile, ConfigurationConstants.WorldServer);
+            var coreConfiguration = ConfigurationHelper.Load<CoreOptions>(ConfigurationFile, ConfigurationConstants.CoreServer);
+            var worldConfiguration = new ObjectConfigurationFiller<WorldOptions>(worldServerConfiguration);
+            var coreServerConfiguration = new ObjectConfigurationFiller<CoreOptions>(coreConfiguration);
 
             Console.WriteLine("----- Core Server -----");
             coreServerConfiguration.Fill();

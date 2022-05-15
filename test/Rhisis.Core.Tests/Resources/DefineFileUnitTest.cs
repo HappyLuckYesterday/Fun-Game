@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Xunit;
 
-namespace Rhisis.Core.Test.Resources
+namespace Rhisis.Core.Tests.Resources
 {
     public class DefineFileUnitTest
     {
@@ -63,7 +63,7 @@ namespace Rhisis.Core.Test.Resources
         {
             var defines = new DefineFile(DefineFilePath);
             Assert.NotNull(defines);
-            
+
             int value = defines.GetValue<int>(TextTwoKey);
             Assert.Equal(TextTwoValue, value);
 

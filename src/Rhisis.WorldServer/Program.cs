@@ -1,19 +1,24 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using LiteNetwork;
+using LiteNetwork.Client.Hosting;
+using LiteNetwork.Hosting;
+using LiteNetwork.Server.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
+using Rhisis.Abstractions.Protocol;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Configuration;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Database;
 using Rhisis.Game;
-using Rhisis.Game.Abstractions.Protocol;
-using Rhisis.Redis;
-using Rhisis.WorldServer.CoreClient;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.Protocol;
+using Rhisis.WorldServer.Abstractions;
+using Rhisis.WorldServer.ClusterCache;
 using Sylver.HandlerInvoker;
-using Sylver.Network.Data;
+using System;
 using System.Threading.Tasks;
 
 namespace Rhisis.WorldServer
@@ -35,20 +40,11 @@ namespace Rhisis.WorldServer
                 {
                     services.AddOptions();
                     services.AddMemoryCache();
-                    services.Configure<WorldConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.WorldServer));
-                    services.Configure<CoreConfiguration>(hostContext.Configuration.GetSection(ConfigurationConstants.CoreServer));
-                    
-                    services.AddDatabase(hostContext.Configuration);
+                    services.Configure<WorldOptions>(hostContext.Configuration.GetSection(ConfigurationSections.World));
+                    services.AddPersistance(hostContext.Configuration);
                     services.AddHandlers();
                     services.AddInjectableServices();
                     services.AddGameSystems();
-
-                    // World server configuration
-                    services.AddSingleton<IWorldServer, WorldServer>();
-                    services.AddSingleton<IHostedService, WorldServerService>();
-                    
-                    // Core server client configuration
-                    services.AddSingleton<IHostedService, WorldCoreClient>();
                 })
                 .ConfigureLogging(builder =>
                 {
@@ -60,18 +56,49 @@ namespace Rhisis.WorldServer
                         CaptureMessageProperties = true
                     });
                 })
-                .UseRedis((host, options) =>
+                .ConfigureLiteNetwork((context, builder) =>
                 {
-                    options.Host = "rhisis.redis";
+                    builder.AddLiteServer<IWorldServer, WorldServer>(options =>
+                    {
+                        var serverOptions = context.Configuration.GetSection(ConfigurationSections.World).Get<WorldOptions>();
+
+                        if (serverOptions is null)
+                        {
+                            throw new InvalidProgramException($"Failed to load world server settings.");
+                        }
+
+                        options.Host = serverOptions.Host;
+                        options.Port = serverOptions.Port;
+                        options.PacketProcessor = new FlyffPacketProcessor();
+                        options.ReceiveStrategy = ReceiveStrategyType.Queued;
+                    });
+                    builder.AddLiteClient<IClusterCacheClient, ClusterCacheClient>(options =>
+                    {
+                        var serverOptions = context.Configuration.GetSection(ConfigurationSections.World).Get<WorldOptions>();
+
+                        if (serverOptions is null)
+                        {
+                            throw new InvalidProgramException($"Failed to load world server settings.");
+                        }
+
+                        options.Host = serverOptions.ClusterCache.Host;
+                        options.Port = serverOptions.ClusterCache.Port;
+                        options.ReceiveStrategy = ReceiveStrategyType.Queued;
+                    });
                 })
                 .UseConsoleLifetime()
                 .SetConsoleCulture(culture)
                 .Build();
 
             await host
-                .AddHandlerParameterTransformer<INetPacketStream, IPacketDeserializer>((source, dest) =>
+                .AddHandlerParameterTransformer<IFFPacket, IPacketDeserializer>((source, dest) =>
                 {
-                    dest?.Deserialize(source);
+                    if (source is not IFFPacket packet)
+                    {
+                        throw new InvalidCastException("Failed to convert a lite packet stream into a Flyff packet stream.");
+                    }
+
+                    dest?.Deserialize(packet);
                     return dest;
                 })
                 .RunAsync();

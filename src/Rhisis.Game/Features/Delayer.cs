@@ -1,4 +1,4 @@
-﻿using Rhisis.Game.Abstractions.Features;
+﻿using Rhisis.Abstractions.Features;
 using System;
 using System.Collections.Generic;
 using System.Threading;

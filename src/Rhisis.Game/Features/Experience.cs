@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Network.Snapshots;
+using Rhisis.Protocol.Snapshots;
 using System;
 using System.Collections.Generic;
 
@@ -24,11 +24,11 @@ namespace Rhisis.Game.Features
 
         private readonly IPlayer _player;
         private readonly IGameResources _gameResources;
-        private readonly WorldConfiguration _worldServerConfiguration;
+        private readonly WorldOptions _worldServerConfiguration;
 
         public long Amount { get; private set; }
 
-        public Experience(IPlayer player, long initialExperience, IGameResources gameResources, IOptions<WorldConfiguration> worldServerConfiguration)
+        public Experience(IPlayer player, long initialExperience, IGameResources gameResources, IOptions<WorldOptions> worldServerConfiguration)
         {
             _player = player;
             Amount = initialExperience;

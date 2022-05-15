@@ -1,7 +1,8 @@
-﻿using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Network;
-using Rhisis.Network.Packets.World.Friends;
+﻿using Rhisis.Abstractions.Caching;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Packets.Client.World.Friends;
+using Rhisis.WorldServer.Abstractions;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 
@@ -44,14 +45,14 @@ namespace Rhisis.WorldServer.Handlers.Friends
                 sender.Messenger.AddFriend(player);
                 player.Messenger.AddFriend(sender);
 
-                CachedPlayer senderCachedPlayer = _playerCache.GetCachedPlayer(sender.CharacterId);
-                CachedPlayer friendCachedPlayer = _playerCache.GetCachedPlayer(player.CharacterId);
+                CachedPlayer senderCachedPlayer = _playerCache.Get(sender.CharacterId);
+                CachedPlayer friendCachedPlayer = _playerCache.Get(player.CharacterId);
 
                 senderCachedPlayer.Friends.Add(new CachedPlayerFriend(player.CharacterId));
                 friendCachedPlayer.Friends.Add(new CachedPlayerFriend(sender.CharacterId));
 
-                _playerCache.SetCachedPlayer(senderCachedPlayer);
-                _playerCache.SetCachedPlayer(friendCachedPlayer);
+                _playerCache.Set(senderCachedPlayer);
+                _playerCache.Set(friendCachedPlayer);
             }
             else
             {

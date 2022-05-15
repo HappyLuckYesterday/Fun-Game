@@ -1,6 +1,6 @@
-﻿using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Features;
-using Sylver.Network.Data;
+﻿using Rhisis.Abstractions;
+using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game.Features
 {
@@ -20,13 +20,13 @@ namespace Rhisis.Game.Features
             Items = new MultipleTaskbarContainer<IShortcut>(GameConstants.MaxTaskbarItemLevels, GameConstants.MaxTaskbarItems);
         }
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             Applets.Serialize(packet);
             Items.Serialize(packet);
-            packet.Write(0);
+            packet.WriteInt32(0);
             //ActionSlot.Serialize(packet);
-            packet.Write(ActionPoints);
+            packet.WriteInt32(ActionPoints);
         }
     }
 }

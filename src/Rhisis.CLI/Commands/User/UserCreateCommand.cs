@@ -3,8 +3,8 @@ using Rhisis.CLI.Services;
 using Rhisis.Core.Cryptography;
 using Rhisis.Core.Extensions;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Game.Common;
 using System;
 using System.Linq;
@@ -55,7 +55,7 @@ namespace Rhisis.CLI.Commands.User
 
         public void OnExecute()
         {
-            var dbConfig = new DatabaseConfiguration
+            var dbConfig = new DatabaseOptions
             {
                 Host = ServerHost,
                 Username = User,
@@ -98,7 +98,7 @@ namespace Rhisis.CLI.Commands.User
             {
                 using IRhisisDatabase database = _databaseFactory.CreateDatabaseInstance(dbConfig);
                 
-                if (database.Users.Any(x => x.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase)))
+                if (database.Users.Any(x => x.Username.ToLower() == user.Username.ToLower()))
                 {
                     Console.WriteLine($"User '{user.Username}' is already used.");
                     return;
@@ -110,7 +110,7 @@ namespace Rhisis.CLI.Commands.User
                     return;
                 }
 
-                if (database.Users.Any(x => x.Email.Equals(user.Email, StringComparison.OrdinalIgnoreCase)))
+                if (database.Users.Any(x => x.Email.ToLower()  == user.Email.ToLower()))
                 {
                     Console.WriteLine($"Email '{user.Email}' is already used.");
                     return;

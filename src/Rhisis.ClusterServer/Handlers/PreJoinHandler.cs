@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.ClusterServer.Client;
-using Rhisis.ClusterServer.Packets;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
-using Rhisis.Network;
-using Rhisis.Network.Packets.Cluster;
+using Microsoft.Extensions.Options;
+using Rhisis.ClusterServer.Abstractions;
+using Rhisis.Core.Structures.Configuration;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.Infrastructure.Persistance.Entities;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Packets.Client.Cluster;
+using Rhisis.Protocol.Packets.Server.Cluster;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Linq;
@@ -15,58 +17,61 @@ namespace Rhisis.ClusterServer.Handlers
     public class PreJoinHandler : ClusterHandlerBase
     {
         private readonly ILogger<PreJoinHandler> _logger;
-        private readonly IClusterServer _clusterServer;
-        private readonly IClusterPacketFactory _clusterPacketFactory;
+        private readonly IOptions<ClusterOptions> _clusterOptions;
 
-        public PreJoinHandler(ILogger<PreJoinHandler> logger, IRhisisDatabase database, IClusterServer clusterServer, IClusterPacketFactory clusterPacketFactory)
+        public PreJoinHandler(ILogger<PreJoinHandler> logger, IOptions<ClusterOptions> clusterOptions, IRhisisDatabase database)
             : base(database)
         {
             _logger = logger;
-            _clusterServer = clusterServer;
-            _clusterPacketFactory = clusterPacketFactory;
+            _clusterOptions = clusterOptions;
         }
 
         [HandlerAction(PacketType.PRE_JOIN)]
-        public void OnPreJoin(IClusterClient client, PreJoinPacket packet)
+        public void OnPreJoin(IClusterUser user, PreJoinPacket packet)
         {
             DbCharacter character = Database.Characters.FirstOrDefault(x => x.Id == packet.CharacterId);
 
             if (character is null)
             {
-                _logger.LogWarning($"[SECURITY] Unable to prejoin character id '{packet.CharacterName}' for user '{packet.Username}' from {client.Socket.RemoteEndPoint}. " +
+                _logger.LogWarning($"[SECURITY] Unable to prejoin character id '{packet.CharacterName}' for user '{packet.Username}'. " +
                       $"Reason: no character with id {packet.CharacterId}.");
-                client.Disconnect();
+                user.Disconnect();
                 return;
             }
 
             if (character.IsDeleted)
             {
-                _logger.LogWarning($"[SECURITY] Unable to prejoin with character '{character.Name}' for user '{packet.Username}' from {client.Socket.RemoteEndPoint}. " +
-                                "Reason: character is deleted.");
-                client.Disconnect();
+                _logger.LogWarning($"[SECURITY] Unable to prejoin with character '{character.Name}' for user '{packet.Username}'. " +
+                    "Reason: character is deleted.");
+                user.Disconnect();
                 return;
             }
 
             if (character.Name != packet.CharacterName)
             {
-                _logger.LogWarning($"[SECURITY] Unable to prejoin character '{character.Name}' for user '{packet.Username}' from {client.Socket.RemoteEndPoint}. " +
-                       "Reason: character is not owned by this user.");
-                client.Disconnect();
+                _logger.LogWarning($"[SECURITY] Unable to prejoin character '{character.Name}' for user '{packet.Username}'. " +
+                    "Reason: character is not owned by this user.");
+                user.Disconnect();
                 return;
             }
 
-            if (_clusterServer.ClusterConfiguration.EnableLoginProtect &&
-                LoginProtect.GetNumPadToPassword(client.LoginProtectValue, packet.BankCode) != character.BankCode)
+            if (_clusterOptions.Value.EnableLoginProtect &&
+                LoginProtect.GetNumPadToPassword(user.LoginProtectValue, packet.BankCode) != character.BankCode)
             {
-                _logger.LogWarning($"Unable to prejoin character '{character.Name}' for user '{packet.Username}' from {client.Socket.RemoteEndPoint}. " +
+                _logger.LogWarning($"Unable to prejoin character '{character.Name}' for user '{packet.Username}'. " +
                     "Reason: bad bank code.");
-                client.LoginProtectValue = new Random().Next(0, 1000);
-                _clusterPacketFactory.SendLoginProtect(client, client.LoginProtectValue);
+                user.LoginProtectValue = new Random().Next(0, 1000);
+                
+                using var loginProtectPacket = new LoginProtectCertPacket(user.LoginProtectValue);
+                user.Send(loginProtectPacket);
+
                 return;
             }
 
-            _clusterPacketFactory.SendJoinWorld(client);
-            _logger.LogInformation($"Character '{character.Name}' has prejoin successfully the game for user '{packet.Username}' from {client.Socket.RemoteEndPoint}.");
+            using var prejoinPacket = new PreJoinPacketComplete();
+            user.Send(prejoinPacket);
+
+            _logger.LogInformation($"Character '{character.Name}' has prejoin successfully the game for user '{packet.Username}'.");
         }
     }
 }

@@ -1,8 +1,8 @@
-﻿using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Protocol;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Sylver.Network.Data;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -45,7 +45,7 @@ namespace Rhisis.Game
 
         public override int GetHashCode() => (int)Id;
 
-        public override void Serialize(INetPacketStream packet)
+        public override void Serialize(IFFPacket packet)
         {
             packet.WriteInt16((short)Type);
             packet.WriteInt16((short)SkillId);

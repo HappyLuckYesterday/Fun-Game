@@ -1,10 +1,10 @@
 ﻿using Rhisis.Core.Helpers;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
 using Rhisis.Game.Common;
-using Sylver.Network.Data;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game
 {
@@ -36,7 +36,7 @@ namespace Rhisis.Game
 
         public bool Equals([AllowNull] IBuff other) => Id == other?.Id;
 
-        public virtual void Serialize(INetPacketStream packet)
+        public virtual void Serialize(IFFPacket packet)
         {
             // Nothing to do.
         }

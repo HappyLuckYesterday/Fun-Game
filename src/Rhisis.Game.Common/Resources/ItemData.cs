@@ -1,5 +1,4 @@
-﻿using Rhisis.Game.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;

@@ -1,8 +1,8 @@
-﻿using Rhisis.Core.DependencyInjection;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Systems;
-using Rhisis.Network;
-using Rhisis.Network.Snapshots;
+﻿using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Systems;
+using Rhisis.Core.DependencyInjection;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Snapshots;
 using System.Collections.Generic;
 using System.Linq;
 

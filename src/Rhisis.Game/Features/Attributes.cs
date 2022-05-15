@@ -1,7 +1,7 @@
-﻿using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
+﻿using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
 using Rhisis.Game.Common;
-using Rhisis.Network.Snapshots;
+using Rhisis.Protocol.Snapshots;
 using System.Collections.Generic;
 
 namespace Rhisis.Game.Features

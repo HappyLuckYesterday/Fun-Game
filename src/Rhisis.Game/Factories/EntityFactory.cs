@@ -6,13 +6,12 @@ using Rhisis.Core.DependencyInjection.Extensions;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Behavior;
-using Rhisis.Game.Abstractions.Components;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Factories;
-using Rhisis.Game.Abstractions.Map;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Behavior;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Factories;
+using Rhisis.Abstractions.Map;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Entities;
@@ -36,9 +35,9 @@ namespace Rhisis.Game.Factories
         private readonly IGameResources _gameResources;
         private readonly IMapManager _mapManager;
         private readonly IBehaviorManager _behaviorManager;
-        private readonly WorldConfiguration _worldServerConfiguration;
+        private readonly WorldOptions _worldServerConfiguration;
 
-        public EntityFactory(ILogger<EntityFactory> logger, IServiceProvider serviceProvider, IGameResources gameResources, IMapManager mapManager, IBehaviorManager behaviorManager, IOptions<WorldConfiguration> worldServerConfiguration)
+        public EntityFactory(ILogger<EntityFactory> logger, IServiceProvider serviceProvider, IGameResources gameResources, IMapManager mapManager, IBehaviorManager behaviorManager, IOptions<WorldOptions> worldServerConfiguration)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;

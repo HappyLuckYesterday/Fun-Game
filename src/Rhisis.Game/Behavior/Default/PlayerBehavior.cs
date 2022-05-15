@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.Options;
 using Rhisis.Core.IO;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Game.Abstractions.Behavior;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Map;
+using Rhisis.Abstractions.Behavior;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Map;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources.Quests;
-using Rhisis.Game.Entities;
-using Rhisis.Network.Snapshots;
+using Rhisis.Protocol.Snapshots;
 
 namespace Rhisis.Game.Behavior.Default
 {
@@ -15,9 +14,9 @@ namespace Rhisis.Game.Behavior.Default
     public class PlayerBehavior : IBehavior
     {
         private readonly IPlayer _player;
-        private readonly WorldConfiguration _worldServerConfiguration;
+        private readonly WorldOptions _worldServerConfiguration;
 
-        public PlayerBehavior(IPlayer player, IOptions<WorldConfiguration> worldServerConfiguration)
+        public PlayerBehavior(IPlayer player, IOptions<WorldOptions> worldServerConfiguration)
         {
             _player = player;
             _worldServerConfiguration = worldServerConfiguration.Value;

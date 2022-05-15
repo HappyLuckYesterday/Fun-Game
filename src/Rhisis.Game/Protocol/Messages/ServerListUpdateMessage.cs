@@ -1,7 +1,4 @@
-﻿using Rhisis.Network.Core.Servers;
-using System.Collections.Generic;
-
-namespace Rhisis.Game.Protocol.Messages
+﻿namespace Rhisis.Game.Protocol.Messages
 {
     public class NewClusterMessage
     {

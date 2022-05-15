@@ -1,7 +1,7 @@
 ﻿using Rhisis.Core.Cryptography;
 using Xunit;
 
-namespace Rhisis.Core.Test.Cryptography
+namespace Rhisis.Core.Tests.Cryptography
 {
     public class MD5Test
     {

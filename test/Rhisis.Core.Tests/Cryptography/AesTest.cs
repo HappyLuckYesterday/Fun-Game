@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Xunit;
 
-namespace Rhisis.Core.Test.Cryptography
+namespace Rhisis.Core.Tests.Cryptography
 {
     public class AesTest
     {

@@ -1,14 +1,14 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources.Quests;
-using Rhisis.Scripting.Quests;
+using Rhisis.Infrastructure.Scripting.Quests;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Rhisis.CLI.Commands.Game.Quests
+namespace Rhisis.CLI.Commands.Resources.Quests
 {
     [Command("convert", Description = "Converts FLYFF quests into Rhisis LUA quests.")]
     public class QuestConverterCommand
@@ -30,7 +30,7 @@ namespace Rhisis.CLI.Commands.Game.Quests
             }
 
             Output = string.IsNullOrEmpty(Output) ? Directory.GetCurrentDirectory() : Path.GetDirectoryName(Output);
-            
+
             IEnumerable<string> questFiles = GetFilesFromInput();
             var questLoader = new LegacyQuestLoader();
             var questsSaved = new List<string>();

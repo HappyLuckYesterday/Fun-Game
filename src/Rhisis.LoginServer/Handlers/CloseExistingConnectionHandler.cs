@@ -1,10 +1,8 @@
-﻿using Rhisis.LoginServer.Client;
-using Rhisis.LoginServer.CoreServer;
-using Rhisis.Network;
-using Rhisis.Network.Core;
-using Rhisis.Network.Packets.Login;
+﻿using Rhisis.LoginServer.Abstractions;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Core;
+using Rhisis.Protocol.Packets.Client.Login;
 using Sylver.HandlerInvoker.Attributes;
-using Sylver.Network.Data;
 using System;
 
 namespace Rhisis.LoginServer.Handlers
@@ -27,7 +25,7 @@ namespace Rhisis.LoginServer.Handlers
         /// <param name="client">Client.</param>
         /// <param name="closeConnectionPacket">Close connection packet.</param>
         [HandlerAction(PacketType.CLOSE_EXISTING_CONNECTION)]
-        public void Execute(ILoginClient _, CloseConnectionPacket closeConnectionPacket)
+        public void Execute(ILoginUser _, CloseConnectionPacket closeConnectionPacket)
         {
             var otherConnectedClient = _loginServer.GetClientByUsername(closeConnectionPacket.Username);
 
@@ -36,8 +34,8 @@ namespace Rhisis.LoginServer.Handlers
                 throw new InvalidOperationException($"Cannot find user with username '{closeConnectionPacket.Username}'.");
             }
 
-            using var packet = new NetPacket();
-            packet.Write((byte)CorePacketType.DisconnectUserFromCluster);
+            using var packet = new CorePacket();
+            packet.WriteByte((byte)CorePacketType.DisconnectUserFromCluster);
             packet.WriteInt32(otherConnectedClient.UserId);
 
             _coreServer.SendToClusters(packet);

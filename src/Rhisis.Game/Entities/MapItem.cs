@@ -1,13 +1,13 @@
 ﻿using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Map;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Map;
 using Rhisis.Game.Common;
-using Sylver.Network.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game.Entities
 {
@@ -79,14 +79,8 @@ namespace Rhisis.Game.Entities
         public bool Equals(IWorldObject other) => Id == other.Id;
 
 
-        public void Send(INetPacketStream packet)
-        {
-            throw new InvalidOperationException($"Cannot send a packet to a map item.");
-        }
+        public void Send(IFFPacket packet) => throw new InvalidOperationException($"Cannot send a packet to a map item.");
 
-        public void SendToVisible(INetPacketStream packet)
-        {
-            throw new NotImplementedException();
-        }
+        public void SendToVisible(IFFPacket packet) => throw new NotImplementedException();
     }
 }

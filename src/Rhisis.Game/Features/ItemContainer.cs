@@ -1,14 +1,14 @@
 ﻿using Rhisis.Core.Extensions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Features;
 using Rhisis.Game.Common;
-using Sylver.Network.Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Abstractions.Protocol;
 
-namespace Rhisis.Game.Abstractions.Components
+namespace Rhisis.Game.Features
 {
     public class ItemContainer<TItem> : IItemContainer
         where TItem : class, IItem
@@ -282,14 +282,14 @@ namespace Rhisis.Game.Abstractions.Components
             }
         }
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             for (int i = 0; i < MaxCapacity; i++)
             {
-                packet.Write(_itemsMask[i]);
+                packet.WriteInt32(_itemsMask[i]);
             }
 
-            packet.Write((byte)Count);
+            packet.WriteByte((byte)Count);
 
             for (int i = 0; i < MaxCapacity; i++)
             {
@@ -297,14 +297,14 @@ namespace Rhisis.Game.Abstractions.Components
 
                 if (item != null && item.Id != -1)
                 {
-                    packet.Write((byte)i);
+                    packet.WriteByte((byte)i);
                     item.Serialize(packet);
                 }
             }
 
             for (int i = 0; i < MaxCapacity; i++)
             {
-                packet.Write(_items[i]?.Slot ?? -1);
+                packet.WriteInt32(_items[i]?.Slot ?? -1);
             }
         }
 

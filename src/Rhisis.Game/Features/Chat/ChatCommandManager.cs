@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
-using Rhisis.Game.Abstractions.Features.Chat;
+using Rhisis.Abstractions.Features.Chat;
 using Rhisis.Game.Common;
 using System;
 using System.Collections.Concurrent;

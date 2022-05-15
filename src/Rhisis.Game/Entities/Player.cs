@@ -1,19 +1,19 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Rhisis.Abstractions.Behavior;
+using Rhisis.Abstractions.Caching;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Features.Battle;
+using Rhisis.Abstractions.Features.Chat;
+using Rhisis.Abstractions.Map;
+using Rhisis.Abstractions.Messaging;
+using Rhisis.Abstractions.Protocol;
+using Rhisis.Abstractions.Systems;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures;
-using Rhisis.Game.Abstractions.Behavior;
-using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
-using Rhisis.Game.Abstractions.Features.Chat;
-using Rhisis.Game.Abstractions.Map;
-using Rhisis.Game.Abstractions.Messaging;
-using Rhisis.Game.Abstractions.Protocol;
-using Rhisis.Game.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Game.Protocol.Messages;
-using Sylver.Network.Data;
+using Rhisis.Protocol.Messages.Cluster;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -161,7 +161,7 @@ namespace Rhisis.Game.Entities
 
         public void UpdateCache()
         {
-            CachedPlayer player = _playerCache.Value.GetCachedPlayer(CharacterId);
+            CachedPlayer player = _playerCache.Value.Get(CharacterId);
 
             if (player is null)
             {
@@ -182,19 +182,41 @@ namespace Rhisis.Game.Entities
                 cacheUpdated = true;
             }
 
+            if (player.MessengerStatus != Messenger.Status)
+            {
+                player.MessengerStatus = Messenger.Status;
+                cacheUpdated = true;
+            }
+
             if (cacheUpdated)
             {
-                player.Version++;
-                _playerCache.Value.SetCachedPlayer(player);
-                _messaging.Value.Publish(new PlayerCacheUpdate(CharacterId));
+                _playerCache.Value.Set(player);
+                //_messaging.Value.Publish(new PlayerCacheUpdate(CharacterId));
             }
+        }
+
+        public void OnConnected()
+        {
+            if (Messenger.Status != MessengerStatusType.Offline)
+            {
+                _messaging.Value.SendMessage(new PlayerConnectedMessage
+                {
+                    Id = CharacterId,
+                    Status = Messenger.Status
+                });
+            }
+        }
+
+        public void OnDisconnected()
+        {
+
         }
 
         public bool Equals(IWorldObject other) => Id == other.Id;
 
-        public void Send(INetPacketStream packet) => Connection.Send(packet);
+        public void Send(IFFPacket packet) => Connection.Send(packet);
 
-        public void SendToVisible(INetPacketStream packet)
+        public void SendToVisible(IFFPacket packet)
         {
             IEnumerable<IPlayer> visiblePlayers = VisibleObjects.OfType<IPlayer>();
 
@@ -207,6 +229,6 @@ namespace Rhisis.Game.Entities
             }
         }
 
-        public override string ToString() => $"{Name} (Id: {CharacterId}";
+        public override string ToString() => $"{Name} (Id: {CharacterId})";
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.Network.Core;
+using Rhisis.Protocol.Core;
 using Sylver.HandlerInvoker.Attributes;
-using Sylver.Network.Data;
 using System;
 
 namespace Rhisis.ClusterServer.Core.Handlers
@@ -17,7 +16,7 @@ namespace Rhisis.ClusterServer.Core.Handlers
         }
 
         [HandlerAction(CorePacketType.AuthenticationResult)]
-        public void OnExecute(ClusterCoreClient _, INetPacketStream packet)
+        public void OnExecute(ClusterCoreClient _, CorePacket packet)
         {
             var result = (CoreAuthenticationResultType)packet.ReadByte();
 

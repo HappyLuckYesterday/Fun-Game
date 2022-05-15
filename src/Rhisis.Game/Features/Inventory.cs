@@ -1,19 +1,18 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.IO;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Components;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Factories;
-using Rhisis.Game.Abstractions.Features;
-using Rhisis.Game.Abstractions.Systems;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Factories;
+using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Systems;
 using Rhisis.Game.Common;
-using Rhisis.Network;
-using Rhisis.Network.Snapshots;
-using Sylver.Network.Data;
+using Rhisis.Protocol.Snapshots;
+using Rhisis.Protocol;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game.Features
 {
@@ -238,7 +237,7 @@ namespace Rhisis.Game.Features
             }
         }
 
-        public void Serialize(INetPacketStream packet) => _container.Serialize(packet);
+        public void Serialize(IFFPacket packet) => _container.Serialize(packet);
 
         public IEnumerator<IItem> GetEnumerator() => _container.GetEnumerator();
 

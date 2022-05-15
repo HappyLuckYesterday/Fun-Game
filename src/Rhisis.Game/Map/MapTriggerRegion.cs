@@ -1,5 +1,5 @@
 ﻿using Rhisis.Core.Structures;
-using Rhisis.Game.Abstractions.Map;
+using Rhisis.Abstractions.Map;
 using Rhisis.Game.IO.Rgn;
 
 namespace Rhisis.Game.Map

@@ -1,10 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Internal;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
+﻿using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Protocol;
 using Rhisis.Game.Common;
-using Sylver.Network.Data;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -127,7 +125,7 @@ namespace Rhisis.Game.Features
             }
         }
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             IEnumerable<IBuff> activeBuffs = _buffs.Where(x => !x.HasExpired);
 

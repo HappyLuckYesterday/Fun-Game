@@ -1,33 +1,34 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using LiteNetwork.Client;
 using Microsoft.Extensions.Logging;
-using Rhisis.Network.Core;
+using Rhisis.Abstractions.Server;
+using Rhisis.ClusterServer.Abstractions;
+using Rhisis.Protocol.Core;
 using Sylver.HandlerInvoker;
-using Sylver.Network.Client;
-using Sylver.Network.Data;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rhisis.ClusterServer.Core
 {
-    public class ClusterCoreClient : NetClient, IHostedService
+    public class ClusterCoreClient : LiteClient, ICoreClient
     {
         private readonly ILogger<ClusterCoreClient> _logger;
         private readonly IHandlerInvoker _handlerInvoker;
 
-        public ClusterCoreClient(ILogger<ClusterCoreClient> logger, IClusterServer clusterServer, IHandlerInvoker handlerInvoker)
+        public ClusterCoreClient(LiteClientOptions options, 
+            ILogger<ClusterCoreClient> logger, 
+            IHandlerInvoker handlerInvoker, 
+            IServiceProvider serviceProvider) 
+            : base(options, serviceProvider)
         {
             _logger = logger;
             _handlerInvoker = handlerInvoker;
-            ClientConfiguration = new NetClientConfiguration(clusterServer.CoreConfiguration.Host,
-                clusterServer.CoreConfiguration.Port, 
-                32, new NetClientRetryConfiguration(NetClientRetryOption.Limited, 10));
         }
 
-        public override void HandleMessage(INetPacketStream packet)
+        public override Task HandleMessageAsync(byte[] packetBuffer)
         {
             try
             {
+                using var packet = new CorePacket(packetBuffer);
                 var packetHeader = (CorePacketType)packet.ReadByte();
 
                 _handlerInvoker.Invoke(packetHeader, this, packet);
@@ -36,20 +37,33 @@ namespace Rhisis.ClusterServer.Core
             {
                 _logger.LogError(e, "An error occured while processing core packet.");
             }
-        }
-
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            Connect();
 
             return Task.CompletedTask;
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public void UpdateWorldChannel(WorldChannel channel)
         {
-            Disconnect();
+            using var packet = new CorePacket();
 
-            return Task.CompletedTask;
+            packet.WriteByte((byte)CorePacketType.UpdateClusterWorldChannel);
+            packet.WriteByte((byte)channel.Id);
+            packet.WriteString(channel.Name);
+            packet.WriteString(channel.Host);
+            packet.WriteUInt16((ushort)channel.Port);
+            packet.WriteInt32(channel.ConnectedUsers);
+            packet.WriteInt32(channel.MaximumUsers);
+
+            Send(packet);
+        }
+
+        public void RemoveWorldChannel(WorldChannel channel)
+        {
+            using var packet = new CorePacket();
+
+            packet.WriteByte((byte)CorePacketType.RemoveClusterWorldChannel);
+            packet.WriteByte((byte)channel.Id);
+
+            Send(packet);
         }
     }
 }

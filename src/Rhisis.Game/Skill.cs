@@ -1,14 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rhisis.Core.IO;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Systems;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Sylver.Network.Data;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game
 {
@@ -72,10 +72,10 @@ namespace Rhisis.Game
 
         public bool IsCoolTimeElapsed() => _nextSkillUsageTime < Time.GetElapsedTime();
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
-            packet.Write(Id);
-            packet.Write(Level);
+            packet.WriteInt32(Id);
+            packet.WriteInt32(Level);
         }
 
         public bool Equals([AllowNull] ISkill otherSkill) => Id == otherSkill?.Id && Owner.Id == otherSkill?.Owner.Id;

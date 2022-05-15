@@ -1,14 +1,14 @@
-﻿using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
+﻿using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets.Friends;
-using Rhisis.Game.Protocol.Snapshots.Friends;
-using Rhisis.Network;
-using Rhisis.Network.Snapshots;
-using Sylver.Network.Data;
+using Rhisis.Protocol.Snapshots.Friends;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Snapshots;
 using System;
+using Rhisis.Abstractions.Protocol;
 
-namespace Rhisis.Game.Abstractions.Components
+namespace Rhisis.Game.Features
 {
     public class Messenger : GameFeature, IMessenger
     {
@@ -60,7 +60,7 @@ namespace Rhisis.Game.Abstractions.Components
             _player.Send(snapshot);
         }
 
-        public void SetFriendBlockState(int friendId)
+        public void ToggleFriendBlockState(int friendId)
         {
             IContact friend = Friends.Get(friendId);
 
@@ -112,7 +112,7 @@ namespace Rhisis.Game.Abstractions.Components
             }
         }
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             packet.WriteInt32((int)Status);
             Friends.Serialize(packet);

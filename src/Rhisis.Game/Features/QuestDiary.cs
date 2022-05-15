@@ -1,21 +1,19 @@
 ﻿using Microsoft.Extensions.Options;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Factories;
+using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Protocol;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Factories;
-using Rhisis.Game.Abstractions.Features;
-using Rhisis.Game.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources.Quests;
-using Rhisis.Game.Entities;
-using Rhisis.Game.Protocol.Snapshots.Quests;
-using Sylver.Network.Data;
+using Rhisis.Protocol.Snapshots.Quests;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Rhisis.Game.Features
 {
@@ -24,7 +22,7 @@ namespace Rhisis.Game.Features
         private readonly IPlayer _player;
         private readonly IGameResources _gameResources;
         private readonly IEntityFactory _entityFactory;
-        private readonly WorldConfiguration _worldServerConfiguration;
+        private readonly WorldOptions _worldServerConfiguration;
         private readonly IList<IQuest> _quests;
 
         public IEnumerable<IQuest> ActiveQuests => _quests.Where(x => !x.IsFinished);
@@ -33,7 +31,7 @@ namespace Rhisis.Game.Features
 
         public IEnumerable<IQuest> CompletedQuests => _quests.Where(x => x.IsFinished);
 
-        public QuestDiary(IPlayer player, IGameResources gameResources, IEntityFactory entityFactory, IOptions<WorldConfiguration> worldServerConfiguration)
+        public QuestDiary(IPlayer player, IGameResources gameResources, IEntityFactory entityFactory, IOptions<WorldOptions> worldServerConfiguration)
         {
             _player = player;
             _gameResources = gameResources;
@@ -127,24 +125,24 @@ namespace Rhisis.Game.Features
             }
         }
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
-            packet.Write((byte)ActiveQuests.Count());
+            packet.WriteByte((byte)ActiveQuests.Count());
             foreach (IQuest quest in ActiveQuests)
             {
                 quest.Serialize(packet);
             }
 
-            packet.Write((byte)CompletedQuests.Count());
+            packet.WriteByte((byte)CompletedQuests.Count());
             foreach (IQuest quest in CompletedQuests)
             {
-                packet.Write((short)quest.Id);
+                packet.WriteInt16((short)quest.Id);
             }
 
-            packet.Write((byte)CheckedQuests.Count());
+            packet.WriteByte((byte)CheckedQuests.Count());
             foreach (IQuest quest in CheckedQuests)
             {
-                packet.Write((short)quest.Id);
+                packet.WriteInt16((short)quest.Id);
             }
         }
 

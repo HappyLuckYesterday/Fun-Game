@@ -1,6 +1,7 @@
-﻿using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Abstractions.Caching;
+using Rhisis.Abstractions.Entities;
 using Rhisis.Game.Protocol.Messages;
+using Rhisis.WorldServer.Abstractions;
 using Sylver.HandlerInvoker.Attributes;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Rhisis.WorldServer.Handlers.Friends.Messages
         public void OnPlayerStatusUpdateMessage(PlayerMessengerStatusUpdate playerMessengerStatusUpdate)
         {
             int playerIdUpdatingStatus = playerMessengerStatusUpdate.Id;
-            CachedPlayer cachedPlayerUpdatingStatus = _playerCache.GetCachedPlayer(playerIdUpdatingStatus);
+            CachedPlayer cachedPlayerUpdatingStatus = _playerCache.Get(playerIdUpdatingStatus);
             IEnumerable<IPlayer> players = _worldServer.ConnectedPlayers
                 .Where(x => x.Spawned &&
                             x.CharacterId != playerIdUpdatingStatus &&

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Common.Resources.Dialogs;
 using Rhisis.Game.IO.Include;
@@ -18,7 +18,7 @@ namespace Rhisis.Game.Resources.Loaders
         private readonly ILogger<NpcLoader> _logger;
         private readonly IMemoryCache _cache;
         private readonly IGameResources _gameResources;
-        private readonly WorldConfiguration _configuration;
+        private readonly WorldOptions _configuration;
         private readonly IDictionary<string, string> _texts;
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Rhisis.Game.Resources.Loaders
         /// <param name="cache">Memory cache.</param>
         /// <param name="gameResources">Game resources.</param>
         /// <param name="worldConfiguration">World configuration.</param>
-        public NpcLoader(ILogger<NpcLoader> logger, IMemoryCache cache, IGameResources gameResources, IOptions<WorldConfiguration> worldConfiguration)
+        public NpcLoader(ILogger<NpcLoader> logger, IMemoryCache cache, IGameResources gameResources, IOptions<WorldOptions> worldConfiguration)
         {
             _logger = logger;
             _cache = cache;
@@ -69,7 +69,7 @@ namespace Rhisis.Game.Resources.Loaders
                                 }
                                 if (npcInfoStatement.Name == "AddMenu")
                                 {
-                                    canBuff = instruction.Parameters.FirstOrDefault() == "MMI_NPC_BUFF";
+                                    canBuff = instruction.Parameters.FirstOrDefault()?.ToString().Equals("MMI_NPC_BUFF") ?? false;
                                 }
                             }
                         }

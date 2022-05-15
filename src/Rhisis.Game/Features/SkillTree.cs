@@ -1,16 +1,16 @@
-﻿using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
-using Rhisis.Game.Abstractions.Resources;
+﻿using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Game.Protocol.Snapshots.Skills;
-using Rhisis.Network.Snapshots;
-using Sylver.Network.Data;
+using Rhisis.Protocol.Snapshots.Skills;
+using Rhisis.Protocol.Snapshots;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game.Features
 {
@@ -90,7 +90,7 @@ namespace Rhisis.Game.Features
             SkillPoints = 0;
         }
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             var skillCount = _skills.Count();
             var otherSkillCount = (int)DefineJob.JobMax.MAX_SKILLS - skillCount;
@@ -102,8 +102,8 @@ namespace Rhisis.Game.Features
 
             for (var i = 0; i < otherSkillCount; i++)
             {
-                packet.Write(-1);
-                packet.Write(0);
+                packet.WriteInt32(-1);
+                packet.WriteInt32(0);
             }
         }
 

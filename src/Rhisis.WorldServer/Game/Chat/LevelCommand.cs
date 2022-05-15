@@ -1,15 +1,15 @@
 ﻿using Rhisis.Core.Extensions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features.Chat;
-using Rhisis.Game.Abstractions.Resources;
-using Rhisis.Game.Abstractions.Systems;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features.Chat;
+using Rhisis.Abstractions.Resources;
+using Rhisis.Abstractions.Systems;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Network.Snapshots;
+using Rhisis.Protocol.Snapshots;
 using System;
 using System.Linq;
 
-namespace Rhisis.Game.Features.Chat.Commands
+namespace Rhisis.WorldServer.Game.Chat
 {
     // /level [job] [level] (legend)
     [ChatCommand("/level", AuthorityType.GameMaster)]
@@ -24,7 +24,7 @@ namespace Rhisis.Game.Features.Chat.Commands
             _gameResources = gameResources;
             _jobSystem = jobSystem;
         }
-        
+
         public void Execute(IPlayer player, object[] parameters)
         {
             if (parameters.Length < 2)

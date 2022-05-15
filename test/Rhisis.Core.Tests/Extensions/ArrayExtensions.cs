@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace Rhisis.Core.Test.Extensions
+namespace Rhisis.Core.Tests.Extensions
 {
     public class ArrayExtensions
     {

@@ -1,5 +1,6 @@
-﻿using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Network;
+﻿using Rhisis.Abstractions.Protocol;
+using Rhisis.Protocol;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,16 +13,16 @@ namespace Rhisis.Game.Protocol.Packets
         {
         }
 
-        public void AddSnapshots(IEnumerable<FFSnapshot> snapshots)
+        public void AddSnapshots(IEnumerable<IFFSnapshot> snapshots)
         {
             short snapshotCount = (short)snapshots.Sum(x => x.Count);
 
-            Write(0); // Not used.
-            Write(snapshotCount); // Snapshot amount.
+            WriteInt32(0); // Not used.
+            WriteInt16(snapshotCount); // Snapshot amount.
 
-            foreach (FFSnapshot snapshot in snapshots)
+            foreach (IFFSnapshot snapshot in snapshots)
             {
-                byte[] snapshotData = snapshot.GetContent();
+                byte[] snapshotData = snapshot.GetSnapshotContent();
 
                 Write(snapshotData, 0, snapshotData.Length);
 
@@ -29,6 +30,6 @@ namespace Rhisis.Game.Protocol.Packets
             }
         }
 
-        public void AddSnapshots(params FFSnapshot[] snapshots) => AddSnapshots(snapshots.AsEnumerable());
+        public void AddSnapshots(params IFFSnapshot[] snapshots) => AddSnapshots(snapshots.AsEnumerable());
     }
 }

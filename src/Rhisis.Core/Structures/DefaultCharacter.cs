@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Rhisis.Core.Common;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 

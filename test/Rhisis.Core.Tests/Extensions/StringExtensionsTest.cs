@@ -1,8 +1,7 @@
 ﻿using Rhisis.Core.Extensions;
-using System;
 using Xunit;
 
-namespace Rhisis.Core.Test.Extensions
+namespace Rhisis.Core.Tests.Extensions
 {
     public class StringExtensionsTest
     {

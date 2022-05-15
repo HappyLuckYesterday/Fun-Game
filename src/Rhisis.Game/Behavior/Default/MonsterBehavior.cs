@@ -3,17 +3,16 @@ using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using Rhisis.Core.Structures;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Behavior;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Factories;
-using Rhisis.Game.Abstractions.Features.Battle;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Behavior;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Factories;
+using Rhisis.Abstractions.Features.Battle;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Game.Entities;
-using Rhisis.Network;
-using Rhisis.Network.Snapshots;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Snapshots;
 using System.Linq;
 
 namespace Rhisis.Game.Behavior.Default
@@ -24,9 +23,9 @@ namespace Rhisis.Game.Behavior.Default
         private readonly IMonster _monster;
         private readonly IEntityFactory _entityFactory;
         private readonly IGameResources _gameResources;
-        private readonly WorldConfiguration _worldServerConfiguration;
+        private readonly WorldOptions _worldServerConfiguration;
 
-        public MonsterBehavior(IMonster monster, IEntityFactory entityFactory, IGameResources gameResources, IOptions<WorldConfiguration> worldServerConfiguration)
+        public MonsterBehavior(IMonster monster, IEntityFactory entityFactory, IGameResources gameResources, IOptions<WorldOptions> worldServerConfiguration)
         {
             _monster = monster;
             _entityFactory = entityFactory;

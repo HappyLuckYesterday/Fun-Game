@@ -1,5 +1,5 @@
-﻿using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
 using Rhisis.Game.Common;
 
 namespace Rhisis.Game.Features.AttackArbiters.Reducers

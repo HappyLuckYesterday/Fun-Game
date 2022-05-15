@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Core.Helpers;
-using Rhisis.Game.Abstractions.Behavior;
-using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Abstractions.Behavior;
+using Rhisis.Abstractions.Entities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

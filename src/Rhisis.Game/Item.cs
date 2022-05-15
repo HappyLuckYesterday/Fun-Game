@@ -1,10 +1,10 @@
 ﻿using Rhisis.Core.Extensions;
-using Rhisis.Game.Abstractions;
+using Rhisis.Abstractions;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Sylver.Network.Data;
 using System;
 using System.Diagnostics;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game
 {
@@ -138,33 +138,33 @@ namespace Rhisis.Game
             Data = null;
         }
 
-        public void Serialize(INetPacketStream packet, int itemIndex)
+        public void Serialize(IFFPacket packet, int itemIndex)
         {
-            packet.Write(itemIndex);
-            packet.Write(Id);
-            packet.Write(0); // Serial number
-            packet.Write(Name.TakeCharacters(31));
-            packet.Write((short)Quantity);
-            packet.Write<byte>(0); // Repair number
-            packet.Write(0); // Hp
-            packet.Write(0); // Repair
-            packet.Write<byte>(0); // flag ?
-            packet.Write((int)Refine);
-            packet.Write(0); // guild id (cloaks?)
-            packet.Write((byte)Element);
-            packet.Write((int)ElementRefine);
-            packet.Write(0); // m_nResistSMItemId
-            packet.Write(0); // Piercing size
-            packet.Write(0); // Ultimate piercing size
-            packet.Write(0); // Pet vis
-            packet.Write(0); // charged
-            packet.Write<long>(0); // m_iRandomOptItemId
-            packet.Write(0); // m_dwKeepTime
-            packet.Write<byte>(0); // pet
-            packet.Write(0); // m_bTranformVisPet
+            packet.WriteInt32(itemIndex);
+            packet.WriteInt32(Id);
+            packet.WriteInt32(0); // Serial number
+            packet.WriteString(Name.TakeCharacters(31));
+            packet.WriteInt16((short)Quantity);
+            packet.WriteByte(0); // Repair number
+            packet.WriteInt32(0); // Hp
+            packet.WriteInt32(0); // Repair
+            packet.WriteByte(0); // flag ?
+            packet.WriteInt32(Refine);
+            packet.WriteInt32(0); // guild id (cloaks?)
+            packet.WriteByte((byte)Element);
+            packet.WriteInt32((int)ElementRefine);
+            packet.WriteInt32(0); // m_nResistSMItemId
+            packet.WriteInt32(0); // Piercing size
+            packet.WriteInt32(0); // Ultimate piercing size
+            packet.WriteInt32(0); // Pet vis
+            packet.WriteInt32(0); // charged
+            packet.WriteInt16(0); // m_iRandomOptItemId
+            packet.WriteInt32(0); // m_dwKeepTime
+            packet.WriteByte(0); // pet
+            packet.WriteInt32(0); // m_bTranformVisPet
         }
 
-        public void Serialize(INetPacketStream packet) => Serialize(packet, Index);
+        public void Serialize(IFFPacket packet) => Serialize(packet, Index);
 
         public IItem Clone()
         {

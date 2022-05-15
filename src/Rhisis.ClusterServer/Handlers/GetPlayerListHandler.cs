@@ -1,15 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.ClusterServer.Client;
-using Rhisis.ClusterServer.Packets;
-using Rhisis.ClusterServer.Structures;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
-using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Network;
-using Rhisis.Network.Core.Servers;
-using Rhisis.Network.Packets.Cluster;
+using Microsoft.Extensions.Options;
+using Rhisis.Abstractions.Server;
+using Rhisis.ClusterServer.Abstractions;
+using Rhisis.Core.Structures.Configuration;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.Infrastructure.Persistance.Entities;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Packets.Client.Cluster;
+using Rhisis.Protocol.Packets.Server.Cluster;
 using Sylver.HandlerInvoker.Attributes;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.ClusterServer.Handlers
@@ -21,38 +20,35 @@ namespace Rhisis.ClusterServer.Handlers
     public class GetPlayerListHandler : ClusterHandlerBase
     {
         private readonly ILogger<GetPlayerListHandler> _logger;
-        private readonly IClusterServer _clusterServer;
-        private readonly IClusterPacketFactory _clusterPacketFactory;
-        private readonly IRhisisCacheManager _cacheManager;
+        private readonly IOptions<ClusterOptions> _clusterOptions;
+        private readonly IClusterCacheServer _clusterCache;
 
         /// <summary>
         /// Creates a new <see cref="CharacterHandler"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="database">Rhisis database.</param>
-        /// <param name="clusterServer">Cluster server instance.</param>
-        /// <param name="gameResources">Game resources.</param>
-        /// <param name="clusterPacketFactory">Cluster server packet factory.</param>
-        public GetPlayerListHandler(ILogger<GetPlayerListHandler> logger, IRhisisDatabase database, IClusterServer clusterServer,
-            IClusterPacketFactory clusterPacketFactory, IRhisisCacheManager cacheManager)
+        public GetPlayerListHandler(ILogger<GetPlayerListHandler> logger, 
+            IOptions<ClusterOptions> clusterOptions,
+            IRhisisDatabase database,
+            IClusterCacheServer clusterCache)
             : base(database)
         {
             _logger = logger;
-            _clusterServer = clusterServer;
-            _clusterPacketFactory = clusterPacketFactory;
-            _cacheManager = cacheManager;
+            _clusterOptions = clusterOptions;
+            _clusterCache = clusterCache;
         }
 
         [HandlerAction(PacketType.GETPLAYERLIST)]
-        public void Execute(IClusterClient client, GetPlayerListPacket packet)
+        public void Execute(IClusterUser user, GetPlayerListPacket packet)
         {
-            var selectedWorldServer = _cacheManager.GetCache(CacheType.ClusterWorldChannels).Get<WorldChannel>(packet.ServerId.ToString());
+            WorldChannel selectedWorldServer = _clusterCache.WorldChannels.SingleOrDefault(x => x.Id == packet.ServerId);
 
             if (selectedWorldServer is null)
             {
-                _logger.LogWarning($"Unable to get characters list for user '{packet.Username}' from {client.Socket.RemoteEndPoint}. " +
+                _logger.LogWarning($"Unable to get characters list for user '{packet.Username}'. " +
                     "Reason: client requested the list on a not connected World server.");
-                client.Disconnect();
+                user.Disconnect();
                 return;
             }
 
@@ -60,23 +56,25 @@ namespace Rhisis.ClusterServer.Handlers
 
             if (dbUser is null)
             {
-                _logger.LogWarning($"[SECURITY] Unable to load character list for user '{packet.Username}' from {client.Socket.RemoteEndPoint}. " +
+                _logger.LogWarning($"[SECURITY] Unable to load character list for user '{packet.Username}'. " +
                     "Reason: bad presented credentials compared to the database.");
-                client.Disconnect();
+                user.Disconnect();
                 return;
             }
 
-            client.UserId = dbUser.Id;
-            client.Username = dbUser.Username;
+            user.UserId = dbUser.Id;
+            user.Username = dbUser.Username;
 
-            IEnumerable<ClusterCharacter> characters = GetCharacters(dbUser.Id);
+            SendPlayerList(user, packet.AuthenticationKey);
 
-            _clusterPacketFactory.SendPlayerList(client, packet.AuthenticationKey, characters);
-            _clusterPacketFactory.SendWorldAddress(client, selectedWorldServer.Host);
+            using var cacheAddressPacket = new CacheAddressPacket(selectedWorldServer.Host);
+            user.Send(cacheAddressPacket);
 
-            if (_clusterServer.ClusterConfiguration.EnableLoginProtect)
+
+            if (_clusterOptions.Value.EnableLoginProtect)
             {
-                _clusterPacketFactory.SendLoginNumPad(client, client.LoginProtectValue);
+                using var loginNumPadPacket = new LoginProctectNumPadPacket(user.LoginProtectValue);
+                user.Send(loginNumPadPacket);
             }
         }
     }

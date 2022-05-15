@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace Rhisis.Core.Test.Extensions
+namespace Rhisis.Core.Tests.Extensions
 {
     public class LinqExtensions
     {
@@ -37,7 +37,7 @@ namespace Rhisis.Core.Test.Extensions
         [InlineData(64)]
         public void GroupByAmount(int itemsPerGroup)
         {
-            int numberOfGroups = (array.Count() / itemsPerGroup);
+            int numberOfGroups = array.Count() / itemsPerGroup;
 
             if (array.Count() % itemsPerGroup > 0)
                 numberOfGroups++;

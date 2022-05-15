@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Game.Abstractions.Map;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions.Map;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.IO;
 using Rhisis.Game.IO.Dyo;
 using Rhisis.Game.IO.Rgn;
@@ -22,10 +22,10 @@ namespace Rhisis.Game.Map
         private readonly ILogger<MapManager> _logger;
         private readonly IGameResources _gameResources;
         private readonly IServiceProvider _serviceProvider;
-        private readonly WorldConfiguration _worldConfiguration;
+        private readonly WorldOptions _worldConfiguration;
         private readonly IDictionary<int, IMap> _maps;
 
-        public MapManager(ILogger<MapManager> logger, IOptions<WorldConfiguration> worldConfiguration, IGameResources gameResources, IServiceProvider serviceProvider)
+        public MapManager(ILogger<MapManager> logger, IOptions<WorldOptions> worldConfiguration, IGameResources gameResources, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _gameResources = gameResources;

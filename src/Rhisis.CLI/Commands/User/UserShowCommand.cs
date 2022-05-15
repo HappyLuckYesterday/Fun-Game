@@ -5,8 +5,8 @@ using McMaster.Extensions.CommandLineUtils;
 using Microsoft.EntityFrameworkCore;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.Structures.Configuration;
-using Rhisis.Database;
-using Rhisis.Database.Entities;
+using Rhisis.Infrastructure.Persistance;
+using Rhisis.Infrastructure.Persistance.Entities;
 
 namespace Rhisis.CLI.Commands.User
 {
@@ -32,7 +32,7 @@ namespace Rhisis.CLI.Commands.User
             if (string.IsNullOrEmpty(DatabaseConfigurationFile))
                 DatabaseConfigurationFile = ConfigurationConstants.DatabasePath;
 
-            var dbConfig = ConfigurationHelper.Load<DatabaseConfiguration>(DatabaseConfigurationFile, ConfigurationConstants.DatabaseConfiguration);
+            var dbConfig = ConfigurationHelper.Load<DatabaseOptions>(DatabaseConfigurationFile, ConfigurationConstants.DatabaseConfiguration);
             if (dbConfig is null)
             {
                 Console.WriteLine("Couldn't load database configuration file during execution of user show command.");

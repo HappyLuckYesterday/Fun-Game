@@ -1,12 +1,12 @@
 ﻿using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.Game.IO.Include;
-using Rhisis.Scripting.Quests;
+using Rhisis.Infrastructure.Scripting.Quests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.CLI.Commands.Game.Quests
+namespace Rhisis.CLI.Commands.Resources.Quests
 {
     internal class LegacyQuestLoader
     {

@@ -1,11 +1,11 @@
-﻿using Rhisis.Game.Abstractions.Features;
-using Sylver.Network.Data;
+﻿using Rhisis.Abstractions.Features;
+using Rhisis.Abstractions.Protocol;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.Game.Abstractions.Components
+namespace Rhisis.Game.Features
 {
     public class MessengerContactList : GameFeature, IContactList
     {
@@ -40,7 +40,7 @@ namespace Rhisis.Game.Abstractions.Components
 
         public IContact Get(int contactId) => _contacts.FirstOrDefault(x => x.Id == contactId);
 
-        public void Serialize(INetPacketStream packet)
+        public void Serialize(IFFPacket packet)
         {
             packet.WriteInt32(Count);
 

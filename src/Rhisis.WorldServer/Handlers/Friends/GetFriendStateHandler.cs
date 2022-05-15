@@ -1,9 +1,9 @@
-﻿using Rhisis.Game.Abstractions.Caching;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
+﻿using Rhisis.Abstractions.Caching;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features;
 using Rhisis.Game.Common;
-using Rhisis.Network;
-using Rhisis.Network.Packets.World.Friends;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Packets.Client.World.Friends;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Collections.Generic;
@@ -39,7 +39,7 @@ namespace Rhisis.WorldServer.Handlers.Friends
         private IContact GetFriend(IPlayer player, IContact friendContact)
         {
             IContact friend = friendContact.Clone();
-            CachedPlayer cachedPlayer = _playerCache.GetCachedPlayer(friend.Id);
+            CachedPlayer cachedPlayer = _playerCache.Get(friend.Id);
 
             if (cachedPlayer != null)
             {

@@ -1,7 +1,7 @@
 ﻿using Rhisis.Core.Common;
 using Rhisis.Core.Structures;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
 using Rhisis.Game.Common;
 using System;
 

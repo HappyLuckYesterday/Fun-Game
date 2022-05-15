@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.Game.Abstractions;
-using Rhisis.Game.Abstractions.Entities;
-using Rhisis.Game.Abstractions.Features;
-using Rhisis.Game.Abstractions.Features.Battle;
+using Rhisis.Abstractions;
+using Rhisis.Abstractions.Entities;
+using Rhisis.Abstractions.Features.Battle;
 using Rhisis.Game.Common;
 using Rhisis.Game.Features.AttackArbiters;
 using Rhisis.Game.Features.AttackArbiters.Reducers;
-using Rhisis.Game.Protocol.Snapshots.Battle;
+using Rhisis.Protocol.Snapshots.Battle;
 using System;
 
 namespace Rhisis.Game.Features

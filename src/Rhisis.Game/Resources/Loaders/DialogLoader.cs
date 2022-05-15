@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Rhisis.Core.Extensions;
-using Rhisis.Game.Abstractions.Resources;
+using Rhisis.Abstractions.Resources;
 using Rhisis.Game.Common.Resources.Dialogs;
 using System.Collections.Concurrent;
 using System.IO;

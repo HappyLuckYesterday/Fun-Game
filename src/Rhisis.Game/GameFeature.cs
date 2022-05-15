@@ -1,9 +1,9 @@
-﻿using Rhisis.Game.Abstractions.Entities;
+﻿using Rhisis.Abstractions.Entities;
 using Rhisis.Game.Common;
-using Rhisis.Network.Snapshots;
-using Sylver.Network.Data;
+using Rhisis.Protocol.Snapshots;
 using System.Collections.Generic;
 using System.Linq;
+using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game
 {
@@ -19,7 +19,7 @@ namespace Rhisis.Game
         /// <param name="worldObject">Current world object.</param>
         /// <param name="packet">Packet to be sent.</param>
         /// <param name="sendToPlayer">If true, try to send the packet to the world object if its a <see cref="IPlayer"/>.</param>
-        public void SendPacketToVisible(IWorldObject worldObject, INetPacketStream packet, bool sendToPlayer = false)
+        public void SendPacketToVisible(IWorldObject worldObject, IFFPacket packet, bool sendToPlayer = false)
         {
             IEnumerable<IPlayer> visiblePlayers = worldObject.VisibleObjects.OfType<IPlayer>();
 
