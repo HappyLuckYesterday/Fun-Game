@@ -41,7 +41,7 @@ namespace Rhisis.Abstractions.Features
         /// Sets the friend blocked state.
         /// </summary>
         /// <param name="friendId">Friend ID to block or unblock.</param>
-        void SetFriendBlockState(int friendId);
+        void ToggleFriendBlockState(int friendId);
 
         /// <summary>
         /// Notifies the current player that a friend has changed its status.

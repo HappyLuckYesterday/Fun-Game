@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Rhisis.Abstractions.Caching;
 using Rhisis.Abstractions.Server;
 using Rhisis.ClusterServer.Abstractions;
 using Rhisis.Core.Structures.Configuration;
@@ -23,14 +22,12 @@ namespace Rhisis.ClusterServer.Handlers
         private readonly ILogger<GetPlayerListHandler> _logger;
         private readonly IOptions<ClusterOptions> _clusterOptions;
         private readonly IClusterCacheServer _clusterCache;
-        private readonly IRhisisCache<WorldChannel> _worldChannelCache;
 
         /// <summary>
         /// Creates a new <see cref="CharacterHandler"/> instance.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="database">Rhisis database.</param>
-        /// <param name="cacheManager">Cache manager.</param>
         public GetPlayerListHandler(ILogger<GetPlayerListHandler> logger, 
             IOptions<ClusterOptions> clusterOptions,
             IRhisisDatabase database,

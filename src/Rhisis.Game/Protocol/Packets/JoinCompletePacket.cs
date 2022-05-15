@@ -1,5 +1,6 @@
 ﻿using Rhisis.Abstractions.Protocol;
 using Rhisis.Protocol;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,7 +22,7 @@ namespace Rhisis.Game.Protocol.Packets
 
             foreach (IFFSnapshot snapshot in snapshots)
             {
-                byte[] snapshotData = snapshot.Buffer;
+                byte[] snapshotData = snapshot.GetSnapshotContent();
 
                 Write(snapshotData, 0, snapshotData.Length);
 

@@ -22,7 +22,7 @@ namespace Rhisis.WorldServer.Handlers.Messages
         [HandlerAction(typeof(PlayerCacheUpdate))]
         public void OnExecute(PlayerCacheUpdate message)
         {
-            CachedPlayer cachedPlayer = _playerCache.GetCachedPlayer(message.PlayerId);
+            CachedPlayer cachedPlayer = _playerCache.Get(message.PlayerId);
 
             if (cachedPlayer is null)
             {

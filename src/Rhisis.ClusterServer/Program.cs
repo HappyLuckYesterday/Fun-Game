@@ -44,7 +44,6 @@ namespace Rhisis.ClusterServer
                     services.AddMemoryCache();
                     services.Configure<ClusterOptions>(hostContext.Configuration.GetSection(ConfigurationSections.Cluster));
                     services.AddPersistance(hostContext.Configuration);
-                    services.AddCache();
                     services.AddHandlers();
                     services.AddSingleton<IGameResources, GameResources>();
                 })

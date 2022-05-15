@@ -24,7 +24,7 @@ namespace Rhisis.WorldServer.Handlers.Friends.Messages
         public void OnPlayerStatusUpdateMessage(PlayerMessengerStatusUpdate playerMessengerStatusUpdate)
         {
             int playerIdUpdatingStatus = playerMessengerStatusUpdate.Id;
-            CachedPlayer cachedPlayerUpdatingStatus = _playerCache.GetCachedPlayer(playerIdUpdatingStatus);
+            CachedPlayer cachedPlayerUpdatingStatus = _playerCache.Get(playerIdUpdatingStatus);
             IEnumerable<IPlayer> players = _worldServer.ConnectedPlayers
                 .Where(x => x.Spawned &&
                             x.CharacterId != playerIdUpdatingStatus &&

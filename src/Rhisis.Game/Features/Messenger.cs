@@ -60,7 +60,7 @@ namespace Rhisis.Game.Features
             _player.Send(snapshot);
         }
 
-        public void SetFriendBlockState(int friendId)
+        public void ToggleFriendBlockState(int friendId)
         {
             IContact friend = Friends.Get(friendId);
 

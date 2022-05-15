@@ -1,7 +1,6 @@
 ﻿using Rhisis.Abstractions.Caching;
 using Rhisis.Abstractions.Entities;
 using Rhisis.Abstractions.Features.Chat;
-using Rhisis.Abstractions.Messaging;
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Protocol.Packets;
@@ -13,14 +12,12 @@ namespace Rhisis.WorldServer.Game.Chat
     [ChatCommand("/say", AuthorityType.Player)]
     public class MessageSayCommand : IChatCommand
     {
-        private readonly IMessaging _messaging;
         private readonly IPlayerCache _playerCache;
 
         public ChatParameterParsingType ParsingType => ChatParameterParsingType.PlainText;
 
-        public MessageSayCommand(IMessaging messaging, IPlayerCache playerCache)
+        public MessageSayCommand(IPlayerCache playerCache)
         {
-            _messaging = messaging;
             _playerCache = playerCache;
         }
 
@@ -36,7 +33,7 @@ namespace Rhisis.WorldServer.Game.Chat
             string destinationPlayerName = parameter.Split(' ').ElementAt(0);
             string message = parameter.Replace(destinationPlayerName, "").Trim();
 
-            CachedPlayer destinationPlayer = _playerCache.GetCachedPlayer(destinationPlayerName.Trim('"'));
+            CachedPlayer destinationPlayer = _playerCache.Get(destinationPlayerName.Trim('"'));
 
             if (destinationPlayer is null)
             {
@@ -52,7 +49,8 @@ namespace Rhisis.WorldServer.Game.Chat
                 destinationPlayer.Id, destinationPlayer.Name,
                 message);
             player.Send(sayPacket);
-            _messaging.Publish(new PlayerMessengerMessage(player.CharacterId, player.Name, destinationPlayer.Id, message));
+
+            //_messaging.Publish(new PlayerMessengerMessage(player.CharacterId, player.Name, destinationPlayer.Id, message));
         }
     }
 }

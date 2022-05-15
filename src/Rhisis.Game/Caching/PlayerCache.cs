@@ -1,6 +1,7 @@
 ﻿using Rhisis.Abstractions.Caching;
 using Rhisis.Core.DependencyInjection;
 using Rhisis.Game.Common;
+using Rhisis.Infrastructure.Caching;
 using Rhisis.Infrastructure.Persistance;
 using System;
 using System.Linq;
@@ -10,36 +11,35 @@ namespace Rhisis.Game.Caching
     [Injectable]
     internal sealed class PlayerCache : IPlayerCache
     {
-        private readonly IRhisisCache<CachedPlayer> _playerCache;
+        private readonly RhisisCache<int, CachedPlayer> _playerCache = new();
         private readonly IRhisisDatabase _database;
 
-        public PlayerCache(IRhisisCache<CachedPlayer> playerCache, IRhisisDatabase database)
+        public PlayerCache(IRhisisDatabase database)
         {
-            _playerCache = playerCache;
             _database = database;
         }
 
-        public CachedPlayer GetCachedPlayer(int playerId)
+        public CachedPlayer Get(int playerId)
         {
-            return _playerCache.Get(playerId) ?? LoadCachedPlayer(playerId);
+            return _playerCache.Get(playerId) ?? Load(playerId);
         }
 
-        public CachedPlayer GetCachedPlayer(string playerName)
+        public CachedPlayer Get(string playerName)
         {
             int playerId = _database.Characters
                 .Where(x => x.Name.ToLower() == playerName.ToLower())
                 .Select(x => x.Id)
                 .FirstOrDefault();
 
-            return GetCachedPlayer(playerId);
+            return Get(playerId);
         }
 
-        public CachedPlayer LoadCachedPlayer(int playerId)
+        public CachedPlayer Load(int playerId)
         {
             var cachedPlayer = _database.Characters.Where(x => x.Id == playerId)
                 .Select(x => new CachedPlayer(x.Id, default, x.Name, (GenderType)x.Gender)
                 {
-                    Version = 1,
+                    Version = default,
                     Level = x.Level,
                     Job = (DefineJob.Job)x.JobId,
                     IsOnline = false,
@@ -52,13 +52,15 @@ namespace Rhisis.Game.Caching
                 throw new InvalidOperationException($"Failed to fetch player with id: {playerId} from database.");
             }
 
-            SetCachedPlayer(cachedPlayer);
+            Set(cachedPlayer);
 
             return cachedPlayer;
         }
 
-        public void SetCachedPlayer(CachedPlayer player)
+        public void Set(CachedPlayer player)
         {
+            player.Version++;
+
             _playerCache.Set(player.Id, player);
         }
     }

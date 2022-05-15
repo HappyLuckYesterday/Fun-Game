@@ -137,5 +137,15 @@ namespace Rhisis.Abstractions.Entities
         /// Updates the player cache information.
         /// </summary>
         void UpdateCache();
+
+        /// <summary>
+        /// Notifies that the player is connected.
+        /// </summary>
+        void OnConnected();
+
+        /// <summary>
+        /// Notifies that the player is disconnected.
+        /// </summary>
+        void OnDisconnected();
     }
 }

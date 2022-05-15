@@ -31,15 +31,11 @@ namespace Rhisis.Protocol
 
         public override byte[] AppendHeader(byte[] buffer)
         {
-            int contentLength = buffer.Length;
-            byte[] contentLengthBuffer = BitConverter.GetBytes(contentLength);
-            byte[] packetBuffer = new byte[PacketHeaderSize + buffer.Length];
+            byte[] contentLengthBuffer = BitConverter.GetBytes(buffer.Length - PacketHeaderSize);
 
-            packetBuffer[0] = HeaderNumber;
-            Array.Copy(contentLengthBuffer, 0, packetBuffer, 1, sizeof(int));
-            Array.Copy(buffer, 0, packetBuffer, PacketHeaderSize, contentLength);
+            Array.Copy(contentLengthBuffer, 0, buffer, 1, sizeof(int));
 
-            return packetBuffer;
+            return buffer;
         }
     }
 }

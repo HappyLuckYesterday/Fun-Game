@@ -16,5 +16,11 @@
         /// <param name="snapshot"></param>
         /// <returns></returns>
         IFFSnapshot Merge(IFFSnapshot snapshot);
+
+        /// <summary>
+        /// Gets the snapshot content as a byte array.
+        /// </summary>
+        /// <returns></returns>
+        byte[] GetSnapshotContent();
     }
 }

@@ -39,7 +39,7 @@ namespace Rhisis.WorldServer.Handlers.Friends
         private IContact GetFriend(IPlayer player, IContact friendContact)
         {
             IContact friend = friendContact.Clone();
-            CachedPlayer cachedPlayer = _playerCache.GetCachedPlayer(friend.Id);
+            CachedPlayer cachedPlayer = _playerCache.Get(friend.Id);
 
             if (cachedPlayer != null)
             {

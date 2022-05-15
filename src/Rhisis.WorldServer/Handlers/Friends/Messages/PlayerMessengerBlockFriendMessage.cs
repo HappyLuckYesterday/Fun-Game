@@ -30,7 +30,7 @@ namespace Rhisis.WorldServer.Handlers.Friends.Messages
                 return;
             }
 
-            CachedPlayer playerBlockingFriend = _playerCache.GetCachedPlayer(blockedFriendMessage.PlayerId);
+            CachedPlayer playerBlockingFriend = _playerCache.Get(blockedFriendMessage.PlayerId);
             CachedPlayerFriend blockedFriend = playerBlockingFriend.Friends.FirstOrDefault(x => x.FriendId == blockedFriendMessage.FriendId);
 
             if (blockedFriend is null)

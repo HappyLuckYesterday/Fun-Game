@@ -1,22 +1,24 @@
-﻿using Rhisis.Abstractions.Caching;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Rhisis.Infrastructure.Caching
 {
-    internal sealed class RhisisCache<TObject> : IRhisisCache<TObject> where TObject : class, new()
+    public sealed class RhisisCache<TKey, TObject>
+        where TKey : struct, IEquatable<TKey>, IConvertible
+        where TObject : class, new()
     {
-        private readonly ConcurrentDictionary<int, TObject> _cache = new();
+        private readonly ConcurrentDictionary<TKey, TObject> _cache = new();
 
         public void Clear() => _cache.Clear();
 
-        public bool Contains(int key) => _cache.ContainsKey(key);
+        public bool Contains(TKey key) => _cache.ContainsKey(key);
 
-        public bool Delete(int key) => _cache.TryRemove(key, out _);
+        public bool Delete(TKey key) => _cache.TryRemove(key, out _);
 
-        public TObject Get(int key) => _cache.GetValueOrDefault(key, default);
+        public TObject Get(TKey key) => _cache.GetValueOrDefault(key, default);
 
-        public bool Set(int key, TObject @object)
+        public bool Set(TKey key, TObject @object)
         {
             _cache[key] = @object;
 

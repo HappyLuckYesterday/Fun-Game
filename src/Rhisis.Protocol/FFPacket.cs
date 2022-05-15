@@ -11,6 +11,8 @@ namespace Rhisis.Protocol
     /// </summary>
     public class FFPacket : MemoryStream, IFFPacket
     {
+        private const byte HeaderNumber = 0x5E;
+
         private const int CodePage = 1252;
         private static readonly Encoding StringEncoding = Encoding.GetEncoding(CodePage);
 
@@ -34,7 +36,7 @@ namespace Rhisis.Protocol
 
         public bool IsEndOfStream => Position >= Length;
 
-        public byte[] Buffer
+        public virtual byte[] Buffer
         {
             get
             {
@@ -55,6 +57,8 @@ namespace Rhisis.Protocol
         public FFPacket()
         {
             _writer = new BinaryWriter(this);
+            WriteByte(HeaderNumber);
+            WriteInt32(0);
         }
 
         /// <summary>
@@ -78,21 +82,6 @@ namespace Rhisis.Protocol
         }
 
         public void WriteHeader(object packetHeader) => WriteUInt32((uint)packetHeader);
-
-        /// <summary>
-        /// Builds the packet buffer.
-        /// </summary>
-        /// <returns></returns>
-        //private byte[] BuildPacketBuffer()
-        //{
-        //    long oldPointer = Position;
-
-        //    Seek(PacketSizeOffset, SeekOrigin.Begin);
-        //    base.Write((int)Length - PacketDataStartOffset);
-        //    Seek(oldPointer, SeekOrigin.Begin);
-
-        //    return base.Buffer;
-        //}
 
         public new byte ReadByte()
         {

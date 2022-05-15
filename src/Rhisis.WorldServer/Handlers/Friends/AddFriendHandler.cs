@@ -45,14 +45,14 @@ namespace Rhisis.WorldServer.Handlers.Friends
                 sender.Messenger.AddFriend(player);
                 player.Messenger.AddFriend(sender);
 
-                CachedPlayer senderCachedPlayer = _playerCache.GetCachedPlayer(sender.CharacterId);
-                CachedPlayer friendCachedPlayer = _playerCache.GetCachedPlayer(player.CharacterId);
+                CachedPlayer senderCachedPlayer = _playerCache.Get(sender.CharacterId);
+                CachedPlayer friendCachedPlayer = _playerCache.Get(player.CharacterId);
 
                 senderCachedPlayer.Friends.Add(new CachedPlayerFriend(player.CharacterId));
                 friendCachedPlayer.Friends.Add(new CachedPlayerFriend(sender.CharacterId));
 
-                _playerCache.SetCachedPlayer(senderCachedPlayer);
-                _playerCache.SetCachedPlayer(friendCachedPlayer);
+                _playerCache.Set(senderCachedPlayer);
+                _playerCache.Set(friendCachedPlayer);
             }
             else
             {

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Abstractions;
 using Rhisis.Abstractions.Caching;
 using Rhisis.Abstractions.Entities;
-using Rhisis.Abstractions.Messaging;
 using Rhisis.Abstractions.Protocol;
 using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
@@ -24,14 +23,14 @@ namespace Rhisis.WorldServer
     {
         private readonly IHandlerInvoker _handlerInvoker;
         private readonly IPlayerCache _playerCache;
-        private readonly IMessaging _messaging;
+        private readonly IClusterCacheClient _clusterCache;
 
         public IPlayer Player { get; }
 
         /// <summary>
         /// Creates a new <see cref="WorldServerUser"/> instance.
         /// </summary>
-        public WorldServerUser(ILogger<WorldServerUser> logger, IHandlerInvoker handlerInvoker, IPlayerCache playerCache, IMessaging messaging)
+        public WorldServerUser(ILogger<WorldServerUser> logger, IHandlerInvoker handlerInvoker, IPlayerCache playerCache, IClusterCacheClient clusterCache)
             : base(logger)
         {
             Player = new Player
@@ -40,7 +39,7 @@ namespace Rhisis.WorldServer
             };
             _handlerInvoker = handlerInvoker;
             _playerCache = playerCache;
-            _messaging = messaging;
+            _clusterCache = clusterCache;
         }
 
         public override Task HandleMessageAsync(byte[] packetBuffer)
@@ -104,7 +103,7 @@ namespace Rhisis.WorldServer
             {
                 if (Player is not null)
                 {
-                    var cachePlayer = _playerCache.GetCachedPlayer(Player.CharacterId);
+                    var cachePlayer = _playerCache.Get(Player.CharacterId);
 
                     if (cachePlayer is not null)
                     {
@@ -114,8 +113,8 @@ namespace Rhisis.WorldServer
                         cachePlayer.IsOnline = false;
                         cachePlayer.Version = 1;
 
-                        _playerCache.SetCachedPlayer(cachePlayer);
-                        _messaging.Publish(new PlayerDisconnected(Player.CharacterId));
+                        _playerCache.Set(cachePlayer);
+                        //_clusterCache.DisconnectCharacter(Player.CharacterId);
                     }
 
                     Player.Spawned = false;

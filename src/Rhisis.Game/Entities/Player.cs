@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Rhisis.Core.Helpers;
-using Rhisis.Core.Structures;
 using Rhisis.Abstractions.Behavior;
 using Rhisis.Abstractions.Caching;
 using Rhisis.Abstractions.Entities;
@@ -9,15 +7,17 @@ using Rhisis.Abstractions.Features.Battle;
 using Rhisis.Abstractions.Features.Chat;
 using Rhisis.Abstractions.Map;
 using Rhisis.Abstractions.Messaging;
+using Rhisis.Abstractions.Protocol;
 using Rhisis.Abstractions.Systems;
+using Rhisis.Core.Helpers;
+using Rhisis.Core.Structures;
 using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources;
-using Rhisis.Game.Protocol.Messages;
+using Rhisis.Protocol.Messages.Cluster;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game.Entities
 {
@@ -161,7 +161,7 @@ namespace Rhisis.Game.Entities
 
         public void UpdateCache()
         {
-            CachedPlayer player = _playerCache.Value.GetCachedPlayer(CharacterId);
+            CachedPlayer player = _playerCache.Value.Get(CharacterId);
 
             if (player is null)
             {
@@ -182,13 +182,34 @@ namespace Rhisis.Game.Entities
                 cacheUpdated = true;
             }
 
+            if (player.MessengerStatus != Messenger.Status)
+            {
+                player.MessengerStatus = Messenger.Status;
+                cacheUpdated = true;
+            }
+
             if (cacheUpdated)
             {
-                player.Version++;
-                // TODO: review cache system
-                _playerCache.Value.SetCachedPlayer(player);
-                _messaging.Value.Publish(new PlayerCacheUpdate(CharacterId));
+                _playerCache.Value.Set(player);
+                //_messaging.Value.Publish(new PlayerCacheUpdate(CharacterId));
             }
+        }
+
+        public void OnConnected()
+        {
+            if (Messenger.Status != MessengerStatusType.Offline)
+            {
+                _messaging.Value.SendMessage(new PlayerConnectedMessage
+                {
+                    Id = CharacterId,
+                    Status = Messenger.Status
+                });
+            }
+        }
+
+        public void OnDisconnected()
+        {
+
         }
 
         public bool Equals(IWorldObject other) => Id == other.Id;
@@ -208,6 +229,6 @@ namespace Rhisis.Game.Entities
             }
         }
 
-        public override string ToString() => $"{Name} (Id: {CharacterId}";
+        public override string ToString() => $"{Name} (Id: {CharacterId})";
     }
 }

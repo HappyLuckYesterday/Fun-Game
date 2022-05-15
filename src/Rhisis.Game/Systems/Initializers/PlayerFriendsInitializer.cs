@@ -35,7 +35,7 @@ namespace Rhisis.Game.Systems.Initializers
 
             foreach (DbFriend friend in friends)
             {
-                CachedPlayer cachedPlayer = _playerCache.GetCachedPlayer(friend.FriendId);
+                CachedPlayer cachedPlayer = _playerCache.Get(friend.FriendId);
 
                 var contact = new MessengerContact(cachedPlayer.Id,
                     cachedPlayer.Channel,

@@ -6,16 +6,16 @@ using System;
 namespace Rhisis.ClusterServer.Core.Handlers
 {
     [Handler]
-    public class DisconnectClientFromClusterHandler
+    public class PlayerDisconnectedFromChannelHandler
     {
         private readonly IClusterServer _clusterServer;
 
-        public DisconnectClientFromClusterHandler(IClusterServer clusterServer)
+        public PlayerDisconnectedFromChannelHandler(IClusterServer clusterServer)
         {
             _clusterServer = clusterServer;
         }
 
-        [HandlerAction(CorePacketType.DisconnectUserFromCluster)]
+        [HandlerAction(CorePacketType.PlayerDisconnectedFromChannel)]
         public void OnExecute(ClusterCoreClient _, CorePacket packet)
         {
             int userId = packet.ReadInt32();

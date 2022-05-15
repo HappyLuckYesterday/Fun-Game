@@ -28,7 +28,7 @@ namespace Rhisis.Protocol
 
         public override void Send(byte[] packetBuffer)
         {
-            Logger.LogTrace("Send {0} packet to {1}.", (PacketType)BitConverter.ToUInt32(packetBuffer, 0), Socket.RemoteEndPoint);
+            Logger.LogTrace("Send {0} packet to {1}.", (PacketType)BitConverter.ToUInt32(packetBuffer, FFPacket.PacketDataStartOffset), SessionId);
             base.Send(packetBuffer);
         }
 

@@ -3,16 +3,25 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Protocol.Core;
+using Rhisis.Protocol.Messages;
+using Rhisis.Protocol.Packets.Cluster;
 using Rhisis.WorldServer.Abstractions;
 using Sylver.HandlerInvoker;
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Rhisis.WorldServer.ClusterCache
 {
     internal class ClusterCacheClient : LiteClient, IClusterCacheClient
     {
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            Converters = { new CoreMessageJsonConverter() },
+            WriteIndented = true
+        };
+
         private readonly ILogger<ClusterCacheClient> _logger;
         private readonly IOptions<WorldOptions> _worldOptions;
         private readonly IHandlerInvoker _handlerInvoker;
@@ -61,18 +70,28 @@ namespace Rhisis.WorldServer.ClusterCache
 
         public void AuthenticateWorldServer()
         {
-            using var packet = new CorePacket();
-
-            packet.WriteByte((byte)CorePacketType.AuthenticationRequest);
-            packet.WriteString(_worldOptions.Value.ClusterCache.Password);
-            packet.WriteByte((byte)_worldOptions.Value.Id);
-            packet.WriteString(_worldOptions.Value.Name);
-            packet.WriteString(_worldOptions.Value.Host);
-            packet.WriteUInt16((ushort)_worldOptions.Value.Port);
-            packet.WriteInt32(_worldServer.ConnectedPlayers.Count());
-            packet.WriteInt32(_worldOptions.Value.MaximumUsers);
-
+            using ClusterAuthenticateWorldChannelPacket packet = new(_worldOptions.Value, _worldServer.ConnectedPlayers.Count());
             Send(packet);
+        }
+
+        public void DisconnectCharacter(int characterId)
+        {
+            using ClusterPlayerDisconnectedPacket packet = new(characterId);
+            Send(packet);
+        }
+
+        public void SendMessage<TMessage>(TMessage message) where TMessage : class
+        {
+            string messageValue = JsonSerializer.Serialize(message, JsonOptions);
+
+            using CorePacket packet = new(CorePacketType.BroadcastMessage);
+            packet.WriteString(messageValue);
+            Send(packet);
+        }
+
+        public CoreMessage ReadMessage(string message)
+        {
+            return JsonSerializer.Deserialize<CoreMessage>(message, JsonOptions);
         }
     }
 }

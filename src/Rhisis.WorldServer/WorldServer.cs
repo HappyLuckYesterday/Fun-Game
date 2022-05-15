@@ -5,7 +5,6 @@ using Rhisis.Abstractions.Behavior;
 using Rhisis.Abstractions.Entities;
 using Rhisis.Abstractions.Features.Chat;
 using Rhisis.Abstractions.Map;
-using Rhisis.Abstractions.Messaging;
 using Rhisis.Abstractions.Protocol;
 using Rhisis.Abstractions.Resources;
 using Rhisis.Core.Structures.Configuration;
@@ -14,6 +13,7 @@ using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Messages;
 using Rhisis.Game.Resources.Loaders;
 using Rhisis.Infrastructure.Persistance;
+using Rhisis.Protocol.Messages.Cluster;
 using Rhisis.WorldServer.Abstractions;
 using Sylver.HandlerInvoker;
 using System;
@@ -32,7 +32,6 @@ namespace Rhisis.WorldServer
         private readonly IBehaviorManager _behaviorManager;
         private readonly IChatCommandManager _chatCommandManager;
         private readonly IRhisisDatabase _database;
-        private readonly IMessaging _messaging;
         private readonly IHandlerInvoker _handlerInvoker;
 
         public IEnumerable<IPlayer> ConnectedPlayers => Users.Cast<WorldServerUser>().Select(x => x.Player);
@@ -48,8 +47,7 @@ namespace Rhisis.WorldServer
             IMapManager mapManager, 
             IBehaviorManager behaviorManager, 
             IChatCommandManager chatCommandManager, 
-            IRhisisDatabase database, 
-            //IMessaging messaging, 
+            IRhisisDatabase database,
             IHandlerInvoker handlerInvoker,
             IServiceProvider serviceProvider)
             : base(serverOptions, serviceProvider)
@@ -62,11 +60,9 @@ namespace Rhisis.WorldServer
             _behaviorManager = behaviorManager;
             _chatCommandManager = chatCommandManager;
             _database = database;
-            //_messaging = messaging;
             _handlerInvoker = handlerInvoker;
         }
 
-        /// <inheritdoc />
         protected override void OnBeforeStart()
         {
             if (!_database.IsAlive())
@@ -114,7 +110,7 @@ namespace Rhisis.WorldServer
 
         public uint GetOnlineConnectedPlayerNumber() => (uint)Users.Count();
 
-        private void OnPlayerConnectedMessage(PlayerConnected playerConnectedMessage)
+        private void OnPlayerConnectedMessage(PlayerConnectedMessage playerConnectedMessage)
         {
             OnPlayerStatusUpdateMessage(new PlayerMessengerStatusUpdate(playerConnectedMessage.Id, playerConnectedMessage.Status));
 

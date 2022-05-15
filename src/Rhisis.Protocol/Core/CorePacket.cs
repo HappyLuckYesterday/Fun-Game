@@ -20,6 +20,12 @@ namespace Rhisis.Protocol.Core
             _writer = new BinaryWriter(this);
         }
 
+        public CorePacket(object packetHeader)
+            : this()
+        {
+            WriteByte((byte)packetHeader);
+        }
+
         /// <summary>
         /// Creates a new <see cref="CorePacket"/> in read-only mode.
         /// </summary>

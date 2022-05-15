@@ -1,6 +1,5 @@
 ﻿using Rhisis.Abstractions.Caching;
 using Rhisis.Abstractions.Entities;
-using Rhisis.Abstractions.Messaging;
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Messages;
 using Rhisis.Protocol;
@@ -13,12 +12,10 @@ namespace Rhisis.WorldServer.Handlers.Friends
     [Handler]
     public class SetFriendStateHandler
     {
-        private readonly IMessaging _messaging;
         private readonly IPlayerCache _playerCache;
 
-        public SetFriendStateHandler(IMessaging messaging, IPlayerCache playerCache)
+        public SetFriendStateHandler(IPlayerCache playerCache)
         {
-            _messaging = messaging;
             _playerCache = playerCache;
         }
 
@@ -34,23 +31,23 @@ namespace Rhisis.WorldServer.Handlers.Friends
 
                 player.Messenger.Status = packet.Status;
 
-                CachedPlayer cachedPlayer = _playerCache.GetCachedPlayer(player.CharacterId);
+                CachedPlayer cachedPlayer = _playerCache.Get(player.CharacterId);
 
                 if (cachedPlayer != null)
                 {
                     cachedPlayer.MessengerStatus = player.Messenger.Status;
                     cachedPlayer.Version++;
-                    _playerCache.SetCachedPlayer(cachedPlayer);
+                    _playerCache.Set(cachedPlayer);
                 }
 
                 using var setStatusStatePacket = new Rhisis.Game.Protocol.Packets.Friends.SetFriendStatePacket(player.CharacterId, player.Messenger.Status);
                 player.Send(setStatusStatePacket);
 
-                _messaging.Publish(new PlayerMessengerStatusUpdate
-                {
-                    Id = player.CharacterId,
-                    Status = player.Messenger.Status
-                });
+                //_messaging.Publish(new PlayerMessengerStatusUpdate
+                //{
+                //    Id = player.CharacterId,
+                //    Status = player.Messenger.Status
+                //});
             }
         }
     }

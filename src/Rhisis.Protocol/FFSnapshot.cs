@@ -93,5 +93,10 @@ namespace Rhisis.Protocol
 
             return snapshotBuffer.GetRange(SnapshotContentOffset, snapshotBuffer.Length - SnapshotContentOffset).ToArray();
         }
+
+        public byte[] GetSnapshotContent()
+        {
+            return GetSnapshotContent(this);
+        }
     }
 }
