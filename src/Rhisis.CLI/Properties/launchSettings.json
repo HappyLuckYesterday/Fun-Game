@@ -2,7 +2,7 @@
   "profiles": {
     "Rhisis.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "database update -s 127.0.0.1 -u rhisisusr -pwd \"hello_world\" -p 3307 -d rhisisdb",
+      "commandLineArgs": "-?",
       "workingDirectory": "../../bin"
     }
   }

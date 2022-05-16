@@ -6,10 +6,7 @@
     <OutputType>Exe</OutputType>
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
     <StartupObject>Rhisis.CLI.Program</StartupObject>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>../../bin/tools/Rhisis.CLI/</OutputPath>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

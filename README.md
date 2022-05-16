@@ -13,7 +13,7 @@
 <p>This project has been created for learning purposes about the network and game logic problematics on the server-side.<br>
 We choose to use the <a href="https://github.com/Eastrall/LiteNetwork">LiteNetwork</a> to manage our server connecitions because it provides a clients management system and also a robust packet management system entirely customisable.</p>
 
-<h4 align="center">:warning: This project is not affiliated with Gala Lab. :warning:</h4><br>
+<h4 align="center">:warning: This project is **not** affiliated with Gala Lab. :warning:</h4><br>
 
 <p align="center">
   <a href="https://www.codacy.com/app/Eastrall/Rhisis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Eastrall/Rhisis&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/500148ec8bdd4f2e954f11c682c39f3c"></a>
@@ -46,7 +46,7 @@ We choose to use the <a href="https://github.com/Eastrall/LiteNetwork">LiteNetwo
 
 - Language: `C#` 9 (latest)
 - Framework: `.NET 6`
-- Application type: `Console` **and** `Docker` support
+- Application type: `Console`
 - Database type: `MySQL`
 - Configuration files type: `JSON`
 - Environment: `Visual Studio 2022`
@@ -63,20 +63,18 @@ Please take a look at our [contributing](https://github.com/Eastrall/Rhisis/blob
 
 Before getting started, you will need to install the following softwares:
 
-- Visual Studio 2019
-- Docker, Docker-Compose, Docker Desktop (if running on Windows)
+- Visual Studio 2022
+- .NET 6 SDK : https://dotnet.microsoft.com/en-us/download/dotnet/6.0
+- A MySQL Server
 - Any MySQL database explorer (MySQL Workbench for example)
 
-> The solution is configured to run with Linux containers.
+### Initial setup
 
-Once you have checked out the repository source code, go to the root directory of the repository and type the following command in a `PowerShell` command prompt and follow the instruction to setup your development environment:
-
+Navigate to the folder where you have checkout the project, open a command prompt (cmd or PowerShell) and run the following command:
 ```sh
-$> ./setup/setup-environment.ps1
+$ dotnet build Rhisis.sln -c Release
 ```
-
-> Note: By the MySQL container listen to port 3306 internally, but exposes the port 3307 if you ever need to connect to the MySQL server using a tool like MySQL workbench.
-> Note2: The database files are located in the `bin/_database` folder.
+> This command will build the entire solution.
 
 ### Configure the database access
 
@@ -86,59 +84,22 @@ In the same command prompt you used to setup your development environment, navig
 $> ./rhisis-cli database configure
 ```
 
-This command will configure the different servers to access the database. Since the servers will be running inside docker containers, please configure your environnement as followed:
-
-```
-Database server host address: Rhisis.Infrastructure.Persistance
-```
-> The `Rhisis.Infrastructure.Persistance` is the name of the Docker container where the MySQL Server is running. In order for other containers to access this container, you need to specify the container name as the host.
-
-```
-Database server listening port: 3306
-```
-> Even if the docker container has an acces with the `3307` port, you should use the port `3306` internally so other containers can access the MySQL Server
-
-```
-Database username:
-Database user password:
-Database name:
-```
-> Type the **same** information you entered during the setup.
+This command will configure the different servers to access the database.
+Follow the the instructions that will be displayed on the command prompt.
 
 For the rest of the options, you can choose to use encryption or not. It's up to you now.
 
-### Configure the servers
+### Setup the database
 
-You can either use the provided configuration and modify it has you want or use the CLI to configure it in your own.
+#### Using SQL Scripts
 
-#### Login Server
+You can setup your database by creating an empty database with the name you want, and then execute the scripts located in the `src/Rhisis.Infrastructure/Persistance/Migrations/SQL`.
 
-```sh
-$> ./rhisis-cli configure login
-```
+> Note that the scripts should be executed in the order and are formated as followed: `yyyyMMddHHmmss_XXXX.sql`
 
-#### Cluster Server
+#### Using CLI
 
-```sh
-$> ./rhisis-cli configure cluster
------ Core Server -----
-Core server host address: rhisis.login
-```
-
-> Note: You will need to specify the `rhisis.login` container name has the core server host in order for the cluster server to communicate with the CoreServer.
-> Also: The port and passwords should match on both sides.
-
-#### World Server
-
-```sh
-$> ./rhisis-cli configure world
-...
------ World cluster Server -----
-World cluster server host address: rhisis.cluster
-```
-
-> Note: You will need to specify the `rhisis.cluster` container name, so the world server can be considered as a "channel" of the given cluster.
-> Also: The port and passwords should match on both sides.
+> :warning: This method might not work and require some rework of the CLI.
 
 ## Contributors
 
