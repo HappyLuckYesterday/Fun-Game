@@ -16,7 +16,7 @@ We choose to use the <a href="https://github.com/Eastrall/LiteNetwork">LiteNetwo
 <h4 align="center">:warning: This project is **not** affiliated with Gala Lab. :warning:</h4><br>
 
 <p align="center">
-  <a href="https://www.codacy.com/app/Eastrall/Rhisis?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Eastrall/Rhisis&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/500148ec8bdd4f2e954f11c682c39f3c"></a>
+  <a href="https://github.com/Eastrall/Rhisis/actions/workflows/dotnet.yml"><img src="https://github.com/Eastrall/Rhisis/actions/workflows/dotnet.yml/badge.svg"></a>
   <a href="https://codecov.io/gh/Eastrall/Rhisis"><img src="https://codecov.io/gh/Eastrall/Rhisis/branch/develop/graph/badge.svg" /></a>
   <a href="https://github.com/Eastrall/Rhisis/commits/develop"><img src="https://img.shields.io/github/last-commit/Eastrall/Rhisis.svg?style=flat-square&logo=github&logoColor=white" alt="GitHub last commit"></a>
   <a href="https://discord.gg/z8K22p8"><img src="https://discordapp.com/api/guilds/294405146300121088/widget.png"></a>
