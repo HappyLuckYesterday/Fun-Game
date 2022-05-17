@@ -34,14 +34,6 @@ We choose to use the <a href="https://github.com/Eastrall/LiteNetwork">LiteNetwo
 
 <p align="center"><img src="https://i.imgur.com/wpfB1VZ.gif"></p>
 
-## Build Status
-
-| Project 	| Status 	|
-|---------	|--------	|
-| `Login Server` | [![Build Status](https://dev.azure.com/eastrall/Rhisis/_apis/build/status/Login%20Server?branchName=integration%2Fazuredevops)](https://dev.azure.com/eastrall/Rhisis/_build/latest?definitionId=7&branchName=integration%2Fazuredevops) |
-| `Cluster Server` | [![Build Status](https://dev.azure.com/eastrall/Rhisis/_apis/build/status/Cluster%20Server?branchName=integration%2Fazuredevops)](https://dev.azure.com/eastrall/Rhisis/_build/latest?definitionId=8&branchName=integration%2Fazuredevops) |
-| `World Server` | [![Build Status](https://dev.azure.com/eastrall/Rhisis/_apis/build/status/World%20Server?branchName=integration%2Fazuredevops)](https://dev.azure.com/eastrall/Rhisis/_build/latest?definitionId=6&branchName=integration%2Fazuredevops) |
-
 ## Technical information
 
 - Language: `C#` 9 (latest)
