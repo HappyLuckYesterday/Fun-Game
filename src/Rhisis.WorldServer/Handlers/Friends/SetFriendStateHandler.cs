@@ -1,9 +1,7 @@
 ﻿using Rhisis.Abstractions.Caching;
 using Rhisis.Abstractions.Entities;
 using Rhisis.Game.Common;
-using Rhisis.Game.Protocol.Messages;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Packets.Client.World.Friends;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 
@@ -20,7 +18,7 @@ namespace Rhisis.WorldServer.Handlers.Friends
         }
 
         [HandlerAction(PacketType.SETFRIENDSTATE)]
-        public void OnExecute(IPlayer player, SetFriendStatePacket packet)
+        public void OnExecute(IPlayer player, Protocol.Packets.Client.World.Friends.SetFriendStatePacket packet)
         {
             if (player.CharacterId == packet.PlayerId)
             {
@@ -40,7 +38,7 @@ namespace Rhisis.WorldServer.Handlers.Friends
                     _playerCache.Set(cachedPlayer);
                 }
 
-                using var setStatusStatePacket = new Rhisis.Game.Protocol.Packets.Friends.SetFriendStatePacket(player.CharacterId, player.Messenger.Status);
+                using var setStatusStatePacket = new Protocol.Packets.Server.World.Friends.SetFriendStatePacket(player.CharacterId, player.Messenger.Status);
                 player.Send(setStatusStatePacket);
 
                 //_messaging.Publish(new PlayerMessengerStatusUpdate

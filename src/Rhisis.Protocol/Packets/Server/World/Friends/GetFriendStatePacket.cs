@@ -1,9 +1,8 @@
 ﻿using Rhisis.Abstractions.Features;
-using Rhisis.Protocol;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.Game.Protocol.Packets.Friends
+namespace Rhisis.Protocol.Packets.Server.World.Friends
 {
     public class GetFriendStatePacket : FFPacket
     {

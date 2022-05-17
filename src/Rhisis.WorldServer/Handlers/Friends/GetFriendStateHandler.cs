@@ -3,7 +3,6 @@ using Rhisis.Abstractions.Entities;
 using Rhisis.Abstractions.Features;
 using Rhisis.Game.Common;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Packets.Client.World.Friends;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,7 @@ namespace Rhisis.WorldServer.Handlers.Friends
         }
 
         [HandlerAction(PacketType.GETFRIENDSTATE)]
-        public void OnExecute(IPlayer player, GetFriendStatePacket packet)
+        public void OnExecute(IPlayer player, Protocol.Packets.Client.World.Friends.GetFriendStatePacket packet)
         {
             if (player.CharacterId != packet.CurrentPlayerId)
             {
@@ -32,7 +31,7 @@ namespace Rhisis.WorldServer.Handlers.Friends
             IEnumerable<IContact> friends = player.Messenger.Friends.Where(x => !x.IsBlocked).Select(x => GetFriend(player, x));
             IEnumerable<IContact> blockedFriends = player.Messenger.Friends.Where(x => x.IsBlocked).Select(x => GetFriend(player, x));
 
-            using var friendStatePacket = new Rhisis.Game.Protocol.Packets.Friends.GetFriendStatePacket(friends, blockedFriends);
+            using var friendStatePacket = new Protocol.Packets.Server.World.Friends.GetFriendStatePacket(friends, blockedFriends);
             player.Send(friendStatePacket);
         }
 

@@ -1,12 +1,12 @@
 ﻿using Rhisis.Abstractions.Entities;
 using Rhisis.Abstractions.Features;
 using Rhisis.Game.Common;
-using Rhisis.Game.Protocol.Packets.Friends;
 using Rhisis.Protocol.Snapshots.Friends;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Snapshots;
 using System;
 using Rhisis.Abstractions.Protocol;
+using Rhisis.Protocol.Packets.Server.World.Friends;
 
 namespace Rhisis.Game.Features
 {

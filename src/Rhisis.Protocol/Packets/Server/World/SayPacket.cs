@@ -1,6 +1,4 @@
-﻿using Rhisis.Protocol;
-
-namespace Rhisis.Game.Protocol.Packets
+﻿namespace Rhisis.Protocol.Packets.Server.World
 {
     public class SayPacket : FFPacket
     {

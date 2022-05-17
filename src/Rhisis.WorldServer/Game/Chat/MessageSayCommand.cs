@@ -2,8 +2,7 @@
 using Rhisis.Abstractions.Entities;
 using Rhisis.Abstractions.Features.Chat;
 using Rhisis.Game.Common;
-using Rhisis.Game.Protocol.Messages;
-using Rhisis.Game.Protocol.Packets;
+using Rhisis.Protocol.Packets.Server.World;
 using System;
 using System.Linq;
 

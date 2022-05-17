@@ -1,6 +1,4 @@
-﻿using Rhisis.Protocol;
-
-namespace Rhisis.Game.Protocol.Packets.Friends
+﻿namespace Rhisis.Protocol.Packets.Server.World.Friends
 {
     public class RemoveFriendStatePacket : FFPacket
     {

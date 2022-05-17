@@ -149,7 +149,7 @@ namespace Rhisis.Game
             packet.WriteInt32(0); // Hp
             packet.WriteInt32(0); // Repair
             packet.WriteByte(0); // flag ?
-            packet.WriteInt32(Refine);
+            packet.WriteInt32((int)Refine);
             packet.WriteInt32(0); // guild id (cloaks?)
             packet.WriteByte((byte)Element);
             packet.WriteInt32((int)ElementRefine);
@@ -158,7 +158,7 @@ namespace Rhisis.Game
             packet.WriteInt32(0); // Ultimate piercing size
             packet.WriteInt32(0); // Pet vis
             packet.WriteInt32(0); // charged
-            packet.WriteInt16(0); // m_iRandomOptItemId
+            packet.WriteInt64(0); // m_iRandomOptItemId
             packet.WriteInt32(0); // m_dwKeepTime
             packet.WriteByte(0); // pet
             packet.WriteInt32(0); // m_bTranformVisPet

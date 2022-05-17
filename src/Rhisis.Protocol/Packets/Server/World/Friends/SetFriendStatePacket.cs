@@ -1,7 +1,6 @@
 ﻿using Rhisis.Game.Common;
-using Rhisis.Protocol;
 
-namespace Rhisis.Game.Protocol.Packets.Friends
+namespace Rhisis.Protocol.Packets.Server.World.Friends
 {
     public class SetFriendStatePacket : FFPacket
     {

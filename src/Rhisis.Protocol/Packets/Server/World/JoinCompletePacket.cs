@@ -1,10 +1,8 @@
 ﻿using Rhisis.Abstractions.Protocol;
-using Rhisis.Protocol;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.Game.Protocol.Packets
+namespace Rhisis.Protocol.Packets.Server.World
 {
     public class JoinCompletePacket : FFPacket
     {
