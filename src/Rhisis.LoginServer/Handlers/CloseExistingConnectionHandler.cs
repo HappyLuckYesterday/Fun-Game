@@ -5,40 +5,39 @@ using Rhisis.Protocol.Packets.Client.Login;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 
-namespace Rhisis.LoginServer.Handlers
+namespace Rhisis.LoginServer.Handlers;
+
+[Handler]
+public class CloseExistingConnectionHandler
 {
-    [Handler]
-    public class CloseExistingConnectionHandler
+    private readonly ILoginServer _loginServer;
+    private readonly ICoreServer _coreServer;
+
+    public CloseExistingConnectionHandler(ILoginServer loginServer, ICoreServer coreServer)
     {
-        private readonly ILoginServer _loginServer;
-        private readonly ICoreServer _coreServer;
+        _loginServer = loginServer;
+        _coreServer = coreServer;
+    }
 
-        public CloseExistingConnectionHandler(ILoginServer loginServer, ICoreServer coreServer)
+    /// <summary>
+    /// Closes an existing connection.
+    /// </summary>
+    /// <param name="client">Client.</param>
+    /// <param name="closeConnectionPacket">Close connection packet.</param>
+    [HandlerAction(PacketType.CLOSE_EXISTING_CONNECTION)]
+    public void Execute(ILoginUser _, CloseConnectionPacket closeConnectionPacket)
+    {
+        var otherConnectedClient = _loginServer.GetClientByUsername(closeConnectionPacket.Username);
+
+        if (otherConnectedClient is null)
         {
-            _loginServer = loginServer;
-            _coreServer = coreServer;
+            throw new InvalidOperationException($"Cannot find user with username '{closeConnectionPacket.Username}'.");
         }
 
-        /// <summary>
-        /// Closes an existing connection.
-        /// </summary>
-        /// <param name="client">Client.</param>
-        /// <param name="closeConnectionPacket">Close connection packet.</param>
-        [HandlerAction(PacketType.CLOSE_EXISTING_CONNECTION)]
-        public void Execute(ILoginUser _, CloseConnectionPacket closeConnectionPacket)
-        {
-            var otherConnectedClient = _loginServer.GetClientByUsername(closeConnectionPacket.Username);
+        using var packet = new CorePacket();
+        packet.WriteByte((byte)CorePacketType.DisconnectUserFromCluster);
+        packet.WriteInt32(otherConnectedClient.UserId);
 
-            if (otherConnectedClient is null)
-            {
-                throw new InvalidOperationException($"Cannot find user with username '{closeConnectionPacket.Username}'.");
-            }
-
-            using var packet = new CorePacket();
-            packet.WriteByte((byte)CorePacketType.DisconnectUserFromCluster);
-            packet.WriteInt32(otherConnectedClient.UserId);
-
-            _coreServer.SendToClusters(packet);
-        }
+        _coreServer.SendToClusters(packet);
     }
 }

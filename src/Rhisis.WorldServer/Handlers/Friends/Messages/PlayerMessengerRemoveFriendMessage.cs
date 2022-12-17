@@ -6,53 +6,52 @@ using Sylver.HandlerInvoker.Attributes;
 using System.Linq;
 using Rhisis.WorldServer.Abstractions;
 
-namespace Rhisis.WorldServer.Handlers.Friends.Messages
-{
-    [Handler]
-    public class PlayerMessengerRemoveFriendMessage
-    {
-        private readonly IWorldServer _worldServer;
-        private readonly IRhisisDatabase _database;
-        private readonly IPlayerCache _playerCache;
+namespace Rhisis.WorldServer.Handlers.Friends.Messages;
 
-        public PlayerMessengerRemoveFriendMessage(IWorldServer worldServer, IRhisisDatabase database, IPlayerCache playerCache)
+[Handler]
+public class PlayerMessengerRemoveFriendMessage
+{
+    private readonly IWorldServer _worldServer;
+    private readonly IRhisisDatabase _database;
+    private readonly IPlayerCache _playerCache;
+
+    public PlayerMessengerRemoveFriendMessage(IWorldServer worldServer, IRhisisDatabase database, IPlayerCache playerCache)
+    {
+        _worldServer = worldServer;
+        _database = database;
+        _playerCache = playerCache;
+    }
+
+    [HandlerAction(typeof(PlayerMessengerRemoveFriend))]
+    public void OnPlayerMessengerRemoveFriendMessage(PlayerMessengerRemoveFriend friendRemovalMessage)
+    {
+        int playerId = friendRemovalMessage.PlayerId;
+        IPlayer removedPlayer = _worldServer.ConnectedPlayers
+            .Where(x => x.Spawned &&
+                        x.CharacterId == friendRemovalMessage.RemovedFriendId &&
+                        x.Messenger.Friends.Contains((uint)playerId))
+            .FirstOrDefault();
+
+        if (removedPlayer != null)
         {
-            _worldServer = worldServer;
-            _database = database;
-            _playerCache = playerCache;
+            removedPlayer.Messenger.RemoveFriend(playerId);
         }
 
-        [HandlerAction(typeof(PlayerMessengerRemoveFriend))]
-        public void OnPlayerMessengerRemoveFriendMessage(PlayerMessengerRemoveFriend friendRemovalMessage)
+        var friend = _database.Friends.FirstOrDefault(x => x.CharacterId == friendRemovalMessage.RemovedFriendId && x.FriendId == playerId);
+
+        if (friend != null)
         {
-            int playerId = friendRemovalMessage.PlayerId;
-            IPlayer removedPlayer = _worldServer.ConnectedPlayers
-                .Where(x => x.Spawned &&
-                            x.CharacterId == friendRemovalMessage.RemovedFriendId &&
-                            x.Messenger.Friends.Contains((uint)playerId))
-                .FirstOrDefault();
+            _database.Friends.Remove(friend);
+            _database.SaveChangesAsync();
+        }
 
-            if (removedPlayer != null)
-            {
-                removedPlayer.Messenger.RemoveFriend(playerId);
-            }
+        CachedPlayer cachedPlayer = _playerCache.Get(removedPlayer.CharacterId);
+        CachedPlayerFriend playerFriend = cachedPlayer.Friends.FirstOrDefault(x => x.FriendId == playerId);
 
-            var friend = _database.Friends.FirstOrDefault(x => x.CharacterId == friendRemovalMessage.RemovedFriendId && x.FriendId == playerId);
-
-            if (friend != null)
-            {
-                _database.Friends.Remove(friend);
-                _database.SaveChangesAsync();
-            }
-
-            CachedPlayer cachedPlayer = _playerCache.Get(removedPlayer.CharacterId);
-            CachedPlayerFriend playerFriend = cachedPlayer.Friends.FirstOrDefault(x => x.FriendId == playerId);
-
-            if (playerFriend != null)
-            {
-                cachedPlayer.Friends.Remove(playerFriend);
-                _playerCache.Set(cachedPlayer);
-            }
+        if (playerFriend != null)
+        {
+            cachedPlayer.Friends.Remove(playerFriend);
+            _playerCache.Set(cachedPlayer);
         }
     }
 }

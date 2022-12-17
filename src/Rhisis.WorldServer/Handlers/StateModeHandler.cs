@@ -6,29 +6,28 @@ using Rhisis.Protocol.Packets.Client.World;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 
-namespace Rhisis.WorldServer.Handlers
+namespace Rhisis.WorldServer.Handlers;
+
+[Handler]
+public class StateModeHandler
 {
-    [Handler]
-    public class StateModeHandler
+    private readonly ISpecialEffectSystem _specialEffectSystem;
+
+    public StateModeHandler(ISpecialEffectSystem specialEffectSystem)
     {
-        private readonly ISpecialEffectSystem _specialEffectSystem;
+        _specialEffectSystem = specialEffectSystem;
+    }
 
-        public StateModeHandler(ISpecialEffectSystem specialEffectSystem)
+    [HandlerAction(PacketType.STATEMODE)]
+    public void OnStateMode(IPlayer player, StateModePacket packet)
+    {
+        if (player.StateMode == packet.StateMode)
         {
-            _specialEffectSystem = specialEffectSystem;
-        }
-
-        [HandlerAction(PacketType.STATEMODE)]
-        public void OnStateMode(IPlayer player, StateModePacket packet)
-        {
-            if (player.StateMode == packet.StateMode)
+            if (packet.Flag == StateModeBaseMotion.BASEMOTION_CANCEL)
             {
-                if (packet.Flag == StateModeBaseMotion.BASEMOTION_CANCEL)
-                {
-                    _specialEffectSystem.SetStateModeBaseMotion(player, packet.Flag);
-                    player.Delayer.CancelAction(player.Inventory.ItemInUseActionId);
-                    player.Inventory.ItemInUseActionId = Guid.Empty;
-                }
+                _specialEffectSystem.SetStateModeBaseMotion(player, packet.Flag);
+                player.Delayer.CancelAction(player.Inventory.ItemInUseActionId);
+                player.Inventory.ItemInUseActionId = Guid.Empty;
             }
         }
     }

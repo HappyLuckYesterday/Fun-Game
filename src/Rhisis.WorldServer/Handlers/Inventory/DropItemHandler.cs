@@ -6,43 +6,42 @@ using Rhisis.Protocol.Packets.Client.World;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 
-namespace Rhisis.WorldServer.Handlers.Inventory
-{
-    [Handler]
-    public class DropItemHandler
-    {
-        private readonly IEntityFactory _entityFactory;
+namespace Rhisis.WorldServer.Handlers.Inventory;
 
-        public DropItemHandler(IEntityFactory entityFactory)
+[Handler]
+public class DropItemHandler
+{
+    private readonly IEntityFactory _entityFactory;
+
+    public DropItemHandler(IEntityFactory entityFactory)
+    {
+        _entityFactory = entityFactory;
+    }
+
+    [HandlerAction(PacketType.DROPITEM)]
+    public void Execute(IPlayer player, DropItemPacket packet)
+    {
+        if (packet.ItemQuantity <= 0)
         {
-            _entityFactory = entityFactory;
+            throw new InvalidOperationException("Invalid drop quantity.");
         }
 
-        [HandlerAction(PacketType.DROPITEM)]
-        public void Execute(IPlayer player, DropItemPacket packet)
+        IItem item = player.Inventory.GetItem(packet.ItemUniqueId);
+
+        if (item == null)
         {
-            if (packet.ItemQuantity <= 0)
-            {
-                throw new InvalidOperationException("Invalid drop quantity.");
-            }
+            throw new InvalidOperationException($"Cannot find item with index: {packet.ItemUniqueId} in player's inventory.");
+        }
 
-            IItem item = player.Inventory.GetItem(packet.ItemUniqueId);
+        int quantityToDrop = Math.Min(packet.ItemQuantity, item.Quantity);
+        IItem itemToDrop = item.Clone();
+        itemToDrop.Quantity = quantityToDrop;
 
-            if (item == null)
-            {
-                throw new InvalidOperationException($"Cannot find item with index: {packet.ItemUniqueId} in player's inventory.");
-            }
+        if (player.Inventory.DeleteItem(item, quantityToDrop) > 0)
+        {
+            IMapItem dropItem = _entityFactory.CreateMapItem(itemToDrop, player.MapLayer, null, player.Position);
 
-            int quantityToDrop = Math.Min(packet.ItemQuantity, item.Quantity);
-            IItem itemToDrop = item.Clone();
-            itemToDrop.Quantity = quantityToDrop;
-
-            if (player.Inventory.DeleteItem(item, quantityToDrop) > 0)
-            {
-                IMapItem dropItem = _entityFactory.CreateMapItem(itemToDrop, player.MapLayer, null, player.Position);
-
-                player.MapLayer.AddItem(dropItem);
-            }
+            player.MapLayer.AddItem(dropItem);
         }
     }
 }

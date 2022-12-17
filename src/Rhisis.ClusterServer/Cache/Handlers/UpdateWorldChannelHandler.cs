@@ -5,11 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rhisis.ClusterServer.Cache.Handlers
-{
-    [Handler]
-    public class UpdateWorldChannelHandler
-    {
+namespace Rhisis.ClusterServer.Cache.Handlers;
 
-    }
+[Handler]
+public class UpdateWorldChannelHandler
+{
+
 }

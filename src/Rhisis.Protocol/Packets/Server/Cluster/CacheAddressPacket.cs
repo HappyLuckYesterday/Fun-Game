@@ -1,11 +1,10 @@
-﻿namespace Rhisis.Protocol.Packets.Server.Cluster
+﻿namespace Rhisis.Protocol.Packets.Server.Cluster;
+
+public class CacheAddressPacket : FFPacket
 {
-    public class CacheAddressPacket : FFPacket
+    public CacheAddressPacket(string address)
+        : base(PacketType.CACHE_ADDR)
     {
-        public CacheAddressPacket(string address)
-            : base(PacketType.CACHE_ADDR)
-        {
-            WriteString(address);
-        }
+        WriteString(address);
     }
 }

@@ -1,21 +1,20 @@
 ﻿using Rhisis.Abstractions.Protocol;
 
-namespace Rhisis.Protocol.Packets.Client.World
-{
-    public class ScriptRemoveAllItemPacket : IPacketDeserializer
-    {
-        /// <summary>
-        /// Gets the item id.
-        /// </summary>
-        public uint ItemId { get; private set; }
+namespace Rhisis.Protocol.Packets.Client.World;
 
-        /// <summary>
-        /// Creates a new <see cref="ScriptRemoveAllItemPacket"/> object.
-        /// </summary>
-        /// <param name="packet">Incoming packet</param>
-        public void Deserialize(IFFPacket packet)
-        {
-            ItemId = packet.ReadUInt32();
-        }
+public class ScriptRemoveAllItemPacket : IPacketDeserializer
+{
+    /// <summary>
+    /// Gets the item id.
+    /// </summary>
+    public uint ItemId { get; private set; }
+
+    /// <summary>
+    /// Creates a new <see cref="ScriptRemoveAllItemPacket"/> object.
+    /// </summary>
+    /// <param name="packet">Incoming packet</param>
+    public void Deserialize(IFFPacket packet)
+    {
+        ItemId = packet.ReadUInt32();
     }
 }

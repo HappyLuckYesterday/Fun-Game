@@ -1,11 +1,10 @@
-﻿namespace Rhisis.Protocol.Packets.Server
+﻿namespace Rhisis.Protocol.Packets.Server;
+
+public class ErrorPacket : FFPacket
 {
-    public class ErrorPacket : FFPacket
+    public ErrorPacket(ErrorType error)
+        : base(PacketType.ERROR)
     {
-        public ErrorPacket(ErrorType error)
-            : base(PacketType.ERROR)
-        {
-            WriteInt32((int)error);
-        }
+        WriteInt32((int)error);
     }
 }

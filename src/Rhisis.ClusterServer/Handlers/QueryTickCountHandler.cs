@@ -5,17 +5,16 @@ using Rhisis.Protocol.Packets.Client.Cluster;
 using Rhisis.Protocol.Packets.Server.Cluster;
 using Sylver.HandlerInvoker.Attributes;
 
-namespace Rhisis.ClusterServer.Handlers
-{
-    [Handler]
-    public class QueryTickCountHandler
-    {
-        [HandlerAction(PacketType.QUERYTICKCOUNT)]
-        public void OnQueryTickCount(IClusterUser user, QueryTickCountPacket packet)
-        {
-            using var queryTickCountPacket = new ServerQueryTickCountPacket(packet.Time, Time.GetElapsedTime());
+namespace Rhisis.ClusterServer.Handlers;
 
-            user.Send(queryTickCountPacket);
-        }
+[Handler]
+public class QueryTickCountHandler
+{
+    [HandlerAction(PacketType.QUERYTICKCOUNT)]
+    public void OnQueryTickCount(IClusterUser user, QueryTickCountPacket packet)
+    {
+        using var queryTickCountPacket = new ServerQueryTickCountPacket(packet.Time, Time.GetElapsedTime());
+
+        user.Send(queryTickCountPacket);
     }
 }

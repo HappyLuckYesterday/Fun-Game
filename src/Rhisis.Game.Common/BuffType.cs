@@ -1,12 +1,11 @@
-﻿namespace Rhisis.Game.Common
+﻿namespace Rhisis.Game.Common;
+
+public enum BuffType
 {
-    public enum BuffType
-    {
-        Unknown = -1,
-        Item,
-        Skill,
-        Pet,
-        Item2,
-        Equip
-    }
+    Unknown = -1,
+    Item,
+    Skill,
+    Pet,
+    Item2,
+    Equip
 }

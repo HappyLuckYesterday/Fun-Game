@@ -6,51 +6,50 @@ using Rhisis.Game.Common.Resources;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Rhisis.Game
+namespace Rhisis.Game;
+
+[DebuggerDisplay("Buff '{SkillName}' Lv.{SkillLevel}")]
+public class BuffSkill : Buff, IBuffSkill
 {
-    [DebuggerDisplay("Buff '{SkillName}' Lv.{SkillLevel}")]
-    public class BuffSkill : Buff, IBuffSkill
+    public override BuffType Type => BuffType.Skill;
+
+    public int? DatabaseId { get; }
+
+    public int SkillId => SkillData.Id;
+
+    public string SkillName => SkillData.Name;
+
+    public int SkillLevel { get; }
+
+    public SkillData SkillData { get; }
+
+    public SkillLevelData SkillLevelData => SkillData.SkillLevels[SkillLevel];
+
+    public BuffSkill(IMover owner, IDictionary<DefineAttributes, int> attributes, SkillData skillData, int skillLevel, int? databaseId = null) 
+        : base(owner, attributes)
     {
-        public override BuffType Type => BuffType.Skill;
+        SkillData = skillData;
+        SkillLevel = skillLevel;
+        DatabaseId = databaseId;
+    }
 
-        public int? DatabaseId { get; }
-
-        public int SkillId => SkillData.Id;
-
-        public string SkillName => SkillData.Name;
-
-        public int SkillLevel { get; }
-
-        public SkillData SkillData { get; }
-
-        public SkillLevelData SkillLevelData => SkillData.SkillLevels[SkillLevel];
-
-        public BuffSkill(IMover owner, IDictionary<DefineAttributes, int> attributes, SkillData skillData, int skillLevel, int? databaseId = null) 
-            : base(owner, attributes)
+    public override bool Equals(object obj)
+    {
+        if (obj is BuffSkill buffSkill)
         {
-            SkillData = skillData;
-            SkillLevel = skillLevel;
-            DatabaseId = databaseId;
+            return SkillId == buffSkill.SkillId;
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj is BuffSkill buffSkill)
-            {
-                return SkillId == buffSkill.SkillId;
-            }
+        return base.Equals(obj);
+    }
 
-            return base.Equals(obj);
-        }
+    public override int GetHashCode() => (int)Id;
 
-        public override int GetHashCode() => (int)Id;
-
-        public override void Serialize(IFFPacket packet)
-        {
-            packet.WriteInt16((short)Type);
-            packet.WriteInt16((short)SkillId);
-            packet.WriteInt32(SkillLevel);
-            packet.WriteInt32(RemainingTime);
-        }
+    public override void Serialize(IFFPacket packet)
+    {
+        packet.WriteInt16((short)Type);
+        packet.WriteInt16((short)SkillId);
+        packet.WriteInt32(SkillLevel);
+        packet.WriteInt32(RemainingTime);
     }
 }

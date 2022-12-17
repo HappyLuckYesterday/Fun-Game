@@ -1,18 +1,17 @@
 ﻿using Rhisis.Abstractions.Protocol;
 
-namespace Rhisis.Protocol.Packets.Client.World
-{
-    public class AwakeningPacket : IPacketDeserializer
-    {
-        /// <summary>
-        /// Gets the item id.
-        /// </summary>
-        public int Item { get; private set; }
+namespace Rhisis.Protocol.Packets.Client.World;
 
-        /// <inheritdoc />
-        public void Deserialize(IFFPacket packet)
-        {
-            Item = packet.ReadInt32();
-        }
+public class AwakeningPacket : IPacketDeserializer
+{
+    /// <summary>
+    /// Gets the item id.
+    /// </summary>
+    public int Item { get; private set; }
+
+    /// <inheritdoc />
+    public void Deserialize(IFFPacket packet)
+    {
+        Item = packet.ReadInt32();
     }
 }

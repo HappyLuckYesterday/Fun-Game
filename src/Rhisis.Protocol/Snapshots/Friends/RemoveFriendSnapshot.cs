@@ -1,13 +1,12 @@
 ﻿using Rhisis.Abstractions.Entities;
 
-namespace Rhisis.Protocol.Snapshots.Friends
+namespace Rhisis.Protocol.Snapshots.Friends;
+
+public class RemoveFriendSnapshot : FFSnapshot
 {
-    public class RemoveFriendSnapshot : FFSnapshot
+    public RemoveFriendSnapshot(IPlayer player, int removedFriendId)
+        : base(SnapshotType.REMOVEFRIEND, player.Id)
     {
-        public RemoveFriendSnapshot(IPlayer player, int removedFriendId)
-            : base(SnapshotType.REMOVEFRIEND, player.Id)
-        {
-            WriteUInt32((uint)removedFriendId);
-        }
+        WriteUInt32((uint)removedFriendId);
     }
 }

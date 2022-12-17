@@ -1,78 +1,77 @@
-﻿namespace Rhisis.Infrastructure.Scripting.Quests
+﻿namespace Rhisis.Infrastructure.Scripting.Quests;
+
+public class QuestScriptConstants
 {
-    public class QuestScriptConstants
-    {
-        public const string QuestDefinitionKey = "QUESTS";
+    public const string QuestDefinitionKey = "QUESTS";
 
-        public const string QuestDefinitionFile = "quests.lua";
+    public const string QuestDefinitionFile = "quests.lua";
 
-        public const string QuestPrefix = "QUEST_";
+    public const string QuestPrefix = "QUEST_";
 
-        public const string Title = "title";
+    public const string Title = "title";
 
-        public const string StartCharacter = "character";
+    public const string StartCharacter = "character";
 
-        public const string EndCharacter = "end_character";
+    public const string EndCharacter = "end_character";
 
-        public const string StartRequirements = "start_requirements";
+    public const string StartRequirements = "start_requirements";
 
-        public const string MinLevel = "min_level";
+    public const string MinLevel = "min_level";
 
-        public const string MaxLevel = "max_level";
+    public const string MaxLevel = "max_level";
 
-        public const string PreviousQuest = "previous_quest";
+    public const string PreviousQuest = "previous_quest";
 
-        public const string Job = "job";
+    public const string Job = "job";
 
-        public const string Rewards = "rewards";
+    public const string Rewards = "rewards";
 
-        public const string Gold = "gold";
+    public const string Gold = "gold";
 
-        public const string Min = "min";
+    public const string Min = "min";
 
-        public const string Max = "max";
+    public const string Max = "max";
 
-        public const string Experience = "exp";
+    public const string Experience = "exp";
 
-        public const string Items = "items";
+    public const string Items = "items";
 
-        public const string Monsters = "monsters";
+    public const string Monsters = "monsters";
 
-        public const string Patrols = "patrols";
+    public const string Patrols = "patrols";
 
-        public const string EndConditions = "end_conditions";
+    public const string EndConditions = "end_conditions";
 
-        public const string Dialogs = "dialogs";
+    public const string Dialogs = "dialogs";
 
-        public const string BeginDialogs = "begin";
+    public const string BeginDialogs = "begin";
 
-        public const string BeginYesDialogs = "begin_yes";
+    public const string BeginYesDialogs = "begin_yes";
 
-        public const string BeginNoDialogs = "begin_no";
+    public const string BeginNoDialogs = "begin_no";
 
-        public const string CompletedDialogs = "completed";
+    public const string CompletedDialogs = "completed";
 
-        public const string NotFinishedDialogs = "not_finished";
+    public const string NotFinishedDialogs = "not_finished";
 
-        public const string Restat = "restat";
+    public const string Restat = "restat";
 
-        public const string Reskill = "reskill";
+    public const string Reskill = "reskill";
 
-        public const string SkillPoints = "skillPoints";
+    public const string SkillPoints = "skillPoints";
 
-        public const string Drops = "drops";
+    public const string Drops = "drops";
 
-        public const string ItemId = "item_id";
+    public const string ItemId = "item_id";
 
-        public const string MonsterId = "monster_id";
+    public const string MonsterId = "monster_id";
 
-        public const string Probability = "probability";
+    public const string Probability = "probability";
 
-        public const string Quantity = "quantity";
-    }
+    public const string Quantity = "quantity";
+}
 
-    public class QuestScriptHooksConstants
-    {
-        public const string ChangeJobReward = "change_job_reward";
-    }
+public class QuestScriptHooksConstants
+{
+    public const string ChangeJobReward = "change_job_reward";
 }

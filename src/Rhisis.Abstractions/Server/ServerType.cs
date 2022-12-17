@@ -1,23 +1,22 @@
-﻿namespace Rhisis.Abstractions.Server
+﻿namespace Rhisis.Abstractions.Server;
+
+/// <summary>
+/// Defines the server types.
+/// </summary>
+public enum ServerType
 {
     /// <summary>
-    /// Defines the server types.
+    /// Unknown server type.
     /// </summary>
-    public enum ServerType
-    {
-        /// <summary>
-        /// Unknown server type.
-        /// </summary>
-        Unknown,
+    Unknown,
 
-        /// <summary>
-        /// Cluster Server.
-        /// </summary>
-        Cluster,
+    /// <summary>
+    /// Cluster Server.
+    /// </summary>
+    Cluster,
 
-        /// <summary>
-        /// World Server.
-        /// </summary>
-        World
-    }
+    /// <summary>
+    /// World Server.
+    /// </summary>
+    World
 }

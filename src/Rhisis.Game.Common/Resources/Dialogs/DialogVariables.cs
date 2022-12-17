@@ -1,10 +1,9 @@
-﻿namespace Rhisis.Game.Common.Resources.Dialogs
+﻿namespace Rhisis.Game.Common.Resources.Dialogs;
+
+public class DialogVariables
 {
-    public class DialogVariables
-    {
-        /// <summary>
-        /// Player name variable for dialogs
-        /// </summary>
-        public const string PlayerNameText = "%PLAYERNAME%";
-    }
+    /// <summary>
+    /// Player name variable for dialogs
+    /// </summary>
+    public const string PlayerNameText = "%PLAYERNAME%";
 }

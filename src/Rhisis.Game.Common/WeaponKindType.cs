@@ -1,9 +1,8 @@
-﻿namespace Rhisis.Game.Common
+﻿namespace Rhisis.Game.Common;
+
+public enum WeaponKindType
 {
-    public enum WeaponKindType
-    {
-        General,
-        Unique,
-        Ultimate
-    }
+    General,
+    Unique,
+    Ultimate
 }

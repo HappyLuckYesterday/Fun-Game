@@ -1,11 +1,10 @@
-﻿namespace Rhisis.Game.Common.Resources
+﻿namespace Rhisis.Game.Common.Resources;
+
+public class DropItemKindData
 {
-    public class DropItemKindData
-    {
-        public ItemKind3 ItemKind { get; set; }
+    public ItemKind3 ItemKind { get; set; }
 
-        public int UniqueMin { get; set; }
+    public int UniqueMin { get; set; }
 
-        public int UniqueMax { get; set; }
-    }
+    public int UniqueMax { get; set; }
 }

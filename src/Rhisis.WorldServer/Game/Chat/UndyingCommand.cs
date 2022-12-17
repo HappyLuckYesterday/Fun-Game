@@ -4,42 +4,41 @@ using Rhisis.Abstractions.Features.Chat;
 using Rhisis.Game.Common;
 using Rhisis.Protocol.Snapshots;
 
-namespace Rhisis.WorldServer.Game.Chat
+namespace Rhisis.WorldServer.Game.Chat;
+
+[ChatCommand("/undying", AuthorityType.GameMaster)]
+[ChatCommand("/ud", AuthorityType.GameMaster)]
+public class UndyingChatCommand : IChatCommand
 {
-    [ChatCommand("/undying", AuthorityType.GameMaster)]
-    [ChatCommand("/ud", AuthorityType.GameMaster)]
-    public class UndyingChatCommand : IChatCommand
+    private readonly ILogger<UndyingChatCommand> _logger;
+
+    /// <summary>
+    /// Creates a new <see cref="UndyingChatCommand"/> instance.
+    /// </summary>
+    /// <param name="logger">Logger.</param>
+    public UndyingChatCommand(ILogger<UndyingChatCommand> logger)
     {
-        private readonly ILogger<UndyingChatCommand> _logger;
+        _logger = logger;
+    }
 
-        /// <summary>
-        /// Creates a new <see cref="UndyingChatCommand"/> instance.
-        /// </summary>
-        /// <param name="logger">Logger.</param>
-        public UndyingChatCommand(ILogger<UndyingChatCommand> logger)
+    /// <inheritdoc />
+    public void Execute(IPlayer player, object[] parameters)
+    {
+        if (!player.Mode.HasFlag(ModeType.MATCHLESS_MODE))
         {
-            _logger = logger;
+            player.Mode |= ModeType.MATCHLESS_MODE;
+
+            using (var snapshot = new ModifyModeSnapshot(player, player.Mode))
+            {
+                player.Send(snapshot);
+                player.SendToVisible(snapshot);
+            }
+
+            _logger.LogTrace($"Player '{player.Name}' is now in undying mode.");
         }
-
-        /// <inheritdoc />
-        public void Execute(IPlayer player, object[] parameters)
+        else
         {
-            if (!player.Mode.HasFlag(ModeType.MATCHLESS_MODE))
-            {
-                player.Mode |= ModeType.MATCHLESS_MODE;
-
-                using (var snapshot = new ModifyModeSnapshot(player, player.Mode))
-                {
-                    player.Send(snapshot);
-                    player.SendToVisible(snapshot);
-                }
-
-                _logger.LogTrace($"Player '{player.Name}' is now in undying mode.");
-            }
-            else
-            {
-                _logger.LogTrace($"Player '{player.Name}' is already in undying mode.");
-            }
+            _logger.LogTrace($"Player '{player.Name}' is already in undying mode.");
         }
     }
 }

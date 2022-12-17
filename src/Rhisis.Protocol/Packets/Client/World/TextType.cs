@@ -2,11 +2,10 @@
 // This file contains every text type from the FF MsgHdr.h
 //
 
-namespace Rhisis.Protocol.Packets.Client.World
+namespace Rhisis.Protocol.Packets.Client.World;
+
+public enum TextType : byte
 {
-    public enum TextType : byte
-    {
-        TEXT_GENERAL = 0x01,
-        TEXT_DIAG = 0x02
-    }
+    TEXT_GENERAL = 0x01,
+    TEXT_DIAG = 0x02
 }

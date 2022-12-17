@@ -1,10 +1,9 @@
-﻿namespace Rhisis.Abstractions
+﻿namespace Rhisis.Abstractions;
+
+public interface IMagicProjectile : IProjectile
 {
-    public interface IMagicProjectile : IProjectile
-    {
-        /// <summary>
-        /// Gets the projectile magic power.
-        /// </summary>
-        int MagicPower { get; }
-    }
+    /// <summary>
+    /// Gets the projectile magic power.
+    /// </summary>
+    int MagicPower { get; }
 }

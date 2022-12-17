@@ -2,15 +2,14 @@
 using Rhisis.Game.Common;
 using System.Linq;
 
-namespace Rhisis.Protocol.Snapshots
+namespace Rhisis.Protocol.Snapshots;
+
+public class DefinedTextSnapshot : FFSnapshot
 {
-    public class DefinedTextSnapshot : FFSnapshot
+    public DefinedTextSnapshot(IPlayer player, DefineText textId, params object[] parameters)
+        : base(parameters.Any() ? SnapshotType.DEFINEDTEXT : SnapshotType.DEFINEDTEXT1, player.Id)
     {
-        public DefinedTextSnapshot(IPlayer player, DefineText textId, params object[] parameters)
-            : base(parameters.Any() ? SnapshotType.DEFINEDTEXT : SnapshotType.DEFINEDTEXT1, player.Id)
-        {
-            WriteInt32((int)textId);
-            WriteString(string.Join(" ", parameters));
-        }
+        WriteInt32((int)textId);
+        WriteString(string.Join(" ", parameters));
     }
 }

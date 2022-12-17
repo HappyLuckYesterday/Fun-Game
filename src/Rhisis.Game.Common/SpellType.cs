@@ -1,20 +1,19 @@
-﻿namespace Rhisis.Game.Common
+﻿namespace Rhisis.Game.Common;
+
+public enum SpellType
 {
-    public enum SpellType
-    {
-        Magic = 1,
-        Mind,
-        Poison,
-        Electricity,
-        Fire,
-        Wind,
-        Water,
-        Earth,
-        Dark,
-        Light,
-        FireEarth,
-        ElectricityWind,
-        EarthWind,
-        EarthWater,
-    }
+    Magic = 1,
+    Mind,
+    Poison,
+    Electricity,
+    Fire,
+    Wind,
+    Water,
+    Earth,
+    Dark,
+    Light,
+    FireEarth,
+    ElectricityWind,
+    EarthWind,
+    EarthWater,
 }

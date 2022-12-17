@@ -8,97 +8,96 @@ using Rhisis.Game.Common;
 using Rhisis.Game.Common.Resources.Quests;
 using Rhisis.Protocol.Snapshots;
 
-namespace Rhisis.Game.Behavior.Default
+namespace Rhisis.Game.Behavior.Default;
+
+[Behavior(BehaviorType.Player, IsDefault = true)]
+public class PlayerBehavior : IBehavior
 {
-    [Behavior(BehaviorType.Player, IsDefault = true)]
-    public class PlayerBehavior : IBehavior
+    private readonly IPlayer _player;
+    private readonly WorldOptions _worldServerConfiguration;
+
+    public PlayerBehavior(IPlayer player, IOptions<WorldOptions> worldServerConfiguration)
     {
-        private readonly IPlayer _player;
-        private readonly WorldOptions _worldServerConfiguration;
+        _player = player;
+        _worldServerConfiguration = worldServerConfiguration.Value;
+    }
 
-        public PlayerBehavior(IPlayer player, IOptions<WorldOptions> worldServerConfiguration)
+    public void OnArrived()
+    {
+        if (_player.IsFollowing && _player.FollowTarget is IMapItem mapItem)
         {
-            _player = player;
-            _worldServerConfiguration = worldServerConfiguration.Value;
+            PickupItem(mapItem);
+            _player.Unfollow();
+        }
+    }
+
+    public void OnKilled(IMover killerEntity)
+    {
+    }
+
+    public void OnTargetKilled(IMover killedEntity)
+    {
+        if (killedEntity is IMonster deadMonster)
+        {
+            _player.Experience.Increase(deadMonster.Data.Experience * _worldServerConfiguration.Rates.Experience);
+            _player.Quests.Update(QuestActionType.KillMonster, deadMonster.Id, 1);
+        }
+    }
+
+    public void Update()
+    {
+        if (_player.Health.IsDead || !_player.Spawned)
+        {
+            return;
         }
 
-        public void OnArrived()
+        if (!_player.Battle.IsFighting)
         {
-            if (_player.IsFollowing && _player.FollowTarget is IMapItem mapItem)
-            {
-                PickupItem(mapItem);
-                _player.Unfollow();
-            }
+            _player.Health.IdleHeal();
+        }
+    }
+
+    private void PickupItem(IMapItem mapItem)
+    {
+        if (mapItem.HasOwner && mapItem.Owner != _player)
+        {
+            using var defineTextSnapshot = new DefinedTextSnapshot(_player, DefineText.TID_GAME_PRIORITYITEMPER, $"\"{mapItem.Item.Name}\"");
+            _player.Send(defineTextSnapshot);
+
+            return;
         }
 
-        public void OnKilled(IMover killerEntity)
+        if (mapItem.IsGold)
         {
-        }
+            int goldAmount = mapItem.Item.Quantity;
 
-        public void OnTargetKilled(IMover killedEntity)
-        {
-            if (killedEntity is IMonster deadMonster)
+            if (_player.Gold.Increase(goldAmount))
             {
-                _player.Experience.Increase(deadMonster.Data.Experience * _worldServerConfiguration.Rates.Experience);
-                _player.Quests.Update(QuestActionType.KillMonster, deadMonster.Id, 1);
-            }
-        }
-
-        public void Update()
-        {
-            if (_player.Health.IsDead || !_player.Spawned)
-            {
-                return;
-            }
-
-            if (!_player.Battle.IsFighting)
-            {
-                _player.Health.IdleHeal();
-            }
-        }
-
-        private void PickupItem(IMapItem mapItem)
-        {
-            if (mapItem.HasOwner && mapItem.Owner != _player)
-            {
-                using var defineTextSnapshot = new DefinedTextSnapshot(_player, DefineText.TID_GAME_PRIORITYITEMPER, $"\"{mapItem.Item.Name}\"");
+                using var defineTextSnapshot = new DefinedTextSnapshot(_player, DefineText.TID_GAME_REAPMONEY, goldAmount.ToString("###,###,###,###"), _player.Gold.Amount.ToString("###,###,###,###"));
                 _player.Send(defineTextSnapshot);
-
-                return;
             }
-
-            if (mapItem.IsGold)
+        }
+        else
+        {
+            if (_player.Inventory.CreateItem(mapItem.Item, mapItem.Item.Quantity) > 0)
             {
-                int goldAmount = mapItem.Item.Quantity;
+                using var defineTextSnapshot = new DefinedTextSnapshot(_player, DefineText.TID_GAME_REAPITEM, $"\"{mapItem.Item.Name}\"");
+                _player.Send(defineTextSnapshot);
+            }
+        }
 
-                if (_player.Gold.Increase(goldAmount))
-                {
-                    using var defineTextSnapshot = new DefinedTextSnapshot(_player, DefineText.TID_GAME_REAPMONEY, goldAmount.ToString("###,###,###,###"), _player.Gold.Amount.ToString("###,###,###,###"));
-                    _player.Send(defineTextSnapshot);
-                }
-            }
-            else
-            {
-                if (_player.Inventory.CreateItem(mapItem.Item, mapItem.Item.Quantity) > 0)
-                {
-                    using var defineTextSnapshot = new DefinedTextSnapshot(_player, DefineText.TID_GAME_REAPITEM, $"\"{mapItem.Item.Name}\"");
-                    _player.Send(defineTextSnapshot);
-                }
-            }
+        using var motionSnapshot = new MotionSnapshot(_player, ObjectMessageType.OBJMSG_PICKUP);
+        _player.SendToVisible(motionSnapshot);
+        _player.Send(motionSnapshot);
 
-            using var motionSnapshot = new MotionSnapshot(_player, ObjectMessageType.OBJMSG_PICKUP);
-            _player.SendToVisible(motionSnapshot);
-            _player.Send(motionSnapshot);
-
-            if (mapItem.ItemType == MapItemType.QuestItem)
-            {
-                mapItem.Spawned = false;
-                mapItem.RespawnTime = Time.TimeInSeconds() + mapItem.RespawnRegion.Time;
-            }
-            else
-            {
-                _player.MapLayer.RemoveItem(mapItem);
-            }
+        if (mapItem.ItemType == MapItemType.QuestItem)
+        {
+            mapItem.Spawned = false;
+            mapItem.RespawnTime = Time.TimeInSeconds() + mapItem.RespawnRegion.Time;
+        }
+        else
+        {
+            _player.MapLayer.RemoveItem(mapItem);
         }
     }
 }

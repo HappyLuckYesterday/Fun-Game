@@ -5,49 +5,48 @@ using System.Collections.Generic;
 using System.Linq;
 using Rhisis.Abstractions.Protocol;
 
-namespace Rhisis.Game
+namespace Rhisis.Game;
+
+public class GameFeature
 {
-    public class GameFeature
+    protected GameFeature()
     {
-        protected GameFeature()
+    }
+
+    /// <summary>
+    /// Sends a packet to every visible player of the given world object.
+    /// </summary>
+    /// <param name="worldObject">Current world object.</param>
+    /// <param name="packet">Packet to be sent.</param>
+    /// <param name="sendToPlayer">If true, try to send the packet to the world object if its a <see cref="IPlayer"/>.</param>
+    public void SendPacketToVisible(IWorldObject worldObject, IFFPacket packet, bool sendToPlayer = false)
+    {
+        IEnumerable<IPlayer> visiblePlayers = worldObject.VisibleObjects.OfType<IPlayer>();
+
+        foreach (IPlayer visiblePlayer in visiblePlayers)
         {
+            visiblePlayer.Connection.Send(packet);
         }
 
-        /// <summary>
-        /// Sends a packet to every visible player of the given world object.
-        /// </summary>
-        /// <param name="worldObject">Current world object.</param>
-        /// <param name="packet">Packet to be sent.</param>
-        /// <param name="sendToPlayer">If true, try to send the packet to the world object if its a <see cref="IPlayer"/>.</param>
-        public void SendPacketToVisible(IWorldObject worldObject, IFFPacket packet, bool sendToPlayer = false)
+        if (worldObject is IPlayer player && sendToPlayer)
         {
-            IEnumerable<IPlayer> visiblePlayers = worldObject.VisibleObjects.OfType<IPlayer>();
-
-            foreach (IPlayer visiblePlayer in visiblePlayers)
-            {
-                visiblePlayer.Connection.Send(packet);
-            }
-
-            if (worldObject is IPlayer player && sendToPlayer)
-            {
-                player.Connection.Send(packet);
-            }
+            player.Connection.Send(packet);
         }
+    }
 
-        /// <summary>
-        /// Sends a defined text message to the given player.
-        /// </summary>
-        /// <param name="player">Current player.</param>
-        /// <param name="text">Defined text id.</param>
-        /// <param name="parameters">Additionnal parameters.</param>
-        public void SendDefinedText(IWorldObject worldObject, DefineText text, params object[] parameters)
+    /// <summary>
+    /// Sends a defined text message to the given player.
+    /// </summary>
+    /// <param name="player">Current player.</param>
+    /// <param name="text">Defined text id.</param>
+    /// <param name="parameters">Additionnal parameters.</param>
+    public void SendDefinedText(IWorldObject worldObject, DefineText text, params object[] parameters)
+    {
+        if (worldObject is IPlayer player)
         {
-            if (worldObject is IPlayer player)
-            {
-                using var definedTextSnapshot = new DefinedTextSnapshot(player, text, parameters);
+            using var definedTextSnapshot = new DefinedTextSnapshot(player, text, parameters);
 
-                player.Connection.Send(definedTextSnapshot);
-            }
+            player.Connection.Send(definedTextSnapshot);
         }
     }
 }

@@ -6,34 +6,33 @@ using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Linq;
 
-namespace Rhisis.WorldServer.Handlers.NpcShop
+namespace Rhisis.WorldServer.Handlers.NpcShop;
+
+[Handler]
+public class OpenNpcShopHandler
 {
-    [Handler]
-    public class OpenNpcShopHandler
+    [HandlerAction(PacketType.OPENSHOPWND)]
+    public void Execute(IPlayer player, OpenShopWindowPacket packet)
     {
-        [HandlerAction(PacketType.OPENSHOPWND)]
-        public void Execute(IPlayer player, OpenShopWindowPacket packet)
+        if (packet.ObjectId <= 0)
         {
-            if (packet.ObjectId <= 0)
-            {
-                throw new ArgumentException("Invalid object id.");
-            }
+            throw new ArgumentException("Invalid object id.");
+        }
 
-            INpc npc = player.VisibleObjects.OfType<INpc>().SingleOrDefault(x => x.Id == packet.ObjectId);
+        INpc npc = player.VisibleObjects.OfType<INpc>().SingleOrDefault(x => x.Id == packet.ObjectId);
 
-            if (npc == null)
-            {
-                throw new ArgumentException($"Cannot find NPC with object id: {packet.ObjectId}");
-            }
+        if (npc == null)
+        {
+            throw new ArgumentException($"Cannot find NPC with object id: {packet.ObjectId}");
+        }
 
-            if (npc.HasShop)
-            {
-                player.CurrentNpcShopName = npc.Name;
+        if (npc.HasShop)
+        {
+            player.CurrentNpcShopName = npc.Name;
 
-                using var openNpcShopSnapshot = new OpenNpcShopWindowSnapshot(npc, npc.Shop);
+            using var openNpcShopSnapshot = new OpenNpcShopWindowSnapshot(npc, npc.Shop);
 
-                player.Connection.Send(openNpcShopSnapshot);
-            }
+            player.Connection.Send(openNpcShopSnapshot);
         }
     }
 }

@@ -1,60 +1,59 @@
 ﻿using Rhisis.Abstractions.Protocol;
 
-namespace Rhisis.Protocol.Packets.Client.World.Party
+namespace Rhisis.Protocol.Packets.Client.World.Party;
+
+public class PartyAddMemberPacket : IPacketDeserializer
 {
-    public class PartyAddMemberPacket : IPacketDeserializer
+    /// <summary>
+    /// Gets the leader id.
+    /// </summary>
+    public uint LeaderId { get; private set; }
+
+    /// <summary>
+    /// Gets the leader level.
+    /// </summary>
+    public int LeaderLevel { get; private set; }
+
+    /// <summary>
+    /// Gets the leader job.
+    /// </summary>
+    public int LeaderJob { get; private set; }
+
+    /// <summary>
+    /// Gets the leader sex.
+    /// </summary>
+    public uint LeaderSex { get; private set; }
+
+    /// <summary>
+    /// Gets the member id.
+    /// </summary>
+    public uint MemberId { get; private set; }
+
+    /// <summary>
+    /// Gets the member level.
+    /// </summary>
+    public int MemberLevel { get; private set; }
+
+    /// <summary>
+    /// Gets the member job.
+    /// </summary>
+    public int MemberJob { get; private set; }
+
+    /// <summary>
+    /// Gets the member sex.
+    /// </summary>
+    public uint MemberSex { get; private set; }
+
+    /// <inheritdoc />
+    public void Deserialize(IFFPacket packet)
     {
-        /// <summary>
-        /// Gets the leader id.
-        /// </summary>
-        public uint LeaderId { get; private set; }
-
-        /// <summary>
-        /// Gets the leader level.
-        /// </summary>
-        public int LeaderLevel { get; private set; }
-
-        /// <summary>
-        /// Gets the leader job.
-        /// </summary>
-        public int LeaderJob { get; private set; }
-
-        /// <summary>
-        /// Gets the leader sex.
-        /// </summary>
-        public uint LeaderSex { get; private set; }
-
-        /// <summary>
-        /// Gets the member id.
-        /// </summary>
-        public uint MemberId { get; private set; }
-
-        /// <summary>
-        /// Gets the member level.
-        /// </summary>
-        public int MemberLevel { get; private set; }
-
-        /// <summary>
-        /// Gets the member job.
-        /// </summary>
-        public int MemberJob { get; private set; }
-
-        /// <summary>
-        /// Gets the member sex.
-        /// </summary>
-        public uint MemberSex { get; private set; }
-
-        /// <inheritdoc />
-        public void Deserialize(IFFPacket packet)
-        {
-            LeaderId = packet.ReadUInt32();
-            LeaderLevel = packet.ReadInt32();
-            LeaderJob = packet.ReadInt32();
-            LeaderSex = packet.ReadUInt32();
-            MemberId = packet.ReadUInt32();
-            MemberLevel = packet.ReadInt32();
-            MemberJob = packet.ReadInt32();
-            MemberSex = packet.ReadUInt32();
-        }
+        LeaderId = packet.ReadUInt32();
+        LeaderLevel = packet.ReadInt32();
+        LeaderJob = packet.ReadInt32();
+        LeaderSex = packet.ReadUInt32();
+        MemberId = packet.ReadUInt32();
+        MemberLevel = packet.ReadInt32();
+        MemberJob = packet.ReadInt32();
+        MemberSex = packet.ReadUInt32();
     }
 }

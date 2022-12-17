@@ -7,63 +7,62 @@ using Sylver.HandlerInvoker;
 using System;
 using System.Threading.Tasks;
 
-namespace Rhisis.ClusterServer.Core
+namespace Rhisis.ClusterServer.Core;
+
+public class ClusterCoreClient : LiteClient, ICoreClient
 {
-    public class ClusterCoreClient : LiteClient, ICoreClient
+    private readonly ILogger<ClusterCoreClient> _logger;
+    private readonly IHandlerInvoker _handlerInvoker;
+
+    public ClusterCoreClient(LiteClientOptions options, 
+        ILogger<ClusterCoreClient> logger, 
+        IHandlerInvoker handlerInvoker, 
+        IServiceProvider serviceProvider) 
+        : base(options, serviceProvider)
     {
-        private readonly ILogger<ClusterCoreClient> _logger;
-        private readonly IHandlerInvoker _handlerInvoker;
+        _logger = logger;
+        _handlerInvoker = handlerInvoker;
+    }
 
-        public ClusterCoreClient(LiteClientOptions options, 
-            ILogger<ClusterCoreClient> logger, 
-            IHandlerInvoker handlerInvoker, 
-            IServiceProvider serviceProvider) 
-            : base(options, serviceProvider)
+    public override Task HandleMessageAsync(byte[] packetBuffer)
+    {
+        try
         {
-            _logger = logger;
-            _handlerInvoker = handlerInvoker;
+            using var packet = new CorePacket(packetBuffer);
+            var packetHeader = (CorePacketType)packet.ReadByte();
+
+            _handlerInvoker.Invoke(packetHeader, this, packet);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "An error occured while processing core packet.");
         }
 
-        public override Task HandleMessageAsync(byte[] packetBuffer)
-        {
-            try
-            {
-                using var packet = new CorePacket(packetBuffer);
-                var packetHeader = (CorePacketType)packet.ReadByte();
+        return Task.CompletedTask;
+    }
 
-                _handlerInvoker.Invoke(packetHeader, this, packet);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "An error occured while processing core packet.");
-            }
+    public void UpdateWorldChannel(WorldChannel channel)
+    {
+        using var packet = new CorePacket();
 
-            return Task.CompletedTask;
-        }
+        packet.WriteByte((byte)CorePacketType.UpdateClusterWorldChannel);
+        packet.WriteByte((byte)channel.Id);
+        packet.WriteString(channel.Name);
+        packet.WriteString(channel.Host);
+        packet.WriteUInt16((ushort)channel.Port);
+        packet.WriteInt32(channel.ConnectedUsers);
+        packet.WriteInt32(channel.MaximumUsers);
 
-        public void UpdateWorldChannel(WorldChannel channel)
-        {
-            using var packet = new CorePacket();
+        Send(packet);
+    }
 
-            packet.WriteByte((byte)CorePacketType.UpdateClusterWorldChannel);
-            packet.WriteByte((byte)channel.Id);
-            packet.WriteString(channel.Name);
-            packet.WriteString(channel.Host);
-            packet.WriteUInt16((ushort)channel.Port);
-            packet.WriteInt32(channel.ConnectedUsers);
-            packet.WriteInt32(channel.MaximumUsers);
+    public void RemoveWorldChannel(WorldChannel channel)
+    {
+        using var packet = new CorePacket();
 
-            Send(packet);
-        }
+        packet.WriteByte((byte)CorePacketType.RemoveClusterWorldChannel);
+        packet.WriteByte((byte)channel.Id);
 
-        public void RemoveWorldChannel(WorldChannel channel)
-        {
-            using var packet = new CorePacket();
-
-            packet.WriteByte((byte)CorePacketType.RemoveClusterWorldChannel);
-            packet.WriteByte((byte)channel.Id);
-
-            Send(packet);
-        }
+        Send(packet);
     }
 }

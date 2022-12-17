@@ -10,88 +10,87 @@ using Rhisis.Protocol;
 using Rhisis.Protocol.Snapshots;
 using System.Collections.Generic;
 
-namespace Rhisis.Game.Systems
+namespace Rhisis.Game.Systems;
+
+[Injectable]
+public class JobSystem : GameFeature, IJobSystem
 {
-    [Injectable]
-    public class JobSystem : GameFeature, IJobSystem
+    private readonly IGameResources _gameResources;
+
+    public JobSystem(IGameResources gameResources)
     {
-        private readonly IGameResources _gameResources;
+        _gameResources = gameResources;
+    }
 
-        public JobSystem(IGameResources gameResources)
+    public void ChangeJob(IPlayer player, DefineJob.Job newJob)
+    {
+        if (!_gameResources.Jobs.TryGetValue(newJob, out JobData jobData))
         {
-            _gameResources = gameResources;
+            throw new KeyNotFoundException($"Cannot find job '{newJob}'.");
         }
 
-        public void ChangeJob(IPlayer player, DefineJob.Job newJob)
+        IEnumerable<SkillData> jobSkills = _gameResources.GetSkillDataByJob(newJob);
+
+        var skillTree = new List<ISkill>();
+
+        foreach (SkillData skillData in jobSkills)
         {
-            if (!_gameResources.Jobs.TryGetValue(newJob, out JobData jobData))
+            ISkill playerSkill = player.SkillTree.GetSkill(skillData.Id);
+
+            if (playerSkill != null)
             {
-                throw new KeyNotFoundException($"Cannot find job '{newJob}'.");
+                skillTree.Add(playerSkill);
             }
-
-            IEnumerable<SkillData> jobSkills = _gameResources.GetSkillDataByJob(newJob);
-
-            var skillTree = new List<ISkill>();
-
-            foreach (SkillData skillData in jobSkills)
+            else
             {
-                ISkill playerSkill = player.SkillTree.GetSkill(skillData.Id);
-
-                if (playerSkill != null)
-                {
-                    skillTree.Add(playerSkill);
-                }
-                else
-                {
-                    skillTree.Add(new Skill(skillData, player, 0));
-                }
+                skillTree.Add(new Skill(skillData, player, 0));
             }
-
-            player.SkillTree.SetSkills(skillTree);
-            player.Job = jobData;
-
-            using var snapshots = new FFSnapshot(
-                new SetJobSkill(player),
-                new CreateSfxObjectSnapshot(player, DefineSpecialEffects.XI_GEN_LEVEL_UP01));
-
-            SendPacketToVisible(player, snapshots, sendToPlayer: true);
-            player.UpdateCache();
         }
 
-        public int GetJobMinLevel(DefineJob.Job job)
+        player.SkillTree.SetSkills(skillTree);
+        player.Job = jobData;
+
+        using var snapshots = new FFSnapshot(
+            new SetJobSkill(player),
+            new CreateSfxObjectSnapshot(player, DefineSpecialEffects.XI_GEN_LEVEL_UP01));
+
+        SendPacketToVisible(player, snapshots, sendToPlayer: true);
+        player.UpdateCache();
+    }
+
+    public int GetJobMinLevel(DefineJob.Job job)
+    {
+        JobData jobData = _gameResources.Jobs.GetValueOrDefault(job);
+
+        if (jobData == null)
         {
-            JobData jobData = _gameResources.Jobs.GetValueOrDefault(job);
-
-            if (jobData == null)
-            {
-                return 0;
-            }
-
-            return jobData.Type switch
-            {
-                DefineJob.JobType.JTYPE_BASE => 1,
-                DefineJob.JobType.JTYPE_EXPERT => (int)DefineJob.JobMax.MAX_JOB_LEVEL,
-                DefineJob.JobType.JTYPE_PRO => (int)DefineJob.JobMax.MAX_JOB_LEVEL + (int)DefineJob.JobMax.MAX_EXP_LEVEL,
-                _ => (int)DefineJob.JobMax.MAX_LEVEL
-            };
+            return 0;
         }
 
-        public int GetJobMaxLevel(DefineJob.Job job)
+        return jobData.Type switch
         {
-            JobData jobData = _gameResources.Jobs.GetValueOrDefault(job);
+            DefineJob.JobType.JTYPE_BASE => 1,
+            DefineJob.JobType.JTYPE_EXPERT => (int)DefineJob.JobMax.MAX_JOB_LEVEL,
+            DefineJob.JobType.JTYPE_PRO => (int)DefineJob.JobMax.MAX_JOB_LEVEL + (int)DefineJob.JobMax.MAX_EXP_LEVEL,
+            _ => (int)DefineJob.JobMax.MAX_LEVEL
+        };
+    }
 
-            if (jobData == null)
-            {
-                return 0;
-            }
+    public int GetJobMaxLevel(DefineJob.Job job)
+    {
+        JobData jobData = _gameResources.Jobs.GetValueOrDefault(job);
 
-            return jobData.Type switch
-            {
-                DefineJob.JobType.JTYPE_BASE => (int)DefineJob.JobMax.MAX_JOB_LEVEL,
-                DefineJob.JobType.JTYPE_EXPERT => (int)DefineJob.JobMax.MAX_JOB_LEVEL + (int)DefineJob.JobMax.MAX_EXP_LEVEL,
-                DefineJob.JobType.JTYPE_PRO => (int)DefineJob.JobMax.MAX_LEVEL,
-                _ => (int)DefineJob.JobMax.MAX_LEVEL
-            };
+        if (jobData == null)
+        {
+            return 0;
         }
+
+        return jobData.Type switch
+        {
+            DefineJob.JobType.JTYPE_BASE => (int)DefineJob.JobMax.MAX_JOB_LEVEL,
+            DefineJob.JobType.JTYPE_EXPERT => (int)DefineJob.JobMax.MAX_JOB_LEVEL + (int)DefineJob.JobMax.MAX_EXP_LEVEL,
+            DefineJob.JobType.JTYPE_PRO => (int)DefineJob.JobMax.MAX_LEVEL,
+            _ => (int)DefineJob.JobMax.MAX_LEVEL
+        };
     }
 }

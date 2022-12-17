@@ -4,42 +4,41 @@ using Rhisis.WorldServer.Abstractions;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 
-namespace Rhisis.WorldServer.ClusterCache.Handlers
+namespace Rhisis.WorldServer.ClusterCache.Handlers;
+
+[Handler]
+internal class AuthenticationResultHandler
 {
-    [Handler]
-    internal class AuthenticationResultHandler
+    private readonly ILogger<AuthenticationResultHandler> _logger;
+
+    public AuthenticationResultHandler(ILogger<AuthenticationResultHandler> logger)
     {
-        private readonly ILogger<AuthenticationResultHandler> _logger;
+        _logger = logger;
+    }
 
-        public AuthenticationResultHandler(ILogger<AuthenticationResultHandler> logger)
+    [HandlerAction(CorePacketType.AuthenticationResult)]
+    public void OnExecute(IClusterCacheClient client, CorePacket packet)
+    {
+        var result = (CoreAuthenticationResultType)packet.ReadByte();
+
+        switch (result)
         {
-            _logger = logger;
+            case CoreAuthenticationResultType.Success:
+                {
+                    _logger.LogInformation("World Core client authenticated successfully.");
+                    return;
+                }
+            case CoreAuthenticationResultType.FailedWorldExists:
+                _logger.LogCritical("Unable to authenticate World Core client. Reason: an other World server (with the same id) is already connected.");
+                break;
+            case CoreAuthenticationResultType.FailedUnknownServer:
+                _logger.LogCritical("Unable to authenticate World Core client. Reason: ISC server doesn't recognize this server. You probably have to update all servers.");
+                break;
+            default:
+                _logger.LogCritical("Unable to authenticate World Core client. Reason: Cannot recognize Core server. You probably have to update all servers.");
+                break;
         }
 
-        [HandlerAction(CorePacketType.AuthenticationResult)]
-        public void OnExecute(IClusterCacheClient client, CorePacket packet)
-        {
-            var result = (CoreAuthenticationResultType)packet.ReadByte();
-
-            switch (result)
-            {
-                case CoreAuthenticationResultType.Success:
-                    {
-                        _logger.LogInformation("World Core client authenticated successfully.");
-                        return;
-                    }
-                case CoreAuthenticationResultType.FailedWorldExists:
-                    _logger.LogCritical("Unable to authenticate World Core client. Reason: an other World server (with the same id) is already connected.");
-                    break;
-                case CoreAuthenticationResultType.FailedUnknownServer:
-                    _logger.LogCritical("Unable to authenticate World Core client. Reason: ISC server doesn't recognize this server. You probably have to update all servers.");
-                    break;
-                default:
-                    _logger.LogCritical("Unable to authenticate World Core client. Reason: Cannot recognize Core server. You probably have to update all servers.");
-                    break;
-            }
-
-            Environment.Exit((int)result);
-        }
+        Environment.Exit((int)result);
     }
 }

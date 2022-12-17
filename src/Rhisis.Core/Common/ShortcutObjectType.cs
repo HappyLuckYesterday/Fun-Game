@@ -1,10 +1,9 @@
-﻿namespace Rhisis.Core.Common
+﻿namespace Rhisis.Core.Common;
+
+public enum ShortcutObjectType : uint
 {
-    public enum ShortcutObjectType : uint
-    {
-        Item,
-        Card,
-        Cube,
-        Pet
-    }
+    Item,
+    Card,
+    Cube,
+    Pet
 }

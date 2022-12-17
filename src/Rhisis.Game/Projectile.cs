@@ -4,24 +4,23 @@ using Rhisis.Game.Common;
 using System;
 using System.Diagnostics;
 
-namespace Rhisis.Game
+namespace Rhisis.Game;
+
+[DebuggerDisplay("{Owner}'s projectile {Type}")]
+public class Projectile : IProjectile
 {
-    [DebuggerDisplay("{Owner}'s projectile {Type}")]
-    public class Projectile : IProjectile
+    public IMover Owner { get; }
+
+    public IMover Target { get; }
+
+    public Action OnArrived { get; }
+
+    public virtual AttackFlags Type => AttackFlags.AF_GENERIC;
+
+    public Projectile(IMover owner, IMover target, Action onArrived)
     {
-        public IMover Owner { get; }
-
-        public IMover Target { get; }
-
-        public Action OnArrived { get; }
-
-        public virtual AttackFlags Type => AttackFlags.AF_GENERIC;
-
-        public Projectile(IMover owner, IMover target, Action onArrived)
-        {
-            Owner = owner;
-            Target = target;
-            OnArrived = onArrived;
-        }
+        Owner = owner;
+        Target = target;
+        OnArrived = onArrived;
     }
 }

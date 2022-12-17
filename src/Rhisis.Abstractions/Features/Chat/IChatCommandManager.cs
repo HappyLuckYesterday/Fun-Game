@@ -1,22 +1,21 @@
 ﻿using Rhisis.Game.Common;
 
-namespace Rhisis.Abstractions.Features.Chat
+namespace Rhisis.Abstractions.Features.Chat;
+
+/// <summary>
+/// Provides a mechanism to manage the chat commands.
+/// </summary>
+public interface IChatCommandManager
 {
     /// <summary>
-    /// Provides a mechanism to manage the chat commands.
+    /// Loads all chat commands.
     /// </summary>
-    public interface IChatCommandManager
-    {
-        /// <summary>
-        /// Loads all chat commands.
-        /// </summary>
-        void Load();
+    void Load();
 
-        /// <summary>
-        /// Gets a chat command by its command name.
-        /// </summary>
-        /// <param name="command">Command to execute.</param>
-        /// <param name="authority">Executor authority.</param>
-        IChatCommand GetChatCommand(string command, AuthorityType authority);
-    }
+    /// <summary>
+    /// Gets a chat command by its command name.
+    /// </summary>
+    /// <param name="command">Command to execute.</param>
+    /// <param name="authority">Executor authority.</param>
+    IChatCommand GetChatCommand(string command, AuthorityType authority);
 }

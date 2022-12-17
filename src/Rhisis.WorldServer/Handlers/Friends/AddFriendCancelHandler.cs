@@ -2,14 +2,13 @@
 using Rhisis.Protocol;
 using Sylver.HandlerInvoker.Attributes;
 
-namespace Rhisis.WorldServer.Handlers.Friends
+namespace Rhisis.WorldServer.Handlers.Friends;
+
+[Handler]
+public class AddFriendCancelHandler
 {
-    [Handler]
-    public class AddFriendCancelHandler
+    [HandlerAction(PacketType.ADDFRIENDCANCEL)]
+    public void OnExecute(IPlayer player)
     {
-        [HandlerAction(PacketType.ADDFRIENDCANCEL)]
-        public void OnExecute(IPlayer player)
-        {
-        }
     }
 }

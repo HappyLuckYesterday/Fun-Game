@@ -1,18 +1,17 @@
-﻿namespace Rhisis.Game.Protocol.Messages
+﻿namespace Rhisis.Game.Protocol.Messages;
+
+public class NewClusterMessage
 {
-    public class NewClusterMessage
-    {
-        public int ClusterId { get; set; }
+    public int ClusterId { get; set; }
 
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public string Host { get; set; }
+    public string Host { get; set; }
 
-        public int Port { get; set; }
-    }
+    public int Port { get; set; }
+}
 
-    public class RemoveClusterMessage
-    {
-        public int ClusterId { get; set; }
-    }
+public class RemoveClusterMessage
+{
+    public int ClusterId { get; set; }
 }

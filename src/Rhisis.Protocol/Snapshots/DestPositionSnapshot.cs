@@ -1,16 +1,15 @@
 ﻿using Rhisis.Abstractions.Entities;
 
-namespace Rhisis.Protocol.Snapshots
+namespace Rhisis.Protocol.Snapshots;
+
+public class DestPositionSnapshot : FFSnapshot
 {
-    public class DestPositionSnapshot : FFSnapshot
+    public DestPositionSnapshot(IMover mover)
+        : base(SnapshotType.DESTPOS, mover.Id)
     {
-        public DestPositionSnapshot(IMover mover)
-            : base(SnapshotType.DESTPOS, mover.Id)
-        {
-            WriteSingle(mover.DestinationPosition.X);
-            WriteSingle(mover.DestinationPosition.Y);
-            WriteSingle(mover.DestinationPosition.Z);
-            WriteByte(1);
-        }
+        WriteSingle(mover.DestinationPosition.X);
+        WriteSingle(mover.DestinationPosition.Y);
+        WriteSingle(mover.DestinationPosition.Z);
+        WriteByte(1);
     }
 }

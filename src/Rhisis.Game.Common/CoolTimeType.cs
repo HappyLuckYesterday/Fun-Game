@@ -1,10 +1,9 @@
-﻿namespace Rhisis.Game.Common
+﻿namespace Rhisis.Game.Common;
+
+public enum CoolTimeType
 {
-    public enum CoolTimeType
-    {
-        None = -1,
-        Food,
-        Pills,
-        Skill
-    }
+    None = -1,
+    Food,
+    Pills,
+    Skill
 }

@@ -1,32 +1,31 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Rhisis.Game.Common.Resources
+namespace Rhisis.Game.Common.Resources;
+
+[DataContract]
+public class ShopItem
 {
-    [DataContract]
-    public class ShopItem
-    {
-        /// <summary>
-        /// Gets the item Id.
-        /// </summary>
-        [DataMember(Name = "itemId")]
-        public int Id { get; protected set; }
+    /// <summary>
+    /// Gets the item Id.
+    /// </summary>
+    [DataMember(Name = "itemId")]
+    public int Id { get; protected set; }
 
-        /// <summary>
-        /// Gets or sets the item refine.
-        /// </summary>
-        [DataMember(Name = "refine")]
-        public byte Refine { get; set; }
+    /// <summary>
+    /// Gets or sets the item refine.
+    /// </summary>
+    [DataMember(Name = "refine")]
+    public byte Refine { get; set; }
 
-        /// <summary>
-        /// Gets or sets the item element. (Fire, water, electricity, etc...)
-        /// </summary>
-        [DataMember(Name = "element")]
-        public ElementType Element { get; set; }
+    /// <summary>
+    /// Gets or sets the item element. (Fire, water, electricity, etc...)
+    /// </summary>
+    [DataMember(Name = "element")]
+    public ElementType Element { get; set; }
 
-        /// <summary>
-        /// Gets or sets the item element refine.
-        /// </summary>
-        [DataMember(Name = "elementRefine")]
-        public byte ElementRefine { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the item element refine.
+    /// </summary>
+    [DataMember(Name = "elementRefine")]
+    public byte ElementRefine { get; set; }
 }

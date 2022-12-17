@@ -1,10 +1,9 @@
-﻿namespace Rhisis.Abstractions
+﻿namespace Rhisis.Abstractions;
+
+public interface IArrowProjectile : IProjectile
 {
-    public interface IArrowProjectile : IProjectile
-    {
-        /// <summary>
-        /// Gets the arrow projectile power.
-        /// </summary>
-        int Power { get; }
-    }
+    /// <summary>
+    /// Gets the arrow projectile power.
+    /// </summary>
+    int Power { get; }
 }

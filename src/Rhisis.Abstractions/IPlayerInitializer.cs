@@ -1,22 +1,21 @@
 ﻿using Rhisis.Abstractions.Entities;
 
-namespace Rhisis.Abstractions
+namespace Rhisis.Abstractions;
+
+/// <summary>
+/// Provides a mechanism to load and save player's data.
+/// </summary>
+public interface IPlayerInitializer
 {
     /// <summary>
-    /// Provides a mechanism to load and save player's data.
+    /// Load player data.
     /// </summary>
-    public interface IPlayerInitializer
-    {
-        /// <summary>
-        /// Load player data.
-        /// </summary>
-        /// <param name="player"></param>
-        void Load(IPlayer player);
+    /// <param name="player"></param>
+    void Load(IPlayer player);
 
-        /// <summary>
-        /// Save player save.
-        /// </summary>
-        /// <param name="player"></param>
-        void Save(IPlayer player);
-    }
+    /// <summary>
+    /// Save player save.
+    /// </summary>
+    /// <param name="player"></param>
+    void Save(IPlayer player);
 }

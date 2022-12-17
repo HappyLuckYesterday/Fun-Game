@@ -10,74 +10,73 @@ using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Drawing;
 
-namespace Rhisis.WorldServer.Handlers.Customization
+namespace Rhisis.WorldServer.Handlers.Customization;
+
+[Handler]
+public class SetHairHandler
 {
-    [Handler]
-    public class SetHairHandler
+    private readonly WorldOptions _worldServerConfiguration;
+
+    public SetHairHandler(IOptions<WorldOptions> worldServerConfiguration)
     {
-        private readonly WorldOptions _worldServerConfiguration;
+        _worldServerConfiguration = worldServerConfiguration.Value;
+    }
 
-        public SetHairHandler(IOptions<WorldOptions> worldServerConfiguration)
+    /// <summary>
+    /// Changes the hair and color of a player.
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="packet"></param>
+    [HandlerAction(PacketType.SET_HAIR)]
+    public void OnSetHair(IPlayer player, SetHairPacket packet)
+    {
+        var color = Color.FromArgb(packet.R, packet.G, packet.B);
+        
+        if (packet.UseCoupon)
         {
-            _worldServerConfiguration = worldServerConfiguration.Value;
-        }
+            IItem coupon = player.Inventory.GetItem(x => x.Id == DefineItem.II_SYS_SYS_SCR_HAIRCHANGE);
 
-        /// <summary>
-        /// Changes the hair and color of a player.
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="packet"></param>
-        [HandlerAction(PacketType.SET_HAIR)]
-        public void OnSetHair(IPlayer player, SetHairPacket packet)
-        {
-            var color = Color.FromArgb(packet.R, packet.G, packet.B);
-            
-            if (packet.UseCoupon)
+            if (coupon == null)
             {
-                IItem coupon = player.Inventory.GetItem(x => x.Id == DefineItem.II_SYS_SYS_SCR_HAIRCHANGE);
+                using var snapshot = new DefinedTextSnapshot(player, DefineText.TID_GAME_WARNNING_COUPON);
+                player.Send(snapshot);
 
-                if (coupon == null)
-                {
-                    using var snapshot = new DefinedTextSnapshot(player, DefineText.TID_GAME_WARNNING_COUPON);
-                    player.Send(snapshot);
-
-                    throw new InvalidOperationException($"Failed to find coupon to change face.");
-                }
-
-                player.Inventory.DeleteItem(coupon, 1);
-            }
-            else
-            {
-                int costs = 0;
-
-                if (player.Appearence.HairId != packet.HairId)
-                {
-                    costs += (int)_worldServerConfiguration.Customization.ChangeHairCost;
-                }
-
-                if (player.Appearence.HairColor != color.ToArgb())
-                {
-                    costs += (int)_worldServerConfiguration.Customization.ChangeHairColorCost;
-                }
-
-                if (player.Gold.Amount < costs)
-                {
-                    using var snapshot = new DefinedTextSnapshot(player, DefineText.TID_GAME_LACKMONEY);
-                    player.Send(snapshot);
-
-                    return;
-                }
-
-                player.Appearence.HairId = packet.HairId;
-                player.Appearence.HairColor = color.ToArgb();
-
-                player.Gold.Decrease(costs);
+                throw new InvalidOperationException($"Failed to find coupon to change face.");
             }
 
-            using var changeHairSnapshot = new SetHairSnapshot(player, (byte)player.Appearence.HairId, color.R, color.G, color.B);
-
-            player.Send(changeHairSnapshot);
-            player.SendToVisible(changeHairSnapshot);
+            player.Inventory.DeleteItem(coupon, 1);
         }
+        else
+        {
+            int costs = 0;
+
+            if (player.Appearence.HairId != packet.HairId)
+            {
+                costs += (int)_worldServerConfiguration.Customization.ChangeHairCost;
+            }
+
+            if (player.Appearence.HairColor != color.ToArgb())
+            {
+                costs += (int)_worldServerConfiguration.Customization.ChangeHairColorCost;
+            }
+
+            if (player.Gold.Amount < costs)
+            {
+                using var snapshot = new DefinedTextSnapshot(player, DefineText.TID_GAME_LACKMONEY);
+                player.Send(snapshot);
+
+                return;
+            }
+
+            player.Appearence.HairId = packet.HairId;
+            player.Appearence.HairColor = color.ToArgb();
+
+            player.Gold.Decrease(costs);
+        }
+
+        using var changeHairSnapshot = new SetHairSnapshot(player, (byte)player.Appearence.HairId, color.R, color.G, color.B);
+
+        player.Send(changeHairSnapshot);
+        player.SendToVisible(changeHairSnapshot);
     }
 }

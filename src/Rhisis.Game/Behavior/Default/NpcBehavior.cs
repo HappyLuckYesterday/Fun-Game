@@ -2,41 +2,40 @@
 using Rhisis.Abstractions.Entities;
 using System;
 
-namespace Rhisis.Game.Behavior.Default
+namespace Rhisis.Game.Behavior.Default;
+
+[Behavior(BehaviorType.Npc, IsDefault = true)]
+public class NpcBehavior : IBehavior
 {
-    [Behavior(BehaviorType.Npc, IsDefault = true)]
-    public class NpcBehavior : IBehavior
+    private readonly INpc _npc;
+
+    public NpcBehavior(INpc npc)
     {
-        private readonly INpc _npc;
+        _npc = npc;
+    }
 
-        public NpcBehavior(INpc npc)
+    public void OnArrived()
+    {
+        throw new InvalidOperationException("A NPC cannot move.");
+    }
+
+    public void OnKilled(IMover killerEntity)
+    {
+        throw new InvalidOperationException("A NPC cannot be killed by other entities.");
+    }
+
+    public void OnTargetKilled(IMover killedEntity)
+    {
+        throw new NotImplementedException($"A NPC cannot kill other entities.");
+    }
+
+    public void Update()
+    {
+        if (!_npc.Spawned)
         {
-            _npc = npc;
+            return;
         }
 
-        public void OnArrived()
-        {
-            throw new InvalidOperationException("A NPC cannot move.");
-        }
-
-        public void OnKilled(IMover killerEntity)
-        {
-            throw new InvalidOperationException("A NPC cannot be killed by other entities.");
-        }
-
-        public void OnTargetKilled(IMover killedEntity)
-        {
-            throw new NotImplementedException($"A NPC cannot kill other entities.");
-        }
-
-        public void Update()
-        {
-            if (!_npc.Spawned)
-            {
-                return;
-            }
-
-            // TODO: NPC oral text
-        }
+        // TODO: NPC oral text
     }
 }

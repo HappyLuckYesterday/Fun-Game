@@ -1,15 +1,14 @@
-﻿namespace Rhisis.Infrastructure.Persistance.Entities
-{
-    public class DbAttribute
-    {
-        /// <summary>
-        /// Gets or sets the attribute id.
-        /// </summary>
-        public int Id { get; set; }
+﻿namespace Rhisis.Infrastructure.Persistance.Entities;
 
-        /// <summary>
-        /// Gets or sets the attribute name.
-        /// </summary>
-        public string Name { get; set; }
-    }
+public class DbAttribute
+{
+    /// <summary>
+    /// Gets or sets the attribute id.
+    /// </summary>
+    public int Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the attribute name.
+    /// </summary>
+    public string Name { get; set; }
 }

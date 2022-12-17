@@ -1,14 +1,13 @@
-﻿namespace Rhisis.Protocol.Core
+﻿namespace Rhisis.Protocol.Core;
+
+/// <summary>
+/// Defines core server/client authentication result types.
+/// </summary>
+public enum CoreAuthenticationResultType
 {
-    /// <summary>
-    /// Defines core server/client authentication result types.
-    /// </summary>
-    public enum CoreAuthenticationResultType
-    {
-        Success,
-        FailedUnknownServer,
-        FailedClusterExists,
-        FailedWorldExists,
-        FailedWrongPassword
-    }
+    Success,
+    FailedUnknownServer,
+    FailedClusterExists,
+    FailedWorldExists,
+    FailedWrongPassword
 }

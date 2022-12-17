@@ -1,11 +1,10 @@
-﻿namespace Rhisis.Protocol.Packets.Server
+﻿namespace Rhisis.Protocol.Packets.Server;
+
+public class WelcomePacket : FFPacket
 {
-    public class WelcomePacket : FFPacket
+    public WelcomePacket(uint sessionId)
+         : base(PacketType.WELCOME)
     {
-        public WelcomePacket(uint sessionId)
-             : base(PacketType.WELCOME)
-        {
-            WriteUInt32(sessionId);
-        }
+        WriteUInt32(sessionId);
     }
 }

@@ -1,12 +1,11 @@
 ﻿using System;
 
-namespace Rhisis.Game.Common
+namespace Rhisis.Game.Common;
+
+[Flags]
+public enum ItemFlags : uint
 {
-    [Flags]
-    public enum ItemFlags : uint
-    {
-        Expired = 0x01,
-        Binds = 0x02,
-        IsUsing = 0x04,
-    }
+    Expired = 0x01,
+    Binds = 0x02,
+    IsUsing = 0x04,
 }

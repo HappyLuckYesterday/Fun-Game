@@ -1,9 +1,8 @@
-﻿namespace Rhisis.Abstractions.Entities
+﻿namespace Rhisis.Abstractions.Entities;
+
+/// <summary>
+/// Describes the pet entity.
+/// </summary>
+public interface IPet : IMover
 {
-    /// <summary>
-    /// Describes the pet entity.
-    /// </summary>
-    public interface IPet : IMover
-    {
-    }
 }

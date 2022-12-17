@@ -3,23 +3,22 @@ using System.Linq;
 using System.Reflection;
 using Xunit.Sdk;
 
-namespace Rhisis.Testing.Attributes
+namespace Rhisis.Testing.Attributes;
+
+public sealed class RepeatTestAttribute : DataAttribute
 {
-    public sealed class RepeatTestAttribute : DataAttribute
+    private readonly int _count;
+
+    public RepeatTestAttribute(int repeatCount)
     {
-        private readonly int _count;
+        _count = repeatCount;
+    }
 
-        public RepeatTestAttribute(int repeatCount)
+    public override IEnumerable<object[]> GetData(MethodInfo testMethod)
+    {
+        foreach (var iterationNumber in Enumerable.Range(start: 1, count: _count))
         {
-            _count = repeatCount;
-        }
-
-        public override IEnumerable<object[]> GetData(MethodInfo testMethod)
-        {
-            foreach (var iterationNumber in Enumerable.Range(start: 1, count: _count))
-            {
-                yield return new object[] { iterationNumber };
-            }
+            yield return new object[] { iterationNumber };
         }
     }
 }

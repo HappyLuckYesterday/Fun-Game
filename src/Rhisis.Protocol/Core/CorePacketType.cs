@@ -1,24 +1,23 @@
-﻿namespace Rhisis.Protocol.Core
+﻿namespace Rhisis.Protocol.Core;
+
+/// <summary>
+/// Defines the core server/client packet types.
+/// </summary>
+public enum CorePacketType : byte
 {
-    /// <summary>
-    /// Defines the core server/client packet types.
-    /// </summary>
-    public enum CorePacketType : byte
-    {
-        Welcome,
+    Welcome,
 
-        // Authentication
-        AuthenticationRequest,
-        AuthenticationResult,
+    // Authentication
+    AuthenticationRequest,
+    AuthenticationResult,
 
-        // Cluster
-        UpdateClusterWorldsList,
-        UpdateCluster,
-        UpdateClusterWorldChannel,
-        RemoveClusterWorldChannel,
-        DisconnectUserFromCluster,
-        PlayerConnectedToChannel,
-        PlayerDisconnectedFromChannel,
-        BroadcastMessage,
-    }
+    // Cluster
+    UpdateClusterWorldsList,
+    UpdateCluster,
+    UpdateClusterWorldChannel,
+    RemoveClusterWorldChannel,
+    DisconnectUserFromCluster,
+    PlayerConnectedToChannel,
+    PlayerDisconnectedFromChannel,
+    BroadcastMessage,
 }

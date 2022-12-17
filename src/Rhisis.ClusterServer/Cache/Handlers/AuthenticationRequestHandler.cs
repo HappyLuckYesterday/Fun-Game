@@ -7,71 +7,70 @@ using Rhisis.Protocol.Core;
 using Sylver.HandlerInvoker.Attributes;
 using System.Linq;
 
-namespace Rhisis.ClusterServer.Cache.Handlers
+namespace Rhisis.ClusterServer.Cache.Handlers;
+
+[Handler]
+public class AuthenticationRequestHandler
 {
-    [Handler]
-    public class AuthenticationRequestHandler
+    private readonly ILogger<AuthenticationRequestHandler> _logger;
+    private readonly IOptions<ClusterOptions> _clusterOptions;
+    private readonly IClusterCacheServer _clusterCacheServer;
+    private readonly ICoreClient _coreClient;
+
+    public AuthenticationRequestHandler(ILogger<AuthenticationRequestHandler> logger, IOptions<ClusterOptions> clusterOptions, 
+        IClusterCacheServer clusterCacheServer,
+        ICoreClient coreClient)
     {
-        private readonly ILogger<AuthenticationRequestHandler> _logger;
-        private readonly IOptions<ClusterOptions> _clusterOptions;
-        private readonly IClusterCacheServer _clusterCacheServer;
-        private readonly ICoreClient _coreClient;
+        _logger = logger;
+        _clusterOptions = clusterOptions;
+        _clusterCacheServer = clusterCacheServer;
+        _coreClient = coreClient;
+    }
 
-        public AuthenticationRequestHandler(ILogger<AuthenticationRequestHandler> logger, IOptions<ClusterOptions> clusterOptions, 
-            IClusterCacheServer clusterCacheServer,
-            ICoreClient coreClient)
+    [HandlerAction(CorePacketType.AuthenticationRequest)]
+    public void OnExecute(ClusterCacheUser user, CorePacket packet)
+    {
+        string cachePassword = packet.ReadString();
+
+        if (!_clusterOptions.Value.Cache.Password.ToLowerInvariant().Equals(cachePassword.ToLowerInvariant()))
         {
-            _logger = logger;
-            _clusterOptions = clusterOptions;
-            _clusterCacheServer = clusterCacheServer;
-            _coreClient = coreClient;
+            _logger.LogError("Failed to authenticate world channel: wrong password.");
+            SendAuthenticationResult(user, CoreAuthenticationResultType.FailedWrongPassword);
+            return;
         }
 
-        [HandlerAction(CorePacketType.AuthenticationRequest)]
-        public void OnExecute(ClusterCacheUser user, CorePacket packet)
+        byte id = packet.ReadByte();
+        string name = packet.ReadString();
+
+        if (_clusterCacheServer.WorldChannels.Any(x => x.Id == id))
         {
-            string cachePassword = packet.ReadString();
-
-            if (!_clusterOptions.Value.Cache.Password.ToLowerInvariant().Equals(cachePassword.ToLowerInvariant()))
-            {
-                _logger.LogError("Failed to authenticate world channel: wrong password.");
-                SendAuthenticationResult(user, CoreAuthenticationResultType.FailedWrongPassword);
-                return;
-            }
-
-            byte id = packet.ReadByte();
-            string name = packet.ReadString();
-
-            if (_clusterCacheServer.WorldChannels.Any(x => x.Id == id))
-            {
-                _logger.LogError($"Failed to authenticate world channel '{user.Channel.Name}': Already registered.");
-                SendAuthenticationResult(user, CoreAuthenticationResultType.FailedWorldExists);
-                return;
-            }
-
-            user.Channel.Id = id;
-            user.Channel.Name = name;
-            user.Channel.Host = packet.ReadString();
-            user.Channel.Port = packet.ReadUInt16();
-            user.Channel.ConnectedUsers = packet.ReadInt32();
-            user.Channel.MaximumUsers = packet.ReadInt32();
-
-            if (!string.IsNullOrEmpty(user.Channel.Name))
-            {
-                _logger.LogInformation($"World channel '{user.Channel.Name}' connected successfuly.");
-                SendAuthenticationResult(user, CoreAuthenticationResultType.Success);
-                _coreClient.UpdateWorldChannel(user.Channel);
-            }
+            _logger.LogError($"Failed to authenticate world channel '{user.Channel.Name}': Already registered.");
+            SendAuthenticationResult(user, CoreAuthenticationResultType.FailedWorldExists);
+            return;
         }
 
-        private static void SendAuthenticationResult(ClusterCacheUser client, CoreAuthenticationResultType result)
+        user.Channel.Id = id;
+        user.Channel.Name = name;
+        user.Channel.Host = packet.ReadString();
+        user.Channel.Port = packet.ReadUInt16();
+        user.Channel.ConnectedUsers = packet.ReadInt32();
+        user.Channel.MaximumUsers = packet.ReadInt32();
+
+        if (!string.IsNullOrEmpty(user.Channel.Name))
         {
-            using var packet = new CorePacket();
-
-            packet.WriteByte((byte)CorePacketType.AuthenticationResult);
-            packet.WriteByte((byte)result);
-
-            client.Send(packet);
+            _logger.LogInformation($"World channel '{user.Channel.Name}' connected successfuly.");
+            SendAuthenticationResult(user, CoreAuthenticationResultType.Success);
+            _coreClient.UpdateWorldChannel(user.Channel);
         }
+    }
+
+    private static void SendAuthenticationResult(ClusterCacheUser client, CoreAuthenticationResultType result)
+    {
+        using var packet = new CorePacket();
+
+        packet.WriteByte((byte)CorePacketType.AuthenticationResult);
+        packet.WriteByte((byte)result);
+
+        client.Send(packet);
     }
 }

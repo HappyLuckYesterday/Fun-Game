@@ -1,9 +1,8 @@
-﻿namespace Rhisis.Game.Common
+﻿namespace Rhisis.Game.Common;
+
+public enum GenderType
 {
-    public enum GenderType
-    {
-        Any = -1,
-        Male,
-        Female
-    }
+    Any = -1,
+    Male,
+    Female
 }

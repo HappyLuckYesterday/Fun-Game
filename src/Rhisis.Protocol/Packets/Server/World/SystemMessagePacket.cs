@@ -1,11 +1,10 @@
-﻿namespace Rhisis.Protocol.Packets.Server.World
+﻿namespace Rhisis.Protocol.Packets.Server.World;
+
+public class SystemMessagePacket : FFPacket
 {
-    public class SystemMessagePacket : FFPacket
+    public SystemMessagePacket(string message)
+        : base(PacketType.SYSTEM)
     {
-        public SystemMessagePacket(string message)
-            : base(PacketType.SYSTEM)
-        {
-            WriteString(message);
-        }
+        WriteString(message);
     }
 }

@@ -1,10 +1,9 @@
-﻿namespace Rhisis.Game.Common
+﻿namespace Rhisis.Game.Common;
+
+public enum SkillReferTargetType
 {
-    public enum SkillReferTargetType
-    {
-        None,
-        Attack,
-        Time,
-        Heal,
-    }
+    None,
+    Attack,
+    Time,
+    Heal,
 }

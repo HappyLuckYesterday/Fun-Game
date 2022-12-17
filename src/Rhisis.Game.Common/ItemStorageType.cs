@@ -1,10 +1,9 @@
-﻿namespace Rhisis.Game.Common
+﻿namespace Rhisis.Game.Common;
+
+public enum ItemStorageType
 {
-    public enum ItemStorageType
-    {
-        Inventory = 1,
-        ExtraBag,
-        Bank,
-        GuildBank
-    }
+    Inventory = 1,
+    ExtraBag,
+    Bank,
+    GuildBank
 }

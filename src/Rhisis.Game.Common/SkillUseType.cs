@@ -1,9 +1,8 @@
-﻿namespace Rhisis.Game.Common
+﻿namespace Rhisis.Game.Common;
+
+public enum SkillUseType
 {
-    public enum SkillUseType
-    {
-        Normal,
-        QueueStart,
-        Queueing
-    }
+    Normal,
+    QueueStart,
+    Queueing
 }

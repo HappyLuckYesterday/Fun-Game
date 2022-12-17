@@ -13,79 +13,78 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Rhisis.Game.Resources.Loaders
+namespace Rhisis.Game.Resources.Loaders;
+
+public class QuestLoader : IGameResourceLoader
 {
-    public class QuestLoader : IGameResourceLoader
+    private static readonly string QuestDefinitionPath = Path.Combine(GameResourcesConstants.Paths.QuestsPath, QuestScriptConstants.QuestDefinitionFile);
+
+    private readonly ILogger<QuestLoader> _logger;
+    private readonly IMemoryCache _cache;
+    private readonly IDictionary<string, int> _defines;
+
+    /// <summary>
+    /// Creates a new <see cref="QuestLoader"/> instance.
+    /// </summary>
+    /// <param name="logger">Logger.</param>
+    /// <param name="cache">Memory cache.</param>
+    public QuestLoader(ILogger<QuestLoader> logger, IMemoryCache cache)
     {
-        private static readonly string QuestDefinitionPath = Path.Combine(GameResourcesConstants.Paths.QuestsPath, QuestScriptConstants.QuestDefinitionFile);
+        _logger = logger;
+        _cache = cache;
+        _defines = _cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
+    }
 
-        private readonly ILogger<QuestLoader> _logger;
-        private readonly IMemoryCache _cache;
-        private readonly IDictionary<string, int> _defines;
+    public void Load()
+    {
+        _logger.LogLoading("Loading quests...");
 
-        /// <summary>
-        /// Creates a new <see cref="QuestLoader"/> instance.
-        /// </summary>
-        /// <param name="logger">Logger.</param>
-        /// <param name="cache">Memory cache.</param>
-        public QuestLoader(ILogger<QuestLoader> logger, IMemoryCache cache)
+        using var lua = new Lua();
+
+        lua["Jobs"] = Enum.GetValues(typeof(DefineJob.Job))
+                          .Cast<DefineJob.Job>()
+                          .ToDictionary(x => x.ToString(), x => (int)x);
+
+        var quests = new ConcurrentDictionary<int, IQuestScript>();
+        IEnumerable<string> questsDefinition = LoadQuestsDefinitions();
+        IEnumerable<string> questFiles = Directory.GetFiles(GameResourcesConstants.Paths.QuestsPath, "*.*", SearchOption.AllDirectories).Where(x => x != QuestDefinitionPath);
+
+        foreach (string questFile in questFiles)
         {
-            _logger = logger;
-            _cache = cache;
-            _defines = _cache.Get<IDictionary<string, int>>(GameResourcesConstants.Defines);
+            lua.DoFile(questFile);
         }
 
-        public void Load()
+        foreach (var questName in questsDefinition)
         {
-            _logger.LogLoading("Loading quests...");
+            var questTable = lua[questName] as LuaTable;
 
-            using var lua = new Lua();
-
-            lua["Jobs"] = Enum.GetValues(typeof(DefineJob.Job))
-                              .Cast<DefineJob.Job>()
-                              .ToDictionary(x => x.ToString(), x => (int)x);
-
-            var quests = new ConcurrentDictionary<int, IQuestScript>();
-            IEnumerable<string> questsDefinition = LoadQuestsDefinitions();
-            IEnumerable<string> questFiles = Directory.GetFiles(GameResourcesConstants.Paths.QuestsPath, "*.*", SearchOption.AllDirectories).Where(x => x != QuestDefinitionPath);
-
-            foreach (string questFile in questFiles)
+            if (!_defines.TryGetValue(questName, out int questId))
             {
-                lua.DoFile(questFile);
-            }
-
-            foreach (var questName in questsDefinition)
-            {
-                var questTable = lua[questName] as LuaTable;
-
-                if (!_defines.TryGetValue(questName, out int questId))
+                if (questName.StartsWith(QuestScriptConstants.QuestPrefix) && !int.TryParse(questName.Replace(QuestScriptConstants.QuestPrefix, ""), out questId))
                 {
-                    if (questName.StartsWith(QuestScriptConstants.QuestPrefix) && !int.TryParse(questName.Replace(QuestScriptConstants.QuestPrefix, ""), out questId))
-                    {
-                        _logger.LogWarning($"Cannot find quest id for quest: '{questName}'.");
-                        continue;
-                    }
+                    _logger.LogWarning($"Cannot find quest id for quest: '{questName}'.");
+                    continue;
                 }
-
-                quests.TryAdd(questId, QuestFactory.CreateQuest(questId, questName, questTable));
             }
 
-            _logger.LogInformation($"-> {quests.Count} quests loaded.");
-            _cache.Set(GameResourcesConstants.Quests, quests);
+            quests.TryAdd(questId, QuestFactory.CreateQuest(questId, questName, questTable));
         }
 
-        /// <summary>
-        /// Load quests definition file.
-        /// </summary>
-        /// <returns></returns>
-        private static IEnumerable<string> LoadQuestsDefinitions()
-        {
-            using var lua = new Lua();
-            lua.DoFile(QuestDefinitionPath);
+        _logger.LogInformation($"-> {quests.Count} quests loaded.");
+        _cache.Set(GameResourcesConstants.Quests, quests);
+    }
 
-            var quests = lua[QuestScriptConstants.QuestDefinitionKey] as LuaTable;
+    /// <summary>
+    /// Load quests definition file.
+    /// </summary>
+    /// <returns></returns>
+    private static IEnumerable<string> LoadQuestsDefinitions()
+    {
+        using var lua = new Lua();
+        lua.DoFile(QuestDefinitionPath);
 
-            return quests.Values.ToArray<string>();
-        }
+        var quests = lua[QuestScriptConstants.QuestDefinitionKey] as LuaTable;
+
+        return quests.Values.ToArray<string>();
     }
 }

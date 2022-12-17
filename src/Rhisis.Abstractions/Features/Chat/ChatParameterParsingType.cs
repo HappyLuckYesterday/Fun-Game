@@ -1,19 +1,18 @@
-﻿namespace Rhisis.Abstractions.Features.Chat
+﻿namespace Rhisis.Abstractions.Features.Chat;
+
+/// <summary>
+/// Provides different modes for handling chat command parameters.
+/// </summary>
+public enum ChatParameterParsingType
 {
     /// <summary>
-    /// Provides different modes for handling chat command parameters.
+    /// The default parsing mode.
+    /// It will use <see cref="string.Split(char[])"/> method to split the command parameters.
     /// </summary>
-    public enum ChatParameterParsingType
-    {
-        /// <summary>
-        /// The default parsing mode.
-        /// It will use <see cref="string.Split(char[])"/> method to split the command parameters.
-        /// </summary>
-        Default,
+    Default,
 
-        /// <summary>
-        /// The parameters will be treated as plain text.
-        /// </summary>
-        PlainText
-    }
+    /// <summary>
+    /// The parameters will be treated as plain text.
+    /// </summary>
+    PlainText
 }

@@ -1,28 +1,27 @@
 ﻿using Rhisis.Game.Common;
 
-namespace Rhisis.Game.Features.AttackArbiters
+namespace Rhisis.Game.Features.AttackArbiters;
+
+public class AttackResult
 {
-    public class AttackResult
+    public int Damages { get; set; }
+
+    public AttackFlags Flags { get; set; }
+
+    public static AttackResult Miss()
     {
-        public int Damages { get; set; }
-
-        public AttackFlags Flags { get; set; }
-
-        public static AttackResult Miss()
+        return new AttackResult
         {
-            return new AttackResult
-            {
-                Flags = AttackFlags.AF_MISS
-            };
-        }
+            Flags = AttackFlags.AF_MISS
+        };
+    }
 
-        public static AttackResult Success(int damages, AttackFlags attackFlags)
+    public static AttackResult Success(int damages, AttackFlags attackFlags)
+    {
+        return new AttackResult
         {
-            return new AttackResult
-            {
-                Damages = damages,
-                Flags = attackFlags
-            };
-        }
+            Damages = damages,
+            Flags = attackFlags
+        };
     }
 }

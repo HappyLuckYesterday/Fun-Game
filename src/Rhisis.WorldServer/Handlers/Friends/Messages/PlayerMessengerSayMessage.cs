@@ -4,32 +4,31 @@ using Rhisis.Protocol.Packets.Server.World;
 using Rhisis.WorldServer.Abstractions;
 using Sylver.HandlerInvoker.Attributes;
 
-namespace Rhisis.WorldServer.Handlers.Friends.Messages
+namespace Rhisis.WorldServer.Handlers.Friends.Messages;
+
+[Handler]
+public class PlayerMessengerSayMessage
 {
-    [Handler]
-    public class PlayerMessengerSayMessage
+    private readonly IWorldServer _server;
+
+    public PlayerMessengerSayMessage(IWorldServer server)
     {
-        private readonly IWorldServer _server;
+        _server = server;
+    }
 
-        public PlayerMessengerSayMessage(IWorldServer server)
+    [HandlerAction(typeof(PlayerMessengerMessage))]
+    public void OnPlayerMessengerMessage(PlayerMessengerMessage message)
+    {
+        IPlayer receiverPlayer = _server.GetPlayerEntityByCharacterId((uint)message.DestinationId);
+
+        if (receiverPlayer is null)
         {
-            _server = server;
+            return;
         }
 
-        [HandlerAction(typeof(PlayerMessengerMessage))]
-        public void OnPlayerMessengerMessage(PlayerMessengerMessage message)
-        {
-            IPlayer receiverPlayer = _server.GetPlayerEntityByCharacterId((uint)message.DestinationId);
-
-            if (receiverPlayer is null)
-            {
-                return;
-            }
-
-            using var sayPacket = new SayPacket(message.FromId, message.FromName, 
-                message.DestinationId, receiverPlayer.Name, 
-                message.Message);
-            receiverPlayer.Send(sayPacket);
-        }
+        using var sayPacket = new SayPacket(message.FromId, message.FromName, 
+            message.DestinationId, receiverPlayer.Name, 
+            message.Message);
+        receiverPlayer.Send(sayPacket);
     }
 }

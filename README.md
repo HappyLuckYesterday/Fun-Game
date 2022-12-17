@@ -8,7 +8,7 @@
   <a href="http://forthebadge.com"><img src="http://forthebadge.com/images/badges/built-with-love.svg"></a><br>
 </p>
 
-<h4>Built with C# 9 and the <a href="https://dotnet.microsoft.com/download/dotnet-core" target="_blank">.NET 6</a>.</h4>
+<h4>Built with C# 10 and the <a href="https://dotnet.microsoft.com/download/dotnet-core" target="_blank">.NET 7</a>.</h4>
 
 <p>This project has been created for learning purposes about the network and game logic problematics on the server-side.<br>
 We choose to use the <a href="https://github.com/Eastrall/LiteNetwork">LiteNetwork</a> to manage our server connecitions because it provides a clients management system and also a robust packet management system entirely customisable.</p>
@@ -36,17 +36,16 @@ We choose to use the <a href="https://github.com/Eastrall/LiteNetwork">LiteNetwo
 
 ## Technical information
 
-- Language: `C#` 9 (latest)
-- Framework: `.NET 6`
+- Language: `C#` 10
+- Framework: `.NET 7`
 - Application type: `Console`
 - Database type: `MySQL`
 - Configuration files type: `JSON`
 - Environment: `Visual Studio 2022`
 - External libraries used:
 	- [LiteNetwork][litenetwork]
-	- [Sylver.HandlerInvoker](https://github.com/Eastrall/Sylver.HandlerInvoker)
+	- [LiteMessageHandler](https://github.com/Eastrall/LiteMessageHandler)
 	- [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore)
-	- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
 	- [NLog](https://github.com/NLog/NLog)
 
 ## Getting started
@@ -56,7 +55,7 @@ Please take a look at our [contributing](https://github.com/Eastrall/Rhisis/blob
 Before getting started, you will need to install the following softwares:
 
 - Visual Studio 2022
-- .NET 6 SDK : https://dotnet.microsoft.com/en-us/download/dotnet/6.0
+- .NET 7 SDK : https://dotnet.microsoft.com/en-us/download/dotnet/7.0
 - A MySQL Server
 - Any MySQL database explorer (MySQL Workbench for example)
 

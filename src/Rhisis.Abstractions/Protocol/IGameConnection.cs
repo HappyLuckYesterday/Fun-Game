@@ -1,19 +1,18 @@
-﻿namespace Rhisis.Abstractions.Protocol
+﻿namespace Rhisis.Abstractions.Protocol;
+
+/// <summary>
+/// Provides an abstraction for a game connection.
+/// </summary>
+public interface IGameConnection
 {
     /// <summary>
-    /// Provides an abstraction for a game connection.
+    /// Gets the ID assigned to this session.
     /// </summary>
-    public interface IGameConnection
-    {
-        /// <summary>
-        /// Gets the ID assigned to this session.
-        /// </summary>
-        uint SessionId { get; }
+    uint SessionId { get; }
 
-        /// <summary>
-        /// Sends a packet to the current connection.
-        /// </summary>
-        /// <param name="packet"></param>
-        void Send(IFFPacket packet);
-    }
+    /// <summary>
+    /// Sends a packet to the current connection.
+    /// </summary>
+    /// <param name="packet"></param>
+    void Send(IFFPacket packet);
 }

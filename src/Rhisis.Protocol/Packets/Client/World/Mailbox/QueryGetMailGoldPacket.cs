@@ -1,18 +1,17 @@
 ﻿using Rhisis.Abstractions.Protocol;
 
-namespace Rhisis.Protocol.Packets.Client.World.Mailbox
-{
-    public class QueryGetMailGoldPacket : IPacketDeserializer
-    {
-        /// <summary>
-        /// Gets the id of the mail
-        /// </summary>
-        public int MailId { get; private set; }
+namespace Rhisis.Protocol.Packets.Client.World.Mailbox;
 
-        /// <inheritdoc />
-        public void Deserialize(IFFPacket packet)
-        {
-            MailId = packet.ReadInt32();
-        }
+public class QueryGetMailGoldPacket : IPacketDeserializer
+{
+    /// <summary>
+    /// Gets the id of the mail
+    /// </summary>
+    public int MailId { get; private set; }
+
+    /// <inheritdoc />
+    public void Deserialize(IFFPacket packet)
+    {
+        MailId = packet.ReadInt32();
     }
 }

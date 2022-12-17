@@ -12,86 +12,85 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Rhisis.WorldServer.ClusterCache
+namespace Rhisis.WorldServer.ClusterCache;
+
+internal class ClusterCacheClient : LiteClient, IClusterCacheClient
 {
-    internal class ClusterCacheClient : LiteClient, IClusterCacheClient
+    private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        private static readonly JsonSerializerOptions JsonOptions = new()
-        {
-            Converters = { new CoreMessageJsonConverter() },
-            WriteIndented = true
-        };
+        Converters = { new CoreMessageJsonConverter() },
+        WriteIndented = true
+    };
 
-        private readonly ILogger<ClusterCacheClient> _logger;
-        private readonly IOptions<WorldOptions> _worldOptions;
-        private readonly IHandlerInvoker _handlerInvoker;
-        private readonly IWorldServer _worldServer;
+    private readonly ILogger<ClusterCacheClient> _logger;
+    private readonly IOptions<WorldOptions> _worldOptions;
+    private readonly IHandlerInvoker _handlerInvoker;
+    private readonly IWorldServer _worldServer;
 
-        public ClusterCacheClient(LiteClientOptions options, 
-            IServiceProvider serviceProvider, 
-            ILogger<ClusterCacheClient> logger, 
-            IOptions<WorldOptions> worldOptions, 
-            IHandlerInvoker handlerInvoker,
-            IWorldServer worldServer)
-            : base(options, serviceProvider)
+    public ClusterCacheClient(LiteClientOptions options, 
+        IServiceProvider serviceProvider, 
+        ILogger<ClusterCacheClient> logger, 
+        IOptions<WorldOptions> worldOptions, 
+        IHandlerInvoker handlerInvoker,
+        IWorldServer worldServer)
+        : base(options, serviceProvider)
+    {
+        _logger = logger;
+        _worldOptions = worldOptions;
+        _handlerInvoker = handlerInvoker;
+        _worldServer = worldServer;
+    }
+
+    public override Task HandleMessageAsync(byte[] packetBuffer)
+    {
+        try
         {
-            _logger = logger;
-            _worldOptions = worldOptions;
-            _handlerInvoker = handlerInvoker;
-            _worldServer = worldServer;
+            using var packet = new CorePacket(packetBuffer);
+            var packetHeader = (CorePacketType)packet.ReadByte();
+
+            _handlerInvoker.Invoke(packetHeader, this, packet);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "An error occured while processing core packet.");
         }
 
-        public override Task HandleMessageAsync(byte[] packetBuffer)
-        {
-            try
-            {
-                using var packet = new CorePacket(packetBuffer);
-                var packetHeader = (CorePacketType)packet.ReadByte();
+        return Task.CompletedTask;
+    }
 
-                _handlerInvoker.Invoke(packetHeader, this, packet);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "An error occured while processing core packet.");
-            }
+    protected override void OnConnected()
+    {
+        _logger.LogTrace("Connected to Cluster Cache server.");
+    }
 
-            return Task.CompletedTask;
-        }
+    protected override void OnDisconnected()
+    {
+        _logger.LogTrace("Disconnected from Cluster Cache server.");
+    }
 
-        protected override void OnConnected()
-        {
-            _logger.LogTrace("Connected to Cluster Cache server.");
-        }
+    public void AuthenticateWorldServer()
+    {
+        using ClusterAuthenticateWorldChannelPacket packet = new(_worldOptions.Value, _worldServer.ConnectedPlayers.Count());
+        Send(packet);
+    }
 
-        protected override void OnDisconnected()
-        {
-            _logger.LogTrace("Disconnected from Cluster Cache server.");
-        }
+    public void DisconnectCharacter(int characterId)
+    {
+        using ClusterPlayerDisconnectedPacket packet = new(characterId);
+        Send(packet);
+    }
 
-        public void AuthenticateWorldServer()
-        {
-            using ClusterAuthenticateWorldChannelPacket packet = new(_worldOptions.Value, _worldServer.ConnectedPlayers.Count());
-            Send(packet);
-        }
+    public void SendMessage<TMessage>(TMessage message) where TMessage : class
+    {
+        string messageValue = JsonSerializer.Serialize(message, JsonOptions);
 
-        public void DisconnectCharacter(int characterId)
-        {
-            using ClusterPlayerDisconnectedPacket packet = new(characterId);
-            Send(packet);
-        }
+        using CorePacket packet = new(CorePacketType.BroadcastMessage);
+        packet.WriteString(messageValue);
+        Send(packet);
+    }
 
-        public void SendMessage<TMessage>(TMessage message) where TMessage : class
-        {
-            string messageValue = JsonSerializer.Serialize(message, JsonOptions);
-
-            using CorePacket packet = new(CorePacketType.BroadcastMessage);
-            packet.WriteString(messageValue);
-            Send(packet);
-        }
-
-        public CoreMessage ReadMessage(string message)
-        {
-            return JsonSerializer.Deserialize<CoreMessage>(message, JsonOptions);
-        }
+    public CoreMessage ReadMessage(string message)
+    {
+        return JsonSerializer.Deserialize<CoreMessage>(message, JsonOptions);
     }
 }

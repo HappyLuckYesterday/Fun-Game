@@ -1,17 +1,16 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Rhisis.Core.Structures.Configuration.World
+namespace Rhisis.Core.Structures.Configuration.World;
+
+/// <summary>
+/// Represents the messenger configuration section.
+/// </summary>
+[DataContract]
+public sealed class MessengerOptions
 {
     /// <summary>
-    /// Represents the messenger configuration section.
+    /// Gets or sets the maximum allowed amount of friends in the messenger.
     /// </summary>
-    [DataContract]
-    public sealed class MessengerOptions
-    {
-        /// <summary>
-        /// Gets or sets the maximum allowed amount of friends in the messenger.
-        /// </summary>
-        [DataMember(Name = "maximumFriends")]
-        public int MaximumFriends { get; set; } = 200;
-    }
+    [DataMember(Name = "maximumFriends")]
+    public int MaximumFriends { get; set; } = 200;
 }

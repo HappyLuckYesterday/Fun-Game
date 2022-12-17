@@ -1,11 +1,10 @@
-﻿namespace Rhisis.Protocol.Snapshots
+﻿namespace Rhisis.Protocol.Snapshots;
+
+public class SnoopSnapshot : FFSnapshot
 {
-    public class SnoopSnapshot : FFSnapshot
+    public SnoopSnapshot(string text)
+        : base(SnapshotType.SNOOP, 0)
     {
-        public SnoopSnapshot(string text)
-            : base(SnapshotType.SNOOP, 0)
-        {
-            WriteString(text);
-        }
+        WriteString(text);
     }
 }

@@ -1,14 +1,13 @@
-﻿namespace Rhisis.Abstractions.Protocol
+﻿namespace Rhisis.Abstractions.Protocol;
+
+/// <summary>
+/// Provides an interface to deserialize an object.
+/// </summary>
+public interface IPacketDeserializer
 {
     /// <summary>
-    /// Provides an interface to deserialize an object.
+    /// Deserializes the current packet stream.
     /// </summary>
-    public interface IPacketDeserializer
-    {
-        /// <summary>
-        /// Deserializes the current packet stream.
-        /// </summary>
-        /// <param name="packet">Packet stream.</param>
-        void Deserialize(IFFPacket packet);
-    }
+    /// <param name="packet">Packet stream.</param>
+    void Deserialize(IFFPacket packet);
 }

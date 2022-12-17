@@ -1,13 +1,12 @@
 ﻿using Rhisis.Abstractions.Protocol;
 
-namespace Rhisis.Protocol.Packets.Client.World
+namespace Rhisis.Protocol.Packets.Client.World;
+
+public class CloseShopWindowPacket : IPacketDeserializer
 {
-    public class CloseShopWindowPacket : IPacketDeserializer
+    /// <inheritdoc />
+    public void Deserialize(IFFPacket packet)
     {
-        /// <inheritdoc />
-        public void Deserialize(IFFPacket packet)
-        {
-            throw new System.NotImplementedException();
-        }
+        throw new System.NotImplementedException();
     }
 }

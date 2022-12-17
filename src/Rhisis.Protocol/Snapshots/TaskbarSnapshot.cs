@@ -1,13 +1,12 @@
 ﻿using Rhisis.Abstractions.Entities;
 
-namespace Rhisis.Protocol.Snapshots
+namespace Rhisis.Protocol.Snapshots;
+
+public class TaskbarSnapshot : FFSnapshot
 {
-    public class TaskbarSnapshot : FFSnapshot
+    public TaskbarSnapshot(IPlayer player)
+        : base(SnapshotType.TASKBAR, player.Id)
     {
-        public TaskbarSnapshot(IPlayer player)
-            : base(SnapshotType.TASKBAR, player.Id)
-        {
-            player.Taskbar.Serialize(this);
-        }
+        player.Taskbar.Serialize(this);
     }
 }

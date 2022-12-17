@@ -1,15 +1,14 @@
 ﻿using Rhisis.Abstractions.Behavior;
 
-namespace Rhisis.Abstractions.Entities
+namespace Rhisis.Abstractions.Entities;
+
+/// <summary>
+/// Describes the behavior of an inteligent entity.
+/// </summary>
+public interface IInteligentEntity : IWorldObject
 {
     /// <summary>
-    /// Describes the behavior of an inteligent entity.
+    /// Gets the entity's behavior.
     /// </summary>
-    public interface IInteligentEntity : IWorldObject
-    {
-        /// <summary>
-        /// Gets the entity's behavior.
-        /// </summary>
-        IBehavior Behavior { get; }
-    }
+    IBehavior Behavior { get; }
 }

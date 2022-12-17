@@ -1,7 +1,6 @@
-﻿namespace Rhisis.Game.Caching
+﻿namespace Rhisis.Game.Caching;
+
+internal sealed class GuildCache
 {
-    internal sealed class GuildCache
-    {
-        // TODO
-    }
+    // TODO
 }

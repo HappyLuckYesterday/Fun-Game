@@ -1,9 +1,8 @@
-﻿namespace Rhisis.Core.Common
+﻿namespace Rhisis.Core.Common;
+
+public enum ShortcutTaskbarTarget
 {
-    public enum ShortcutTaskbarTarget
-    {
-        Applet,
-        Item,
-        Queue
-    }
+    Applet,
+    Item,
+    Queue
 }

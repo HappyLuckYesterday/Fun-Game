@@ -5,45 +5,44 @@ using Rhisis.Game.Common;
 using Rhisis.WorldServer.Abstractions;
 using System;
 
-namespace Rhisis.WorldServer.Game.Chat
+namespace Rhisis.WorldServer.Game.Chat;
+
+[ChatCommand("/summon", AuthorityType.GameMaster)]
+[ChatCommand("/su", AuthorityType.GameMaster)]
+public class SummonCommand : IChatCommand
 {
-    [ChatCommand("/summon", AuthorityType.GameMaster)]
-    [ChatCommand("/su", AuthorityType.GameMaster)]
-    public class SummonCommand : IChatCommand
+    private readonly IWorldServer _worldServer;
+    private readonly ILogger<SummonCommand> _logger;
+
+    /// <summary>
+    /// Creates a new <see cref="SummonCommand"/> instance.
+    /// </summary>
+    /// <param name="logger">logger system.</param>
+    /// <param name="worldServer">World server.</param>
+    public SummonCommand(ILogger<SummonCommand> logger, IWorldServer worldServer)
     {
-        private readonly IWorldServer _worldServer;
-        private readonly ILogger<SummonCommand> _logger;
+        _logger = logger;
+        _worldServer = worldServer;
+    }
 
-        /// <summary>
-        /// Creates a new <see cref="SummonCommand"/> instance.
-        /// </summary>
-        /// <param name="logger">logger system.</param>
-        /// <param name="worldServer">World server.</param>
-        public SummonCommand(ILogger<SummonCommand> logger, IWorldServer worldServer)
+    /// <inheritdoc />
+    public void Execute(IPlayer player, object[] parameters)
+    {
+        if (parameters.Length == 1)
         {
-            _logger = logger;
-            _worldServer = worldServer;
+            IPlayer playerToSummon = _worldServer.GetPlayerEntity(parameters[0].ToString());
+
+            if (playerToSummon == null)
+            {
+                throw new ArgumentException($"The player doesn't exist or is not connected.", nameof(parameters));
+            }
+
+            playerToSummon.Teleport(player.Position, player.Map.Id);
+            _logger.LogTrace($"{playerToSummon.Name} is summoned by {player.Name}.");
         }
-
-        /// <inheritdoc />
-        public void Execute(IPlayer player, object[] parameters)
+        else
         {
-            if (parameters.Length == 1)
-            {
-                IPlayer playerToSummon = _worldServer.GetPlayerEntity(parameters[0].ToString());
-
-                if (playerToSummon == null)
-                {
-                    throw new ArgumentException($"The player doesn't exist or is not connected.", nameof(parameters));
-                }
-
-                playerToSummon.Teleport(player.Position, player.Map.Id);
-                _logger.LogTrace($"{playerToSummon.Name} is summoned by {player.Name}.");
-            }
-            else
-            {
-                throw new ArgumentException("Too many or not enough arguments.");
-            }
+            throw new ArgumentException("Too many or not enough arguments.");
         }
     }
 }

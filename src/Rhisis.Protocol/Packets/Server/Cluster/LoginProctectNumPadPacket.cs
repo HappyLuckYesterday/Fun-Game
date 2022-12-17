@@ -1,11 +1,10 @@
-﻿namespace Rhisis.Protocol.Packets.Server.Cluster
+﻿namespace Rhisis.Protocol.Packets.Server.Cluster;
+
+public class LoginProctectNumPadPacket : FFPacket
 {
-    public class LoginProctectNumPadPacket : FFPacket
+    public LoginProctectNumPadPacket(int loginProtectValue)
+        : base(PacketType.LOGIN_PROTECT_NUMPAD)
     {
-        public LoginProctectNumPadPacket(int loginProtectValue)
-            : base(PacketType.LOGIN_PROTECT_NUMPAD)
-        {
-            WriteInt32(loginProtectValue);
-        }
+        WriteInt32(loginProtectValue);
     }
 }

@@ -6,135 +6,134 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Rhisis.Infrastructure.Scripting.Quests
+namespace Rhisis.Infrastructure.Scripting.Quests;
+
+[DebuggerDisplay("{Name}")]
+internal class QuestScript : ScriptBase, IQuestScript
 {
-    [DebuggerDisplay("{Name}")]
-    internal class QuestScript : ScriptBase, IQuestScript
+    public int Id { get; }
+
+    public string Name { get; }
+
+    public string Title { get; }
+
+    public string StartCharacter { get; }
+
+    public string EndCharacter { get; }
+
+    public IQuestRewards Rewards { get; }
+
+    public IQuestStartRequirements StartRequirements { get; }
+
+    public IQuestEndConditions EndConditions { get; }
+
+    public IEnumerable<QuestItemDrop> Drops { get; }
+
+    public IEnumerable<string> BeginDialogs { get; }
+
+    public IEnumerable<string> AcceptedDialogs { get; }
+
+    public IEnumerable<string> DeclinedDialogs { get; }
+
+    public IEnumerable<string> CompletedDialogs { get; }
+
+    public IEnumerable<string> NotFinishedDialogs { get; }
+
+    /// <summary>
+    /// Creates a new <see cref="QuestScript"/> instance.
+    /// </summary>
+    /// <param name="questId">Quest id.</param>
+    /// <param name="questName">Quest name.</param>
+    /// <param name="luaScriptTable">Lua script table.</param>
+    public QuestScript(int questId, string questName, LuaTable luaScriptTable)
+        : base(luaScriptTable)
     {
-        public int Id { get; }
+        Id = questId;
+        Name = questName;
+        Title = luaScriptTable.GetValue<string>(QuestScriptConstants.Title);
+        StartCharacter = luaScriptTable.GetValue<string>(QuestScriptConstants.StartCharacter);
+        EndCharacter = luaScriptTable.GetValue<string>(QuestScriptConstants.EndCharacter);
 
-        public string Name { get; }
-
-        public string Title { get; }
-
-        public string StartCharacter { get; }
-
-        public string EndCharacter { get; }
-
-        public IQuestRewards Rewards { get; }
-
-        public IQuestStartRequirements StartRequirements { get; }
-
-        public IQuestEndConditions EndConditions { get; }
-
-        public IEnumerable<QuestItemDrop> Drops { get; }
-
-        public IEnumerable<string> BeginDialogs { get; }
-
-        public IEnumerable<string> AcceptedDialogs { get; }
-
-        public IEnumerable<string> DeclinedDialogs { get; }
-
-        public IEnumerable<string> CompletedDialogs { get; }
-
-        public IEnumerable<string> NotFinishedDialogs { get; }
-
-        /// <summary>
-        /// Creates a new <see cref="QuestScript"/> instance.
-        /// </summary>
-        /// <param name="questId">Quest id.</param>
-        /// <param name="questName">Quest name.</param>
-        /// <param name="luaScriptTable">Lua script table.</param>
-        public QuestScript(int questId, string questName, LuaTable luaScriptTable)
-            : base(luaScriptTable)
+        if (string.IsNullOrEmpty(EndCharacter))
         {
-            Id = questId;
-            Name = questName;
-            Title = luaScriptTable.GetValue<string>(QuestScriptConstants.Title);
-            StartCharacter = luaScriptTable.GetValue<string>(QuestScriptConstants.StartCharacter);
-            EndCharacter = luaScriptTable.GetValue<string>(QuestScriptConstants.EndCharacter);
-
-            if (string.IsNullOrEmpty(EndCharacter))
-            {
-                EndCharacter = StartCharacter;
-            }
-
-            Rewards = new QuestRewards(luaScriptTable, ScriptTable[QuestScriptConstants.Rewards] as LuaTable);
-            StartRequirements = new QuestStartRequirements(ScriptTable[QuestScriptConstants.StartRequirements] as LuaTable);
-            EndConditions = new QuestEndConditions(ScriptTable[QuestScriptConstants.EndConditions] as LuaTable);
-            Drops = LoadQuestItemDrops(ScriptTable[QuestScriptConstants.Drops] as LuaTable);
-
-            if (ScriptTable[QuestScriptConstants.Dialogs] is LuaTable dialogsTable)
-            {
-                BeginDialogs = GetDialogs(dialogsTable, QuestScriptConstants.BeginDialogs);
-                AcceptedDialogs = GetDialogs(dialogsTable, QuestScriptConstants.BeginYesDialogs);
-                DeclinedDialogs = GetDialogs(dialogsTable, QuestScriptConstants.BeginNoDialogs);
-                CompletedDialogs = GetDialogs(dialogsTable, QuestScriptConstants.CompletedDialogs);
-                NotFinishedDialogs = GetDialogs(dialogsTable, QuestScriptConstants.NotFinishedDialogs);
-            }
+            EndCharacter = StartCharacter;
         }
 
-        /// <summary>
-        /// Gets the dialogs values.
-        /// </summary>
-        /// <param name="table"></param>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        private static IEnumerable<string> GetDialogs(LuaTable table, string path) => (table[path] as LuaTable)?.Values.ToArray<string>();
+        Rewards = new QuestRewards(luaScriptTable, ScriptTable[QuestScriptConstants.Rewards] as LuaTable);
+        StartRequirements = new QuestStartRequirements(ScriptTable[QuestScriptConstants.StartRequirements] as LuaTable);
+        EndConditions = new QuestEndConditions(ScriptTable[QuestScriptConstants.EndConditions] as LuaTable);
+        Drops = LoadQuestItemDrops(ScriptTable[QuestScriptConstants.Drops] as LuaTable);
 
-        /// <summary>
-        /// Loads the quest item drops.
-        /// </summary>
-        /// <param name="table">Main lua table.</param>
-        /// <returns>Collection of <see cref="QuestItemDrop"/> objects.</returns>
-        private static IEnumerable<QuestItemDrop> LoadQuestItemDrops(LuaTable table)
+        if (ScriptTable[QuestScriptConstants.Dialogs] is LuaTable dialogsTable)
         {
-            var questItemDrops = new List<QuestItemDrop>();
+            BeginDialogs = GetDialogs(dialogsTable, QuestScriptConstants.BeginDialogs);
+            AcceptedDialogs = GetDialogs(dialogsTable, QuestScriptConstants.BeginYesDialogs);
+            DeclinedDialogs = GetDialogs(dialogsTable, QuestScriptConstants.BeginNoDialogs);
+            CompletedDialogs = GetDialogs(dialogsTable, QuestScriptConstants.CompletedDialogs);
+            NotFinishedDialogs = GetDialogs(dialogsTable, QuestScriptConstants.NotFinishedDialogs);
+        }
+    }
 
-            if (table != null)
+    /// <summary>
+    /// Gets the dialogs values.
+    /// </summary>
+    /// <param name="table"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    private static IEnumerable<string> GetDialogs(LuaTable table, string path) => (table[path] as LuaTable)?.Values.ToArray<string>();
+
+    /// <summary>
+    /// Loads the quest item drops.
+    /// </summary>
+    /// <param name="table">Main lua table.</param>
+    /// <returns>Collection of <see cref="QuestItemDrop"/> objects.</returns>
+    private static IEnumerable<QuestItemDrop> LoadQuestItemDrops(LuaTable table)
+    {
+        var questItemDrops = new List<QuestItemDrop>();
+
+        if (table != null)
+        {
+            IEnumerable<LuaTable> values = table.Values.ToArray<LuaTable>().AsEnumerable();
+
+            foreach (LuaTable dropItem in values)
             {
-                IEnumerable<LuaTable> values = table.Values.ToArray<LuaTable>().AsEnumerable();
-
-                foreach (LuaTable dropItem in values)
+                if (dropItem[QuestScriptConstants.ItemId] == null || dropItem[QuestScriptConstants.Probability] == null ||
+                    (dropItem[QuestScriptConstants.Monsters] == null && dropItem[QuestScriptConstants.MonsterId] == null))
                 {
-                    if (dropItem[QuestScriptConstants.ItemId] == null || dropItem[QuestScriptConstants.Probability] == null ||
-                        (dropItem[QuestScriptConstants.Monsters] == null && dropItem[QuestScriptConstants.MonsterId] == null))
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    IEnumerable<string> monsterIds;
+                IEnumerable<string> monsterIds;
 
-                    if (dropItem[QuestScriptConstants.Monsters] is LuaTable dropItemMonstersTable && dropItemMonstersTable.Values.Count > 0)
+                if (dropItem[QuestScriptConstants.Monsters] is LuaTable dropItemMonstersTable && dropItemMonstersTable.Values.Count > 0)
+                {
+                    monsterIds = dropItemMonstersTable.Values.ToArray<string>().AsEnumerable();
+                }
+                else
+                {
+                    monsterIds = new[]
                     {
-                        monsterIds = dropItemMonstersTable.Values.ToArray<string>().AsEnumerable();
-                    }
-                    else
-                    {
-                        monsterIds = new[]
-                        {
-                            dropItem.GetValue<string>(QuestScriptConstants.MonsterId)
-                        };
-                    }
+                        dropItem.GetValue<string>(QuestScriptConstants.MonsterId)
+                    };
+                }
 
-                    string itemId = dropItem.GetValue<string>(QuestScriptConstants.ItemId);
-                    long probability = dropItem.GetValue<long>(QuestScriptConstants.Probability);
-                    int quantity = dropItem.GetValueOrDefault<int>(QuestScriptConstants.Quantity, 1);
+                string itemId = dropItem.GetValue<string>(QuestScriptConstants.ItemId);
+                long probability = dropItem.GetValue<long>(QuestScriptConstants.Probability);
+                int quantity = dropItem.GetValueOrDefault<int>(QuestScriptConstants.Quantity, 1);
 
-                    foreach (string monsterId in monsterIds)
+                foreach (string monsterId in monsterIds)
+                {
+                    questItemDrops.Add(new QuestItemDrop
                     {
-                        questItemDrops.Add(new QuestItemDrop
-                        {
-                            ItemId = itemId,
-                            MonsterId = monsterId,
-                            Probability = probability,
-                            Quantity = quantity
-                        });
-                    }
+                        ItemId = itemId,
+                        MonsterId = monsterId,
+                        Probability = probability,
+                        Quantity = quantity
+                    });
                 }
             }
-
-            return questItemDrops;
         }
+
+        return questItemDrops;
     }
 }

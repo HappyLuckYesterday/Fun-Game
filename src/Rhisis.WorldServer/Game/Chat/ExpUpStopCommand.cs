@@ -3,36 +3,35 @@ using Rhisis.Game.Common;
 using Rhisis.Abstractions.Entities;
 using Rhisis.Abstractions.Features.Chat;
 
-namespace Rhisis.WorldServer.Game.Chat
+namespace Rhisis.WorldServer.Game.Chat;
+
+[ChatCommand("/ExpUpStop", AuthorityType.Administrator)]
+[ChatCommand("/es", AuthorityType.Administrator)]
+public class ExpUpStopChatCommand : IChatCommand
 {
-    [ChatCommand("/ExpUpStop", AuthorityType.Administrator)]
-    [ChatCommand("/es", AuthorityType.Administrator)]
-    public class ExpUpStopChatCommand : IChatCommand
+    private readonly ILogger<ExpUpStopChatCommand> _logger;
+
+    /// <summary>
+    /// Creates a new <see cref="ExpUpStopChatCommand"/> instance.
+    /// </summary>
+    /// <param name="logger">Logger.</param>
+    public ExpUpStopChatCommand(ILogger<ExpUpStopChatCommand> logger)
     {
-        private readonly ILogger<ExpUpStopChatCommand> _logger;
+        _logger = logger;
+    }
 
-        /// <summary>
-        /// Creates a new <see cref="ExpUpStopChatCommand"/> instance.
-        /// </summary>
-        /// <param name="logger">Logger.</param>
-        public ExpUpStopChatCommand(ILogger<ExpUpStopChatCommand> logger)
+    /// <inheritdoc />
+    public void Execute(IPlayer player, object[] parameters)
+    {
+        if (!player.Mode.HasFlag(ModeType.MODE_EXPUP_STOP))
         {
-            _logger = logger;
+            player.Mode |= ModeType.MODE_EXPUP_STOP;
+            _logger.LogTrace($"Player '{player.Name}' is now in Exp Up Stop mode.");
         }
-
-        /// <inheritdoc />
-        public void Execute(IPlayer player, object[] parameters)
+        else
         {
-            if (!player.Mode.HasFlag(ModeType.MODE_EXPUP_STOP))
-            {
-                player.Mode |= ModeType.MODE_EXPUP_STOP;
-                _logger.LogTrace($"Player '{player.Name}' is now in Exp Up Stop mode.");
-            }
-            else
-            {
-                player.Mode &= ~ModeType.MODE_EXPUP_STOP;
-                _logger.LogTrace($"Player '{player.Name}' isn't in Exp Up Stop mode.");
-            }
+            player.Mode &= ~ModeType.MODE_EXPUP_STOP;
+            _logger.LogTrace($"Player '{player.Name}' isn't in Exp Up Stop mode.");
         }
     }
 }

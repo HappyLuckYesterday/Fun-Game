@@ -6,54 +6,53 @@ using Rhisis.Abstractions.Entities;
 using Rhisis.Protocol.Snapshots;
 using Rhisis.WorldServer.Abstractions;
 
-namespace Rhisis.WorldServer.Game.Chat
+namespace Rhisis.WorldServer.Game.Chat;
+
+[ChatCommand("/freeze", AuthorityType.GameMaster)]
+[ChatCommand("/fr", AuthorityType.GameMaster)]
+public class FreezeChatCommand : IChatCommand
 {
-    [ChatCommand("/freeze", AuthorityType.GameMaster)]
-    [ChatCommand("/fr", AuthorityType.GameMaster)]
-    public class FreezeChatCommand : IChatCommand
+    private readonly ILogger<FreezeChatCommand> _logger;
+    private readonly IWorldServer _worldServer;
+
+    /// <summary>
+    /// Creates a new <see cref="FreezeChatCommand"/> instance.
+    /// </summary>
+    /// <param name="logger">Logger.</param>
+    /// <param name="worldServer">World server system.</param>
+    public FreezeChatCommand(ILogger<FreezeChatCommand> logger, IWorldServer worldServer)
     {
-        private readonly ILogger<FreezeChatCommand> _logger;
-        private readonly IWorldServer _worldServer;
+        _logger = logger;
+        _worldServer = worldServer;
+    }
 
-        /// <summary>
-        /// Creates a new <see cref="FreezeChatCommand"/> instance.
-        /// </summary>
-        /// <param name="logger">Logger.</param>
-        /// <param name="worldServer">World server system.</param>
-        public FreezeChatCommand(ILogger<FreezeChatCommand> logger, IWorldServer worldServer)
+    /// <inheritdoc />
+    public void Execute(IPlayer player, object[] parameters)
+    {
+        if (parameters.Length == 1) 
         {
-            _logger = logger;
-            _worldServer = worldServer;
+            IPlayer playerToFreeze = _worldServer.GetPlayerEntity(parameters[0].ToString());
+
+            if (!player.Mode.HasFlag(ModeType.DONMOVE_MODE))
+            {
+                playerToFreeze.Mode |= ModeType.DONMOVE_MODE;
+
+                using (var snapshot = new ModifyModeSnapshot(playerToFreeze, playerToFreeze.Mode))
+                {
+                    player.Send(snapshot);
+                    player.SendToVisible(snapshot);
+                }
+
+                _logger.LogTrace($"Player '{playerToFreeze.Name}' is now freezed.");
+            }
+            else 
+            {
+                _logger.LogTrace($"Player '{playerToFreeze.Name}' is already freezed.");
+            }
         }
-
-        /// <inheritdoc />
-        public void Execute(IPlayer player, object[] parameters)
+        else
         {
-            if (parameters.Length == 1) 
-            {
-                IPlayer playerToFreeze = _worldServer.GetPlayerEntity(parameters[0].ToString());
-
-                if (!player.Mode.HasFlag(ModeType.DONMOVE_MODE))
-                {
-                    playerToFreeze.Mode |= ModeType.DONMOVE_MODE;
-
-                    using (var snapshot = new ModifyModeSnapshot(playerToFreeze, playerToFreeze.Mode))
-                    {
-                        player.Send(snapshot);
-                        player.SendToVisible(snapshot);
-                    }
-
-                    _logger.LogTrace($"Player '{playerToFreeze.Name}' is now freezed.");
-                }
-                else 
-                {
-                    _logger.LogTrace($"Player '{playerToFreeze.Name}' is already freezed.");
-                }
-            }
-            else
-            {
-                throw new ArgumentException("Too many or not enough arguments.");
-            }
+            throw new ArgumentException("Too many or not enough arguments.");
         }
     }
 }

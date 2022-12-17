@@ -1,17 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<LangVersion>10.0</LangVersion>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="LiteNetwork" Version="2.0.0-rc.6" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="LiteNetwork" Version="2.1.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Rhisis.Abstractions\Rhisis.Abstractions.csproj" />
-    <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
-    <ProjectReference Include="..\Rhisis.Game.Common\Rhisis.Game.Common.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Rhisis.Abstractions\Rhisis.Abstractions.csproj" />
+		<ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
+		<ProjectReference Include="..\Rhisis.Game.Common\Rhisis.Game.Common.csproj" />
+	</ItemGroup>
 
 </Project>

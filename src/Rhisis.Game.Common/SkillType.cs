@@ -1,8 +1,7 @@
-﻿namespace Rhisis.Game.Common
+﻿namespace Rhisis.Game.Common;
+
+public enum SkillType : byte
 {
-    public enum SkillType : byte
-    {
-        Magic = 1,
-        Skill,
-    }
+    Magic = 1,
+    Skill,
 }

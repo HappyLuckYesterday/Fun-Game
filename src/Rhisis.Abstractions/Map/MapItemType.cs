@@ -1,8 +1,7 @@
-﻿namespace Rhisis.Abstractions.Map
+﻿namespace Rhisis.Abstractions.Map;
+
+public enum MapItemType
 {
-    public enum MapItemType
-    {
-        DropItem,
-        QuestItem
-    }
+    DropItem,
+    QuestItem
 }

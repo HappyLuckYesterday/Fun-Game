@@ -10,64 +10,63 @@ using Rhisis.Infrastructure.Persistance;
 using System;
 using System.Linq;
 
-namespace Rhisis.ClusterServer
+namespace Rhisis.ClusterServer;
+
+/// <summary>
+/// Cluster server.
+/// </summary>
+public class ClusterServer : LiteServer<ClusterUser>, IClusterServer
 {
+    private readonly ILogger<ClusterServer> _logger;
+    private readonly IOptions<ClusterOptions> _clusterConfiguration;
+    private readonly IGameResources _gameResources;
+    private readonly IRhisisDatabase _database;
+
     /// <summary>
-    /// Cluster server.
+    /// Creates a new <see cref="ClusterServer"/> instance.
     /// </summary>
-    public class ClusterServer : LiteServer<ClusterUser>, IClusterServer
+    /// <param name="options">Server options.</param>
+    /// <param name="logger">Logger.</param>
+    /// <param name="clusterConfiguration">Cluster Server configuration.</param>
+    /// <param name="gameResources">Game resources.</param>
+    /// <param name="database">Database access.</param>
+    /// <param name="serviceProvider">Service provider.</param>
+    public ClusterServer(LiteServerOptions options,
+        ILogger<ClusterServer> logger,
+        IOptions<ClusterOptions> clusterConfiguration,
+        IGameResources gameResources,
+        IRhisisDatabase database,
+        IServiceProvider serviceProvider)
+        : base(options, serviceProvider)
     {
-        private readonly ILogger<ClusterServer> _logger;
-        private readonly IOptions<ClusterOptions> _clusterConfiguration;
-        private readonly IGameResources _gameResources;
-        private readonly IRhisisDatabase _database;
+        _logger = logger;
+        _clusterConfiguration = clusterConfiguration;
+        _gameResources = gameResources;
+        _database = database;
+    }
 
-        /// <summary>
-        /// Creates a new <see cref="ClusterServer"/> instance.
-        /// </summary>
-        /// <param name="options">Server options.</param>
-        /// <param name="logger">Logger.</param>
-        /// <param name="clusterConfiguration">Cluster Server configuration.</param>
-        /// <param name="gameResources">Game resources.</param>
-        /// <param name="database">Database access.</param>
-        /// <param name="serviceProvider">Service provider.</param>
-        public ClusterServer(LiteServerOptions options,
-            ILogger<ClusterServer> logger,
-            IOptions<ClusterOptions> clusterConfiguration,
-            IGameResources gameResources,
-            IRhisisDatabase database,
-            IServiceProvider serviceProvider)
-            : base(options, serviceProvider)
+    protected override void OnBeforeStart()
+    {
+        if (!_database.IsAlive())
         {
-            _logger = logger;
-            _clusterConfiguration = clusterConfiguration;
-            _gameResources = gameResources;
-            _database = database;
+            throw new InvalidProgramException($"Cannot start {nameof(ClusterServer)}. Failed to reach database.");
         }
 
-        protected override void OnBeforeStart()
-        {
-            if (!_database.IsAlive())
-            {
-                throw new InvalidProgramException($"Cannot start {nameof(ClusterServer)}. Failed to reach database.");
-            }
+        _gameResources.Load(typeof(DefineLoader), typeof(JobLoader));
+    }
 
-            _gameResources.Load(typeof(DefineLoader), typeof(JobLoader));
-        }
+    protected override void OnAfterStart()
+    {
+        _logger.LogInformation($"'{_clusterConfiguration.Value.Name}' cluster server is started and listening on {Options.Host}:{Options.Port}.");
+    }
 
-        protected override void OnAfterStart()
-        {
-            _logger.LogInformation($"'{_clusterConfiguration.Value.Name}' cluster server is started and listening on {Options.Host}:{Options.Port}.");
-        }
+    protected override void OnError(LiteConnection connection, Exception exception)
+    {
+        _logger.LogError(exception, $"An exception occured in {typeof(ClusterServer).Name}.");
+    }
 
-        protected override void OnError(LiteConnection connection, Exception exception)
-        {
-            _logger.LogError(exception, $"An exception occured in {typeof(ClusterServer).Name}.");
-        }
-
-        public IClusterUser GetClientByUserId(int userId)
-        {
-            return Users.Cast<ClusterUser>().FirstOrDefault(x => x.UserId == userId);
-        }
+    public IClusterUser GetClientByUserId(int userId)
+    {
+        return Users.Cast<ClusterUser>().FirstOrDefault(x => x.UserId == userId);
     }
 }

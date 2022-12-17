@@ -1,42 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>9.0</LangVersion>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net7.0</TargetFramework>
+		<LangVersion>10.0</LangVersion>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>none</DebugType>
-    <DebugSymbols>false</DebugSymbols>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>none</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="LiteNetwork" Version="2.0.0-rc.6" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
-    <PackageReference Include="NLog" Version="4.7.15" />
-    <PackageReference Include="NLog.Extensions.Logging" Version="1.7.4" />
+	<ItemGroup>
+		<PackageReference Include="LiteNetwork" Version="2.1.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
+		<PackageReference Include="NLog" Version="5.1.0" />
+		<PackageReference Include="NLog.Extensions.Logging" Version="5.2.0" />
 
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
-    <PackageReference Include="Sylver.HandlerInvoker" Version="1.1.2" />
-  </ItemGroup>
+		<PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
+		<PackageReference Include="Sylver.HandlerInvoker" Version="1.1.2" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Rhisis.Abstractions\Rhisis.Abstractions.csproj" />
-    <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
-    <ProjectReference Include="..\Rhisis.Abstractions\Rhisis.Abstractions.csproj" />
-    <ProjectReference Include="..\Rhisis.Game\Rhisis.Game.csproj" />
-    <ProjectReference Include="..\Rhisis.Infrastructure\Rhisis.Infrastructure.csproj" />
-    <ProjectReference Include="..\Rhisis.Protocol\Rhisis.Protocol.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Rhisis.Abstractions\Rhisis.Abstractions.csproj" />
+		<ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
+		<ProjectReference Include="..\Rhisis.Abstractions\Rhisis.Abstractions.csproj" />
+		<ProjectReference Include="..\Rhisis.Game\Rhisis.Game.csproj" />
+		<ProjectReference Include="..\Rhisis.Infrastructure\Rhisis.Infrastructure.csproj" />
+		<ProjectReference Include="..\Rhisis.Protocol\Rhisis.Protocol.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="nlog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Update="nlog.config">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>

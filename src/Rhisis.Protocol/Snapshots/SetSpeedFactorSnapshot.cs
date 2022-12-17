@@ -1,13 +1,12 @@
 ﻿using Rhisis.Abstractions.Entities;
 
-namespace Rhisis.Protocol.Snapshots
+namespace Rhisis.Protocol.Snapshots;
+
+public class SetSpeedFactorSnapshot : FFSnapshot
 {
-    public class SetSpeedFactorSnapshot : FFSnapshot
+    public SetSpeedFactorSnapshot(IMover mover, float speedFactor)
+        : base(SnapshotType.SET_SPEED_FACTOR, mover.Id)
     {
-        public SetSpeedFactorSnapshot(IMover mover, float speedFactor)
-            : base(SnapshotType.SET_SPEED_FACTOR, mover.Id)
-        {
-            WriteSingle(speedFactor);
-        }
+        WriteSingle(speedFactor);
     }
 }

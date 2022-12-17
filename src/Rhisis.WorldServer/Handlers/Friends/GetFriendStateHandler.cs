@@ -8,49 +8,48 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.WorldServer.Handlers.Friends
+namespace Rhisis.WorldServer.Handlers.Friends;
+
+[Handler]
+public class GetFriendStateHandler
 {
-    [Handler]
-    public class GetFriendStateHandler
+    private readonly IPlayerCache _playerCache;
+
+    public GetFriendStateHandler(IPlayerCache playerCache)
     {
-        private readonly IPlayerCache _playerCache;
+        _playerCache = playerCache;
+    }
 
-        public GetFriendStateHandler(IPlayerCache playerCache)
+    [HandlerAction(PacketType.GETFRIENDSTATE)]
+    public void OnExecute(IPlayer player, Protocol.Packets.Client.World.Friends.GetFriendStatePacket packet)
+    {
+        if (player.CharacterId != packet.CurrentPlayerId)
         {
-            _playerCache = playerCache;
+            throw new InvalidOperationException($"Player ids doesn't match.");
         }
 
-        [HandlerAction(PacketType.GETFRIENDSTATE)]
-        public void OnExecute(IPlayer player, Protocol.Packets.Client.World.Friends.GetFriendStatePacket packet)
+        IEnumerable<IContact> friends = player.Messenger.Friends.Where(x => !x.IsBlocked).Select(x => GetFriend(player, x));
+        IEnumerable<IContact> blockedFriends = player.Messenger.Friends.Where(x => x.IsBlocked).Select(x => GetFriend(player, x));
+
+        using var friendStatePacket = new Protocol.Packets.Server.World.Friends.GetFriendStatePacket(friends, blockedFriends);
+        player.Send(friendStatePacket);
+    }
+
+    private IContact GetFriend(IPlayer player, IContact friendContact)
+    {
+        IContact friend = friendContact.Clone();
+        CachedPlayer cachedPlayer = _playerCache.Get(friend.Id);
+
+        if (cachedPlayer != null)
         {
-            if (player.CharacterId != packet.CurrentPlayerId)
+            CachedPlayerFriend playerFriend = cachedPlayer.Friends.FirstOrDefault(x => x.FriendId == player.CharacterId);
+
+            if (playerFriend != null)
             {
-                throw new InvalidOperationException($"Player ids doesn't match.");
+                friend.Status = playerFriend.IsBlocked ? MessengerStatusType.Offline : cachedPlayer.MessengerStatus;
             }
-
-            IEnumerable<IContact> friends = player.Messenger.Friends.Where(x => !x.IsBlocked).Select(x => GetFriend(player, x));
-            IEnumerable<IContact> blockedFriends = player.Messenger.Friends.Where(x => x.IsBlocked).Select(x => GetFriend(player, x));
-
-            using var friendStatePacket = new Protocol.Packets.Server.World.Friends.GetFriendStatePacket(friends, blockedFriends);
-            player.Send(friendStatePacket);
         }
 
-        private IContact GetFriend(IPlayer player, IContact friendContact)
-        {
-            IContact friend = friendContact.Clone();
-            CachedPlayer cachedPlayer = _playerCache.Get(friend.Id);
-
-            if (cachedPlayer != null)
-            {
-                CachedPlayerFriend playerFriend = cachedPlayer.Friends.FirstOrDefault(x => x.FriendId == player.CharacterId);
-
-                if (playerFriend != null)
-                {
-                    friend.Status = playerFriend.IsBlocked ? MessengerStatusType.Offline : cachedPlayer.MessengerStatus;
-                }
-            }
-
-            return friend;
-        }
+        return friend;
     }
 }

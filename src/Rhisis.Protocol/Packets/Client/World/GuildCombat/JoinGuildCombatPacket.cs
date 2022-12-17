@@ -1,13 +1,12 @@
 ﻿using Rhisis.Abstractions.Protocol;
 
-namespace Rhisis.Protocol.Packets.Client.World.GuildCombat
+namespace Rhisis.Protocol.Packets.Client.World.GuildCombat;
+
+public class JoinGuildCombatPacket : IPacketDeserializer
 {
-    public class JoinGuildCombatPacket : IPacketDeserializer
+    /// <inheritdoc />
+    public void Deserialize(IFFPacket packet)
     {
-        /// <inheritdoc />
-        public void Deserialize(IFFPacket packet)
-        {
-            throw new System.NotImplementedException();
-        }
+        throw new System.NotImplementedException();
     }
 }

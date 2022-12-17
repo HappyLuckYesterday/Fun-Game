@@ -1,23 +1,22 @@
-﻿namespace Rhisis.Game.Common
+﻿namespace Rhisis.Game.Common;
+
+/// <summary>
+/// Defines a set of values representing an entity target mode.
+/// </summary>
+public enum TargetModeType
 {
     /// <summary>
-    /// Defines a set of values representing an entity target mode.
+    /// Unkown target mode.
     /// </summary>
-    public enum TargetModeType
-    {
-        /// <summary>
-        /// Unkown target mode.
-        /// </summary>
-        Unknown,
+    Unknown,
 
-        /// <summary>
-        /// Unselected target mode.
-        /// </summary>
-        Unselected,
+    /// <summary>
+    /// Unselected target mode.
+    /// </summary>
+    Unselected,
 
-        /// <summary>
-        /// Selected target mode.
-        /// </summary>
-        Selected
-    }
+    /// <summary>
+    /// Selected target mode.
+    /// </summary>
+    Selected
 }

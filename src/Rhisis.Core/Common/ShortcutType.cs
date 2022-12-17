@@ -1,18 +1,17 @@
-﻿namespace Rhisis.Core.Common
+﻿namespace Rhisis.Core.Common;
+
+public enum ShortcutType : uint
 {
-    public enum ShortcutType : uint
-    {
-        None,
-        Etc,
-        Applet,
-        Motion,
-        Script,
-        Item,
-        Skill,
-        Object,
-        Chat,
-        SkillFun,
-        Emoticon,
-        LordSkill
-    }
+    None,
+    Etc,
+    Applet,
+    Motion,
+    Script,
+    Item,
+    Skill,
+    Object,
+    Chat,
+    SkillFun,
+    Emoticon,
+    LordSkill
 }

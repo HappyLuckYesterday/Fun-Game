@@ -1,10 +1,9 @@
-﻿namespace Rhisis.Abstractions.Map
+﻿namespace Rhisis.Abstractions.Map;
+
+public interface IMapNpcObject : IMapObject
 {
-    public interface IMapNpcObject : IMapObject
-    {
-        /// <summary>
-        /// Gets the map NPC name.
-        /// </summary>
-        string Name { get; }
-    }
+    /// <summary>
+    /// Gets the map NPC name.
+    /// </summary>
+    string Name { get; }
 }

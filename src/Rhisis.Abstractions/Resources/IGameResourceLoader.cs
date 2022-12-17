@@ -1,13 +1,12 @@
-﻿namespace Rhisis.Abstractions.Resources
+﻿namespace Rhisis.Abstractions.Resources;
+
+/// <summary>
+/// Provides a mechanism to load a game resource.
+/// </summary>
+public interface IGameResourceLoader
 {
     /// <summary>
-    /// Provides a mechanism to load a game resource.
+    /// Load a game resource.
     /// </summary>
-    public interface IGameResourceLoader
-    {
-        /// <summary>
-        /// Load a game resource.
-        /// </summary>
-        void Load();
-    }
+    void Load();
 }

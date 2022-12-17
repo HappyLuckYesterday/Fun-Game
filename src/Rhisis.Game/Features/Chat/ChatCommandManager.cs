@@ -10,73 +10,72 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Rhisis.Game.Features.Chat
+namespace Rhisis.Game.Features.Chat;
+
+[Injectable(ServiceLifetime.Singleton)]
+public sealed class ChatCommandManager : IChatCommandManager
 {
-    [Injectable(ServiceLifetime.Singleton)]
-    public sealed class ChatCommandManager : IChatCommandManager
+    private readonly ILogger<ChatCommandManager> _logger;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ConcurrentDictionary<string, ChatCommandDefinition> _chatCommands;
+
+    /// <summary>
+    /// Creates a new <see cref="ChatCommandManager"/> instance.
+    /// </summary>
+    /// <param name="logger">Logger.</param>
+    /// <param name="serviceProvider">Service provider.</param>
+    public ChatCommandManager(ILogger<ChatCommandManager> logger, IServiceProvider serviceProvider)
     {
-        private readonly ILogger<ChatCommandManager> _logger;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ConcurrentDictionary<string, ChatCommandDefinition> _chatCommands;
+        _logger = logger;
+        _serviceProvider = serviceProvider;
+        _chatCommands = new ConcurrentDictionary<string, ChatCommandDefinition>();
+    }
 
-        /// <summary>
-        /// Creates a new <see cref="ChatCommandManager"/> instance.
-        /// </summary>
-        /// <param name="logger">Logger.</param>
-        /// <param name="serviceProvider">Service provider.</param>
-        public ChatCommandManager(ILogger<ChatCommandManager> logger, IServiceProvider serviceProvider)
+    /// <inheritdoc />
+    public void Load()
+    {
+        _logger.LogInformation($"Loading chat commands...");
+
+        IEnumerable<TypeInfo> chatCommandTypes = ReflectionHelper.GetClassesAssignableFrom<IChatCommand>();
+
+        foreach (TypeInfo chatCommandType in chatCommandTypes)
         {
-            _logger = logger;
-            _serviceProvider = serviceProvider;
-            _chatCommands = new ConcurrentDictionary<string, ChatCommandDefinition>();
-        }
+            IEnumerable<ChatCommandAttribute> attributes = chatCommandType.GetCustomAttributes<ChatCommandAttribute>();
 
-        /// <inheritdoc />
-        public void Load()
-        {
-            _logger.LogInformation($"Loading chat commands...");
-
-            IEnumerable<TypeInfo> chatCommandTypes = ReflectionHelper.GetClassesAssignableFrom<IChatCommand>();
-
-            foreach (TypeInfo chatCommandType in chatCommandTypes)
+            if (attributes.Any())
             {
-                IEnumerable<ChatCommandAttribute> attributes = chatCommandType.GetCustomAttributes<ChatCommandAttribute>();
+                ObjectFactory chatCommandFactory = ActivatorUtilities.CreateFactory(chatCommandType, Type.EmptyTypes);
 
-                if (attributes.Any())
+                foreach (ChatCommandAttribute chatAttribute in attributes)
                 {
-                    ObjectFactory chatCommandFactory = ActivatorUtilities.CreateFactory(chatCommandType, Type.EmptyTypes);
+                    var chatCommandDefinition = new ChatCommandDefinition(chatAttribute.Command, chatCommandFactory, chatAttribute.MinimumAuthorization);
 
-                    foreach (ChatCommandAttribute chatAttribute in attributes)
+                    if (!_chatCommands.TryAdd(chatAttribute.Command, chatCommandDefinition))
                     {
-                        var chatCommandDefinition = new ChatCommandDefinition(chatAttribute.Command, chatCommandFactory, chatAttribute.MinimumAuthorization);
-
-                        if (!_chatCommands.TryAdd(chatAttribute.Command, chatCommandDefinition))
-                        {
-                            throw new InvalidOperationException($"Duplicate chat command: '{chatAttribute.Command}' already exists.");
-                        }
+                        throw new InvalidOperationException($"Duplicate chat command: '{chatAttribute.Command}' already exists.");
                     }
                 }
             }
-
-            _logger.LogInformation($"-> {_chatCommands.Count} chat commands loaded.");
         }
 
-        /// <inheritdoc />
-        public IChatCommand GetChatCommand(string command, AuthorityType authority)
-        {
-            if (_chatCommands.TryGetValue(command, out ChatCommandDefinition chatCommandDefinition))
-            {
-                if (authority < chatCommandDefinition.Authority)
-                {
-                    throw new InvalidOperationException($"Player doesn't have enough authority to execute this command.");
-                }
+        _logger.LogInformation($"-> {_chatCommands.Count} chat commands loaded.");
+    }
 
-                return chatCommandDefinition.ChatCommandFactory(_serviceProvider, null) as IChatCommand;
-            }
-            else
+    /// <inheritdoc />
+    public IChatCommand GetChatCommand(string command, AuthorityType authority)
+    {
+        if (_chatCommands.TryGetValue(command, out ChatCommandDefinition chatCommandDefinition))
+        {
+            if (authority < chatCommandDefinition.Authority)
             {
-                throw new KeyNotFoundException($"Cannot find chat command: '{command}'.");
+                throw new InvalidOperationException($"Player doesn't have enough authority to execute this command.");
             }
+
+            return chatCommandDefinition.ChatCommandFactory(_serviceProvider, null) as IChatCommand;
+        }
+        else
+        {
+            throw new KeyNotFoundException($"Cannot find chat command: '{command}'.");
         }
     }
 }

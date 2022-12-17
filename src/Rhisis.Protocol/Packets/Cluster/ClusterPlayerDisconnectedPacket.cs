@@ -1,13 +1,12 @@
 ﻿using Rhisis.Protocol.Core;
 
-namespace Rhisis.Protocol.Packets.Cluster
+namespace Rhisis.Protocol.Packets.Cluster;
+
+public class ClusterPlayerDisconnectedPacket : CorePacket
 {
-    public class ClusterPlayerDisconnectedPacket : CorePacket
+    public ClusterPlayerDisconnectedPacket(int characterId)
+        : base(CorePacketType.PlayerDisconnectedFromChannel)
     {
-        public ClusterPlayerDisconnectedPacket(int characterId)
-            : base(CorePacketType.PlayerDisconnectedFromChannel)
-        {
-            WriteInt32(characterId);
-        }
+        WriteInt32(characterId);
     }
 }

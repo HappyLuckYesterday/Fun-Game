@@ -1,7 +1,6 @@
-﻿namespace Rhisis.Abstractions.Messaging
+﻿namespace Rhisis.Abstractions.Messaging;
+
+public interface IMessaging
 {
-    public interface IMessaging
-    {
-        void SendMessage<TMessage>(TMessage message) where TMessage : class;
-    }
+    void SendMessage<TMessage>(TMessage message) where TMessage : class;
 }

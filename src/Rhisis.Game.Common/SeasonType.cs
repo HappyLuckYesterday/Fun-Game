@@ -1,12 +1,11 @@
-﻿namespace Rhisis.Game.Common
+﻿namespace Rhisis.Game.Common;
+
+public enum SeasonType
 {
-    public enum SeasonType
-    {
-        None,
-        Spring,
-        Summer,
-        Fall,
-        Winter,
-        Max
-    }
+    None,
+    Spring,
+    Summer,
+    Fall,
+    Winter,
+    Max
 }

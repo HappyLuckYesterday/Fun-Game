@@ -3,40 +3,39 @@ using Rhisis.Abstractions.Protocol;
 using Rhisis.Core.Cryptography;
 using Rhisis.Core.Structures.Configuration;
 
-namespace Rhisis.Protocol.Packets.Client.Login
+namespace Rhisis.Protocol.Packets.Client.Login;
+
+public class CertifyPacket : IPacketDeserializer
 {
-    public class CertifyPacket : IPacketDeserializer
+    private readonly LoginOptions _configuration;
+
+    public virtual string BuildVersion { get; private set; }
+
+    public virtual string Username { get; private set; }
+
+    public virtual string Password { get; private set; }
+
+    public CertifyPacket(IOptions<LoginOptions> loginConfiguration)
     {
-        private readonly LoginOptions _configuration;
+        _configuration = loginConfiguration.Value;
+    }
 
-        public virtual string BuildVersion { get; private set; }
+    public void Deserialize(IFFPacket packet)
+    {
+        BuildVersion = packet.ReadString();
+        Username = packet.ReadString();
+        Password = null;
 
-        public virtual string Username { get; private set; }
-
-        public virtual string Password { get; private set; }
-
-        public CertifyPacket(IOptions<LoginOptions> loginConfiguration)
+        if (_configuration.PasswordEncryption)
         {
-            _configuration = loginConfiguration.Value;
+            byte[] encryptedPassword = packet.ReadBytes(16 * 42);
+            byte[] encryptionKey = Aes.BuildEncryptionKeyFromString(_configuration.EncryptionKey, 16);
+
+            Password = Aes.DecryptByteArray(encryptedPassword, encryptionKey);
         }
-
-        public void Deserialize(IFFPacket packet)
+        else
         {
-            BuildVersion = packet.ReadString();
-            Username = packet.ReadString();
-            Password = null;
-
-            if (_configuration.PasswordEncryption)
-            {
-                byte[] encryptedPassword = packet.ReadBytes(16 * 42);
-                byte[] encryptionKey = Aes.BuildEncryptionKeyFromString(_configuration.EncryptionKey, 16);
-
-                Password = Aes.DecryptByteArray(encryptedPassword, encryptionKey);
-            }
-            else
-            {
-                Password = packet.ReadString();
-            }
+            Password = packet.ReadString();
         }
     }
 }

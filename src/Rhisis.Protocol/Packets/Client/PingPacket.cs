@@ -1,35 +1,34 @@
 ﻿using Rhisis.Abstractions.Protocol;
 using System;
 
-namespace Rhisis.Protocol.Packets.Client
+namespace Rhisis.Protocol.Packets.Client;
+
+/// <summary>
+/// Represents the ping packet.
+/// </summary>
+public class PingPacket : IPacketDeserializer
 {
     /// <summary>
-    /// Represents the ping packet.
+    /// Gets the ping packet time.
     /// </summary>
-    public class PingPacket : IPacketDeserializer
+    public virtual int Time { get; private set; }
+
+    /// <summary>
+    /// Gets a value that indiciates that the ping packet has timeout.
+    /// </summary>
+    public virtual bool IsTimeOut { get; private set; }
+
+    public void Deserialize(IFFPacket packet)
     {
-        /// <summary>
-        /// Gets the ping packet time.
-        /// </summary>
-        public virtual int Time { get; private set; }
-
-        /// <summary>
-        /// Gets a value that indiciates that the ping packet has timeout.
-        /// </summary>
-        public virtual bool IsTimeOut { get; private set; }
-
-        public void Deserialize(IFFPacket packet)
+        try
         {
-            try
-            {
-                Time = packet.ReadInt32();
-                IsTimeOut = false;
-            }
-            catch (Exception)
-            {
-                Time = 0;
-                IsTimeOut = true;
-            }
+            Time = packet.ReadInt32();
+            IsTimeOut = false;
+        }
+        catch (Exception)
+        {
+            Time = 0;
+            IsTimeOut = true;
         }
     }
 }

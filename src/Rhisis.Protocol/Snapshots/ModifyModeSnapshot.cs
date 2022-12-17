@@ -1,14 +1,13 @@
 ﻿using Rhisis.Abstractions.Entities;
 using Rhisis.Game.Common;
 
-namespace Rhisis.Protocol.Snapshots
+namespace Rhisis.Protocol.Snapshots;
+
+public class ModifyModeSnapshot : FFSnapshot
 {
-    public class ModifyModeSnapshot : FFSnapshot
+    public ModifyModeSnapshot(IPlayer player, ModeType mode)
+        : base(SnapshotType.MODIFYMODE, player.Id)
     {
-        public ModifyModeSnapshot(IPlayer player, ModeType mode)
-            : base(SnapshotType.MODIFYMODE, player.Id)
-        {
-            WriteUInt32((uint)mode);
-        }
+        WriteUInt32((uint)mode);
     }
 }

@@ -1,14 +1,13 @@
-﻿namespace Rhisis.Game.Common
+﻿namespace Rhisis.Game.Common;
+
+public enum SpellRegionType
 {
-    public enum SpellRegionType
-    {
-        Direct = 1,
-        Region,
-        Extent,
-        Surround,
-        Double,
-        Line,
-        Around,
-        Troupe,
-    }
+    Direct = 1,
+    Region,
+    Extent,
+    Surround,
+    Double,
+    Line,
+    Around,
+    Troupe,
 }

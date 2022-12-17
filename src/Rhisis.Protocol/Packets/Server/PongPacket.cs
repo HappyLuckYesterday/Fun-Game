@@ -1,11 +1,10 @@
-﻿namespace Rhisis.Protocol.Packets.Server
+﻿namespace Rhisis.Protocol.Packets.Server;
+
+public class PongPacket : FFPacket
 {
-    public class PongPacket : FFPacket
+    public PongPacket(int time)
+        : base(PacketType.PING)
     {
-        public PongPacket(int time)
-            : base(PacketType.PING)
-        {
-            WriteInt32(time);
-        }
+        WriteInt32(time);
     }
 }

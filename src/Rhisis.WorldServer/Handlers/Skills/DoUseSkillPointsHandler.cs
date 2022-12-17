@@ -7,33 +7,32 @@ using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Linq;
 
-namespace Rhisis.WorldServer.Handlers.Skills
+namespace Rhisis.WorldServer.Handlers.Skills;
+
+[Handler]
+public class DoUseSkillPointsHandler
 {
-    [Handler]
-    public class DoUseSkillPointsHandler
+    private readonly ISpecialEffectSystem _specialEffectSystem;
+
+    public DoUseSkillPointsHandler(ISpecialEffectSystem specialEffectSystem)
     {
-        private readonly ISpecialEffectSystem _specialEffectSystem;
+        _specialEffectSystem = specialEffectSystem;
+    }
 
-        public DoUseSkillPointsHandler(ISpecialEffectSystem specialEffectSystem)
+    /// <summary>
+    /// Updates the player's skill levels.
+    /// </summary>
+    /// <param name="player">Current player.</param>
+    /// <param name="packet">Incoming packet.</param>
+    [HandlerAction(PacketType.DOUSESKILLPOINT)]
+    public void OnDoUseSkillPoints(IPlayer player, DoUseSkillPointsPacket packet)
+    {
+        if (!packet.Skills.Any())
         {
-            _specialEffectSystem = specialEffectSystem;
+            throw new InvalidOperationException($"Player {player} tried to update skills, but no skills were sent.");
         }
 
-        /// <summary>
-        /// Updates the player's skill levels.
-        /// </summary>
-        /// <param name="player">Current player.</param>
-        /// <param name="packet">Incoming packet.</param>
-        [HandlerAction(PacketType.DOUSESKILLPOINT)]
-        public void OnDoUseSkillPoints(IPlayer player, DoUseSkillPointsPacket packet)
-        {
-            if (!packet.Skills.Any())
-            {
-                throw new InvalidOperationException($"Player {player} tried to update skills, but no skills were sent.");
-            }
-
-            player.SkillTree.Update(packet.Skills);
-            _specialEffectSystem.StartSpecialEffect(player, DefineSpecialEffects.XI_SYS_EXCHAN01, false);
-        }
+        player.SkillTree.Update(packet.Skills);
+        _specialEffectSystem.StartSpecialEffect(player, DefineSpecialEffects.XI_SYS_EXCHAN01, false);
     }
 }

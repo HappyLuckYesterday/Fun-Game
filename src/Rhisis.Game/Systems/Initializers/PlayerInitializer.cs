@@ -6,62 +6,61 @@ using Rhisis.Abstractions.Entities;
 using System;
 using System.Linq;
 
-namespace Rhisis.Game.Systems.Initializers
+namespace Rhisis.Game.Systems.Initializers;
+
+[Injectable]
+public class PlayerInitializer : IPlayerInitializer
 {
-    [Injectable]
-    public class PlayerInitializer : IPlayerInitializer
+    private readonly IRhisisDatabase _database;
+
+    public PlayerInitializer(IRhisisDatabase database)
     {
-        private readonly IRhisisDatabase _database;
+        _database = database;
+    }
 
-        public PlayerInitializer(IRhisisDatabase database)
+    public void Load(IPlayer player)
+    {
+        // Nothing to load.
+    }
+
+    public void Save(IPlayer player)
+    {
+        DbCharacter character = _database.Characters.FirstOrDefault(x => x.Id == player.CharacterId);
+
+        if (character != null)
         {
-            _database = database;
-        }
+            character.LastConnectionTime = player.LoggedInAt;
+            character.PlayTime += (long)(DateTime.UtcNow - player.LoggedInAt).TotalSeconds;
 
-        public void Load(IPlayer player)
-        {
-            // Nothing to load.
-        }
+            character.PosX = player.Position.X;
+            character.PosY = player.Position.Y;
+            character.PosZ = player.Position.Z;
+            character.Angle = player.Angle;
+            character.MapId = player.Map.Id;
+            character.MapLayerId = player.MapLayer.Id;
+            character.Gender = (byte)player.Appearence.Gender;
+            character.HairColor = player.Appearence.HairColor;
+            character.HairId = player.Appearence.HairId;
+            character.FaceId = player.Appearence.FaceId;
+            character.SkinSetId = player.Appearence.SkinSetId;
+            character.Level = player.Level;
 
-        public void Save(IPlayer player)
-        {
-            DbCharacter character = _database.Characters.FirstOrDefault(x => x.Id == player.CharacterId);
+            character.JobId = (int)player.Job.Id;
+            character.Gold = player.Gold.Amount;
+            character.Experience = player.Experience.Amount;
 
-            if (character != null)
-            {
-                character.LastConnectionTime = player.LoggedInAt;
-                character.PlayTime += (long)(DateTime.UtcNow - player.LoggedInAt).TotalSeconds;
+            character.Strength = player.Statistics.Strength;
+            character.Stamina = player.Statistics.Stamina;
+            character.Dexterity = player.Statistics.Dexterity;
+            character.Intelligence = player.Statistics.Intelligence;
+            character.StatPoints = player.Statistics.AvailablePoints;
+            character.SkillPoints = player.SkillTree.SkillPoints;
 
-                character.PosX = player.Position.X;
-                character.PosY = player.Position.Y;
-                character.PosZ = player.Position.Z;
-                character.Angle = player.Angle;
-                character.MapId = player.Map.Id;
-                character.MapLayerId = player.MapLayer.Id;
-                character.Gender = (byte)player.Appearence.Gender;
-                character.HairColor = player.Appearence.HairColor;
-                character.HairId = player.Appearence.HairId;
-                character.FaceId = player.Appearence.FaceId;
-                character.SkinSetId = player.Appearence.SkinSetId;
-                character.Level = player.Level;
+            character.Hp = player.Health.Hp;
+            character.Mp = player.Health.Mp;
+            character.Fp = player.Health.Fp;
 
-                character.JobId = (int)player.Job.Id;
-                character.Gold = player.Gold.Amount;
-                character.Experience = player.Experience.Amount;
-
-                character.Strength = player.Statistics.Strength;
-                character.Stamina = player.Statistics.Stamina;
-                character.Dexterity = player.Statistics.Dexterity;
-                character.Intelligence = player.Statistics.Intelligence;
-                character.StatPoints = player.Statistics.AvailablePoints;
-                character.SkillPoints = player.SkillTree.SkillPoints;
-
-                character.Hp = player.Health.Hp;
-                character.Mp = player.Health.Mp;
-                character.Fp = player.Health.Fp;
-
-                _database.SaveChanges();
-            }
+            _database.SaveChanges();
         }
     }
 }

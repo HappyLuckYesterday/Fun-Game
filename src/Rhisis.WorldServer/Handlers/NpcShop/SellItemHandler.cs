@@ -5,29 +5,28 @@ using Rhisis.Protocol.Packets.Client.World;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 
-namespace Rhisis.WorldServer.Handlers.NpcShop
+namespace Rhisis.WorldServer.Handlers.NpcShop;
+
+[Handler]
+public class SellItemHandler
 {
-    [Handler]
-    public class SellItemHandler
+    [HandlerAction(PacketType.SELLITEM)]
+    public void Execute(IPlayer player, SellItemPacket packet)
     {
-        [HandlerAction(PacketType.SELLITEM)]
-        public void Execute(IPlayer player, SellItemPacket packet)
+        IItem item = player.Inventory.GetItem(packet.ItemIndex);
+
+        if (item == null)
         {
-            IItem item = player.Inventory.GetItem(packet.ItemIndex);
+            throw new InvalidOperationException($"Cannot find item with index: {packet.ItemIndex} in player's inventory.");
+        }
 
-            if (item == null)
-            {
-                throw new InvalidOperationException($"Cannot find item with index: {packet.ItemIndex} in player's inventory.");
-            }
+        int sellingQuantity = Math.Min(packet.Quantity, item.Data.PackMax);
+        int sellPrice = item.Data.Cost / 4; // TODO: make this configurable
+        int deletedQuantity = player.Inventory.DeleteItem(item, sellingQuantity);
 
-            int sellingQuantity = Math.Min(packet.Quantity, item.Data.PackMax);
-            int sellPrice = item.Data.Cost / 4; // TODO: make this configurable
-            int deletedQuantity = player.Inventory.DeleteItem(item, sellingQuantity);
-
-            if (deletedQuantity > 0)
-            {
-                player.Gold.Increase(sellPrice * deletedQuantity);
-            }
+        if (deletedQuantity > 0)
+        {
+            player.Gold.Increase(sellPrice * deletedQuantity);
         }
     }
 }

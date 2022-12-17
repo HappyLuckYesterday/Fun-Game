@@ -1,14 +1,13 @@
-﻿namespace Rhisis.Game.Common.Resources.Quests
+﻿namespace Rhisis.Game.Common.Resources.Quests;
+
+public enum QuestStateType
 {
-    public enum QuestStateType
-    {
-        Unknown,
-        Suggest,
-        BeginYes,
-        BeginNo,
-        End,
-        EndCompleted,
-        Ok,
-        Completed = 14
-    }
+    Unknown,
+    Suggest,
+    BeginYes,
+    BeginNo,
+    End,
+    EndCompleted,
+    Ok,
+    Completed = 14
 }

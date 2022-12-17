@@ -1,33 +1,32 @@
 ﻿using Rhisis.Abstractions.Protocol;
 
-namespace Rhisis.Abstractions.Features
+namespace Rhisis.Abstractions.Features;
+
+/// <summary>
+/// Provides a mechanism to manage the player taskbar.
+/// </summary>
+public interface ITaskbar : IPacketSerializer
 {
     /// <summary>
-    /// Provides a mechanism to manage the player taskbar.
+    /// Gets the player action points.
     /// </summary>
-    public interface ITaskbar : IPacketSerializer
-    {
-        /// <summary>
-        /// Gets the player action points.
-        /// </summary>
-        int ActionPoints { get; }
+    int ActionPoints { get; }
 
-        /// <summary>
-        /// Gets the shortcut applets container.
-        /// </summary>
-        ITaskbarContainer<IShortcut> Applets { get; }
+    /// <summary>
+    /// Gets the shortcut applets container.
+    /// </summary>
+    ITaskbarContainer<IShortcut> Applets { get; }
 
-        /// <summary>
-        /// Gets the multi level taskbar containers.
-        /// </summary>
-        /// <remarks>
-        /// Can host applets, skills and items.
-        /// </remarks>
-        IMultipleTaskbarContainer<IShortcut> Items { get; }
+    /// <summary>
+    /// Gets the multi level taskbar containers.
+    /// </summary>
+    /// <remarks>
+    /// Can host applets, skills and items.
+    /// </remarks>
+    IMultipleTaskbarContainer<IShortcut> Items { get; }
 
-        /// <summary>
-        /// Gets the action slot container.
-        /// </summary>
-        ITaskbarContainer<ISkill> ActionSlot { get; }
-    }
+    /// <summary>
+    /// Gets the action slot container.
+    /// </summary>
+    ITaskbarContainer<ISkill> ActionSlot { get; }
 }

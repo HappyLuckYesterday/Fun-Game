@@ -1,24 +1,23 @@
 ﻿using Rhisis.Abstractions.Protocol;
 
-namespace Rhisis.Protocol.Packets.Client.World.Duel
+namespace Rhisis.Protocol.Packets.Client.World.Duel;
+
+public class DuelYesPacket : IPacketDeserializer
 {
-    public class DuelYesPacket : IPacketDeserializer
+    /// <summary>
+    /// Gets the source player id.
+    /// </summary>
+    public uint SourcePlayerId { get; private set; }
+
+    /// <summary>
+    /// Gets the destination player id.
+    /// </summary>
+    public uint DestinationPlayerId { get; private set; }
+
+    /// <inheritdoc />
+    public void Deserialize(IFFPacket packet)
     {
-        /// <summary>
-        /// Gets the source player id.
-        /// </summary>
-        public uint SourcePlayerId { get; private set; }
-
-        /// <summary>
-        /// Gets the destination player id.
-        /// </summary>
-        public uint DestinationPlayerId { get; private set; }
-
-        /// <inheritdoc />
-        public void Deserialize(IFFPacket packet)
-        {
-            SourcePlayerId = packet.ReadUInt32();
-            DestinationPlayerId = packet.ReadUInt32();
-        }
+        SourcePlayerId = packet.ReadUInt32();
+        DestinationPlayerId = packet.ReadUInt32();
     }
 }

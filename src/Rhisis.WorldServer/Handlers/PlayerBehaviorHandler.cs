@@ -6,36 +6,35 @@ using Rhisis.Protocol.Packets.Client.World;
 using Sylver.HandlerInvoker.Attributes;
 using System;
 
-namespace Rhisis.WorldServer.Handlers
+namespace Rhisis.WorldServer.Handlers;
+
+[Handler]
+public class PlayerBehaviorHandler
 {
-    [Handler]
-    public class PlayerBehaviorHandler
+    [HandlerAction(PacketType.PLAYERBEHAVIOR)]
+    public void Execute(IPlayer player, PlayerMovedPacket packet)
     {
-        [HandlerAction(PacketType.PLAYERBEHAVIOR)]
-        public void Execute(IPlayer player, PlayerMovedPacket packet)
+        if (player.Health.IsDead)
         {
-            if (player.Health.IsDead)
-            {
-                throw new InvalidOperationException("Player is dead.");
-            }
-
-            // TODO: this handler isn't really correct.
-            // We need to review this in order to correct movements.
-
-            player.Unfollow();
-            player.Battle.ClearTarget();
-            player.DestinationPosition.Reset();
-            player.Position.Copy(packet.BeginPosition + packet.DestinationPosition);
-            player.Angle = packet.Angle;
-            player.ObjectState = (ObjectState)packet.State;
-            player.ObjectStateFlags = (StateFlags)packet.StateFlag;
-
-            using var snapshot = new MoverBehaviorSnapshot(player,
-                packet.BeginPosition, packet.DestinationPosition, player.Angle,
-                (int)player.ObjectState, (int)player.ObjectStateFlags,
-                packet.Motion, packet.MotionEx, packet.Loop, packet.MotionOption, packet.TickCount);
-
-            player.SendToVisible(snapshot);
+            throw new InvalidOperationException("Player is dead.");
         }
+
+        // TODO: this handler isn't really correct.
+        // We need to review this in order to correct movements.
+
+        player.Unfollow();
+        player.Battle.ClearTarget();
+        player.DestinationPosition.Reset();
+        player.Position.Copy(packet.BeginPosition + packet.DestinationPosition);
+        player.Angle = packet.Angle;
+        player.ObjectState = (ObjectState)packet.State;
+        player.ObjectStateFlags = (StateFlags)packet.StateFlag;
+
+        using var snapshot = new MoverBehaviorSnapshot(player,
+            packet.BeginPosition, packet.DestinationPosition, player.Angle,
+            (int)player.ObjectState, (int)player.ObjectStateFlags,
+            packet.Motion, packet.MotionEx, packet.Loop, packet.MotionOption, packet.TickCount);
+
+        player.SendToVisible(snapshot);
     }
 }

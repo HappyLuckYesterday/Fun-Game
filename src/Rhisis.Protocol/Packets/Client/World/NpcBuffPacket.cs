@@ -1,18 +1,17 @@
 ﻿using Rhisis.Abstractions.Protocol;
 
-namespace Rhisis.Protocol.Packets.Client.World
-{
-    public class NpcBuffPacket : IPacketDeserializer
-    {
-        /// <summary>
-        /// Gets the buffing NPC key.
-        /// </summary>
-        public string NpcKey { get; private set; }
+namespace Rhisis.Protocol.Packets.Client.World;
 
-        /// <inheritdoc />
-        public void Deserialize(IFFPacket packet)
-        {
-            NpcKey = packet.ReadString();
-        }
+public class NpcBuffPacket : IPacketDeserializer
+{
+    /// <summary>
+    /// Gets the buffing NPC key.
+    /// </summary>
+    public string NpcKey { get; private set; }
+
+    /// <inheritdoc />
+    public void Deserialize(IFFPacket packet)
+    {
+        NpcKey = packet.ReadString();
     }
 }

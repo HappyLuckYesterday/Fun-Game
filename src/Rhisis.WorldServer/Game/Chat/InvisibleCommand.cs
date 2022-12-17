@@ -4,42 +4,41 @@ using Rhisis.Abstractions.Features.Chat;
 using Rhisis.Game.Common;
 using Rhisis.Protocol.Snapshots;
 
-namespace Rhisis.WorldServer.Game.Chat
+namespace Rhisis.WorldServer.Game.Chat;
+
+[ChatCommand("/invisible", AuthorityType.GameMaster)]
+[ChatCommand("/inv", AuthorityType.GameMaster)]
+public class InvisibleChatCommand : IChatCommand
 {
-    [ChatCommand("/invisible", AuthorityType.GameMaster)]
-    [ChatCommand("/inv", AuthorityType.GameMaster)]
-    public class InvisibleChatCommand : IChatCommand
+    private readonly ILogger<InvisibleChatCommand> _logger;
+
+    /// <summary>
+    /// Creates a new <see cref="InvisibleChatCommand"/> instance.
+    /// </summary>
+    /// <param name="logger">Logger.</param>
+    public InvisibleChatCommand(ILogger<InvisibleChatCommand> logger)
     {
-        private readonly ILogger<InvisibleChatCommand> _logger;
+        _logger = logger;
+    }
 
-        /// <summary>
-        /// Creates a new <see cref="InvisibleChatCommand"/> instance.
-        /// </summary>
-        /// <param name="logger">Logger.</param>
-        public InvisibleChatCommand(ILogger<InvisibleChatCommand> logger)
+    /// <inheritdoc />
+    public void Execute(IPlayer player, object[] parameters)
+    {
+        if (!player.Mode.HasFlag(ModeType.TRANSPARENT_MODE))
         {
-            _logger = logger;
+            player.Mode |= ModeType.TRANSPARENT_MODE;
+
+            using (var snapshot = new ModifyModeSnapshot(player, player.Mode))
+            {
+                player.Send(snapshot);
+                player.SendToVisible(snapshot);
+            }
+
+            _logger.LogTrace($"Player '{player.Name}' is now invisible.");
         }
-
-        /// <inheritdoc />
-        public void Execute(IPlayer player, object[] parameters)
+        else
         {
-            if (!player.Mode.HasFlag(ModeType.TRANSPARENT_MODE))
-            {
-                player.Mode |= ModeType.TRANSPARENT_MODE;
-
-                using (var snapshot = new ModifyModeSnapshot(player, player.Mode))
-                {
-                    player.Send(snapshot);
-                    player.SendToVisible(snapshot);
-                }
-
-                _logger.LogTrace($"Player '{player.Name}' is now invisible.");
-            }
-            else
-            {
-                _logger.LogTrace($"Player '{player.Name}' is already invisible.");
-            }
+            _logger.LogTrace($"Player '{player.Name}' is already invisible.");
         }
     }
 }

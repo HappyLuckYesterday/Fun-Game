@@ -7,28 +7,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.ClusterServer.Cache
+namespace Rhisis.ClusterServer.Cache;
+
+internal class ClusterCacheServer : LiteServer<ClusterCacheUser>, IClusterCacheServer
 {
-    internal class ClusterCacheServer : LiteServer<ClusterCacheUser>, IClusterCacheServer
+    private readonly ILogger<ClusterCacheServer> _logger;
+
+    public IEnumerable<WorldChannel> WorldChannels => Users.Cast<ClusterCacheUser>().Select(x => x.Channel);
+
+    public ClusterCacheServer(LiteServerOptions options, ILogger<ClusterCacheServer> logger, IServiceProvider serviceProvider) 
+        : base(options, serviceProvider)
     {
-        private readonly ILogger<ClusterCacheServer> _logger;
+        _logger = logger;
+    }
 
-        public IEnumerable<WorldChannel> WorldChannels => Users.Cast<ClusterCacheUser>().Select(x => x.Channel);
+    protected override void OnAfterStart()
+    {
+        _logger.LogInformation($"Cluster cache server started and listening on port '{Options.Port}'.");
+    }
 
-        public ClusterCacheServer(LiteServerOptions options, ILogger<ClusterCacheServer> logger, IServiceProvider serviceProvider) 
-            : base(options, serviceProvider)
-        {
-            _logger = logger;
-        }
-
-        protected override void OnAfterStart()
-        {
-            _logger.LogInformation($"Cluster cache server started and listening on port '{Options.Port}'.");
-        }
-
-        protected override void OnError(LiteConnection connection, Exception exception)
-        {
-            _logger.LogError(exception, $"An exception occured in {typeof(ClusterCacheServer).Name}.");
-        }
+    protected override void OnError(LiteConnection connection, Exception exception)
+    {
+        _logger.LogError(exception, $"An exception occured in {typeof(ClusterCacheServer).Name}.");
     }
 }

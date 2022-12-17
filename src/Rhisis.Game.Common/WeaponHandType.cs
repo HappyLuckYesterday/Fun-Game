@@ -1,9 +1,8 @@
-﻿namespace Rhisis.Game.Common
+﻿namespace Rhisis.Game.Common;
+
+public enum WeaponHandType
 {
-    public enum WeaponHandType
-    {
-        One = 1,
-        Two,
-        Dual
-    }
+    One = 1,
+    Two,
+    Dual
 }

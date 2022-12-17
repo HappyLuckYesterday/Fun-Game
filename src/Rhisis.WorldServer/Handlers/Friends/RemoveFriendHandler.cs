@@ -7,37 +7,36 @@ using Sylver.HandlerInvoker.Attributes;
 using System;
 using System.Linq;
 
-namespace Rhisis.WorldServer.Handlers.Friends
-{
-    [Handler]
-    public class RemoveFriendHandler
-    {
-        private readonly IPlayerCache _playerCache;
+namespace Rhisis.WorldServer.Handlers.Friends;
 
-        public RemoveFriendHandler(IPlayerCache playerCache)
+[Handler]
+public class RemoveFriendHandler
+{
+    private readonly IPlayerCache _playerCache;
+
+    public RemoveFriendHandler(IPlayerCache playerCache)
+    {
+        _playerCache = playerCache;
+    }
+
+    [HandlerAction(PacketType.REMOVEFRIEND)]
+    public void OnExecute(IPlayer player, RemoveFriendPacket packet)
+    {
+        if (player.CharacterId != packet.CurrentPlayerId)
         {
-            _playerCache = playerCache;
+            throw new InvalidOperationException($"Player ids doens't match.");
         }
 
-        [HandlerAction(PacketType.REMOVEFRIEND)]
-        public void OnExecute(IPlayer player, RemoveFriendPacket packet)
+        player.Messenger.RemoveFriend(packet.FriendId);
+        //_messaging.Publish(new PlayerMessengerRemoveFriend(player.CharacterId, packet.FriendId));
+
+        CachedPlayer cachedPlayer = _playerCache.Get(player.CharacterId);
+        CachedPlayerFriend playerFriend = cachedPlayer.Friends.FirstOrDefault(x => x.FriendId == packet.FriendId);
+
+        if (cachedPlayer != null)
         {
-            if (player.CharacterId != packet.CurrentPlayerId)
-            {
-                throw new InvalidOperationException($"Player ids doens't match.");
-            }
-
-            player.Messenger.RemoveFriend(packet.FriendId);
-            //_messaging.Publish(new PlayerMessengerRemoveFriend(player.CharacterId, packet.FriendId));
-
-            CachedPlayer cachedPlayer = _playerCache.Get(player.CharacterId);
-            CachedPlayerFriend playerFriend = cachedPlayer.Friends.FirstOrDefault(x => x.FriendId == packet.FriendId);
-
-            if (cachedPlayer != null)
-            {
-                cachedPlayer.Friends.Remove(playerFriend);
-                _playerCache.Set(cachedPlayer);
-            }
+            cachedPlayer.Friends.Remove(playerFriend);
+            _playerCache.Set(cachedPlayer);
         }
     }
 }

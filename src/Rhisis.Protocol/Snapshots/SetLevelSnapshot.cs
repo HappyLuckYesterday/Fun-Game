@@ -1,13 +1,12 @@
 ﻿using Rhisis.Abstractions.Entities;
 
-namespace Rhisis.Protocol.Snapshots
+namespace Rhisis.Protocol.Snapshots;
+
+public class SetLevelSnapshot : FFSnapshot
 {
-    public class SetLevelSnapshot : FFSnapshot
+    public SetLevelSnapshot(IPlayer player, int level)
+        : base(SnapshotType.SETLEVEL, player.Id)
     {
-        public SetLevelSnapshot(IPlayer player, int level)
-            : base(SnapshotType.SETLEVEL, player.Id)
-        {
-            WriteInt16((short)level);
-        }
+        WriteInt16((short)level);
     }
 }

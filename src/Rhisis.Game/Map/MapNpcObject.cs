@@ -1,9 +1,8 @@
 ﻿using Rhisis.Abstractions.Map;
 
-namespace Rhisis.Game.Map
+namespace Rhisis.Game.Map;
+
+public class MapNpcObject : MapObject, IMapNpcObject
 {
-    public class MapNpcObject : MapObject, IMapNpcObject
-    {
-        public string Name { get; set; }
-    }
+    public string Name { get; set; }
 }

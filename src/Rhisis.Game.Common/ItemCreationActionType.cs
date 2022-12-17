@@ -1,9 +1,8 @@
-﻿namespace Rhisis.Game.Common
+﻿namespace Rhisis.Game.Common;
+
+public enum ItemCreationActionType
 {
-    public enum ItemCreationActionType
-    {
-        Add,
-        Update,
-        Delete
-    }
+    Add,
+    Update,
+    Delete
 }

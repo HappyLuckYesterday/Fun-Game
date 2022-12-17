@@ -1,9 +1,8 @@
-﻿namespace Rhisis.Game.Common.Resources.Quests
+﻿namespace Rhisis.Game.Common.Resources.Quests;
+
+public enum QuestActionType
 {
-    public enum QuestActionType
-    {
-        Patrol,
-        Dialog,
-        KillMonster
-    }
+    Patrol,
+    Dialog,
+    KillMonster
 }

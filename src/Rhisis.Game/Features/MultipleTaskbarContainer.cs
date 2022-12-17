@@ -4,53 +4,52 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.Game.Features
+namespace Rhisis.Game.Features;
+
+public class MultipleTaskbarContainer<TObject> : IMultipleTaskbarContainer<TObject> where TObject : class, IPacketSerializer
 {
-    public class MultipleTaskbarContainer<TObject> : IMultipleTaskbarContainer<TObject> where TObject : class, IPacketSerializer
+    private readonly List<TaskbarContainer<TObject>> _levels;
+
+    public int Count => _levels.Sum(x => x.Count);
+
+    public int Capacity { get; }
+
+    public MultipleTaskbarContainer(int capacity, int capacityPerLevels)
     {
-        private readonly List<TaskbarContainer<TObject>> _levels;
+        _levels = new List<TaskbarContainer<TObject>>(Enumerable.Repeat(new TaskbarContainer<TObject>(capacityPerLevels), capacity));
+        Capacity = capacity;
+    }
 
-        public int Count => _levels.Sum(x => x.Count);
-
-        public int Capacity { get; }
-
-        public MultipleTaskbarContainer(int capacity, int capacityPerLevels)
+    public ITaskbarContainer<TObject> GetContainerAtLevel(int level)
+    {
+        if (level < 0 || level >= Capacity)
         {
-            _levels = new List<TaskbarContainer<TObject>>(Enumerable.Repeat(new TaskbarContainer<TObject>(capacityPerLevels), capacity));
-            Capacity = capacity;
+            return null;
         }
 
-        public ITaskbarContainer<TObject> GetContainerAtLevel(int level)
+        return _levels[level];
+    }
+
+    public void Serialize(IFFPacket packet)
+    {
+        packet.WriteInt32(Count);
+
+        for (int level = 0; level < Capacity; level++)
         {
-            if (level < 0 || level >= Capacity)
+            ITaskbarContainer<TObject> taskbarLevel = GetContainerAtLevel(level);
+
+            foreach (TObject shortcut in taskbarLevel)
             {
-                return null;
-            }
-
-            return _levels[level];
-        }
-
-        public void Serialize(IFFPacket packet)
-        {
-            packet.WriteInt32(Count);
-
-            for (int level = 0; level < Capacity; level++)
-            {
-                ITaskbarContainer<TObject> taskbarLevel = GetContainerAtLevel(level);
-
-                foreach (TObject shortcut in taskbarLevel)
+                if (shortcut != null)
                 {
-                    if (shortcut != null)
-                    {
-                        packet.WriteInt32(level);
-                        shortcut.Serialize(packet);
-                    }
+                    packet.WriteInt32(level);
+                    shortcut.Serialize(packet);
                 }
             }
         }
-
-        public IEnumerator<ITaskbarContainer<TObject>> GetEnumerator() => _levels.GetEnumerator();
-        
-        IEnumerator IEnumerable.GetEnumerator() => _levels.GetEnumerator();
     }
+
+    public IEnumerator<ITaskbarContainer<TObject>> GetEnumerator() => _levels.GetEnumerator();
+    
+    IEnumerator IEnumerable.GetEnumerator() => _levels.GetEnumerator();
 }

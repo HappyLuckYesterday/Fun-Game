@@ -1,15 +1,14 @@
-﻿namespace Rhisis.Game.Common
+﻿namespace Rhisis.Game.Common;
+
+public enum WorldObjectType
 {
-    public enum WorldObjectType
-    {
-        Object,
-        Animation,
-        Control,
-        SFX,
-        Item,
-        Mover,
-        Region,
-        Ship,
-        Path,
-    }
+    Object,
+    Animation,
+    Control,
+    SFX,
+    Item,
+    Mover,
+    Region,
+    Ship,
+    Path,
 }

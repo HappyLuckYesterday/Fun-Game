@@ -8,114 +8,113 @@ using System;
 using Rhisis.Abstractions.Protocol;
 using Rhisis.Protocol.Packets.Server.World.Friends;
 
-namespace Rhisis.Game.Features
+namespace Rhisis.Game.Features;
+
+public class Messenger : GameFeature, IMessenger
 {
-    public class Messenger : GameFeature, IMessenger
+    private readonly IPlayer _player;
+    private readonly int _currentChannelId;
+
+    public MessengerStatusType Status { get; set; }
+
+    public IContactList Friends { get; }
+
+    public Messenger(IPlayer player, int currentChannelId, int maximumFriendCount)
     {
-        private readonly IPlayer _player;
-        private readonly int _currentChannelId;
+        _player = player;
+        _currentChannelId = currentChannelId;
+        Friends = new MessengerContactList(maximumFriendCount);
+    }
 
-        public MessengerStatusType Status { get; set; }
+    public void SendFriendRequest(IPlayer targetPlayer)
+    {
+        using var snapshot = new AddFriendRequestSnapshot(_player, targetPlayer);
 
-        public IContactList Friends { get; }
+        targetPlayer.Send(snapshot);
+    }
 
-        public Messenger(IPlayer player, int currentChannelId, int maximumFriendCount)
+    public void AddFriend(IPlayer playerToAdd)
+    {
+        var contact = new MessengerContact(playerToAdd, _currentChannelId);
+
+        Friends.Add(contact);
+
+        using var snapshot = new AddFriendSnapshot(_player, playerToAdd);
+        snapshot.Merge(new DefinedTextSnapshot(_player, DefineText.TID_GAME_MSGINVATECOM, playerToAdd.Name));
+
+        _player.Send(snapshot);
+    }
+
+    public void RemoveFriend(int friendId)
+    {
+        IContact friend = Friends.Get(friendId);
+
+        if (friend is null)
         {
-            _player = player;
-            _currentChannelId = currentChannelId;
-            Friends = new MessengerContactList(maximumFriendCount);
+            throw new InvalidOperationException($"Failed to find friend with id: '{friendId}'");
         }
 
-        public void SendFriendRequest(IPlayer targetPlayer)
-        {
-            using var snapshot = new AddFriendRequestSnapshot(_player, targetPlayer);
+        Friends.Remove(friend);
 
-            targetPlayer.Send(snapshot);
+        using var snapshot = new RemoveFriendSnapshot(_player, friend.Id);
+        _player.Send(snapshot);
+    }
+
+    public void ToggleFriendBlockState(int friendId)
+    {
+        IContact friend = Friends.Get(friendId);
+
+        if (friend is null)
+        {
+            throw new InvalidOperationException($"Failed to find friend with id: '{friendId}'");
         }
 
-        public void AddFriend(IPlayer playerToAdd)
+        friend.IsBlocked = !friend.IsBlocked;
+
+        FFPacket packet;
+
+        if (friend.IsBlocked)
         {
-            var contact = new MessengerContact(playerToAdd, _currentChannelId);
-
-            Friends.Add(contact);
-
-            using var snapshot = new AddFriendSnapshot(_player, playerToAdd);
-            snapshot.Merge(new DefinedTextSnapshot(_player, DefineText.TID_GAME_MSGINVATECOM, playerToAdd.Name));
-
-            _player.Send(snapshot);
+            packet = new FriendInterceptPacket(_player.CharacterId, friend.Id);
+        }
+        else
+        {
+            packet = new FriendNoInterceptPacket(friend.Id, friend.Status);
         }
 
-        public void RemoveFriend(int friendId)
+        using (packet)
         {
-            IContact friend = Friends.Get(friendId);
+            _player.Send(packet);
+        }
+    }
 
-            if (friend is null)
-            {
-                throw new InvalidOperationException($"Failed to find friend with id: '{friendId}'");
-            }
+    public void OnFriendStatusChanged(int friendPlayerId, MessengerStatusType statusType)
+    {
+        IContact friend = Friends.Get(friendPlayerId);
 
-            Friends.Remove(friend);
-
-            using var snapshot = new RemoveFriendSnapshot(_player, friend.Id);
-            _player.Send(snapshot);
+        if (friend is null)
+        {
+            return;
         }
 
-        public void ToggleFriendBlockState(int friendId)
+        MessengerStatusType oldStatus = friend.Status;
+        friend.Status = statusType;
+
+        if (oldStatus == MessengerStatusType.Offline)
         {
-            IContact friend = Friends.Get(friendId);
-
-            if (friend is null)
-            {
-                throw new InvalidOperationException($"Failed to find friend with id: '{friendId}'");
-            }
-
-            friend.IsBlocked = !friend.IsBlocked;
-
-            FFPacket packet;
-
-            if (friend.IsBlocked)
-            {
-                packet = new FriendInterceptPacket(_player.CharacterId, friend.Id);
-            }
-            else
-            {
-                packet = new FriendNoInterceptPacket(friend.Id, friend.Status);
-            }
-
-            using (packet)
-            {
-                _player.Send(packet);
-            }
+            using var friendJoinGame = new AddFriendJoinPacket(friend);
+            _player.Send(friendJoinGame);
         }
-
-        public void OnFriendStatusChanged(int friendPlayerId, MessengerStatusType statusType)
+        else
         {
-            IContact friend = Friends.Get(friendPlayerId);
-
-            if (friend is null)
-            {
-                return;
-            }
-
-            MessengerStatusType oldStatus = friend.Status;
-            friend.Status = statusType;
-
-            if (oldStatus == MessengerStatusType.Offline)
-            {
-                using var friendJoinGame = new AddFriendJoinPacket(friend);
-                _player.Send(friendJoinGame);
-            }
-            else
-            {
-                using var setStatePacket = new SetFriendStatePacket(friend.Id, friend.Status);
-                _player.Send(setStatePacket);
-            }
+            using var setStatePacket = new SetFriendStatePacket(friend.Id, friend.Status);
+            _player.Send(setStatePacket);
         }
+    }
 
-        public void Serialize(IFFPacket packet)
-        {
-            packet.WriteInt32((int)Status);
-            Friends.Serialize(packet);
-        }
+    public void Serialize(IFFPacket packet)
+    {
+        packet.WriteInt32((int)Status);
+        Friends.Serialize(packet);
     }
 }

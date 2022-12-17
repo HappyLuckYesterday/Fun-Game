@@ -1,12 +1,11 @@
 ﻿using Rhisis.Abstractions.Server;
 using System.Collections.Generic;
 
-namespace Rhisis.ClusterServer.Abstractions
-{
-    public interface IClusterCacheServer
-    {
-        IEnumerable<WorldChannel> WorldChannels { get; }
+namespace Rhisis.ClusterServer.Abstractions;
 
-        void SendToAll(byte[] packet);
-    }
+public interface IClusterCacheServer
+{
+    IEnumerable<WorldChannel> WorldChannels { get; }
+
+    void SendToAll(byte[] packet);
 }

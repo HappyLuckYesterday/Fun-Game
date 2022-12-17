@@ -1,85 +1,84 @@
 ﻿using System;
 using System.IO;
 
-namespace Rhisis.Abstractions.Protocol
+namespace Rhisis.Abstractions.Protocol;
+
+/// <summary>
+/// Provides an interface to explorer flyff packets.
+/// </summary>
+public interface IFFPacket : IDisposable
 {
     /// <summary>
-    /// Provides an interface to explorer flyff packets.
+    /// Gets the packet buffer.
     /// </summary>
-    public interface IFFPacket : IDisposable
-    {
-        /// <summary>
-        /// Gets the packet buffer.
-        /// </summary>
-        byte[] Buffer { get; }
+    byte[] Buffer { get; }
 
-        /// <summary>
-        /// Gets a boolean value that indicates if the current packet stream has reached end of stream.
-        /// </summary>
-        bool IsEndOfStream { get; }
+    /// <summary>
+    /// Gets a boolean value that indicates if the current packet stream has reached end of stream.
+    /// </summary>
+    bool IsEndOfStream { get; }
 
-        /// <summary>
-        /// Write packet header.
-        /// </summary>
-        /// <param name="packetHeader">FFPacket header</param>
-        void WriteHeader(object packetHeader);
+    /// <summary>
+    /// Write packet header.
+    /// </summary>
+    /// <param name="packetHeader">FFPacket header</param>
+    void WriteHeader(object packetHeader);
 
-        byte ReadByte();
+    byte ReadByte();
 
-        sbyte ReadSByte();
+    sbyte ReadSByte();
 
-        char ReadChar();
+    char ReadChar();
 
-        bool ReadBoolean();
+    bool ReadBoolean();
 
-        short ReadInt16();
+    short ReadInt16();
 
-        ushort ReadUInt16();
+    ushort ReadUInt16();
 
-        int ReadInt32();
+    int ReadInt32();
 
-        uint ReadUInt32();
+    uint ReadUInt32();
 
-        long ReadInt64();
+    long ReadInt64();
 
-        ulong ReadUInt64();
+    ulong ReadUInt64();
 
-        float ReadSingle();
+    float ReadSingle();
 
-        double ReadDouble();
+    double ReadDouble();
 
-        string ReadString();
+    string ReadString();
 
-        byte[] ReadBytes(int count);
+    byte[] ReadBytes(int count);
 
-        void WriteByte(byte value);
+    void WriteByte(byte value);
 
-        void WriteSByte(sbyte value);
+    void WriteSByte(sbyte value);
 
-        void WriteChar(char value);
+    void WriteChar(char value);
 
-        void WriteBoolean(bool value);
+    void WriteBoolean(bool value);
 
-        void WriteInt16(short value);
+    void WriteInt16(short value);
 
-        void WriteUInt16(ushort value);
+    void WriteUInt16(ushort value);
 
-        void WriteInt32(int value);
+    void WriteInt32(int value);
 
-        void WriteUInt32(uint value);
+    void WriteUInt32(uint value);
 
-        void WriteSingle(float value);
+    void WriteSingle(float value);
 
-        void WriteDouble(double value);
+    void WriteDouble(double value);
 
-        void WriteInt64(long value);
+    void WriteInt64(long value);
 
-        void WriteUInt64(ulong value);
+    void WriteUInt64(ulong value);
 
-        void WriteString(string value);
+    void WriteString(string value);
 
-        void WriteBytes(byte[] values);
+    void WriteBytes(byte[] values);
 
-        long Seek(long offset, SeekOrigin loc);
-    }
+    long Seek(long offset, SeekOrigin loc);
 }

@@ -4,53 +4,52 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.Game.Features
+namespace Rhisis.Game.Features;
+
+public class TaskbarContainer<TObject> : ITaskbarContainer<TObject> where TObject : class, IPacketSerializer
 {
-    public class TaskbarContainer<TObject> : ITaskbarContainer<TObject> where TObject : class, IPacketSerializer
+    private readonly List<TObject> _objects;
+
+    public int Capacity { get; }
+
+    public int Count => _objects.Count(x => x != null);
+
+    public TaskbarContainer(int capacity)
     {
-        private readonly List<TObject> _objects;
+        _objects = new List<TObject>(new TObject[capacity]);
+        Capacity = capacity;
+    }
 
-        public int Capacity { get; }
+    public bool Add(TObject @object, int slotIndex) => SetAt(slotIndex, @object);
 
-        public int Count => _objects.Count(x => x != null);
+    public bool Remove(int slotIndex) => SetAt(slotIndex, null);
 
-        public TaskbarContainer(int capacity)
+    public void Serialize(IFFPacket packet)
+    {
+        packet.WriteInt32(Count);
+
+        for (int i = 0; i < Capacity; i++)
         {
-            _objects = new List<TObject>(new TObject[capacity]);
-            Capacity = capacity;
-        }
-
-        public bool Add(TObject @object, int slotIndex) => SetAt(slotIndex, @object);
-
-        public bool Remove(int slotIndex) => SetAt(slotIndex, null);
-
-        public void Serialize(IFFPacket packet)
-        {
-            packet.WriteInt32(Count);
-
-            for (int i = 0; i < Capacity; i++)
+            if (_objects[i] != null)
             {
-                if (_objects[i] != null)
-                {
-                    _objects[i].Serialize(packet);
-                }
+                _objects[i].Serialize(packet);
             }
         }
+    }
 
-        public IEnumerator<TObject> GetEnumerator() => _objects.GetEnumerator();
+    public IEnumerator<TObject> GetEnumerator() => _objects.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => _objects.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => _objects.GetEnumerator();
 
-        private bool SetAt(int slotIndex, TObject @object)
+    private bool SetAt(int slotIndex, TObject @object)
+    {
+        if (slotIndex < 0 || slotIndex >= Capacity)
         {
-            if (slotIndex < 0 || slotIndex >= Capacity)
-            {
-                return false;
-            }
-
-            _objects[slotIndex] = @object;
-
-            return true;
+            return false;
         }
+
+        _objects[slotIndex] = @object;
+
+        return true;
     }
 }

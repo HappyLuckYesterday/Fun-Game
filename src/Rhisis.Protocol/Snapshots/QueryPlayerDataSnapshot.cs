@@ -1,21 +1,20 @@
 ﻿using Rhisis.Abstractions.Caching;
 using System;
 
-namespace Rhisis.Protocol.Snapshots
+namespace Rhisis.Protocol.Snapshots;
+
+public class QueryPlayerDataSnapshot : FFSnapshot
 {
-    public class QueryPlayerDataSnapshot : FFSnapshot
+    public QueryPlayerDataSnapshot(CachedPlayer player)
+        : base(SnapshotType.QUERY_PLAYER_DATA, uint.MaxValue)
     {
-        public QueryPlayerDataSnapshot(CachedPlayer player)
-            : base(SnapshotType.QUERY_PLAYER_DATA, uint.MaxValue)
-        {
-            WriteUInt32((uint)player.Id);
-            WriteString(player.Name);
-            WriteByte((byte)player.Job);
-            WriteByte((byte)player.Level);
-            WriteByte((byte)player.Gender);
-            WriteByte(0);
-            WriteInt32(player.Version);
-            WriteInt32(Convert.ToInt32(player.IsOnline));
-        }
+        WriteUInt32((uint)player.Id);
+        WriteString(player.Name);
+        WriteByte((byte)player.Job);
+        WriteByte((byte)player.Level);
+        WriteByte((byte)player.Gender);
+        WriteByte(0);
+        WriteInt32(player.Version);
+        WriteInt32(Convert.ToInt32(player.IsOnline));
     }
 }
