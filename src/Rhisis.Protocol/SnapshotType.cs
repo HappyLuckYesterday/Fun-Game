@@ -1,8 +1,4 @@
-﻿//
-// This file contains every packet snapshot headers from the FF MsgHdr.h
-//
-
-namespace Rhisis.Protocol;
+﻿namespace Rhisis.Protocol;
 
 public enum SnapshotType : uint
 {

@@ -1,52 +1,40 @@
-﻿using LiteNetwork;
-using LiteNetwork.Server;
+﻿using LiteNetwork.Server;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rhisis.Infrastructure.Persistance;
-using Rhisis.LoginServer.Abstractions;
 using System;
-using System.Linq;
 
 namespace Rhisis.LoginServer;
 
-public sealed class LoginServer : LiteServer<LoginUser>, ILoginServer
+internal sealed class LoginServer : LiteServer<LoginUser>
 {
     private readonly ILogger<LoginServer> _logger;
-    private readonly IRhisisDatabase _database;
+    private readonly IServiceProvider _serviceProvider;
 
-    /// <summary>
-    /// Creates a new <see cref="LoginServer"/> instance.
-    /// </summary>
-    /// <param name="serverOptions">Server options.</param>
-    /// <param name="serviceProvider">Service provider.</param>
-    /// <param name="logger">Logger</param>
-    /// <param name="database"></param>
-    public LoginServer(LiteServerOptions serverOptions, IServiceProvider serviceProvider, ILogger<LoginServer> logger, IRhisisDatabase database)
-        : base(serverOptions, serviceProvider)
+    public LoginServer(LiteServerOptions options, ILogger<LoginServer> logger, IServiceProvider serviceProvider = null)
+        : base(options, serviceProvider)
     {
         _logger = logger;
-        _database = database;
+        _serviceProvider = serviceProvider;
     }
 
     protected override void OnBeforeStart()
     {
-        if (!_database.IsAlive())
-        {
-            throw new InvalidProgramException($"Cannot start {nameof(LoginServer)}. Failed to reach database.");
-        }
+        using IServiceScope serviceScope = _serviceProvider.CreateScope();
+        using IAccountDatabase accountDatabase = serviceScope.ServiceProvider.GetRequiredService<IAccountDatabase>();
+
+        accountDatabase.Migrate();
+
+        base.OnBeforeStart();
     }
 
     protected override void OnAfterStart()
     {
-        _logger.LogInformation($"{nameof(LoginServer)} is started and listen on {Options.Host}:{Options.Port}.");
+        _logger.LogInformation($"Login Server listening on port {Options.Port}.");
     }
 
-    protected override void OnError(LiteConnection connection, Exception exception)
+    protected override void OnError(LoginUser connection, Exception exception)
     {
         _logger.LogError(exception, $"An exception occured in {typeof(LoginServer).Name}.");
     }
-
-    public ILoginUser GetClientByUsername(string username)
-        => Users.Cast<LoginUser>().FirstOrDefault(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
-
-    public bool IsClientConnected(string username) => GetClientByUsername(username) is not null;
 }

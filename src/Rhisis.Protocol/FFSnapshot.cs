@@ -1,14 +1,13 @@
-﻿using Rhisis.Abstractions.Protocol;
-using Rhisis.Core.Extensions;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using Rhisis.Core.Extensions;
 
 namespace Rhisis.Protocol;
 
 /// <summary>
 /// Represents a FlyFF snapshot packet.
 /// </summary>
-public class FFSnapshot : FFPacket, IFFSnapshot
+public class FFSnapshot : FFPacket
 {
     /// <summary>
     /// Gets the FlyFF snapshot header offset in the packet stream.
@@ -31,11 +30,11 @@ public class FFSnapshot : FFPacket, IFFSnapshot
     /// </summary>
     public static readonly int SnapshotContentOffset = SnapshotAmountOffset + sizeof(short);
 
+    /// <summary>
+    /// Gets the number of packets inside the current snapshot.
+    /// </summary>
     public short Count { get; private set; } = 0;
 
-    /// <summary>
-    /// Creates a new empty <see cref="FFSnapshot"/> instance.
-    /// </summary>
     public FFSnapshot()
         : base(PacketType.SNAPSHOT)
     {
@@ -44,33 +43,28 @@ public class FFSnapshot : FFPacket, IFFSnapshot
     }
 
     /// <summary>
-    /// Creates a new <see cref="FFSnapshot"/> instance and merges the given snapshots into it.
-    /// </summary>
-    /// <param name="snapshots">Snapshots to merge.</param>
-    public FFSnapshot(params IFFSnapshot[] snapshots)
-        : this()
-    {
-        foreach (var snapshot in snapshots)
-        {
-            Merge(snapshot);
-        }
-    }
-
-    /// <summary>
-    /// Creates a new <see cref="FFSnapshot"/> instance.
+    /// Creates a new <see cref="FFSnapshot"/> instance for a given object.
     /// </summary>
     /// <param name="snapshot">Snapshot type.</param>
     /// <param name="objectId">Target object id.</param>
     public FFSnapshot(SnapshotType snapshot, uint objectId)
         : base(PacketType.SNAPSHOT)
     {
-        WriteInt32(0); // Not used.
-        WriteInt16(++Count); // Snapshot amount.
+        WriteInt32(0);
+        WriteInt16(++Count);
         WriteUInt32(objectId);
         WriteInt16((short)((uint)snapshot));
     }
 
-    public IFFSnapshot Merge(IFFSnapshot snapshot)
+    /// <summary>
+    /// Merge two snapshots together.
+    /// </summary>
+    /// <remarks>
+    /// The given snapshot content is added at the end of the current one.
+    /// </remarks>
+    /// <param name="snapshot">Snapshot to merge.</param>
+    /// <returns>Current snapshot.</returns>
+    public FFSnapshot Merge(FFSnapshot snapshot)
     {
         Count += snapshot.Count;
 
@@ -87,15 +81,10 @@ public class FFSnapshot : FFPacket, IFFSnapshot
         return this;
     }
 
-    private static byte[] GetSnapshotContent(IFFSnapshot snapshot)
+    private static byte[] GetSnapshotContent(FFSnapshot snapshot)
     {
         byte[] snapshotBuffer = snapshot.Buffer;
 
         return snapshotBuffer.GetRange(SnapshotContentOffset, snapshotBuffer.Length - SnapshotContentOffset).ToArray();
-    }
-
-    public byte[] GetSnapshotContent()
-    {
-        return GetSnapshotContent(this);
     }
 }

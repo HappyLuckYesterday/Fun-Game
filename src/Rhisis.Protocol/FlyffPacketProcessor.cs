@@ -1,12 +1,12 @@
-﻿using LiteNetwork.Protocol;
-using System;
+﻿using System;
+using LiteNetwork.Protocol;
 
 namespace Rhisis.Protocol;
 
-public class FlyffPacketProcessor : LitePacketProcessor
+public sealed class FlyffPacketProcessor : LitePacketProcessor
 {
-    private const byte HeaderNumber = 0x5E;
-    private const byte PacketHeaderSize = sizeof(byte) + sizeof(int);
+    internal const byte HeaderNumber = 0x5E;
+    internal const byte PacketDataStartOffset = sizeof(byte) + sizeof(int);
 
     /// <summary>
     /// Gets the FlyFF packet header size.
@@ -17,21 +17,21 @@ public class FlyffPacketProcessor : LitePacketProcessor
 
     public override int GetMessageLength(byte[] buffer)
     {
-        if (buffer[0] == FFPacket.Header)
+        if (buffer[0] != HeaderNumber)
         {
-            var packetDataLength = new byte[4];
-
-            Buffer.BlockCopy(buffer, 5, packetDataLength, 0, packetDataLength.Length);
-
-            return BitConverter.ToInt32(packetDataLength, 0);
+            throw new InvalidOperationException($"Packet header '0x{buffer[0]:X2}' is invalid. (Excepted header: 0x{HeaderNumber:X2})");
         }
 
-        return 0;
+        var packetDataLength = new byte[4];
+
+        Buffer.BlockCopy(buffer, 5, packetDataLength, 0, packetDataLength.Length);
+
+        return BitConverter.ToInt32(packetDataLength, 0);
     }
 
     public override byte[] AppendHeader(byte[] buffer)
     {
-        byte[] contentLengthBuffer = BitConverter.GetBytes(buffer.Length - PacketHeaderSize);
+        byte[] contentLengthBuffer = BitConverter.GetBytes(buffer.Length - PacketDataStartOffset);
 
         Array.Copy(contentLengthBuffer, 0, buffer, 1, sizeof(int));
 

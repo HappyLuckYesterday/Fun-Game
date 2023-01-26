@@ -45,7 +45,7 @@ public static class Aes
     /// <param name="input">Input string</param>
     /// <param name="key">Encryption key as byte array</param>
     /// <returns>Encrypted string converted in base 64</returns>
-    public static string EncryptString(string input, byte[] key) 
+    public static string EncryptString(string input, byte[] key)
         => Convert.ToBase64String(EncryptByteArray(Encoding.UTF8.GetBytes(input), key));
 
     /// <summary>
@@ -137,23 +137,6 @@ public static class Aes
         else
         {
             return encryptionKey.Take(keySize).ToArray();
-        }
-    }
-
-    /// <summary>
-    /// Generates an encryption key converted in base 64 string.
-    /// </summary>
-    /// <param name="keySize">Encryption key size</param>
-    /// <returns></returns>
-    public static string GenerateKey(int keySize)
-    {
-        if (keySize != 128 && keySize != 192 && keySize != 256)
-            throw new InvalidOperationException("The key size of the Aes encryption must be 128, 192 or 256 bits. Please check https://blogs.msdn.microsoft.com/shawnfa/2006/10/09/the-differences-between-rijndael-and-aes/ for more informations.");
-
-        using (var crypto = new AesCryptoServiceProvider {KeySize = keySize, BlockSize = 128})
-        {
-            crypto.GenerateKey();
-            return Convert.ToBase64String(crypto.Key);
         }
     }
 }

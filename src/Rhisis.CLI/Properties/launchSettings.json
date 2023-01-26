@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "Rhisis.CLI": {
-      "commandName": "Project",
-      "commandLineArgs": "-?",
-      "workingDirectory": "../../bin"
-    }
-  }
-}

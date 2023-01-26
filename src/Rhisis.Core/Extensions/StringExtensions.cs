@@ -10,8 +10,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    public static bool IsValidEmail(this string source) 
-        => new EmailAddressAttribute().IsValid(source);
+    public static bool IsValidEmail(this string source) => new EmailAddressAttribute().IsValid(source);
 
     /// <summary>
     /// Converts a string to a given enumeration type.

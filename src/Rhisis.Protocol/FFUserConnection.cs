@@ -1,7 +1,6 @@
 ﻿using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
-using Rhisis.Abstractions.Protocol;
-using Rhisis.Core.Helpers;
+using Rhisis.Protocol.Packets;
 using System;
 
 namespace Rhisis.Protocol;
@@ -14,7 +13,7 @@ public class FFUserConnection : LiteServerUser
     /// <summary>
     /// Gets the user session id.
     /// </summary>
-    public uint SessionId { get; } = RandomHelper.GenerateSessionKey();
+    public uint SessionId { get; } = (uint)new Random().Next(0, int.MaxValue);
 
     /// <summary>
     /// Gets the connection logger.
@@ -26,11 +25,15 @@ public class FFUserConnection : LiteServerUser
         Logger = logger;
     }
 
-    public override void Send(byte[] packetBuffer)
+    protected override void OnConnected()
     {
-        Logger.LogTrace("Send {0} packet to {1}.", (PacketType)BitConverter.ToUInt32(packetBuffer, FFPacket.PacketDataStartOffset), SessionId);
-        base.Send(packetBuffer);
+        using WelcomePacket packet = new(SessionId);
+
+        Send(packet);
     }
 
-    public void Send(IFFPacket packet) => Send(packet.Buffer);
+    protected override void OnError(object sender, Exception exception)
+    {
+        Logger.LogError(exception, $"An error occured while processing a request for user '{Id}' (Session Id={SessionId})");
+    }
 }

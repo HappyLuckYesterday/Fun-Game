@@ -1,8 +1,4 @@
-﻿//
-// This file contains every packet headers from the FF MsgHdr.h
-//
-
-namespace Rhisis.Protocol;
+﻿namespace Rhisis.Protocol;
 
 public enum PacketType : uint
 {
