@@ -33,7 +33,7 @@ public class MessageHandlerDispatcher : IMessageHandlerDispatcher
             return null;
         }
 
-        return new MessageHandler(handler.CreateInstance(_serviceProvider), handler.Executor);
+        return new MessageHandler(handler, _serviceProvider);
     }
 
     public MessageHandler? GetHandler<TMessage>()
@@ -43,7 +43,7 @@ public class MessageHandlerDispatcher : IMessageHandlerDispatcher
 
     public void Dispatch<TMessage>(TMessage message)
     {
-        MessageHandler? handler = GetHandler(typeof(TMessage));
+        using MessageHandler? handler = GetHandler(typeof(TMessage));
 
         if (handler == null)
         {

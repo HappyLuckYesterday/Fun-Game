@@ -1,0 +1,50 @@
+server:
+  ip: '127.0.0.1'
+  port: 23000
+  name: 'Rhisis'
+  login-project: false
+  default-character:
+    man:
+      level: 1
+      gold: 0
+      strength: 15
+      stamina: 15
+      dexterity: 15
+      intelligence: 15
+      map: 1
+      pos-x: 6968
+      pos-y: 100
+      pos-z: 3328
+      equiped:
+        hat: -1
+        suit: 502
+        hand: 506
+        shoes: 510
+        right-weapon: 21
+        left-weapon: -1
+      inventory: []
+    woman:
+      level: 1
+      gold: 0
+      strength: 0
+      stamina: 0
+      dexterity: 0
+      intelligence: 0
+      map: 1
+      pos-x: 6968
+      pos-y: 100
+      pos-z: 3328
+      equiped:
+        hat: -1
+        suit: 504
+        hand: 508
+        shoes: 512
+        right-weapon: 21
+        left-weapon: -1
+      inventory: []
+account-database:
+  provider: 'sqlite'
+  connection-string: 'Data Source=./db/accounts.db;'
+game-database:
+  provider: 'sqlite'
+  connection-string: 'Data Source=./db/game.db;'

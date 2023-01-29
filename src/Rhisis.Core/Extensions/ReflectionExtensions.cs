@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 
 namespace Rhisis.Core.Extensions;
 
@@ -38,5 +39,18 @@ public static class ReflectionExtensions
         {
             return sourceType.GetInterfaces().Any(x => x == interfaceType);
         }
+    }
+
+    /// <summary>
+    /// Assign the given value to the object's property.
+    /// </summary>
+    /// <param name="object">Current object.</param>
+    /// <param name="propertyName">Object property name.</param>
+    /// <param name="value">Value.</param>
+    public static void AssignProperty(this object @object, string propertyName, object value)
+    {
+        PropertyInfo property = @object.GetType().GetProperty(propertyName);
+
+        property?.SetValue(@object, value, null);
     }
 }

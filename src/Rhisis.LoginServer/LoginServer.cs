@@ -1,29 +1,26 @@
 ﻿using LiteNetwork.Server;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rhisis.Infrastructure.Persistance;
 using System;
+using System.Linq;
 
 namespace Rhisis.LoginServer;
 
 internal sealed class LoginServer : LiteServer<LoginUser>
 {
     private readonly ILogger<LoginServer> _logger;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IAccountDatabase _accountDatabase;
 
-    public LoginServer(LiteServerOptions options, ILogger<LoginServer> logger, IServiceProvider serviceProvider = null)
+    public LoginServer(LiteServerOptions options, ILogger<LoginServer> logger, IAccountDatabase accountDatabase, IServiceProvider serviceProvider = null)
         : base(options, serviceProvider)
     {
         _logger = logger;
-        _serviceProvider = serviceProvider;
+        _accountDatabase = accountDatabase;
     }
 
     protected override void OnBeforeStart()
     {
-        using IServiceScope serviceScope = _serviceProvider.CreateScope();
-        using IAccountDatabase accountDatabase = serviceScope.ServiceProvider.GetRequiredService<IAccountDatabase>();
-
-        accountDatabase.Migrate();
+        _accountDatabase.Migrate();
 
         base.OnBeforeStart();
     }
@@ -37,4 +34,6 @@ internal sealed class LoginServer : LiteServer<LoginUser>
     {
         _logger.LogError(exception, $"An exception occured in {typeof(LoginServer).Name}.");
     }
+
+    public bool IsUserConnected(string username) => Users.Cast<LoginUser>().Any(x => x.Username?.Equals(username) ?? false);
 }

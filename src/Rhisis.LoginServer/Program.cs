@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Core.Configuration;
 using Rhisis.Core.Extensions;
 using Rhisis.Infrastructure.Persistance;
+using Rhisis.LoginServer.Caching;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
 using System;
@@ -33,9 +34,11 @@ internal static class Program
            {
                services.AddOptions();
                services.Configure<LoginServerOptions>(hostContext.Configuration.GetSection("server"));
+               services.Configure<ClusterCacheServerOptions>(hostContext.Configuration.GetSection("cluster-cache-server"));
 
                services.AddAccountPersistance(hostContext.Configuration.GetSection("database").Get<DatabaseOptions>());
                services.AddSingleton<IMessageHandlerDispatcher, MessageHandlerDispatcher>();
+               services.AddSingleton<ClusterCache>();
            })
            .ConfigureLogging(builder =>
            {
@@ -62,6 +65,19 @@ internal static class Program
                    options.Host = serverOptions.Ip;
                    options.Port = serverOptions.Port;
                    options.PacketProcessor = new FlyffPacketProcessor();
+                   options.ReceiveStrategy = ReceiveStrategyType.Queued;
+               });
+               builder.AddLiteServer<ClusterCacheServer>(options =>
+               {
+                   var serverOptions = context.Configuration.GetSection("cluster-cache-server").Get<ClusterCacheServerOptions>();
+
+                   if (serverOptions is null)
+                   {
+                       throw new InvalidProgramException($"Failed to load cluster cache server settings.");
+                   }
+
+                   options.Host = serverOptions.Ip;
+                   options.Port = serverOptions.Port;
                    options.ReceiveStrategy = ReceiveStrategyType.Queued;
                });
            })

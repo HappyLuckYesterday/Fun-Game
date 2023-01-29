@@ -1,34 +1,37 @@
-﻿using LiteMessageHandler;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Configuration;
 using Rhisis.Core.Cryptography;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
+using Rhisis.LoginServer.Caching;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
 using Rhisis.Protocol.Packets;
-using Rhisis.Protocol.Packets.Clients;
+using Rhisis.Protocol.Packets.Login.Clients;
+using Rhisis.Protocol.Packets.Login.Server;
 using System;
 using System.Linq;
 
 namespace Rhisis.LoginServer.Handlers;
 
 [PacketHandler(PacketType.CERTIFY)]
-internal sealed class CertifyHandler : LoginPacketHandler, IMessageHandler<CertifyPacket>
+internal sealed class CertifyHandler : LoginPacketHandler<CertifyPacket>
 {
     private readonly ILogger<CertifyHandler> _logger;
     private readonly IAccountDatabase _accountDatabase;
     private readonly IOptions<LoginServerOptions> _options;
+    private readonly ClusterCache _clusterCache;
 
-    public CertifyHandler(ILogger<CertifyHandler> logger, IAccountDatabase accountDatabase, IOptions<LoginServerOptions> options)
+    public CertifyHandler(ILogger<CertifyHandler> logger, IAccountDatabase accountDatabase, IOptions<LoginServerOptions> options, ClusterCache clusterCache)
     {
         _logger = logger;
         _accountDatabase = accountDatabase;
         _options = options;
+        _clusterCache = clusterCache;
     }
 
-    public void Execute(CertifyPacket message)
+    public override void Execute(CertifyPacket message)
     {
         ArgumentNullException.ThrowIfNull(message, nameof(message));
         ArgumentException.ThrowIfNullOrEmpty(message.Username);
@@ -44,8 +47,7 @@ internal sealed class CertifyHandler : LoginPacketHandler, IMessageHandler<Certi
         string password = Aes.DecryptByteArray(message.Password, passwordEncryptionKey);
 
         AccountEntity account = _accountDatabase.Accounts
-            .FirstOrDefault(x => x.Username.Equals(message.Username, StringComparison.OrdinalIgnoreCase) && 
-                                 x.Password.Equals(password, StringComparison.OrdinalIgnoreCase));
+            .FirstOrDefault(x => x.Username.Equals(message.Username) && x.Password.Equals(password));
 
         if (!VerifyAccount(account))
         {
@@ -59,8 +61,7 @@ internal sealed class CertifyHandler : LoginPacketHandler, IMessageHandler<Certi
         User.Username = account.Username;
         User.UserId = account.Id;
 
-        // TODO: check if already connected
-        // TODO: send cluster server list
+        SendClusterList();
 
         _logger.LogInformation($"User '{account.Username}' logged-in successfuly.");
     }
@@ -77,6 +78,11 @@ internal sealed class CertifyHandler : LoginPacketHandler, IMessageHandler<Certi
             SendAuthenticationFailed(ErrorType.ILLEGAL_ACCESS, "Account has been deleted.");
             return false;
         }
+        else if (Server.IsUserConnected(account.Username))
+        {
+            SendAuthenticationFailed(ErrorType.DUPLICATE_ACCOUNT, "User already connected.");
+            return false;
+        }
 
         return true;
     }
@@ -91,6 +97,13 @@ internal sealed class CertifyHandler : LoginPacketHandler, IMessageHandler<Certi
         using ErrorPacket packet = new(error);
 
         User.Send(packet);
+    }
+
+    private void SendClusterList()
+    {
+        using ServerListPacket serverListPacket = new(User.Username, _clusterCache.Clusters);
+        
+        User.Send(serverListPacket);
     }
 }
 

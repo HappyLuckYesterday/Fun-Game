@@ -10,5 +10,5 @@ public interface IAccountDatabase : IDisposable
 
     void Migrate();
 
-    void SaveChanges();
+    int SaveChanges();
 }

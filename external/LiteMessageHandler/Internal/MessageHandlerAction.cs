@@ -31,8 +31,6 @@ internal class MessageHandlerAction
             return Activator.CreateInstance(HandlerType);
         }
 
-        using var scope = serviceProvider.CreateScope();
-
-        return _objectFactory(scope.ServiceProvider, null);
+        return _objectFactory(serviceProvider, null);
     }
 }

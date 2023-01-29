@@ -1,0 +1,20 @@
+server:
+  ip: ''
+  port: 5400
+  cluster: 'Rhisis'
+  name: 'Channel 1'
+  maximum-users: 100
+  language: 'en'
+  maps:
+    - "WI_WORLD_MADRIGAL"
+    - "WI_DUNGEON_FL_MAS"
+  rates:
+    gold: 1
+    experience: 1
+    drop: 1
+account-database:
+  provider: 'sqlite'
+  connection-string: 'Data Source=./db/accounts.db;'
+game-database:
+  provider: 'sqlite'
+  connection-string: 'Data Source=./db/game.db;'

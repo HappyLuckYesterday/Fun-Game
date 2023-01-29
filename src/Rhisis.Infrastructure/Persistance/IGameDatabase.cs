@@ -9,4 +9,6 @@ public interface IGameDatabase : IDisposable
     DbSet<PlayerEntity> Players { get; }
 
     void Migrate();
+
+    int SaveChanges();
 }

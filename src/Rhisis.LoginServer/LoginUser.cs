@@ -1,8 +1,8 @@
 ﻿using LiteMessageHandler;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Rhisis.LoginServer.Handlers;
+using Rhisis.Core.Extensions;
 using Rhisis.Protocol;
+using Rhisis.Protocol.Exceptions;
 using Rhisis.Protocol.Handlers;
 using System;
 using System.Threading.Tasks;
@@ -12,17 +12,17 @@ namespace Rhisis.LoginServer;
 internal sealed class LoginUser : FFUserConnection
 {
     private readonly IMessageHandlerDispatcher _messageDispatcher;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly LoginServer _loginServer;
 
     public Guid UserId { get; set; }
 
     public string Username { get; set; }
 
-    public LoginUser(ILogger<LoginUser> logger, IMessageHandlerDispatcher messageDispatcher, IServiceProvider serviceProvider) 
+    public LoginUser(ILogger<LoginUser> logger, IMessageHandlerDispatcher messageDispatcher, LoginServer loginServer) 
         : base(logger)
     {
         _messageDispatcher = messageDispatcher;
-        _serviceProvider = serviceProvider;
+        _loginServer = loginServer;
     }
 
     public override Task HandleMessageAsync(byte[] packetBuffer)
@@ -33,32 +33,43 @@ internal sealed class LoginUser : FFUserConnection
             return Task.CompletedTask;
         }
 
+        MessageHandler packetHandler = null;
+
         try
         {
             FFPacket packet = new(packetBuffer);
             Type packetType = PacketHandlerCache.GetPacketType(packet.Header);
-            MessageHandler packetHandler = GetHandler(packetType);
-            LoginPacketHandler packetHandlerMessage = CreatePacketHandlerMessage(packetType, packet);
 
+            if (packetType is null)
+            {
+                throw new PacketHandlerNotImplemented(packet.Header);
+            }
+
+            object packetHandlerMessage = Activator.CreateInstance(packetType, packet);
+
+            packetHandler = GetHandler(packetType);
             packetHandler.Execute(packetHandlerMessage);
         }
         catch (Exception e)
         {
             Logger.LogError(e, "An error occured while handling a login packet.");
         }
+        finally
+        {
+            packetHandler?.Dispose();
+        }
 
         return base.HandleMessageAsync(packetBuffer);
     }
 
-    protected override void OnConnected()
+    public void Disconnect(string reason = null)
     {
-        base.OnConnected();
-    }
+        _loginServer.DisconnectUser(Id);
 
-    protected override void OnError(object sender, Exception exception)
-    {
-
-        base.OnError(sender, exception);
+        if (!string.IsNullOrWhiteSpace(reason))
+        {
+            Logger.LogInformation($"{Username} disconnected. Reason: {reason}");
+        }
     }
 
     private MessageHandler GetHandler(Type packetType)
@@ -70,23 +81,9 @@ internal sealed class LoginUser : FFUserConnection
             throw new ArgumentException($"Failed to find handler for packet type: {packetType.Name}");
         }
 
-        if (packetHandler.Target is LoginPacketHandler loginHandler)
-        {
-            loginHandler.User = this;
-        }
+        packetHandler.Target.AssignProperty("User", this);
+        packetHandler.Target.AssignProperty("Server", _loginServer);
 
         return packetHandler;
-    }
-
-    private LoginPacketHandler CreatePacketHandlerMessage(Type packetType, FFPacket packet)
-    {
-        var packetObject = ActivatorUtilities.CreateInstance(_serviceProvider, packetType, packet) as LoginPacketHandler;
-
-        if (packetObject is not null)
-        {
-            packetObject.User = this;
-        }
-
-        return packetObject;
     }
 }
