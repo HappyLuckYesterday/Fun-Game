@@ -4,7 +4,7 @@ namespace Rhisis.Infrastructure.Persistance.Entities;
 
 public sealed class AccountEntity
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     public string Username { get; set; }
 

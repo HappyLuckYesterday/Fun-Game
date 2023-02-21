@@ -44,7 +44,7 @@ server:
       inventory: []
 account-database:
   provider: 'sqlite'
-  connection-string: 'Data Source=./db/accounts.db;'
+  connection-string: 'Data Source=./data/db/accounts.db;'
 game-database:
   provider: 'sqlite'
-  connection-string: 'Data Source=./db/game.db;'
+  connection-string: 'Data Source=./data/db/game.db;'

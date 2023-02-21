@@ -61,7 +61,7 @@ public static class ServiceCollectionExtensions
             {
                 throw new NotImplementedException($"Provider '{databaseOptions.Provider}' is not implemented.");
             }
-        });
+        }, ServiceLifetime.Transient);
 
         return services;
     }

@@ -11,7 +11,7 @@ using Rhisis.Infrastructure.Persistance.Contexts;
 namespace Rhisis.Infrastructure.Persistance.Sqlite.Migrations.Account
 {
     [DbContext(typeof(AccountDbContext))]
-    [Migration("20230126072532_InitialMigration")]
+    [Migration("20230221184008_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -22,9 +22,9 @@ namespace Rhisis.Infrastructure.Persistance.Sqlite.Migrations.Account
 
             modelBuilder.Entity("Rhisis.Infrastructure.Persistance.Entities.AccountEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Authority")
                         .ValueGeneratedOnAdd()

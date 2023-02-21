@@ -5,11 +5,18 @@ using Rhisis.Protocol.Packets.Login.Clients;
 namespace Rhisis.LoginServer.Handlers;
 
 [PacketHandler(PacketType.ERROR)]
-internal sealed class ErrorHandler : LoginPacketHandler<LoginErrorPacket>
+public sealed class ErrorHandler : LoginPacketHandler, IPacketHandler
 {
-    public override void Execute(LoginErrorPacket message)
+    private readonly LoginServer _server;
+
+    public ErrorHandler(LoginServer _server)
     {
-        if (Server.IsUserConnected(User.Username))
+        this._server = _server;
+    }
+
+    public void Execute(LoginErrorPacket message)
+    {
+        if (_server.IsUserConnected(User.Username))
         {
             User.Disconnect();
         }

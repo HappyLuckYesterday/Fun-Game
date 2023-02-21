@@ -5,9 +5,9 @@ using Rhisis.Protocol.Packets;
 namespace Rhisis.LoginServer.Handlers;
 
 [PacketHandler(PacketType.PING)]
-internal sealed class PingHandler : LoginPacketHandler<PingPacket>
+public sealed class PingHandler : LoginPacketHandler, IPacketHandler
 {
-    public override void Execute(PingPacket message)
+    public void Execute(PingPacket message)
     {
         if (!message.IsTimeOut)
         {

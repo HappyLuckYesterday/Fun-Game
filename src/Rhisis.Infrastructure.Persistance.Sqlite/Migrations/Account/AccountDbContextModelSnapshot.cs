@@ -19,9 +19,9 @@ namespace Rhisis.Infrastructure.Persistance.Sqlite.Migrations.Account
 
             modelBuilder.Entity("Rhisis.Infrastructure.Persistance.Entities.AccountEntity", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Authority")
                         .ValueGeneratedOnAdd()

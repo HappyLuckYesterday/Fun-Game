@@ -16,22 +16,24 @@ using System.Linq;
 namespace Rhisis.LoginServer.Handlers;
 
 [PacketHandler(PacketType.CERTIFY)]
-internal sealed class CertifyHandler : LoginPacketHandler<CertifyPacket>
+public sealed class CertifyHandler : LoginPacketHandler, IPacketHandler
 {
     private readonly ILogger<CertifyHandler> _logger;
     private readonly IAccountDatabase _accountDatabase;
     private readonly IOptions<LoginServerOptions> _options;
-    private readonly ClusterCache _clusterCache;
+    private readonly LoginServer _loginServer;
+    private readonly ClusterCacheServer _clusterCache;
 
-    public CertifyHandler(ILogger<CertifyHandler> logger, IAccountDatabase accountDatabase, IOptions<LoginServerOptions> options, ClusterCache clusterCache)
+    public CertifyHandler(ILogger<CertifyHandler> logger, IAccountDatabase accountDatabase, IOptions<LoginServerOptions> options, LoginServer loginServer, ClusterCacheServer clusterCache)
     {
         _logger = logger;
         _accountDatabase = accountDatabase;
         _options = options;
+        _loginServer = loginServer;
         _clusterCache = clusterCache;
     }
 
-    public override void Execute(CertifyPacket message)
+    public void Execute(CertifyPacket message)
     {
         ArgumentNullException.ThrowIfNull(message, nameof(message));
         ArgumentException.ThrowIfNullOrEmpty(message.Username);
@@ -78,7 +80,7 @@ internal sealed class CertifyHandler : LoginPacketHandler<CertifyPacket>
             SendAuthenticationFailed(ErrorType.ILLEGAL_ACCESS, "Account has been deleted.");
             return false;
         }
-        else if (Server.IsUserConnected(account.Username))
+        else if (_loginServer.IsUserConnected(account.Username))
         {
             SendAuthenticationFailed(ErrorType.DUPLICATE_ACCOUNT, "User already connected.");
             return false;
@@ -106,4 +108,3 @@ internal sealed class CertifyHandler : LoginPacketHandler<CertifyPacket>
         User.Send(serverListPacket);
     }
 }
-

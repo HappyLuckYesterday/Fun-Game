@@ -10,4 +10,4 @@ cluster-cache-server:
   master-password: 'StrongPassword'
 database:
   provider: 'sqlite' # 'sqlite' | 'mysql' | 'mssql'
-  connection-string: 'Data Source=./db/accounts.db;'
+  connection-string: 'Data Source=./data/db/accounts.db;'

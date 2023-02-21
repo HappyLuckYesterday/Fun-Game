@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Rhisis.Infrastructure.Persistance.Entities;
+using System.Data.Common;
+using System.Reflection;
 
 namespace Rhisis.Infrastructure.Persistance.Contexts;
 

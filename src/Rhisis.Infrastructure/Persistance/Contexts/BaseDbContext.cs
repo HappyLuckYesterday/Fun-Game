@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Rhisis.Core.Configuration;
 using Rhisis.Infrastructure.Persistance.Extensions;
 using System;
+using System.Data.Common;
 using System.IO;
 using System.Reflection;
 
@@ -20,7 +21,21 @@ public class BaseDbContext<TContext> : DbContext, IDesignTimeDbContextFactory<TC
     {
     }
 
-    public void Migrate() => Database.Migrate();
+    public virtual void Migrate()
+    {
+        if (Database.IsSqlite())
+        {
+            DbConnectionStringBuilder builder = new()
+            {
+                ConnectionString = Database.GetConnectionString()
+            };
+
+            string filePath = ((string)builder["Data Source"]).Trim();
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+        }
+
+        Database.Migrate();
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -74,5 +89,11 @@ public class BaseDbContext<TContext> : DbContext, IDesignTimeDbContextFactory<TC
         }
 
         return Activator.CreateInstance(typeof(TContext), builder.Options) as TContext;
+    }
+
+    public override void Dispose()
+    {
+        Console.WriteLine("Disposed");
+        base.Dispose();
     }
 }

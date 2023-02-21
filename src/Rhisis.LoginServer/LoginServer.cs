@@ -1,4 +1,5 @@
 ﻿using LiteNetwork.Server;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rhisis.Infrastructure.Persistance;
 using System;
@@ -6,21 +7,24 @@ using System.Linq;
 
 namespace Rhisis.LoginServer;
 
-internal sealed class LoginServer : LiteServer<LoginUser>
+public sealed class LoginServer : LiteServer<LoginUser>
 {
     private readonly ILogger<LoginServer> _logger;
-    private readonly IAccountDatabase _accountDatabase;
+    private readonly IServiceProvider _serviceProvider;
 
-    public LoginServer(LiteServerOptions options, ILogger<LoginServer> logger, IAccountDatabase accountDatabase, IServiceProvider serviceProvider = null)
+    public LoginServer(LiteServerOptions options, ILogger<LoginServer> logger, IServiceProvider serviceProvider = null)
         : base(options, serviceProvider)
     {
         _logger = logger;
-        _accountDatabase = accountDatabase;
+        _serviceProvider = serviceProvider;
     }
 
     protected override void OnBeforeStart()
     {
-        _accountDatabase.Migrate();
+        using IServiceScope scope = _serviceProvider.CreateScope();
+        IAccountDatabase accountDatabase = scope.ServiceProvider.GetService<IAccountDatabase>();
+
+        accountDatabase.Migrate();
 
         base.OnBeforeStart();
     }
@@ -37,3 +41,4 @@ internal sealed class LoginServer : LiteServer<LoginUser>
 
     public bool IsUserConnected(string username) => Users.Cast<LoginUser>().Any(x => x.Username?.Equals(username) ?? false);
 }
+

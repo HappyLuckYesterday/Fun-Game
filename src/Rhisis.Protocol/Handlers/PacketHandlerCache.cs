@@ -10,6 +10,7 @@ public static class PacketHandlerCache
 {
     private static Dictionary<PacketType, Type> _packetTypes;
     private static Dictionary<SnapshotType, Type> _snapshotTypes;
+    private static Dictionary<CorePacketType, Type> _corePacketTypes;
 
     public static void Load(Type messageHandlerBaseType)
     {
@@ -26,6 +27,13 @@ public static class PacketHandlerCache
             .ToDictionary(
                 x => x.GetCustomAttribute<SnapshotHandlerAttribute>().SnapshotType,
                 x => x.GetInterfaces().Single(i => i.GetGenericTypeDefinition() == messageHandlerBaseType).GetGenericArguments()[0]);
+
+        _corePacketTypes = Assembly.GetEntryAssembly()
+            .GetTypes()
+            .Where(x => x.IsClass && x.ImplementsInterface(messageHandlerBaseType) && x.GetCustomAttribute<CoreHandlerAttribute>() != null)
+            .ToDictionary(
+                x => x.GetCustomAttribute<CoreHandlerAttribute>().CorePacketType,
+                x => x.GetInterfaces().Single(i => i.GetGenericTypeDefinition() == messageHandlerBaseType).GetGenericArguments()[0]);
     }
 
     public static Type GetPacketType(PacketType packetTypeHeader)
@@ -33,4 +41,7 @@ public static class PacketHandlerCache
 
     public static Type GetSnapshotType(SnapshotType snapshotTypeHeader)
         => _snapshotTypes.TryGetValue(snapshotTypeHeader, out Type snapshotType) ? snapshotType : null;
+
+    public static Type GetCorePacketType(CorePacketType corePacketTypeHeader)
+        => _corePacketTypes.TryGetValue(corePacketTypeHeader, out Type corePacketType) ? corePacketType : null;
 }

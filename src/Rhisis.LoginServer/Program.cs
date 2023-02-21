@@ -1,5 +1,4 @@
-﻿using LiteMessageHandler;
-using LiteNetwork;
+﻿using LiteNetwork;
 using LiteNetwork.Hosting;
 using LiteNetwork.Server.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +10,6 @@ using Rhisis.Core.Extensions;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.LoginServer.Caching;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Handlers;
 using System;
 using System.Threading.Tasks;
 
@@ -37,19 +35,11 @@ internal static class Program
                services.Configure<ClusterCacheServerOptions>(hostContext.Configuration.GetSection("cluster-cache-server"));
 
                services.AddAccountPersistance(hostContext.Configuration.GetSection("database").Get<DatabaseOptions>());
-               services.AddSingleton<IMessageHandlerDispatcher, MessageHandlerDispatcher>();
-               services.AddSingleton<ClusterCache>();
            })
            .ConfigureLogging(builder =>
            {
-               builder.AddFilter("Microsoft", LogLevel.Warning);
                builder.SetMinimumLevel(LogLevel.Trace);
                builder.AddConsole();
-               //builder.AddNLog(new NLogProviderOptions
-               //{
-               //    CaptureMessageTemplates = true,
-               //    CaptureMessageProperties = true
-               //});
            })
            .ConfigureLiteNetwork((context, builder) =>
            {
@@ -84,8 +74,6 @@ internal static class Program
            .UseConsoleLifetime()
            .SetConsoleCulture(culture)
            .Build();
-
-        PacketHandlerCache.Load(typeof(IMessageHandler<>));
 
         await host.RunAsync();
     }

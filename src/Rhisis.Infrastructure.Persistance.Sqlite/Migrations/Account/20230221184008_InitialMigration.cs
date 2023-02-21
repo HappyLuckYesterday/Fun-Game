@@ -15,7 +15,8 @@ namespace Rhisis.Infrastructure.Persistance.Sqlite.Migrations.Account
                 name: "Accounts",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
                     Username = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
                     Password = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
                     Authority = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 80),
