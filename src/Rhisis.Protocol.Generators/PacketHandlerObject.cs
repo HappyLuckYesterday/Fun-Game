@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace Rhisis.Protocol.Generators;
 
 [DebuggerDisplay("{ClassName}")]
-internal sealed class PacketHandlerObject
+public sealed class PacketHandlerObject
 {
     public ClassDeclarationSyntax ClassNode { get; }
 

@@ -9,8 +9,14 @@ namespace Rhisis.Protocol.Generators;
 internal class PacketHandlerSyntaxReceiver : ISyntaxReceiver
 {
     private readonly List<PacketHandlerObject> _packetHandler = new();
+    private readonly string _attributeName;
 
     public IReadOnlyList<PacketHandlerObject> Handlers => _packetHandler;
+
+    public PacketHandlerSyntaxReceiver(string attributeName)
+    {
+        _attributeName = attributeName;
+    }
 
     public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
     {
@@ -21,24 +27,24 @@ internal class PacketHandlerSyntaxReceiver : ISyntaxReceiver
             if (hasPacketHandlerInterface && @class.AttributeLists.Any())
             {
                 PacketHandlerObject packetHandler = new(@class);
-                AttributeSyntax packetHandlerAttribute = @class.AttributeLists.SelectMany(x => x.Attributes).FirstOrDefault(x => x.Name.ToString() == "PacketHandler");
+                AttributeSyntax packetHandlerAttribute = @class.AttributeLists.SelectMany(x => x.Attributes).FirstOrDefault(x => x.Name.ToString() == _attributeName);
 
                 if (packetHandlerAttribute is not null)
                 {
                     packetHandler.PacketType = packetHandlerAttribute.ArgumentList.Arguments.First().ToString();
+
+                    MethodDeclarationSyntax executeMethod = @class.Members.Where(x => x.Kind() == SyntaxKind.MethodDeclaration)
+                        .Cast<MethodDeclarationSyntax>()
+                        .First(x => x.Identifier.ValueText == "Execute");
+
+                    if (executeMethod is not null)
+                    {
+                        packetHandler.HasExecuteMethod = true;
+                        packetHandler.PacketMessageClassName = executeMethod.ParameterList.Parameters.FirstOrDefault()?.Type.ToString();
+                    }
+
+                    _packetHandler.Add(packetHandler);
                 }
-
-                MethodDeclarationSyntax executeMethod = @class.Members.Where(x => x.Kind() == SyntaxKind.MethodDeclaration)
-                    .Cast<MethodDeclarationSyntax>()
-                    .First(x => x.Identifier.ValueText == "Execute");
-
-                if (executeMethod is not null)
-                {
-                    packetHandler.HasExecuteMethod = true;
-                    packetHandler.PacketMessageClassName = executeMethod.ParameterList.Parameters.FirstOrDefault()?.Type.ToString();
-                }
-
-                _packetHandler.Add(packetHandler);
             }
         }
     }
