@@ -48,3 +48,7 @@ account-database:
 game-database:
   provider: 'sqlite'
   connection-string: 'Data Source=./data/db/game.db;'
+cache:
+  ip: '127.0.0.1'
+  port: 15000
+  master-password: 'StrongPassword'

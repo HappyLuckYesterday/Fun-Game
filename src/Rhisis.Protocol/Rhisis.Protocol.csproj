@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Rhisis.Core\Rhisis.Core.csproj" />
+    <ProjectReference Include="..\Rhisis.Game\Rhisis.Game.csproj" />
   </ItemGroup>
 
 </Project>

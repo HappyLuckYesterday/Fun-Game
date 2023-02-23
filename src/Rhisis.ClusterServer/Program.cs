@@ -1,4 +1,5 @@
 ﻿using LiteNetwork;
+using LiteNetwork.Client.Hosting;
 using LiteNetwork.Hosting;
 using LiteNetwork.Server.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,16 +9,15 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Core.Configuration;
 using Rhisis.Core.Extensions;
 using Rhisis.Infrastructure.Persistance;
-using Rhisis.LoginServer.Caching;
 using Rhisis.Protocol;
 using System;
 using System.Threading.Tasks;
 
-namespace Rhisis.LoginServer;
+namespace Rhisis.ClusterServer;
 
-internal static class Program
+internal class Program
 {
-    static async Task Main(string[] args)
+    public static async Task Main()
     {
         const string culture = "en-US";
 
@@ -34,7 +34,8 @@ internal static class Program
                services.Configure<LoginServerOptions>(hostContext.Configuration.GetSection("server"));
                services.Configure<ClusterCacheOptions>(hostContext.Configuration.GetSection("cluster-cache-server"));
 
-               services.AddAccountPersistance(hostContext.Configuration.GetSection("database").Get<DatabaseOptions>());
+               services.AddAccountPersistance(hostContext.Configuration.GetSection("account-database").Get<DatabaseOptions>());
+               services.AddGamePersistance(hostContext.Configuration.GetSection("game-database").Get<DatabaseOptions>());
            })
            .ConfigureLogging(builder =>
            {
@@ -43,7 +44,7 @@ internal static class Program
            })
            .ConfigureLiteNetwork((context, builder) =>
            {
-               builder.AddLiteServer<LoginServer>(options =>
+               builder.AddLiteServer<ClusterServer>(options =>
                {
                    var serverOptions = context.Configuration.GetSection("server").Get<LoginServerOptions>();
 
@@ -57,17 +58,17 @@ internal static class Program
                    options.PacketProcessor = new FlyffPacketProcessor();
                    options.ReceiveStrategy = ReceiveStrategyType.Queued;
                });
-               builder.AddLiteServer<ClusterCacheServer>(options =>
+               builder.AddLiteClient<ClusterCacheClient>(options =>
                {
-                   var serverOptions = context.Configuration.GetSection("cluster-cache-server").Get<ClusterCacheOptions>();
+                   var cacheClientOptions = context.Configuration.GetSection("cache").Get<ClusterCacheOptions>();
 
-                   if (serverOptions is null)
+                   if (cacheClientOptions is null)
                    {
-                       throw new InvalidProgramException($"Failed to load cluster cache server settings.");
+                       throw new InvalidProgramException("Failed to load cluster cache client settings.");
                    }
 
-                   options.Host = serverOptions.Ip;
-                   options.Port = serverOptions.Port;
+                   options.Host = cacheClientOptions.Ip;
+                   options.Port = cacheClientOptions.Port;
                    options.ReceiveStrategy = ReceiveStrategyType.Queued;
                });
            })

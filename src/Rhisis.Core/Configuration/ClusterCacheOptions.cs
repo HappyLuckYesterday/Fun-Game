@@ -2,7 +2,7 @@
 
 namespace Rhisis.Core.Configuration;
 
-public sealed class ClusterCacheServerOptions
+public sealed class ClusterCacheOptions
 {
     /// <summary>
     /// Gets or sets the server's listening IP address.
