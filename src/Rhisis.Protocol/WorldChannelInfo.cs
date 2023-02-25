@@ -1,6 +1,6 @@
 ﻿namespace Rhisis.Protocol;
 
-public sealed class WorldChannel
+public sealed class WorldChannelInfo
 {
     public int Id { get; set; }
 

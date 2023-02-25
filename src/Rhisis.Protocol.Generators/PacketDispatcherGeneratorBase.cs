@@ -150,6 +150,9 @@ public class PacketDispatcherGeneratorBase
                             .Parameter(SyntaxFactory.Identifier("user"))
                             .WithType(SyntaxFactory.ParseTypeName(PacketDispatcherConstants.FFUserConnectionTypeName)),
                         SyntaxFactory
+                            .Parameter(SyntaxFactory.Identifier("header"))
+                            .WithType(SyntaxFactory.ParseName(_packetTypeName)),
+                        SyntaxFactory
                             .Parameter(SyntaxFactory.Identifier("packet"))
                             .WithType(SyntaxFactory.ParseName(PacketDispatcherConstants.FFPacketTypeName)),
                         SyntaxFactory
@@ -162,11 +165,7 @@ public class PacketDispatcherGeneratorBase
                 SyntaxFactory.Block(
                     SyntaxFactory.SingletonList<StatementSyntax>(
                         SyntaxFactory.SwitchStatement(
-                            SyntaxFactory.MemberAccessExpression(
-                                SyntaxKind.SimpleMemberAccessExpression,
-                                SyntaxFactory.IdentifierName("packet"),
-                                SyntaxFactory.IdentifierName("Header")
-                            )
+                            SyntaxFactory.IdentifierName("header")
                         )
                         .WithSections(
                             SyntaxFactory.List<SwitchSectionSyntax>(GenerateSwitchSections(handlers))
@@ -323,11 +322,7 @@ public class PacketDispatcherGeneratorBase
                                         SyntaxFactory.ArgumentList(
                                             SyntaxFactory.SingletonSeparatedList<ArgumentSyntax>(
                                                 SyntaxFactory.Argument(
-                                                    SyntaxFactory.MemberAccessExpression(
-                                                        SyntaxKind.SimpleMemberAccessExpression,
-                                                        SyntaxFactory.IdentifierName("packet"),
-                                                        SyntaxFactory.IdentifierName("Header")
-                                                    )
+                                                    SyntaxFactory.IdentifierName("header")
                                                 )
                                             )
                                         )

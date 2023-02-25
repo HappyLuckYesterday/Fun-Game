@@ -32,7 +32,7 @@ public sealed class LoginUser : FFUserConnection
         try
         {
             FFPacket packet = new(packetBuffer);
-            PacketDispatcher.Execute(this, packet, _serviceProvider);
+            PacketDispatcher.Execute(this, packet.Header, packet, _serviceProvider);
         }
         catch (Exception e)
         {

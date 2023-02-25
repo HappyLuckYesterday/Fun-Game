@@ -1,4 +1,6 @@
-﻿namespace Rhisis.Protocol.Packets.Cluster.Client;
+﻿using Rhisis.Game;
+
+namespace Rhisis.Protocol.Packets.Cluster.Client;
 
 public class CreatePlayerPacket
 {

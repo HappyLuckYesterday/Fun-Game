@@ -11,7 +11,7 @@ public sealed class ClusterCacheServer : LiteServer<ClusterCacheUser>
 {
     private readonly ILogger<ClusterCacheServer> _logger;
 
-    public IReadOnlyList<Cluster> Clusters => Users.Cast<ClusterCacheUser>().Where(x => x.Cluster is not null).Select(x => x.Cluster).ToList();
+    public IReadOnlyList<ClusterInfo> Clusters => Users.Cast<ClusterCacheUser>().Where(x => x.Cluster is not null).Select(x => x.Cluster).ToList();
 
     public ClusterCacheServer(LiteServerOptions options, ILogger<ClusterCacheServer> logger, IServiceProvider serviceProvider = null) 
         : base(options, serviceProvider)
@@ -24,5 +24,5 @@ public sealed class ClusterCacheServer : LiteServer<ClusterCacheUser>
         _logger.LogInformation($"Cluster cache server listening on port {Options.Port}.");
     }
 
-    public Cluster GetCluster(string name) => Clusters.SingleOrDefault(x => x.Name == name);
+    public ClusterInfo GetCluster(string name) => Clusters.SingleOrDefault(x => x.Name == name);
 }

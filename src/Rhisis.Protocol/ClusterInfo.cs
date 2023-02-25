@@ -2,7 +2,7 @@
 
 namespace Rhisis.Protocol;
 
-public sealed class Cluster
+public sealed class ClusterInfo
 {
     public int Id { get; set; }
 
@@ -14,5 +14,5 @@ public sealed class Cluster
 
     public bool IsEnabled { get; set; }
 
-    public IList<WorldChannel> Channels { get; set; } = new List<WorldChannel>();
+    public IList<WorldChannelInfo> Channels { get; set; } = new List<WorldChannelInfo>();
 }

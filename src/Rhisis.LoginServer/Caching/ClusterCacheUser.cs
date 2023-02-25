@@ -15,7 +15,7 @@ public sealed class ClusterCacheUser : LiteServerUser
     private readonly ILogger<ClusterCacheUser> _logger;
     private readonly ClusterCacheServer _cacheServer;
 
-    public Cluster Cluster { get; }
+    public ClusterInfo Cluster { get; }
 
     public ClusterCacheUser(ILogger<ClusterCacheUser> logger, ClusterCacheServer cacheServer)
     {

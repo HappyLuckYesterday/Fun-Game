@@ -6,7 +6,7 @@ namespace Rhisis.Protocol.Packets.Login.Server;
 
 public class ServerListPacket : FFPacket
 {
-    public ServerListPacket(string username, IEnumerable<Cluster> clusters)
+    public ServerListPacket(string username, IEnumerable<ClusterInfo> clusters)
         : base(PacketType.SRVR_LIST)
     {
         WriteInt32(0); // Authentication key
@@ -14,7 +14,7 @@ public class ServerListPacket : FFPacket
         WriteString(username);
         WriteInt32(clusters.Sum(x => x.Channels.Count) + clusters.Count());
 
-        foreach (Cluster cluster in clusters)
+        foreach (ClusterInfo cluster in clusters)
         {
             WriteInt32(-1); // Parent server id
             WriteInt32(cluster.Id);
@@ -25,7 +25,7 @@ public class ServerListPacket : FFPacket
             WriteInt32(Convert.ToInt32(cluster.IsEnabled));
             WriteInt32(0); // Maximum users
 
-            foreach (WorldChannel world in cluster.Channels)
+            foreach (WorldChannelInfo world in cluster.Channels)
             {
                 WriteInt32(cluster.Id);
                 WriteInt32(world.Id);
