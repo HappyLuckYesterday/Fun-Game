@@ -2,7 +2,7 @@
   "profiles": {
     "Profile 1": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "..\\Rhisis.LoginServer\\Rhisis.LoginServer.csproj"
+      "targetProject": "..\\Rhisis.ClusterServer\\Rhisis.ClusterServer.csproj"
     }
   }
 }

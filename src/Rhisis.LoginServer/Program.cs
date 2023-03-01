@@ -22,7 +22,7 @@ internal static class Program
         const string culture = "en-US";
 
         var host = new HostBuilder()
-           .ConfigureAppConfiguration((hostContext, config) =>
+           .ConfigureAppConfiguration((_, config) =>
            {
                config.AddEnvironmentVariables();
                config.SetBasePath(EnvironmentExtension.GetCurrentEnvironementDirectory());

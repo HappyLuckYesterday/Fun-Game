@@ -1,6 +1,6 @@
 ﻿namespace Rhisis.Game;
 
-public class DefineJob
+public static class DefineJob
 {
     public enum JobType : int
     {

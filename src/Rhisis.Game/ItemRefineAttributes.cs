@@ -2,7 +2,7 @@
 
 namespace Rhisis.Game;
 
-public class ItemRefineAttributes
+public static class ItemRefineAttributes
 {
     /// <summary>
     /// Flyff item refine table.

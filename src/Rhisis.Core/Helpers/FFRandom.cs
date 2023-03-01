@@ -2,7 +2,7 @@
 
 namespace Rhisis.Core.Helpers;
 
-internal class FFRandom
+public static class FFRandom
 {
     private static object _syncLock = new object();
     private static uint _id;

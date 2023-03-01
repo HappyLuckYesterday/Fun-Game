@@ -1,6 +1,6 @@
 ﻿namespace Rhisis.Game;
 
-public class DefineItem
+public static class DefineItem
 {
     public const int II_DEFAULT = 0x0000000A;
     public const int II_WEA_HAN_HAND = 0x0000000B;

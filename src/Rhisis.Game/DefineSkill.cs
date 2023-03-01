@@ -1,6 +1,6 @@
 ﻿namespace Rhisis.Game;
 
-public class DefineSkill
+public static class DefineSkill
 {
     public const int SI_VAG_ONE_CLEANHIT = 1;
     public const int SI_VAG_ONE_BRANDISH = 2;

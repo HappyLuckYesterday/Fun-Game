@@ -111,9 +111,9 @@ public class BinaryStream : MemoryStream
     {
         var bytes = new byte[count];
 
-        Read(bytes, 0, count);
+        int bytesRead = Read(bytes, 0, count);
 
-        return bytes;
+        return bytesRead < 0 ? null : bytes;
     }
 
     private void InternalWriteBytes(byte[] values)
@@ -132,7 +132,12 @@ public class BinaryStream : MemoryStream
         {
             var buffer = new byte[GetTypeSize<TValue>()];
 
-            Read(buffer, 0, buffer.Length);
+            int bytesRead = Read(buffer, 0, buffer.Length);
+
+            if (bytesRead < 0)
+            {
+                return default;
+            }
 
             if (BitConverter.IsLittleEndian && ReverseIfLittleEndian)
             {

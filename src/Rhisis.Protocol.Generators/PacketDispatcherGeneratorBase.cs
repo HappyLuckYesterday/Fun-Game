@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Rhisis.Protocol.Generators.Constants;
 using Rhisis.Protocol.Generators.Extensions;
 using Rhisis.Protocol.Generators.Helpers;
 using System.Collections.Generic;
@@ -8,22 +9,28 @@ using System.Linq;
 
 namespace Rhisis.Protocol.Generators;
 
-public class PacketDispatcherGeneratorBase
+public class PacketDispatcherCodeGenerator
 {
+    private readonly GeneratorExecutionContext _context;
+    private readonly string _className;
+    private readonly IEnumerable<PacketHandlerObject> _handlers;
     private readonly string _packetTypeName;
 
-    protected PacketDispatcherGeneratorBase(string type)
+    public PacketDispatcherCodeGenerator(GeneratorExecutionContext context, string className, IEnumerable<PacketHandlerObject> handlers, string type)
     {
+        _context = context;
+        _className = className;
+        _handlers = handlers;
         _packetTypeName = type;
     }
 
-    protected string GenerateCode(GeneratorExecutionContext context, string className, IEnumerable<PacketHandlerObject> handlers)
+    public string GenerateCode()
     {
         NamespaceDeclarationSyntax @namespace = SyntaxFactory.NamespaceDeclaration(
-            SyntaxFactory.IdentifierName(context.Compilation.AssemblyName))
+            SyntaxFactory.IdentifierName(_context.Compilation.AssemblyName))
             .WithMembers(
                 SyntaxFactory.SingletonList<MemberDeclarationSyntax>(
-                    SyntaxFactory.ClassDeclaration(className)
+                    SyntaxFactory.ClassDeclaration(_className)
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword))
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
@@ -31,7 +38,7 @@ public class PacketDispatcherGeneratorBase
                             CreateOnBeforeExecuteMethod(),
                             CreateOnAfterExecuteMethod(),
                             CreateOnHandlerNotImplementedMethod(),
-                            CreateExecuteMethod(handlers)
+                            CreateExecuteMethod(_handlers)
                         )
                 )
             );
@@ -178,6 +185,7 @@ public class PacketDispatcherGeneratorBase
     private IEnumerable<SwitchSectionSyntax> GenerateSwitchSections(IEnumerable<PacketHandlerObject> handlers)
     {
         var handlerSections = handlers
+            .Where(x => x.IsValid)
             .Select(x =>
                 SyntaxFactory
                     .SwitchSection()

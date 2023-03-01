@@ -16,6 +16,8 @@ public sealed class PacketHandlerObject
 
     public bool HasExecuteMethod { get; set; }
 
+    public bool IsValid => !string.IsNullOrWhiteSpace(ClassName) && !string.IsNullOrWhiteSpace(PacketType) && HasExecuteMethod;
+
     public PacketHandlerObject(ClassDeclarationSyntax classNode)
     {
         ClassNode = classNode;

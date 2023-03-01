@@ -1,4 +1,6 @@
-﻿namespace Rhisis.Protocol.Generators;
+﻿using Microsoft.CodeAnalysis;
+
+namespace Rhisis.Protocol.Generators.Constants;
 
 internal static class PacketDispatcherConstants
 {
@@ -22,4 +24,17 @@ internal static class PacketDispatcherConstants
     public const string ServiceProviderTypeName = "System.IServiceProvider";
     public const string ActivatorUtilitiesClassName = "Microsoft.Extensions.DependencyInjection.ActivatorUtilities";
     public const string CreateInstanceMethodName = "CreateInstance";
+}
+
+internal static class Diagnostics
+{
+    public static DiagnosticDescriptor MissingExecuteMethod(string packetType)
+    {
+        return new("RHIGEN001",
+            title: "Missing Execute method",
+            messageFormat: $"No execute method found for packet handler '{packetType}'.",
+            category: "Packet Dispatcher Generator",
+            DiagnosticSeverity.Warning,
+            isEnabledByDefault: true);
+    }
 }

@@ -8,6 +8,8 @@ public interface IGameDatabase : IDisposable
 {
     DbSet<PlayerEntity> Players { get; }
 
+    DbSet<ItemEntity> Items { get; }
+
     void Migrate();
 
     int SaveChanges();
