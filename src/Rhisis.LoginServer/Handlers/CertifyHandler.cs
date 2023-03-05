@@ -4,7 +4,7 @@ using Rhisis.Core.Configuration;
 using Rhisis.Core.Cryptography;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
-using Rhisis.LoginServer.Caching;
+using Rhisis.LoginServer.Core;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
 using Rhisis.Protocol.Packets;
@@ -22,9 +22,9 @@ public sealed class CertifyHandler : LoginPacketHandler, IPacketHandler
     private readonly IAccountDatabase _accountDatabase;
     private readonly IOptions<LoginServerOptions> _options;
     private readonly LoginServer _loginServer;
-    private readonly ClusterCacheServer _clusterCache;
+    private readonly IClusterCache _clusterCache;
 
-    public CertifyHandler(ILogger<CertifyHandler> logger, IAccountDatabase accountDatabase, IOptions<LoginServerOptions> options, LoginServer loginServer, ClusterCacheServer clusterCache)
+    public CertifyHandler(ILogger<CertifyHandler> logger, IAccountDatabase accountDatabase, IOptions<LoginServerOptions> options, LoginServer loginServer, IClusterCache clusterCache)
     {
         _logger = logger;
         _accountDatabase = accountDatabase;
@@ -103,7 +103,7 @@ public sealed class CertifyHandler : LoginPacketHandler, IPacketHandler
 
     private void SendClusterList()
     {
-        using ServerListPacket serverListPacket = new(User.Username, _clusterCache.Clusters);
+        using ServerListPacket serverListPacket = new(User.Username, _clusterCache.GetClusters());
         
         User.Send(serverListPacket);
     }

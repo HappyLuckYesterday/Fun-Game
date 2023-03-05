@@ -13,7 +13,7 @@ public sealed class GameDbContext : BaseDbContext<GameDbContext>, IGameDatabase
     {
     }
 
-    public GameDbContext(DbContextOptions options) 
+    public GameDbContext(DbContextOptions<GameDbContext> options) 
         : base(options)
     {
     }

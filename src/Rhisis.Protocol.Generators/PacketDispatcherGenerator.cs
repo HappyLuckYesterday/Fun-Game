@@ -7,7 +7,7 @@ using System.Linq;
 namespace Rhisis.Protocol.Generators;
 
 [Generator]
-public class PacketTypeDispatcherGenerator : ISourceGenerator
+public class PacketDispatcherGenerator : ISourceGenerator
 {
     public void Execute(GeneratorExecutionContext context)
     {
@@ -31,12 +31,24 @@ public class PacketTypeDispatcherGenerator : ISourceGenerator
         string snapshotDispatcherCode = GenerateSnapshotDispatcherCode(context, syntaxReceiver.Handlers.Where(x => x.PacketType.Contains("SnapshotType")));
 
         // Add the source code to the compilation
-        context.AddSource($"PacketTypeDispatcher.g.cs", packetDispatcherCode);
-        context.AddSource($"SnapshotTypeDispatcher.g.cs", snapshotDispatcherCode);
+        if (!string.IsNullOrWhiteSpace(packetDispatcherCode))
+        {
+            context.AddSource($"PacketTypeDispatcher.g.cs", packetDispatcherCode);
+        }
+
+        if (!string.IsNullOrWhiteSpace(snapshotDispatcherCode))
+        {
+            context.AddSource($"SnapshotTypeDispatcher.g.cs", snapshotDispatcherCode);
+        }
     }
 
     private string GeneratePacketDispatcherCode(GeneratorExecutionContext context, IEnumerable<PacketHandlerObject> handlers)
     {
+        if (!handlers.Any())
+        {
+            return null;
+        }
+
         PacketDispatcherCodeGenerator generator = new(context, PacketDispatcherConstants.PacketDispatcherClassName, handlers, PacketDispatcherConstants.PacketTypeName);
 
         return generator.GenerateCode();

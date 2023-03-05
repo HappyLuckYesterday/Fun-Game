@@ -1,8 +1,8 @@
 server:
   ip: '127.0.0.1'
-  port: 23000
+  port: 28000
   name: 'Rhisis'
-  login-project: false
+  login-protect: false
   default-character:
     man:
       level: 1
@@ -51,4 +51,8 @@ game-database:
 cache:
   ip: '127.0.0.1'
   port: 15000
+  master-password: 'StrongPassword'
+world-channel-cache:
+  ip: '127.0.0.1'
+  port: 16000
   master-password: 'StrongPassword'

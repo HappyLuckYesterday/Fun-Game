@@ -1,39 +1,35 @@
 ﻿using LiteNetwork;
 using LiteNetwork.Client.Hosting;
 using LiteNetwork.Hosting;
-using LiteNetwork.Server.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Rhisis.ClusterServer.Caching;
 using Rhisis.Core.Configuration;
 using Rhisis.Core.Extensions;
 using Rhisis.Infrastructure.Persistance;
-using Rhisis.Protocol;
 using System;
 using System.Threading.Tasks;
 
-namespace Rhisis.ClusterServer;
+namespace Rhisis.WorldServer;
 
 internal class Program
 {
-    public static async Task Main()
+    static async Task Main(string[] args)
     {
         const string culture = "en-US";
 
-        Console.Title = "Rhisis - Cluster Server";
         var host = new HostBuilder()
            .ConfigureAppConfiguration((_, config) =>
            {
                config.AddEnvironmentVariables();
                config.SetBasePath(EnvironmentExtension.GetCurrentEnvironementDirectory());
-               config.AddYamlFile("config/cluster-server.yml", optional: false, reloadOnChange: true);
+               config.AddYamlFile("config/world-server.yml", optional: false, reloadOnChange: true);
            })
            .ConfigureServices((hostContext, services) =>
            {
                services.AddOptions();
-               services.Configure<ClusterServerOptions>(hostContext.Configuration.GetSection("server"));
+               //services.Configure<ClusterServerOptions>(hostContext.Configuration.GetSection("server"));
                services.Configure<ClusterCacheOptions>(hostContext.Configuration.GetSection("cluster-cache-server"));
 
                services.AddAccountPersistance(hostContext.Configuration.GetSection("account-database").Get<DatabaseOptions>());
@@ -42,31 +38,11 @@ internal class Program
            .ConfigureLogging(builder =>
            {
                builder.SetMinimumLevel(LogLevel.Trace);
-               builder.AddFilter("LiteNetwork.*", LogLevel.Warning);
-               builder.AddFilter("Microsoft.EntityFrameworkCore.*", LogLevel.Warning);
                builder.AddConsole();
            })
            .ConfigureLiteNetwork((context, builder) =>
            {
-               builder.AddLiteServer<ClusterServer>(options =>
-               {
-                   var serverOptions = context.Configuration.GetSection("server").Get<ClusterServerOptions>();
-
-                   if (serverOptions is null)
-                   {
-                       throw new InvalidProgramException($"Failed to load login server settings.");
-                   }
-
-                   options.Host = serverOptions.Ip;
-                   options.Port = serverOptions.Port;
-                   options.PacketProcessor = new FlyffPacketProcessor();
-                   options.ReceiveStrategy = ReceiveStrategyType.Queued;
-               });
-               //builder.AddLiteServer<WorldChannelCacheServer>(options =>
-               //{
-
-               //});
-               builder.AddLiteClient<CoreCacheClient>(options =>
+               builder.AddLiteClient<WorldChannelCacheUser>(options =>
                {
                    var cacheClientOptions = context.Configuration.GetSection("cache").Get<ClusterCacheOptions>();
 

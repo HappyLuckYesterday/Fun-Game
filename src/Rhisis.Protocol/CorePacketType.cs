@@ -2,6 +2,6 @@
 
 public enum CorePacketType : uint
 {
-    Welcome = 0,
+    Handshake = 0,
     UpdateClusterInfo
 }

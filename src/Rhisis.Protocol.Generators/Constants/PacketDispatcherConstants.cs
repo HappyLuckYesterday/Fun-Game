@@ -1,40 +1,26 @@
-﻿using Microsoft.CodeAnalysis;
-
-namespace Rhisis.Protocol.Generators.Constants;
+﻿namespace Rhisis.Protocol.Generators.Constants;
 
 internal static class PacketDispatcherConstants
 {
-    public const string PacketDispatcherClassName = "PacketDispatcher";
-    public const string SnapshotDispatcherClassName = "SnapshotDispatcher";
-    public const string ExecuteMethodName = "Execute";
-    public const string OnBeforeExecuteMethodName = "OnBeforeExecute";
-    public const string OnAfterExecuteMethodName = "OnAfterExecute";
-    public const string OnHandlerNotImplemented = "OnHandlerNotImplemented";
+    public static readonly string PacketDispatcherClassName = "PacketDispatcher";
+    public static readonly string SnapshotDispatcherClassName = "SnapshotDispatcher";
+    public static readonly string ExecuteMethodName = "Execute";
+    public static readonly string OnBeforeExecuteMethodName = "OnBeforeExecute";
+    public static readonly string OnAfterExecuteMethodName = "OnAfterExecute";
+    public static readonly string OnHandlerNotImplemented = "OnHandlerNotImplemented";
 
-    public const string FFUserConnectionTypeName = "Rhisis.Protocol.FFUserConnection";
-    public const string FFPacketTypeName = "Rhisis.Protocol.FFPacket";
-    public const string IPacketHandlerTypeName = "Rhisis.Protocol.Handlers.IPacketHandler";
-    public const string PacketTypeName = "Rhisis.Protocol.PacketType";
-    public const string SnapshotTypeName = "Rhisis.Protocol.SnapshotType";
-    public const string ProtocolNamspace = "Rhisis.Protocol";
+    public static readonly string FFUserConnectionTypeName = "Rhisis.Protocol.FFUserConnection";
+    public static readonly string FFPacketTypeName = "Rhisis.Protocol.FFPacket";
+    public static readonly string IPacketHandlerTypeName = "Rhisis.Protocol.Handlers.IPacketHandler";
+    public static readonly string PacketTypeName = "Rhisis.Protocol.PacketType";
+    public static readonly string SnapshotTypeName = "Rhisis.Protocol.SnapshotType";
+    public static readonly string ProtocolNamspace = "Rhisis.Protocol";
 
-    public const string PacketHandlerAttributeName = "PacketHandler";
-    public const string SnapshotHandlerAttributeName = "SnapshotHandler";
+    public static readonly string PacketHandlerAttributeName = "PacketHandler";
+    public static readonly string SnapshotHandlerAttributeName = "SnapshotHandler";
+    public static readonly string CoreHandlerAttributeName = "CoreHandler";
 
-    public const string ServiceProviderTypeName = "System.IServiceProvider";
-    public const string ActivatorUtilitiesClassName = "Microsoft.Extensions.DependencyInjection.ActivatorUtilities";
-    public const string CreateInstanceMethodName = "CreateInstance";
-}
-
-internal static class Diagnostics
-{
-    public static DiagnosticDescriptor MissingExecuteMethod(string packetType)
-    {
-        return new("RHIGEN001",
-            title: "Missing Execute method",
-            messageFormat: $"No execute method found for packet handler '{packetType}'.",
-            category: "Packet Dispatcher Generator",
-            DiagnosticSeverity.Warning,
-            isEnabledByDefault: true);
-    }
+    public static readonly string ServiceProviderTypeName = "System.IServiceProvider";
+    public static readonly string ActivatorUtilitiesClassName = "Microsoft.Extensions.DependencyInjection.ActivatorUtilities";
+    public static readonly string CreateInstanceMethodName = "CreateInstance";
 }

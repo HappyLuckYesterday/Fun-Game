@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Core.Configuration;
 using Rhisis.Core.Extensions;
 using Rhisis.Infrastructure.Persistance;
-using Rhisis.LoginServer.Caching;
+using Rhisis.LoginServer.Core;
 using Rhisis.Protocol;
 using System;
 using System.Threading.Tasks;
@@ -21,6 +21,7 @@ internal static class Program
     {
         const string culture = "en-US";
 
+        Console.Title = "Rhisis - Login Server";
         var host = new HostBuilder()
            .ConfigureAppConfiguration((_, config) =>
            {
@@ -35,10 +36,14 @@ internal static class Program
                services.Configure<ClusterCacheOptions>(hostContext.Configuration.GetSection("cluster-cache-server"));
 
                services.AddAccountPersistance(hostContext.Configuration.GetSection("database").Get<DatabaseOptions>());
+
+               services.AddSingleton<IClusterCache, CoreCacheServer>(serviceProvider => serviceProvider.GetRequiredService<CoreCacheServer>());
            })
            .ConfigureLogging(builder =>
            {
                builder.SetMinimumLevel(LogLevel.Trace);
+               builder.AddFilter("LiteNetwork.*", LogLevel.Warning);
+               builder.AddFilter("Microsoft.EntityFrameworkCore.*", LogLevel.Warning);
                builder.AddConsole();
            })
            .ConfigureLiteNetwork((context, builder) =>
@@ -57,7 +62,7 @@ internal static class Program
                    options.PacketProcessor = new FlyffPacketProcessor();
                    options.ReceiveStrategy = ReceiveStrategyType.Queued;
                });
-               builder.AddLiteServer<ClusterCacheServer>(options =>
+               builder.AddLiteServer<CoreCacheServer>(options =>
                {
                    var serverOptions = context.Configuration.GetSection("cluster-cache-server").Get<ClusterCacheOptions>();
 

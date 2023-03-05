@@ -20,12 +20,15 @@ public sealed class ClusterServer : LiteServer<ClusterUser>
 
     protected override void OnBeforeStart()
     {
-        using IServiceScope scope = _serviceProvider?.CreateScope();
-        IAccountDatabase accountDatabase = scope.ServiceProvider.GetService<IAccountDatabase>();
-        IGameDatabase gameDatabase = scope.ServiceProvider.GetService<IGameDatabase>();
+        if (_serviceProvider is not null)
+        {
+            using IServiceScope scope = _serviceProvider.CreateScope();
+            IAccountDatabase accountDatabase = scope.ServiceProvider.GetService<IAccountDatabase>();
+            IGameDatabase gameDatabase = scope.ServiceProvider.GetService<IGameDatabase>();
 
-        accountDatabase.Migrate();
-        gameDatabase.Migrate();
+            accountDatabase.Migrate();
+            gameDatabase.Migrate();
+        }
 
         base.OnBeforeStart();
     }
