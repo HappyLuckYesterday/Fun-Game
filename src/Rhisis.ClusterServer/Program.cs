@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Rhisis.ClusterServer;
 
-internal class Program
+internal static class Program
 {
     public static async Task Main()
     {
