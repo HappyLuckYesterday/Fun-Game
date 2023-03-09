@@ -2,7 +2,7 @@
 
 namespace Rhisis.Core.Configuration;
 
-public sealed class ClusterCacheOptions
+public class CoreCacheBaseOptions
 {
     /// <summary>
     /// Gets or sets the server's listening IP address.
@@ -24,4 +24,8 @@ public sealed class ClusterCacheOptions
     /// </summary>
     [ConfigurationKeyName("master-password")]
     public string MasterPassword { get; set; }
+
+    protected CoreCacheBaseOptions()
+    {
+    }
 }

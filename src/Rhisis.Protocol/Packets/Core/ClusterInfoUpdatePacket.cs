@@ -1,4 +1,5 @@
-﻿namespace Rhisis.Protocol.Packets.Core;
+﻿using System.Collections.Generic;
 
-public sealed record ClusterInfoUpdatePacket(ClusterInfo Cluster);
+namespace Rhisis.Protocol.Packets.Core;
 
+public sealed record ClusterInfoUpdatePacket(List<WorldChannelInfo> Channels);

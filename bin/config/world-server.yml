@@ -1,9 +1,14 @@
 server:
   ip: ''
   port: 5400
-  cluster: 'Rhisis'
   name: 'Channel 1'
+  cluster:
+    name: 'Rhisis'
+    ip: '127.0.0.1'
+    port: 16000
+    master-password: 'StrongPassword'
   maximum-users: 100
+  pk-enabled: false
   language: 'en'
   maps:
     - "WI_WORLD_MADRIGAL"

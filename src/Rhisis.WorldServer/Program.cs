@@ -19,6 +19,7 @@ internal class Program
     {
         const string culture = "en-US";
 
+        Console.Title = "Rhisis - World Server";
         var host = new HostBuilder()
            .ConfigureAppConfiguration((_, config) =>
            {
@@ -29,30 +30,33 @@ internal class Program
            .ConfigureServices((hostContext, services) =>
            {
                services.AddOptions();
-               //services.Configure<ClusterServerOptions>(hostContext.Configuration.GetSection("server"));
-               services.Configure<ClusterCacheOptions>(hostContext.Configuration.GetSection("cluster-cache-server"));
+               services.Configure<WorldChannelServerOptions>(hostContext.Configuration.GetSection("server"));
 
                services.AddAccountPersistance(hostContext.Configuration.GetSection("account-database").Get<DatabaseOptions>());
                services.AddGamePersistance(hostContext.Configuration.GetSection("game-database").Get<DatabaseOptions>());
            })
            .ConfigureLogging(builder =>
            {
-               builder.SetMinimumLevel(LogLevel.Trace);
                builder.AddConsole();
+               builder.SetMinimumLevel(LogLevel.Trace);
+               builder.AddFilter("LiteNetwork.*", LogLevel.Warning);
+               builder.AddFilter("Microsoft.EntityFrameworkCore.*", LogLevel.Warning);
+               builder.AddFilter("Microsoft.Extensions.*", LogLevel.Warning);
+               builder.AddFilter("Microsoft.Hosting.*", LogLevel.Warning);
            })
            .ConfigureLiteNetwork((context, builder) =>
            {
-               builder.AddLiteClient<WorldChannelCacheUser>(options =>
+               builder.AddLiteClient<ClusterCacheClient>(options =>
                {
-                   var cacheClientOptions = context.Configuration.GetSection("cache").Get<ClusterCacheOptions>();
+                   var cacheClientOptions = context.Configuration.GetSection("server").Get<WorldChannelServerOptions>();
 
                    if (cacheClientOptions is null)
                    {
                        throw new InvalidProgramException("Failed to load cluster cache client settings.");
                    }
 
-                   options.Host = cacheClientOptions.Ip;
-                   options.Port = cacheClientOptions.Port;
+                   options.Host = cacheClientOptions.Cluster.Ip;
+                   options.Port = cacheClientOptions.Cluster.Port;
                    options.ReceiveStrategy = ReceiveStrategyType.Queued;
                });
            })

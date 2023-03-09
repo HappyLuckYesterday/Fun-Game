@@ -1,8 +1,6 @@
 ﻿using LiteNetwork.Client;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Rhisis.ClusterServer.Abstractions;
 using Rhisis.Core.Configuration;
 using Rhisis.Core.Extensions;
 using Rhisis.Protocol;
@@ -12,28 +10,18 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Rhisis.ClusterServer.Caching;
+namespace Rhisis.WorldServer;
 
-public sealed class CoreCacheClient : LiteClient
+public class ClusterCacheClient : LiteClient
 {
-    private readonly ILogger<CoreCacheClient> _logger;
-    private readonly IOptions<ClusterServerOptions> _clusterOptions;
-    private readonly IOptions<CoreCacheClientOptions> _coreClientOptions;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<ClusterCacheClient> _logger;
+    private readonly IOptions<WorldChannelServerOptions> _channelOptions;
 
-    private string Name => _clusterOptions.Value.Name;
-
-    public CoreCacheClient(LiteClientOptions options,
-        ILogger<CoreCacheClient> logger,
-        IOptions<ClusterServerOptions> clusterOptions,
-        IOptions<CoreCacheClientOptions> coreClientOptions,
-        IServiceProvider serviceProvider = null)
+    public ClusterCacheClient(LiteClientOptions options, ILogger<ClusterCacheClient> logger, IOptions<WorldChannelServerOptions> channelOptions, IServiceProvider serviceProvider = null) 
         : base(options, serviceProvider)
     {
         _logger = logger;
-        _clusterOptions = clusterOptions;
-        _coreClientOptions = coreClientOptions;
-        _serviceProvider = serviceProvider;
+        _channelOptions = channelOptions;
     }
 
     public override Task HandleMessageAsync(byte[] packetBuffer)
@@ -69,12 +57,12 @@ public sealed class CoreCacheClient : LiteClient
 
     protected override void OnConnected()
     {
-        _logger.LogInformation($"Cluster '{_clusterOptions.Value.Name}' connected to Core Cache server.");
+        _logger.LogInformation($"Channel '{_channelOptions.Value.Name}' connected to cluster cache server.");
     }
 
     protected override void OnDisconnected()
     {
-        _logger.LogInformation($"Cluster '{_clusterOptions.Value.Name}' disconnected from Core Cache server.");
+        _logger.LogInformation($"Channel '{_channelOptions.Value.Name}' disconnected from cluster cache server.");
     }
 
     public void Send(CorePacketType packet, object message = null)
@@ -92,10 +80,13 @@ public sealed class CoreCacheClient : LiteClient
 
     private void OnHandshake()
     {
-        ServerAuthenticationPacket packet = new(Name,
-            _clusterOptions.Value.Ip,
-            _clusterOptions.Value.Port,
-            _coreClientOptions.Value.MasterPassword);
+        WorldChannelAuthenticationPacket packet = new(
+            _channelOptions.Value.Cluster.Name, 
+            _channelOptions.Value.Name, 
+            _channelOptions.Value.Ip, 
+            _channelOptions.Value.Port, 
+            _channelOptions.Value.Cluster.MasterPassword,
+            _channelOptions.Value.MaximumUsers);
 
         Send(CorePacketType.Authenticate, packet);
     }
@@ -105,13 +96,10 @@ public sealed class CoreCacheClient : LiteClient
         switch (packet.Result)
         {
             case CoreAuthenticationResult.Success:
-                _logger.LogInformation($"Server '{Name}' authenticated to core cache server.");
-                ICluster cluster = _serviceProvider.GetRequiredService<ICluster>();
-
-                cluster.SendChannels();
+                _logger.LogInformation($"Server '{_channelOptions.Value.Name}' authenticated to cluster cache server.");
                 break;
-            case CoreAuthenticationResult.ClusterExists:
-                _logger.LogWarning($"A server with name '{Name}' is already connected to core cache server.");
+            case CoreAuthenticationResult.WorldChannelExists:
+                _logger.LogWarning($"A server with name '{_channelOptions.Value.Name}' is already connected to cluster cache server.");
                 break;
             case CoreAuthenticationResult.WrongMasterPassword:
                 _logger.LogWarning($"Authentication failed: wrong master password.");

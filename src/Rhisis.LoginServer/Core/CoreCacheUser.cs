@@ -1,27 +1,33 @@
-﻿using LiteNetwork.Server;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Rhisis.Core.Configuration;
 using Rhisis.Core.Extensions;
-using Rhisis.LoginServer.Core.Handlers;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Packets.Core;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Rhisis.LoginServer.Core;
 
-public sealed class CoreCacheUser : LiteServerUser
+public sealed class CoreCacheUser : FFInterServerConnection
 {
     private readonly ILogger<CoreCacheUser> _logger;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IOptions<CoreCacheServerOptions> _coreServerOptions;
+    private readonly IClusterCache _clusterCache;
 
-    public ClusterInfo Cluster { get; set; }
+    public bool IsAuthenticated => Cluster is not null;
 
-    public CoreCacheUser(ILogger<CoreCacheUser> logger, IServiceProvider serviceProvider)
+    public ClusterInfo Cluster { get; private set; }
+
+    public CoreCacheUser(ILogger<CoreCacheUser> logger, IOptions<CoreCacheServerOptions> coreServerOptions, IClusterCache clusterCache)
     {
         _logger = logger;
-        _serviceProvider = serviceProvider;
+        _coreServerOptions = coreServerOptions;
+        _clusterCache = clusterCache;
     }
 
     public override Task HandleMessageAsync(byte[] packetBuffer)
@@ -32,14 +38,25 @@ public sealed class CoreCacheUser : LiteServerUser
 
         try
         {
-            string messageContent = reader.ReadString();
+            _logger.LogTrace($"Received core packet '{packetType}'.");
+            string message = reader.BaseStream.IsEndOfStream() ? null : reader.ReadString();
 
             switch (packetType)
             {
+                case CorePacketType.Authenticate:
+                    OnAuthenticate(JsonSerializer.Deserialize<ServerAuthenticationPacket>(message));
+                    break;
                 case CorePacketType.UpdateClusterInfo:
-                    ClusterInfoUpdateHandler clusterInfoUpdateHandler = _serviceProvider.CreateInstance<ClusterInfoUpdateHandler>();
-                    clusterInfoUpdateHandler.User = this;
-                    clusterInfoUpdateHandler.Execute(JsonSerializer.Deserialize<ClusterInfoUpdatePacket>(messageContent));
+                    OnUpdateCluster();
+                    break;
+                case CorePacketType.AddChannel:
+                    OnAddChannel(JsonSerializer.Deserialize<ClusterAddChannelPacket>(message));
+                    break;
+                case CorePacketType.UpdateChannel:
+                    OnUpdateChannel(JsonSerializer.Deserialize<ClusterUpdateChannelPacket>(message));
+                    break;
+                case CorePacketType.RemoveChannel:
+                    OnRemoveChannel(JsonSerializer.Deserialize<ClusterRemoveChannelPacket>(message));
                     break;
                 default:
                     _logger.LogWarning($"No handler for packet: '{packetType}'.");
@@ -54,16 +71,110 @@ public sealed class CoreCacheUser : LiteServerUser
         return base.HandleMessageAsync(packetBuffer);
     }
 
-    public void Send(CorePacketType packet, object message = null)
+    protected override void OnConnected()
     {
-        using BinaryWriter writer = new(new MemoryStream());
-        writer.Write((byte)packet);
+        _logger.LogInformation($"New cluster connected to core server ({Id}).");
 
-        if (message is not null)
+        Send(CorePacketType.Handshake);
+    }
+
+    private void OnAuthenticate(ServerAuthenticationPacket packet)
+    {
+        ArgumentNullException.ThrowIfNull(packet, nameof(packet));
+
+        if (IsAuthenticated)
         {
-            writer.Write(JsonSerializer.Serialize(message));
+            throw new InvalidOperationException("Cluster is already authenticated.");
         }
 
-        Send(writer.BaseStream);
+        if (!_coreServerOptions.Value.MasterPassword.Equals(packet.MasterPassword))
+        {
+            _logger.LogWarning($"Cluster '{packet.Name}' tried to authenticated with wrong password.");
+
+            Send(CorePacketType.AuthenticationResult, new ServerAuthenticationResultPacket(CoreAuthenticationResult.WrongMasterPassword));
+            Disconnect();
+        }
+
+        if (Cluster is null && _clusterCache.HasCluster(packet.Name))
+        {
+            _logger.LogWarning($"A cluster with name '{packet.Name}' is already connected.");
+
+            Send(CorePacketType.AuthenticationResult, new ServerAuthenticationResultPacket(CoreAuthenticationResult.ClusterExists));
+            Dispose();
+        }
+
+        Cluster = new()
+        {
+            Name = packet.Name,
+            Ip = packet.Ip,
+            Port = packet.Port,
+            IsEnabled = true,
+            Channels = new List<WorldChannelInfo>()
+        };
+
+        _clusterCache.AddCluster(Cluster);
+
+        Send(CorePacketType.AuthenticationResult, new ServerAuthenticationResultPacket(CoreAuthenticationResult.Success));
+    }
+
+    private void OnUpdateCluster()
+    {
+        IsAuthenticatedGuard();
+    }
+
+    private void OnAddChannel(ClusterAddChannelPacket packet)
+    {
+        IsAuthenticatedGuard();
+
+        if (Cluster.Channels.Any(x => x.Name == packet.Channel.Name))
+        {
+            throw new InvalidOperationException($"Failed to add channel '{packet.Channel.Name}' to cluster '{Cluster.Name}' because a channel with the same name already exists.");
+        }
+
+        Cluster.Channels.Add(new WorldChannelInfo
+        {
+            Id = packet.Channel.Id,
+            Ip = packet.Channel.Ip,
+            Port = packet.Channel.Port,
+            Name = packet.Channel.Name,
+            IsEnabled = packet.Channel.IsEnabled,
+            MaximumUsers = packet.Channel.MaximumUsers,
+            ConnectedUsers = packet.Channel.ConnectedUsers
+        });
+
+        _logger.LogInformation($"World channel '{packet.Channel.Name}' added to '{Cluster.Name}'.");
+    }
+
+    private void OnUpdateChannel(ClusterUpdateChannelPacket packet)
+    {
+        IsAuthenticatedGuard();
+
+        WorldChannelInfo channel = Cluster.Channels.SingleOrDefault(x => x.Name == packet.Channel.Name);
+
+        if (channel is null)
+        {
+            throw new InvalidOperationException($"Channel with name '{packet.Channel.Name}' not found in cluster '{Cluster.Name}'.");
+        }
+
+        channel.ConnectedUsers = packet.Channel.ConnectedUsers;
+
+        _logger.LogInformation($"World channel '{packet.Channel.Name}' updated for '{Cluster.Name}'.");
+    }
+
+    private void OnRemoveChannel(ClusterRemoveChannelPacket packet)
+    {
+        IsAuthenticatedGuard();
+
+        _clusterCache.RemoveCluster(packet.ChannelName);
+
+        _logger.LogInformation($"World channel '{packet.ChannelName}' removed from '{Cluster.Name}'.");
+    }
+
+    private void IsAuthenticatedGuard()
+    {
+        if (!IsAuthenticated)
+        {
+            throw new InvalidOperationException("Cluster must be authenticated to perform this operation.");
+        }
     }
 }

@@ -33,18 +33,20 @@ internal static class Program
            {
                services.AddOptions();
                services.Configure<LoginServerOptions>(hostContext.Configuration.GetSection("server"));
-               services.Configure<ClusterCacheOptions>(hostContext.Configuration.GetSection("cluster-cache-server"));
+               services.Configure<CoreCacheServerOptions>(hostContext.Configuration.GetSection("core-cache-server"));
 
-               services.AddAccountPersistance(hostContext.Configuration.GetSection("database").Get<DatabaseOptions>());
+               services.AddAccountPersistance(hostContext.Configuration.GetSection("account-database").Get<DatabaseOptions>());
 
                services.AddSingleton<IClusterCache, CoreCacheServer>(serviceProvider => serviceProvider.GetRequiredService<CoreCacheServer>());
            })
            .ConfigureLogging(builder =>
            {
+               builder.AddConsole();
                builder.SetMinimumLevel(LogLevel.Trace);
                builder.AddFilter("LiteNetwork.*", LogLevel.Warning);
                builder.AddFilter("Microsoft.EntityFrameworkCore.*", LogLevel.Warning);
-               builder.AddConsole();
+               builder.AddFilter("Microsoft.Extensions.*", LogLevel.Warning);
+               builder.AddFilter("Microsoft.Hosting.*", LogLevel.Warning);
            })
            .ConfigureLiteNetwork((context, builder) =>
            {
@@ -64,11 +66,11 @@ internal static class Program
                });
                builder.AddLiteServer<CoreCacheServer>(options =>
                {
-                   var serverOptions = context.Configuration.GetSection("cluster-cache-server").Get<ClusterCacheOptions>();
+                   var serverOptions = context.Configuration.GetSection("core-cache-server").Get<CoreCacheServerOptions>();
 
                    if (serverOptions is null)
                    {
-                       throw new InvalidProgramException($"Failed to load cluster cache server settings.");
+                       throw new InvalidProgramException($"Failed to load core cache server settings.");
                    }
 
                    options.Host = serverOptions.Ip;

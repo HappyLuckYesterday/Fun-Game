@@ -103,7 +103,7 @@ public sealed class CertifyHandler : LoginPacketHandler, IPacketHandler
 
     private void SendClusterList()
     {
-        using ServerListPacket serverListPacket = new(User.Username, _clusterCache.GetClusters());
+        using ServerListPacket serverListPacket = new(User.Username, _clusterCache.Clusters);
         
         User.Send(serverListPacket);
     }

@@ -27,9 +27,15 @@ public class FFUserConnection : LiteServerUser
 
     protected override void OnConnected()
     {
+        Logger.LogInformation($"New user connected (SessionId={SessionId}|Id={Id})");
         using WelcomePacket packet = new(SessionId);
 
         Send(packet);
+    }
+
+    protected override void OnDisconnected()
+    {
+        Logger.LogInformation($"Client disconnected from {Socket?.RemoteEndPoint.ToString() ?? "unknown location"}.");
     }
 
     protected override void OnError(object sender, Exception exception)

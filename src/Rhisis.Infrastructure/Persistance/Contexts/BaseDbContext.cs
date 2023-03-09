@@ -90,10 +90,4 @@ public class BaseDbContext<TContext> : DbContext, IDesignTimeDbContextFactory<TC
 
         return Activator.CreateInstance(typeof(TContext), builder.Options) as TContext;
     }
-
-    public override void Dispose()
-    {
-        Console.WriteLine("Disposed");
-        base.Dispose();
-    }
 }
