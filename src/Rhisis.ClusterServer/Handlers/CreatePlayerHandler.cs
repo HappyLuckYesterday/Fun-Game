@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.ClusterServer.Abstractions;
 using Rhisis.Core.Configuration.Cluster;
+using Rhisis.Core.Extensions;
 using Rhisis.Game;
 using Rhisis.Game.Resources;
 using Rhisis.Infrastructure.Persistance;
@@ -57,7 +58,7 @@ internal class CreatePlayerHandler : ClusterHandlerBase, IPacketHandler
         PlayerEntity newPlayer = new()
         {
             AccountId = userAccount.Id,
-            Name = packet.CharacterName,
+            Name = packet.CharacterName.TakeCharacters(32),
             Slot = (byte)packet.Slot,
             SkinSetId = packet.SkinSet,
             HairColor = (int)packet.HairColor,

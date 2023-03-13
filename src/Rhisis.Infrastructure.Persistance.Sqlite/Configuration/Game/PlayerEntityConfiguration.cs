@@ -11,7 +11,7 @@ public sealed class PlayerEntityConfiguration : IEntityTypeConfiguration<PlayerE
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Property(x => x.AccountId).IsRequired();
-        builder.Property(x => x.Name).IsRequired().HasColumnType("TEXT").HasMaxLength(32);
+        builder.Property(x => x.Name).IsRequired();
         builder.Property(x => x.Level).IsRequired();
         builder.Property(x => x.Experience).HasDefaultValue(0);
         builder.Property(x => x.JobId).IsRequired().HasDefaultValue(0);

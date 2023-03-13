@@ -1,5 +1,5 @@
 server:
-  ip: ''
+  ip: '127.0.0.1'
   port: 5400
   name: 'Channel 1'
   cluster:

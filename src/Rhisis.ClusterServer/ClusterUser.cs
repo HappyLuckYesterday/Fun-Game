@@ -77,6 +77,14 @@ public sealed class ClusterUser : FFUserConnection
         Send(packet);
     }
 
+    public void SendNewNumPad()
+    {
+        _loginProtectValue = new Random().Next(0, 1000);
+
+        using LoginProtectCertPacket packet = new(_loginProtectValue);
+        Send(packet);
+    }
+
     public void SendError(ErrorType errorType)
     {
         using ErrorPacket packet = new(errorType);
@@ -98,6 +106,18 @@ public sealed class ClusterUser : FFUserConnection
         Send(queryTickCountPacket);
     }
 
+    public void SendPreJoin()
+    {
+        using PreJoinPacketComplete packet = new();
+
+        Send(packet);
+    }
+
+    public bool IsSecondPasswordCorrect(int userPassword, int userInputPassword)
+    {
+        return LoginNumberPad.GetNumPadToPassword(_loginProtectValue, userInputPassword) == userPassword;
+    }
+
     private IReadOnlyList<SelectableCharacter> GetCharacterList()
     {
         return _gameDatabase.Players
@@ -108,6 +128,7 @@ public sealed class ClusterUser : FFUserConnection
             .Select(x => new SelectableCharacter
             {
                 Id = x.Id,
+                Name = x.Name,
                 Gender = (GenderType)x.Gender,
                 Level = x.Level,
                 Slot = x.Slot,

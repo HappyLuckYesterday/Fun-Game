@@ -1,14 +1,18 @@
 ﻿using LiteNetwork;
 using LiteNetwork.Client.Hosting;
 using LiteNetwork.Hosting;
+using LiteNetwork.Server.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Configuration;
+using Rhisis.Core.Configuration.Cluster;
 using Rhisis.Core.Extensions;
 using Rhisis.Infrastructure.Logging;
 using Rhisis.Infrastructure.Persistance;
+using Rhisis.Protocol;
+using Rhisis.WorldServer.Abstractions;
 using Rhisis.WorldServer.ClusterCache;
 using System;
 using System.Threading.Tasks;
@@ -55,6 +59,20 @@ internal static class Program
 
                    options.Host = cacheClientOptions.Cluster.Ip;
                    options.Port = cacheClientOptions.Cluster.Port;
+                   options.ReceiveStrategy = ReceiveStrategyType.Queued;
+               });
+               builder.AddLiteServer<IWorldChannel, WorldServer>(options =>
+               {
+                   var serverOptions = context.Configuration.GetSection("server").Get<WorldChannelServerOptions>();
+
+                   if (serverOptions is null)
+                   {
+                       throw new InvalidProgramException($"Failed to load world server settings.");
+                   }
+
+                   options.Host = serverOptions.Ip;
+                   options.Port = serverOptions.Port;
+                   options.PacketProcessor = new FlyffPacketProcessor();
                    options.ReceiveStrategy = ReceiveStrategyType.Queued;
                });
            })

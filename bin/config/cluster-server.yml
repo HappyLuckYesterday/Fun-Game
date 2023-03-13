@@ -26,19 +26,19 @@ server:
     woman:
       level: 1
       gold: 0
-      strength: 0
-      stamina: 0
-      dexterity: 0
-      intelligence: 0
+      strength: 15
+      stamina: 15
+      dexterity: 15
+      intelligence: 15
       map: 1
       pos-x: 6968
       pos-y: 100
       pos-z: 3328
       equiped:
         hat: -1
-        body: 504
-        hand: 508
-        boots: 512
+        body: II_ARM_F_VAG_SUIT01
+        hand: II_ARM_F_VAG_GAUNTLET01
+        boots: II_ARM_F_VAG_BOOTS01
         right-weapon: II_WEA_SWO_WOODEN
         left-weapon: -1
       inventory: []
