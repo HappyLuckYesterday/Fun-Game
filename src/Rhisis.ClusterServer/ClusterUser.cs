@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Helpers;
+using Rhisis.Core.IO;
 using Rhisis.Game;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Protocol;
@@ -9,6 +10,7 @@ using Rhisis.Protocol.Packets.Cluster.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace Rhisis.ClusterServer;
@@ -80,6 +82,20 @@ public sealed class ClusterUser : FFUserConnection
         using ErrorPacket packet = new(errorType);
 
         Send(packet);
+    }
+
+    public void SendPong(int time)
+    {
+        using PongPacket pingPacket = new(time);
+
+        Send(pingPacket);
+    }
+
+    public void SendQueryTickCount(uint time)
+    {
+        using ServerQueryTickCountPacket queryTickCountPacket = new(time, Time.GetElapsedTime());
+
+        Send(queryTickCountPacket);
     }
 
     private IReadOnlyList<SelectableCharacter> GetCharacterList()
