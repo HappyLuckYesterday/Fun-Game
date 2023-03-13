@@ -16,46 +16,6 @@ public sealed class ConfigurationConstants
     public static readonly string RhisisDockerConfigurationKey = "RHISIS_CONFIGURATION";
 
     /// <summary>
-    /// Gets the CoreServer configuration path.
-    /// </summary>
-    public static readonly string CoreServerPath = "./config/core.yaml";
-
-    /// <summary>
-    /// Gets the LoginServer configuration file path.
-    /// </summary>
-    public static readonly string LoginServerPath = "./config/login.yaml";
-
-    /// <summary>
-    /// Gets the ClusterServer configuration file path.
-    /// </summary>
-    public static readonly string ClusterServerPath = "./config/cluster.yaml";
-
-    /// <summary>
-    /// Gets the WorldClusterServer configuration key.
-    /// </summary>
-    public static readonly string WorldClusterServer = "worldClusterServer";
-
-    /// <summary>
-    /// Gets the WorldServer configuration file path.
-    /// </summary>
-    public static readonly string WorldServerPath = "./config/world.yaml";
-
-    /// <summary>
-    /// Gets the Database configuration file path.
-    /// </summary>
-    public static readonly string DatabasePath = "config/database.yaml";
-
-    /// <summary>
-    /// Gets the server configuration key.
-    /// </summary>
-    public static readonly string ServerConfigurationKey = "server";
-
-    /// <summary>
-    /// Gets the Database configuration key.
-    /// </summary>
-    public static readonly string DatabaseConfiguration = "databaseConfiguration";
-
-    /// <summary>
     /// Prevents from creating a <see cref="ConfigurationConstants"/> instance from outside.
     /// </summary>
     private ConfigurationConstants()

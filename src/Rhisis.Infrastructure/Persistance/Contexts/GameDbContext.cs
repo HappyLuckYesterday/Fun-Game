@@ -9,6 +9,8 @@ public sealed class GameDbContext : BaseDbContext<GameDbContext>, IGameDatabase
 
     public DbSet<ItemEntity> Items => Set<ItemEntity>();
 
+    public DbSet<PlayerItemEntity> PlayerItems => Set<PlayerItemEntity>();
+
     public GameDbContext()
     {
     }

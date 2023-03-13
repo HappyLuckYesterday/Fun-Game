@@ -7,7 +7,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Configuration;
 using Rhisis.Core.Extensions;
+using Rhisis.Infrastructure.Logging;
 using Rhisis.Infrastructure.Persistance;
+using Rhisis.WorldServer.ClusterCache;
 using System;
 using System.Threading.Tasks;
 
@@ -38,11 +40,7 @@ internal static class Program
            .ConfigureLogging(builder =>
            {
                builder.AddConsole();
-               builder.SetMinimumLevel(LogLevel.Trace);
-               builder.AddFilter("LiteNetwork.*", LogLevel.Warning);
-               builder.AddFilter("Microsoft.EntityFrameworkCore.*", LogLevel.Warning);
-               builder.AddFilter("Microsoft.Extensions.*", LogLevel.Warning);
-               builder.AddFilter("Microsoft.Hosting.*", LogLevel.Warning);
+               builder.AddLoggingFilters();
            })
            .ConfigureLiteNetwork((context, builder) =>
            {

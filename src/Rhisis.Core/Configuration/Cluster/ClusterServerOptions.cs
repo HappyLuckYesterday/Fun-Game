@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace Rhisis.Core.Configuration;
+namespace Rhisis.Core.Configuration.Cluster;
 
 /// <summary>
 /// Provides options to configure the cluster server.
@@ -33,4 +33,10 @@ public sealed class ClusterServerOptions
     /// </summary>
     [ConfigurationKeyName("login-protect")]
     public bool LoginProtectEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the default character configuration options.
+    /// </summary>
+    [ConfigurationKeyName("default-character")]
+    public DefaultCharacterSection DefaultCharacter { get; set; }
 }

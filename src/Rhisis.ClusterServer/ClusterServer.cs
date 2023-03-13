@@ -1,8 +1,10 @@
 ﻿using LiteNetwork.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Rhisis.ClusterServer.Abstractions;
 using Rhisis.ClusterServer.Caching;
+using Rhisis.Core.Configuration.Cluster;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Packets.Core;
@@ -10,26 +12,36 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace Rhisis.ClusterServer;
 
 public sealed class ClusterServer : LiteServer<ClusterUser>, ICluster
 {
     private readonly ILogger<ClusterServer> _logger;
+    private readonly IOptions<ClusterServerOptions> _clusterOptions;
     private readonly IServiceProvider _serviceProvider;
     private readonly ConcurrentDictionary<string, WorldChannel> _channels = new();
 
     private readonly WorldChannelCacheServer _worldChannelCacheServer;
     private readonly CoreCacheClient _coreCacheClient;
 
-    public string Name => throw new NotImplementedException();
+    public string Name => Configuration.Name;
+
+    public ClusterServerOptions Configuration => _clusterOptions.Value;
 
     public IReadOnlyList<WorldChannel> Channels => _channels.Values.ToImmutableList();
 
-    public ClusterServer(LiteServerOptions options, ILogger<ClusterServer> logger, WorldChannelCacheServer worldChannelCacheServer, CoreCacheClient coreCacheClient, IServiceProvider serviceProvider = null) 
+    public ClusterServer(LiteServerOptions options, 
+        ILogger<ClusterServer> logger,
+        IOptions<ClusterServerOptions> clusterOptions,
+        WorldChannelCacheServer worldChannelCacheServer, 
+        CoreCacheClient coreCacheClient, 
+        IServiceProvider serviceProvider = null) 
         : base(options, serviceProvider)
     {
         _logger = logger;
+        _clusterOptions = clusterOptions;
         _worldChannelCacheServer = worldChannelCacheServer;
         _coreCacheClient = coreCacheClient;
         _serviceProvider = serviceProvider;
@@ -52,7 +64,7 @@ public sealed class ClusterServer : LiteServer<ClusterUser>, ICluster
 
     protected override void OnAfterStart()
     {
-        _logger.LogInformation($"Login Server listening on port {Options.Port}.");
+        _logger.LogInformation($"Login Server listening on port {Configuration.Port}.");
     }
 
     protected override void OnError(ClusterUser connection, Exception exception)
@@ -95,6 +107,8 @@ public sealed class ClusterServer : LiteServer<ClusterUser>, ICluster
     }
 
     public WorldChannel GetChannel(string channelName) => _channels.GetValueOrDefault(channelName);
+
+    public WorldChannel GetChannel(int channelId) => _channels.Values.SingleOrDefault(x => x.Id == channelId);
 
     public bool HasChannel(string channelName) => GetChannel(channelName) is not null;
 

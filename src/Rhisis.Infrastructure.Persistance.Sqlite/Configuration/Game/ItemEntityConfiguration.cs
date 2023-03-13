@@ -14,10 +14,6 @@ public sealed class ItemEntityConfiguration : IEntityTypeConfiguration<ItemEntit
         builder.Property(x => x.Refine).IsRequired(false);
         builder.Property(x => x.Element).IsRequired(false);
         builder.Property(x => x.ElementRefine).IsRequired(false);
-        builder.Property(x => x.OwnerId).IsRequired();
-        builder.HasOne(x => x.Owner)
-            .WithMany()
-            .HasForeignKey(x => x.OwnerId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(x => x.IsDeleted).IsRequired().HasDefaultValue(false);
     }
 }

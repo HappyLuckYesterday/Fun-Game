@@ -123,26 +123,31 @@ public class PacketDispatcherCodeGenerator
             .MethodDeclaration(SyntaxFactory.ParseTypeName("void"), PacketDispatcherConstants.OnHandlerNotImplemented)
             .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword))
             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
+
             .WithParameterList(
                 SyntaxFactory.ParameterList(
-                    SyntaxFactory.SingletonSeparatedList(
+                    SyntaxFactory.SeparatedList<ParameterSyntax>(new[]
+                    {
+                        SyntaxFactory
+                            .Parameter(SyntaxFactory.Identifier("user"))
+                            .WithType(SyntaxFactory.ParseTypeName(PacketDispatcherConstants.FFUserConnectionTypeName)),
                         SyntaxFactory
                             .Parameter(SyntaxFactory.Identifier("packetType"))
                             .WithType(SyntaxFactory.ParseTypeName(_packetTypeName))
-                    )
+                    })
                 )
              )
             .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
     }
 
     /// <summary>
-    /// Creates the "OnHandlerNotImplemented()" method.
+    /// Creates the "Execute()" method.
     /// </summary>
     /// <remarks>
     /// Output:
-    /// static partial void OnHandlerNotImplemented(IPacketHandler)
+    /// static partial void Execute(IPacketHandler)
     /// </remarks>
-    /// <returns>OnHandlerNotImplemented() method declaration syntax.</returns>
+    /// <returns>Execute() method declaration syntax.</returns>
     private MethodDeclarationSyntax CreateExecuteMethod(IEnumerable<PacketHandlerObject> handlers)
     {
         return SyntaxFactory
@@ -328,11 +333,11 @@ public class PacketDispatcherCodeGenerator
                                 SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(PacketDispatcherConstants.OnHandlerNotImplemented))
                                     .WithArgumentList(
                                         SyntaxFactory.ArgumentList(
-                                            SyntaxFactory.SingletonSeparatedList<ArgumentSyntax>(
-                                                SyntaxFactory.Argument(
-                                                    SyntaxFactory.IdentifierName("header")
-                                                )
-                                            )
+                                            SyntaxFactory.SeparatedList<ArgumentSyntax>(new[]
+                                            {
+                                                SyntaxFactory.Argument(SyntaxFactory.IdentifierName("user")),
+                                                SyntaxFactory.Argument(SyntaxFactory.IdentifierName("header"))
+                                            })
                                         )
                                     )
                             ),

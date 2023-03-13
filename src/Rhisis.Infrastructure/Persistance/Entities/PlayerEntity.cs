@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Rhisis.Infrastructure.Persistance.Entities;
 
@@ -163,4 +164,9 @@ public sealed class PlayerEntity
     /// Gets or sets a flag that indicates if the character is deleted.
     /// </summary>
     public bool IsDeleted { get; set; }
+
+    /// <summary>
+    /// Gets or sets the player items.
+    /// </summary>
+    public ICollection<PlayerItemEntity> Items { get; set; } = new HashSet<PlayerItemEntity>();
 }

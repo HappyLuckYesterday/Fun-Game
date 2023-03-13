@@ -40,4 +40,11 @@ public static class ReflectionExtensions
             return sourceType.GetInterfaces().Any(x => x == interfaceType);
         }
     }
+
+    public static TAttribute GetAttribute<TAttribute>(this PropertyInfo property) where TAttribute : Attribute
+    {
+        ArgumentNullException.ThrowIfNull(property, nameof(property));
+
+        return property.GetCustomAttribute(typeof(TAttribute)) as TAttribute;
+    }
 }

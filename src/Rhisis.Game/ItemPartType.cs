@@ -1,6 +1,6 @@
 ﻿namespace Rhisis.Game;
 
-public enum ItemPartType
+public enum ItemPartType : byte
 {
     Head,
     Hair,

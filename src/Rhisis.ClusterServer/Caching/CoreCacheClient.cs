@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.ClusterServer.Abstractions;
 using Rhisis.Core.Configuration;
+using Rhisis.Core.Configuration.Cluster;
 using Rhisis.Core.Extensions;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Packets.Core;

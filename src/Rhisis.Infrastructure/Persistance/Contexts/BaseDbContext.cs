@@ -58,11 +58,12 @@ public class BaseDbContext<TContext> : DbContext, IDesignTimeDbContextFactory<TC
     {
         if (args.Length < 2)
         {
-            throw new ArgumentException("Invalid arguments: [provider] [configuration-file]");
+            throw new ArgumentException("Invalid arguments: [provider] [configuration-file] [configuration-section]");
         }
 
         string provider = args[0];
         string configurationFile = args[1];
+        string configurationSection = args[2];
         string configurationFilePath = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(configurationFile));
         string configurationFileName = Path.GetFileName(configurationFile);
 
@@ -71,7 +72,7 @@ public class BaseDbContext<TContext> : DbContext, IDesignTimeDbContextFactory<TC
                 .AddYamlFile(configurationFileName)
                 .Build();
 
-        DatabaseOptions databaseOptions = configuration.GetSection("database").Get<DatabaseOptions>();
+        DatabaseOptions databaseOptions = configuration.GetSection(configurationSection).Get<DatabaseOptions>();
 
         ArgumentNullException.ThrowIfNull(databaseOptions);
         DbContextOptionsBuilder<TContext> builder = new();

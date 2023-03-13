@@ -13,11 +13,6 @@ public class ItemEntity
     public int Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the owner id.
-    /// </summary>
-    public int OwnerId { get; set; }
-
-    /// <summary>
     /// Gets or sets the item refine value.
     /// </summary>
     public byte? Refine { get; set; }
@@ -36,9 +31,4 @@ public class ItemEntity
     /// Gets or sets a boolean value that indicates whether the item is deleted or not.
     /// </summary>
     public bool IsDeleted { get; set; }
-
-    /// <summary>
-    /// Gets or sets the item owner.
-    /// </summary>
-    public PlayerEntity Owner { get; set; }
 }

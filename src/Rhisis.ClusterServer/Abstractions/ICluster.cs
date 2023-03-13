@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Rhisis.Core.Configuration.Cluster;
+using System.Collections.Generic;
 
 namespace Rhisis.ClusterServer.Abstractions;
 
@@ -11,6 +12,11 @@ public interface ICluster
     /// Gets the cluster name.
     /// </summary>
     string Name { get; }
+
+    /// <summary>
+    /// Gets the cluster server options.
+    /// </summary>
+    ClusterServerOptions Configuration { get; }
 
     /// <summary>
     /// Gets a list of the connected world channels.
@@ -35,6 +41,13 @@ public interface ICluster
     /// <param name="channelName">Channel name</param>
     /// <returns>World channel instance matchin the given name; null if not found.</returns>
     WorldChannel GetChannel(string channelName);
+
+    /// <summary>
+    /// Gets a world channel by its id.
+    /// </summary>
+    /// <param name="channelId">Channel id.</param>
+    /// <returns>World channel instance matching the given id; null if not found.</returns>
+    WorldChannel GetChannel(int channelId);
 
     /// <summary>
     /// Checks if a channel with the given name exists in the cluster.

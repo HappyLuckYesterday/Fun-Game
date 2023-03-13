@@ -13,4 +13,9 @@ public partial class PacketDispatcher
             loginPacketHandler.User = user as LoginUser;
         }
     }
+
+    static partial void OnHandlerNotImplemented(FFUserConnection user, PacketType packetType)
+    {
+        user.PacketHandlerNotImplemented(packetType);
+    }
 }

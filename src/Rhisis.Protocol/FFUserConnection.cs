@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Rhisis.Protocol.Packets;
 using System;
+using System.Net.Sockets;
 
 namespace Rhisis.Protocol;
 
@@ -23,6 +24,21 @@ public class FFUserConnection : LiteServerUser
     protected FFUserConnection(ILogger logger)
     {
         Logger = logger;
+    }
+
+    public void Disconnect()
+    {
+        Dispose();
+    }
+
+    public void PacketHandlerNotImplemented(PacketType packetType)
+    {
+        Logger.LogWarning($"Received an unimplemented packet {packetType} (0x{(int)packetType:X4}) from {Socket.RemoteEndPoint}.");
+    }
+
+    public void SnapshotNotImplemented(SnapshotType snapshotType)
+    {
+        Logger.LogWarning($"Received an unimplemented snapshot {snapshotType} (0x{(int)snapshotType:X4}) from {Socket.RemoteEndPoint}.");
     }
 
     protected override void OnConnected()

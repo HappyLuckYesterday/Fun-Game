@@ -40,5 +40,9 @@ public sealed class PlayerEntityConfiguration : IEntityTypeConfiguration<PlayerE
         builder.Property(x => x.LastConnectionTime).IsRequired();
         builder.Property(x => x.PlayTime).IsRequired().HasDefaultValue(0);
         builder.Property(x => x.IsDeleted).IsRequired().HasDefaultValue(false);
+        builder.HasMany(x => x.Items)
+            .WithOne(x => x.Player)
+            .HasForeignKey(x => x.PlayerId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

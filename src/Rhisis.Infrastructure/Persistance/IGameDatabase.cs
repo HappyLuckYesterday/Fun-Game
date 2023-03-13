@@ -10,6 +10,8 @@ public interface IGameDatabase : IDisposable
 
     DbSet<ItemEntity> Items { get; }
 
+    DbSet<PlayerItemEntity> PlayerItems { get; }
+
     void Migrate();
 
     int SaveChanges();

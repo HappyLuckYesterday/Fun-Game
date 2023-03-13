@@ -10,14 +10,14 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Rhisis.WorldServer;
+namespace Rhisis.WorldServer.ClusterCache;
 
 public class ClusterCacheClient : LiteClient
 {
     private readonly ILogger<ClusterCacheClient> _logger;
     private readonly IOptions<WorldChannelServerOptions> _channelOptions;
 
-    public ClusterCacheClient(LiteClientOptions options, ILogger<ClusterCacheClient> logger, IOptions<WorldChannelServerOptions> channelOptions, IServiceProvider serviceProvider = null) 
+    public ClusterCacheClient(LiteClientOptions options, ILogger<ClusterCacheClient> logger, IOptions<WorldChannelServerOptions> channelOptions, IServiceProvider serviceProvider = null)
         : base(options, serviceProvider)
     {
         _logger = logger;
@@ -81,10 +81,10 @@ public class ClusterCacheClient : LiteClient
     private void OnHandshake()
     {
         WorldChannelAuthenticationPacket packet = new(
-            _channelOptions.Value.Cluster.Name, 
-            _channelOptions.Value.Name, 
-            _channelOptions.Value.Ip, 
-            _channelOptions.Value.Port, 
+            _channelOptions.Value.Cluster.Name,
+            _channelOptions.Value.Name,
+            _channelOptions.Value.Ip,
+            _channelOptions.Value.Port,
             _channelOptions.Value.Cluster.MasterPassword,
             _channelOptions.Value.MaximumUsers);
 

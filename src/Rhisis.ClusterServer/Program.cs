@@ -9,10 +9,14 @@ using Microsoft.Extensions.Logging;
 using Rhisis.ClusterServer.Abstractions;
 using Rhisis.ClusterServer.Caching;
 using Rhisis.Core.Configuration;
+using Rhisis.Core.Configuration.Cluster;
 using Rhisis.Core.Extensions;
+using Rhisis.Game.Resources;
+using Rhisis.Infrastructure.Logging;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Protocol;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Rhisis.ClusterServer;
@@ -44,11 +48,7 @@ internal static class Program
            .ConfigureLogging(builder =>
            {
                builder.AddConsole();
-               builder.SetMinimumLevel(LogLevel.Trace);
-               builder.AddFilter("LiteNetwork.*", LogLevel.Warning);
-               builder.AddFilter("Microsoft.EntityFrameworkCore.*", LogLevel.Warning);
-               builder.AddFilter("Microsoft.Extensions.*", LogLevel.Warning);
-               builder.AddFilter("Microsoft.Hosting.*", LogLevel.Warning);
+               builder.AddLoggingFilters();
            })
            .ConfigureLiteNetwork((context, builder) =>
            {
@@ -96,6 +96,9 @@ internal static class Program
            .UseConsoleLifetime()
            .SetConsoleCulture(culture)
            .Build();
+
+        GameResources.Current.LoadDefines();
+        GameResources.Current.LoadItems();
 
         await host.RunAsync();
     }

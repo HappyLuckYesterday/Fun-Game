@@ -46,9 +46,8 @@ public class PlayerListPacket : FFPacket
             {
                 WriteInt32(equipedItemId);
             }
-
-
-            WriteInt32(0); // Messenger?
         }
+
+        WriteInt32(0); // Messenger?
     }
 }

@@ -3,6 +3,4 @@
 internal class ClusterHandlerBase
 {
     public ClusterUser User { get; set; }
-
-    protected ClusterHandlerBase() { }
 }

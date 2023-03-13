@@ -17,10 +17,10 @@ server:
       pos-z: 3328
       equiped:
         hat: -1
-        suit: 502
-        hand: 506
-        shoes: 510
-        right-weapon: 21
+        body: II_ARM_M_VAG_SUIT01
+        hand: II_ARM_M_VAG_GAUNTLET01
+        boots: II_ARM_M_VAG_BOOTS01
+        right-weapon: II_WEA_SWO_WOODEN
         left-weapon: -1
       inventory: []
     woman:
@@ -36,10 +36,10 @@ server:
       pos-z: 3328
       equiped:
         hat: -1
-        suit: 504
+        body: 504
         hand: 508
-        shoes: 512
-        right-weapon: 21
+        boots: 512
+        right-weapon: II_WEA_SWO_WOODEN
         left-weapon: -1
       inventory: []
 cluster-cache-server:

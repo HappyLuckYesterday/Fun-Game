@@ -13,4 +13,9 @@ public partial class PacketDispatcher
             packetHandler.User = user as ClusterUser;
         }
     }
+
+    static partial void OnHandlerNotImplemented(FFUserConnection user, PacketType packetType)
+    {
+        user.PacketHandlerNotImplemented(packetType);
+    }
 }
