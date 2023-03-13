@@ -8,8 +8,6 @@ using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
 using Rhisis.Protocol.Packets.Cluster.Client;
-using System;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 
 namespace Rhisis.ClusterServer.Handlers;
