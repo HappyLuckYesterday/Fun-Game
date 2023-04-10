@@ -1,10 +1,20 @@
-﻿namespace Rhisis.Game;
+﻿using System.Diagnostics;
+
+namespace Rhisis.Game;
 
 /// <summary>
 /// Describes an item slot of an item container.
 /// </summary>
+[DebuggerDisplay("Slot = {Slot} (Index = {Index}) | Item = {HasItem ? Item.Name : \"none\"}")]
 public class ItemContainerSlot
 {
+    public static readonly ItemContainerSlot Empty = new ItemContainerSlot()
+    {
+        Index = -1,
+        Slot = -1,
+        Item = null
+    };
+
     /// <summary>
     /// Gets or sets the slot index.
     /// </summary>

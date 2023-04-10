@@ -2,9 +2,11 @@
 using Rhisis.Game.Resources.Properties;
 using Rhisis.Protocol;
 using System;
+using System.Diagnostics;
 
 namespace Rhisis.Game;
 
+[DebuggerDisplay("{Properties.IdentifierName} +{Refine} ({Element}+{ElementRefine}) x{Quantity}")]
 public class Item
 {
     private int _quantity;

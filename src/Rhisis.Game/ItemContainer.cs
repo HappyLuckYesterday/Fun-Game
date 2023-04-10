@@ -1,12 +1,8 @@
 ﻿using Rhisis.Core.Extensions;
-using Rhisis.Core.IO;
-using Rhisis.Game.Entities;
-using Rhisis.Game.Factories;
 using Rhisis.Protocol;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace Rhisis.Game;
@@ -54,52 +50,50 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
         }
     }
 
-    public void Initialize(IEnumerable<Item> items)
+    public void Initialize(IEnumerable<ItemContainerSlot> items)
     {
         int itemIndex;
         int itemsCount = Math.Min(items.Count(), MaxCapacity);
 
-        //for (itemIndex = 0; itemIndex < itemsCount; itemIndex++)
-        //{
-        //    Item item = items.ElementAtOrDefault(itemIndex);
+        for (itemIndex = 0; itemIndex < itemsCount; itemIndex++)
+        {
+            ItemContainerSlot item = items.ElementAtOrDefault(itemIndex);
 
-        //    if (item != null)
-        //    {
-        //        int slot = item.Slot;
+            if (item != null)
+            {
+                int slot = item.Slot;
 
-        //        _items[slot].CopyFrom(item);
-        //        _items[slot].Slot = slot;
-        //        _items[slot].Index = slot;
-        //        _itemsMask[slot] = slot;
-        //    }
-        //}
+                _items[slot].Item = item.Item;
+                _items[slot].Slot = slot;
+                _items[slot].Index = slot;
+                _itemsMask[slot] = slot;
+            }
+        }
     }
 
     public Item GetItem(int itemId) => _items.FirstOrDefault(x => x.HasItem && x.Item.Id == itemId).Item;
 
-    public Item GetItemAtIndex(int index)
+    public ItemContainerSlot GetAtIndex(int index)
     {
         if (index < 0 || index >= MaxCapacity)
         {
-            return null;
+            return ItemContainerSlot.Empty;
         }
 
-        ItemContainerSlot itemSlot = _items[index];
-
-        return itemSlot.HasItem ? itemSlot.Item : null;
+        return _items[index];
     }
 
-    public Item GetItemAtSlot(int slot)
+    public ItemContainerSlot GetAtSlot(int slot)
     {
         if (slot < 0 || slot >= MaxCapacity)
         {
             throw new IndexOutOfRangeException();
         }
 
-        return GetItemAtIndex(_itemsMask[slot]);
+        return GetAtIndex(_itemsMask[slot]);
     }
 
-    public IEnumerable<Item> GetRange(int start, int count) => _itemsMask.GetRange(start, count).Select(GetItemAtIndex);
+    public IEnumerable<ItemContainerSlot> GetRange(int start, int count) => _itemsMask.GetRange(start, count).Select(GetAtIndex);
 
     public bool CanStoreItem(Item itemToStore)
     {
@@ -113,9 +107,9 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
 
         for (int i = 0; i < Capacity; i++)
         {
-            Item item = GetItemAtSlot(i);
+            ItemContainerSlot itemSlot = GetAtSlot(i);
 
-            if (item == null)
+            if (!itemSlot.HasItem)
             {
                 if (quantityToStore > itemToStoreMaxQuantity)
                 {
@@ -126,11 +120,11 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
                     return true;
                 }
             }
-            else if (item.Id == itemToStore.Id)
+            else if (itemSlot.Item.Id == itemToStore.Id)
             {
-                if (item.Quantity + quantityToStore > itemToStoreMaxQuantity)
+                if (itemSlot.Item.Quantity + quantityToStore > itemToStoreMaxQuantity)
                 {
-                    quantityToStore -= itemToStoreMaxQuantity - item.Quantity;
+                    quantityToStore -= itemToStoreMaxQuantity - itemSlot.Item.Quantity;
                 }
                 else
                 {

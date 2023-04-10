@@ -93,7 +93,7 @@ internal class CreatePlayerHandler : ClusterHandlerBase
         CreatePlayerItem(newPlayer, defaultPlayerOptions.EquipedItems.Hand, ItemPartType.Hand);
         CreatePlayerItem(newPlayer, defaultPlayerOptions.EquipedItems.RightWeapon, ItemPartType.RightWeapon);
         CreatePlayerItem(newPlayer, defaultPlayerOptions.EquipedItems.LeftWeapon, ItemPartType.LeftWeapon);
-        CreatePlayerItem(newPlayer, defaultPlayerOptions.EquipedItems.Boots, ItemPartType.Boots);
+        CreatePlayerItem(newPlayer, defaultPlayerOptions.EquipedItems.Boots, ItemPartType.Foot);
 
         if (defaultPlayerOptions.InventoryItems.Any())
         {

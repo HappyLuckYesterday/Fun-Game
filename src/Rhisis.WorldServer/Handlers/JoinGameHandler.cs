@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Rhisis.Game;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Protocol.Packets.World.Client;
@@ -9,6 +10,8 @@ using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.WorldServer.Handlers;
@@ -96,6 +99,28 @@ internal class JoinGameHandler : WorldPacketHandler
 
         User.Player.Gold.Initialize(player.Gold);
         User.Player.Experience.Initialize(player.Experience);
+
+        IEnumerable<ItemContainerSlot> playerInventoryItems = _gameDatabase.PlayerItems
+            .Include(x => x.Item)
+            .Where(x => x.PlayerId == player.Id && x.StorageType == PlayerItemStorageType.Inventory)
+            .Select(x => new ItemContainerSlot
+            {
+                Slot = x.Slot,
+                Item = new Item(GameResources.Current.Items.Get(x.Item.Id))
+                {
+                    SerialNumber = x.Item.SerialNumber,
+                    Refine = x.Item.Refine.GetValueOrDefault(0),
+                    Element = (ElementType)x.Item.Element.GetValueOrDefault(0),
+                    ElementRefine = x.Item.ElementRefine.GetValueOrDefault(0),
+                    Quantity = x.Quantity
+                }
+            });
+
+        if (playerInventoryItems.Any())
+        {
+            User.Player.Inventory.Initialize(playerInventoryItems);
+        }
+
         // TODO: initialize inventory items
         // TODO: initialize skills
         // TODO: initialize quest diary

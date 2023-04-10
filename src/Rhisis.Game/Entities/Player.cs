@@ -6,6 +6,7 @@ using Rhisis.Protocol;
 using Rhisis.Protocol.Snapshots;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.Game.Entities;
 
@@ -114,7 +115,9 @@ public sealed class Player : Mover
     {
     }
 
-    public IEnumerable<Item> GetEquipedItems() => Inventory.GetRange(Inventory.InventorySize, Inventory.InventoryEquipParts);
+    public IEnumerable<Item> GetEquipedItems() 
+        => Inventory.GetRange(Inventory.InventorySize, Inventory.InventoryEquipParts)
+            .Select(x => x.Item);
 
     /// <summary>
     /// Adds the given amount of skill points to the current player.
