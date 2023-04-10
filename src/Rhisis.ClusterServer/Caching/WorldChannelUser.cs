@@ -2,11 +2,13 @@
 using Microsoft.Extensions.Options;
 using Rhisis.ClusterServer.Abstractions;
 using Rhisis.Core.Configuration;
+using Rhisis.Core.Configuration.Cluster;
 using Rhisis.Core.Extensions;
+using Rhisis.Game.Protocol.Packets.Core;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Packets.Core;
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -114,6 +116,11 @@ public class WorldChannelUser : FFInterServerConnection
         _cluster.AddChannel(channel);
 
         Send(CorePacketType.AuthenticationResult, new ServerAuthenticationResultPacket(CoreAuthenticationResult.Success));
+        Send(CorePacketType.ChannelConfiguration, new ChannelConfigurationPacket(
+            _cluster.Configuration.Rates,
+            _cluster.Configuration.Messenger, 
+            _cluster.Configuration.Customization, 
+            _cluster.Configuration.Maps.ToArray()));
 
         Name = channel.Name;
         IsAuthenticated = true;

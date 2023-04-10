@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Configuration;
 using Rhisis.Core.Extensions;
+using Rhisis.Game.Protocol.Packets.Core;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Packets.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;

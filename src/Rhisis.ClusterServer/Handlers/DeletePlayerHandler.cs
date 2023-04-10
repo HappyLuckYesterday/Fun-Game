@@ -1,16 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Rhisis.Game.Protocol.Packets.Cluster.Client;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
-using Rhisis.Protocol.Packets.Cluster.Client;
 using System.Linq;
 
 namespace Rhisis.ClusterServer.Handlers;
 
 [PacketHandler(PacketType.DEL_PLAYER)]
-internal class DeletePlayerHandler : ClusterHandlerBase, IPacketHandler
+internal class DeletePlayerHandler : ClusterHandlerBase
 {
     private readonly ILogger<DeletePlayerHandler> _logger;
     private readonly IAccountDatabase _accountDatabase;

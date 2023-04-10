@@ -11,7 +11,6 @@ internal static class PacketDispatcherConstants
 
     public static readonly string FFUserConnectionTypeName = "Rhisis.Protocol.FFUserConnection";
     public static readonly string FFPacketTypeName = "Rhisis.Protocol.FFPacket";
-    public static readonly string IPacketHandlerTypeName = "Rhisis.Protocol.Handlers.IPacketHandler";
     public static readonly string PacketTypeName = "Rhisis.Protocol.PacketType";
     public static readonly string SnapshotTypeName = "Rhisis.Protocol.SnapshotType";
     public static readonly string ProtocolNamspace = "Rhisis.Protocol";

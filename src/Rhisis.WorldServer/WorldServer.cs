@@ -1,5 +1,6 @@
 ﻿using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
+using Rhisis.Game.Resources;
 using Rhisis.WorldServer.Abstractions;
 using System;
 
@@ -8,6 +9,7 @@ namespace Rhisis.WorldServer;
 public sealed class WorldServer : LiteServer<WorldUser>, IWorldChannel
 {
     private readonly ILogger<WorldServer> _logger;
+    private readonly IServiceProvider _serviceProvider;
 
     public string Name => throw new NotImplementedException();
 
@@ -21,6 +23,12 @@ public sealed class WorldServer : LiteServer<WorldUser>, IWorldChannel
         : base(options, serviceProvider)
     {
         _logger = logger;
+        _serviceProvider = serviceProvider;
+    }
+
+    protected override void OnBeforeStart()
+    {
+        _logger.LogInformation($"Starting World Server...");
     }
 
     protected override void OnAfterStart()

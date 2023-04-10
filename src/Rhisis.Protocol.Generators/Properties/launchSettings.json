@@ -1,8 +1,16 @@
 {
   "profiles": {
-    "Profile 1": {
+    "SG: LoginServer": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\Rhisis.LoginServer\\Rhisis.LoginServer.csproj"
+    },
+    "SG: ClusterServer": {
       "commandName": "DebugRoslynComponent",
       "targetProject": "..\\Rhisis.ClusterServer\\Rhisis.ClusterServer.csproj"
+    },
+    "SG: WorldServer": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\Rhisis.WorldServer\\Rhisis.WorldServer.csproj"
     }
   }
 }

@@ -81,6 +81,8 @@ public class FFSnapshot : FFPacket
         return this;
     }
 
+    public byte[] GetContent() => GetSnapshotContent(this);
+
     private static byte[] GetSnapshotContent(FFSnapshot snapshot)
     {
         byte[] snapshotBuffer = snapshot.Buffer;

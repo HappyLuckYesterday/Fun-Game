@@ -3,18 +3,18 @@ using Rhisis.ClusterServer.Abstractions;
 using Rhisis.Core.Configuration.Cluster;
 using Rhisis.Core.Extensions;
 using Rhisis.Game;
+using Rhisis.Game.Protocol.Packets.Cluster.Client;
 using Rhisis.Game.Resources;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
-using Rhisis.Protocol.Packets.Cluster.Client;
 using System.Linq;
 
 namespace Rhisis.ClusterServer.Handlers;
 
 [PacketHandler(PacketType.CREATE_PLAYER)]
-internal class CreatePlayerHandler : ClusterHandlerBase, IPacketHandler
+internal class CreatePlayerHandler : ClusterHandlerBase
 {
     private static readonly byte InventoryMaxSize = 42;
     private readonly ILogger<CreatePlayerPacket> _logger;
@@ -114,7 +114,7 @@ internal class CreatePlayerHandler : ClusterHandlerBase, IPacketHandler
 
     private static void CreatePlayerItem(PlayerEntity player, string itemIdentifier, byte slot, int quantity = 1, byte refine = 0, byte element = 0, byte elementRefine = 0)
     {
-        int itemId = GameResources.Current.GetItem(itemIdentifier)?.Id ?? -1;
+        int itemId = GameResources.Current.Items.Get(itemIdentifier)?.Id ?? -1;
 
         if (itemId > 0)
         {

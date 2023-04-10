@@ -2,21 +2,21 @@
 using Microsoft.Extensions.Options;
 using Rhisis.Core.Configuration;
 using Rhisis.Core.Cryptography;
+using Rhisis.Game.Protocol.Packets;
+using Rhisis.Game.Protocol.Packets.Login.Clients;
+using Rhisis.Game.Protocol.Packets.Login.Server;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.LoginServer.Core;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
-using Rhisis.Protocol.Packets;
-using Rhisis.Protocol.Packets.Login.Clients;
-using Rhisis.Protocol.Packets.Login.Server;
 using System;
 using System.Linq;
 
 namespace Rhisis.LoginServer.Handlers;
 
 [PacketHandler(PacketType.CERTIFY)]
-public sealed class CertifyHandler : LoginPacketHandler, IPacketHandler
+public sealed class CertifyHandler : LoginPacketHandler
 {
     private readonly ILogger<CertifyHandler> _logger;
     private readonly IAccountDatabase _accountDatabase;

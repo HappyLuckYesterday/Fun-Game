@@ -6,7 +6,7 @@ namespace Rhisis.ClusterServer;
 
 public partial class PacketDispatcher
 {
-    static partial void OnBeforeExecute(FFUserConnection user, IPacketHandler handler)
+    static partial void OnBeforeExecute(FFUserConnection user, object handler)
     {
         if (handler is ClusterHandlerBase packetHandler)
         {

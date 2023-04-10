@@ -7,8 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="LiteNetwork" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
-    <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageReference Include="NetEscapades.Configuration.Yaml" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>

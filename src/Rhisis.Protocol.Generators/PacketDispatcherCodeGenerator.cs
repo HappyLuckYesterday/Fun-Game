@@ -54,7 +54,7 @@ public class PacketDispatcherCodeGenerator
     /// </summary>
     /// <remarks>
     /// Output:
-    /// static partial void OnBeforeExecute(FFConnection, IPacketHandler)
+    /// static partial void OnBeforeExecute(FFConnection, object)
     /// </remarks>
     /// <returns>OnBeforeExecute() method declaration syntax.</returns>
     private MemberDeclarationSyntax CreateOnBeforeExecuteMethod()
@@ -72,7 +72,7 @@ public class PacketDispatcherCodeGenerator
                             .WithType(SyntaxFactory.ParseTypeName(PacketDispatcherConstants.FFUserConnectionTypeName)),
                         SyntaxFactory
                             .Parameter(SyntaxFactory.Identifier("handler"))
-                            .WithType(SyntaxFactory.ParseTypeName(PacketDispatcherConstants.IPacketHandlerTypeName))
+                            .WithType(SyntaxFactory.ParseTypeName("object"))
                     })
                 )
              )
@@ -84,7 +84,7 @@ public class PacketDispatcherCodeGenerator
     /// </summary>
     /// <remarks>
     /// Output:
-    /// static partial void OnAfterExecute(FFConnection, IPacketHandler)
+    /// static partial void OnAfterExecute(FFConnection, object)
     /// </remarks>
     /// <returns>OnAfterExecute() method declaration syntax.</returns>
     private MemberDeclarationSyntax CreateOnAfterExecuteMethod()
@@ -102,7 +102,7 @@ public class PacketDispatcherCodeGenerator
                             .WithType(SyntaxFactory.ParseTypeName(PacketDispatcherConstants.FFUserConnectionTypeName)),
                         SyntaxFactory
                             .Parameter(SyntaxFactory.Identifier("handler"))
-                            .WithType(SyntaxFactory.ParseTypeName(PacketDispatcherConstants.IPacketHandlerTypeName))
+                            .WithType(SyntaxFactory.ParseTypeName("object"))
                     })
                 )
              )
@@ -145,7 +145,7 @@ public class PacketDispatcherCodeGenerator
     /// </summary>
     /// <remarks>
     /// Output:
-    /// static partial void Execute(IPacketHandler)
+    /// static partial void Execute(user, header, packet, serviceProvider)
     /// </remarks>
     /// <returns>Execute() method declaration syntax.</returns>
     private MethodDeclarationSyntax CreateExecuteMethod(IEnumerable<PacketHandlerObject> handlers)

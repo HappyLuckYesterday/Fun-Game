@@ -1,11 +1,11 @@
-﻿using Rhisis.Protocol;
+﻿using Rhisis.Game.Protocol.Packets.Cluster.Client;
+using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
-using Rhisis.Protocol.Packets.Cluster.Client;
 
 namespace Rhisis.ClusterServer.Handlers;
 
 [PacketHandler(PacketType.QUERYTICKCOUNT)]
-internal class QueryTickCountHandler : ClusterHandlerBase, IPacketHandler
+internal class QueryTickCountHandler : ClusterHandlerBase
 {
     public void Execute(QueryTickCountPacket packet)
     {

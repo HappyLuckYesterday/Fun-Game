@@ -23,9 +23,7 @@ internal class PacketHandlerSyntaxReceiver : ISyntaxReceiver
     {
         if (syntaxNode is not null and ClassDeclarationSyntax @class)
         {
-            bool hasPacketHandlerInterface = @class.BaseList?.Types.Any(x => x.ToString() == "IPacketHandler") ?? false;
-
-            if (hasPacketHandlerInterface && @class.AttributeLists.Any())
+            if (@class.AttributeLists.Any())
             {
                 PacketHandlerObject packetHandler = new(@class);
                 AttributeSyntax packetHandlerAttribute = @class.AttributeLists.SelectMany(x => x.Attributes).FirstOrDefault(x => _attributeNames.Contains(x.Name.ToString()));

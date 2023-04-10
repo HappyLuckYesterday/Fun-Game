@@ -2,7 +2,7 @@
 
 public static class DefineJob
 {
-    public enum JobType : int
+    public enum JobType
     {
         JTYPE_BASE = 0,
         JTYPE_EXPERT = 1,

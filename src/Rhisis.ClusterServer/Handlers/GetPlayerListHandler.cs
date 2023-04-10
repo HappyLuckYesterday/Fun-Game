@@ -1,16 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.ClusterServer.Abstractions;
+using Rhisis.Game.Protocol.Packets.Cluster.Client;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
-using Rhisis.Protocol.Packets.Cluster.Client;
 using System.Linq;
 
 namespace Rhisis.ClusterServer.Handlers;
 
 [PacketHandler(PacketType.GETPLAYERLIST)]
-internal class GetPlayerListHandler : ClusterHandlerBase, IPacketHandler
+internal class GetPlayerListHandler : ClusterHandlerBase
 {
     private readonly ILogger<GetPlayerListHandler> _logger;
     private readonly IAccountDatabase _accountDatabase;

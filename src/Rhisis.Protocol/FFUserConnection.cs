@@ -1,6 +1,5 @@
 ﻿using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
-using Rhisis.Protocol.Packets;
 using System;
 using System.Net.Sockets;
 
@@ -33,18 +32,21 @@ public class FFUserConnection : LiteServerUser
 
     public void PacketHandlerNotImplemented(PacketType packetType)
     {
-        Logger.LogWarning($"Received an unimplemented packet {packetType} (0x{(int)packetType:X4}) from {Socket.RemoteEndPoint}.");
+        Logger.LogWarning($"Received an unimplemented packet {packetType} (0x{(int)packetType:X8}) from {Socket.RemoteEndPoint}.");
     }
 
     public void SnapshotNotImplemented(SnapshotType snapshotType)
     {
-        Logger.LogWarning($"Received an unimplemented snapshot {snapshotType} (0x{(int)snapshotType:X4}) from {Socket.RemoteEndPoint}.");
+        Logger.LogWarning($"Received an unimplemented snapshot {snapshotType} (0x{(int)snapshotType:X8}) from {Socket.RemoteEndPoint}.");
     }
 
     protected override void OnConnected()
     {
         Logger.LogInformation($"New user connected (SessionId={SessionId}|Id={Id})");
-        using WelcomePacket packet = new(SessionId);
+        
+        using FFPacket packet = new();
+        packet.WriteUInt32((uint)PacketType.WELCOME);
+        packet.WriteUInt32(SessionId);
 
         Send(packet);
     }

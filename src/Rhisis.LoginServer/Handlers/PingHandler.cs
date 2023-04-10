@@ -1,11 +1,11 @@
-﻿using Rhisis.Protocol;
+﻿using Rhisis.Game.Protocol.Packets;
+using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
-using Rhisis.Protocol.Packets;
 
 namespace Rhisis.LoginServer.Handlers;
 
 [PacketHandler(PacketType.PING)]
-public sealed class PingHandler : LoginPacketHandler, IPacketHandler
+public sealed class PingHandler : LoginPacketHandler
 {
     public void Execute(PingPacket message)
     {

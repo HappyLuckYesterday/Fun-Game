@@ -9,11 +9,11 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Core.Configuration;
 using Rhisis.Core.Configuration.Cluster;
 using Rhisis.Core.Extensions;
+using Rhisis.Game.Resources;
 using Rhisis.Infrastructure.Logging;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Protocol;
 using Rhisis.WorldServer.Abstractions;
-using Rhisis.WorldServer.ClusterCache;
 using System;
 using System.Threading.Tasks;
 
@@ -79,6 +79,14 @@ internal static class Program
            .UseConsoleLifetime()
            .SetConsoleCulture(culture)
            .Build();
+
+        GameResources.Current.Initialize(host.Services);
+        GameResources.Current.Items.Load();
+        GameResources.Current.Movers.Load();
+        GameResources.Current.Skills.Load();
+        GameResources.Current.Jobs.Load();
+        GameResources.Current.ExperienceTable.Load();
+        GameResources.Current.Penalities.Load();
 
         await host.RunAsync();
     }

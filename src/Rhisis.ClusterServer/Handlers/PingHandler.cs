@@ -1,11 +1,11 @@
-﻿using Rhisis.Protocol;
+﻿using Rhisis.Game.Protocol.Packets;
+using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
-using Rhisis.Protocol.Packets;
 
 namespace Rhisis.ClusterServer.Handlers;
 
 [PacketHandler(PacketType.PING)]
-internal class PingHandler : ClusterHandlerBase, IPacketHandler
+internal class PingHandler : ClusterHandlerBase
 {
     public void Execute(PingPacket packet)
     {

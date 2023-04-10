@@ -1,11 +1,11 @@
-﻿using Rhisis.Protocol;
+﻿using Rhisis.Game.Protocol.Packets.Login.Clients;
+using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
-using Rhisis.Protocol.Packets.Login.Clients;
 
 namespace Rhisis.LoginServer.Handlers;
 
 [PacketHandler(PacketType.ERROR)]
-public sealed class ErrorHandler : LoginPacketHandler, IPacketHandler
+public sealed class ErrorHandler : LoginPacketHandler
 {
     private readonly LoginServer _server;
 

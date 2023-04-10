@@ -97,8 +97,8 @@ internal static class Program
            .SetConsoleCulture(culture)
            .Build();
 
-        GameResources.Current.LoadDefines();
-        GameResources.Current.LoadItems();
+        GameResources.Current.Initialize(host.Services);
+        GameResources.Current.Items.Load();
 
         await host.RunAsync();
     }
