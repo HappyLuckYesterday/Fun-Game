@@ -1,73 +1,78 @@
-﻿using Microsoft.Extensions.Logging;
-using Rhisis.ClusterServer.Abstractions;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Rhisis.Game.Protocol.Packets.Cluster.Client;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Packets.Client.Cluster;
-using Sylver.HandlerInvoker.Attributes;
-using System;
+using Rhisis.Protocol.Handlers;
 using System.Linq;
 
 namespace Rhisis.ClusterServer.Handlers;
 
-[Handler]
-public class DeletePlayerHandler : ClusterHandlerBase
+[PacketHandler(PacketType.DEL_PLAYER)]
+internal class DeletePlayerHandler : ClusterHandlerBase
 {
     private readonly ILogger<DeletePlayerHandler> _logger;
+    private readonly IAccountDatabase _accountDatabase;
+    private readonly IGameDatabase _gameDatabase;
 
-    public DeletePlayerHandler(ILogger<DeletePlayerHandler> logger, IRhisisDatabase database)
-        : base(database)
+    public DeletePlayerHandler(ILogger<DeletePlayerHandler> logger, IAccountDatabase accountDatabase, IGameDatabase gameDatabase)
     {
         _logger = logger;
+        _accountDatabase = accountDatabase;
+        _gameDatabase = gameDatabase;
     }
 
-    [HandlerAction(PacketType.DEL_PLAYER)]
-    public void Execute(IClusterUser user, DeletePlayerPacket packet)
+    public void Execute(DeletePlayerPacket packet)
     {
-        DbUser dbUser = Database.Users.FirstOrDefault(x => x.Username == packet.Username && x.Password == packet.Password);
-
-        if (dbUser is null)
+        if (packet.Password != packet.PasswordConfirmation)
         {
-            _logger.LogWarning($"[SECURITY] Unable to create new character for user '{packet.Username}'. " +
-                "Reason: bad presented credentials compared to the database.");
-            user.Disconnect();
+            _logger.LogError($"Unable to verify user account '{packet.Username}'. Reason: passwords doesn't match.");
+            User.Disconnect();
             return;
         }
 
-        if (!string.Equals(packet.Password, packet.PasswordConfirmation, StringComparison.OrdinalIgnoreCase))
+        AccountEntity userAccount = _accountDatabase.Accounts.SingleOrDefault(x => x.Username == packet.Username && x.Password == packet.Password && x.Id == User.AccountId);
+
+        if (userAccount is null)
         {
-            _logger.LogWarning($"Unable to delete character id '{packet.CharacterId}' for user '{packet.Username}'. " +
-                "Reason: passwords entered do not match.");
-            SendError(user, ErrorType.WRONG_PASSWORD);
+            _logger.LogWarning($"Unable to create new character for user '{packet.Username}' Reason: bad presented credentials compared to the database.");
+            User.Disconnect();
 
             return;
         }
 
-        DbCharacter characterToDelete = Database.Characters.FirstOrDefault(x => x.Id == packet.CharacterId);
+        PlayerEntity playerToDelete = _gameDatabase.Players.SingleOrDefault(x => x.Id == packet.CharacterId);
 
-        // Check if character exist.
-        if (characterToDelete is null)
+        if (playerToDelete is null)
         {
-            _logger.LogWarning($"[SECURITY] Unable to delete character id '{packet.CharacterId}' for user '{packet.Username}'. " +
-                "Reason: user doesn't have any character with this id.");
-            user.Disconnect();
+            _logger.LogWarning($"Unable to delete character id '{packet.CharacterId}' for user '{packet.Username}'. Reason: user doesn't have any character with this id.");
+            User.Disconnect();
             return;
         }
 
-        if (characterToDelete.IsDeleted)
+        if (playerToDelete.IsDeleted)
         {
-            _logger.LogWarning($"[SECURITY] Unable to delete character id '{packet.CharacterId}' for user '{packet.Username}'. " +
-                   "Reason: character is already deleted.");
+            _logger.LogWarning($"Unable to delete character id '{packet.CharacterId}' for user '{packet.Username}'. Reason: character is already deleted.");
+            User.Disconnect();
             return;
         }
 
-        characterToDelete.IsDeleted = true;
+        playerToDelete.IsDeleted = true;
 
-        Database.Characters.Update(characterToDelete);
-        Database.SaveChanges();
+        IQueryable<ItemEntity> playerItems = _gameDatabase.PlayerItems
+            .Include(x => x.Item)
+            .Where(x => x.PlayerId == playerToDelete.Id)
+            .Select(x => x.Item);
 
-        _logger.LogInformation($"Character '{characterToDelete.Name}' has been deleted successfully for user '{packet.Username}'.");
+        foreach (ItemEntity item in playerItems)
+        {
+            item.IsDeleted = true;
+        }
 
-        SendPlayerList(user, packet.AuthenticationKey);
+        _gameDatabase.SaveChanges();
+        User.SendPlayerList();
+
+        _logger.LogInformation($"Character '{playerToDelete.Name}' has been deleted successfully for user '{userAccount.Username}' (ID='{userAccount.Id}').");
     }
 }

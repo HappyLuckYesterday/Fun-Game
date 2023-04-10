@@ -1,80 +1,58 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Rhisis.Abstractions.Server;
 using Rhisis.ClusterServer.Abstractions;
-using Rhisis.Core.Structures.Configuration;
+using Rhisis.Game.Protocol.Packets.Cluster.Client;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Packets.Client.Cluster;
-using Rhisis.Protocol.Packets.Server.Cluster;
-using Sylver.HandlerInvoker.Attributes;
+using Rhisis.Protocol.Handlers;
 using System.Linq;
 
 namespace Rhisis.ClusterServer.Handlers;
 
-/// <summary>
-/// Handles the GETPLAYERLIST packet and sends the user's characters list to the client.
-/// </summary>
-[Handler]
-public class GetPlayerListHandler : ClusterHandlerBase
+[PacketHandler(PacketType.GETPLAYERLIST)]
+internal class GetPlayerListHandler : ClusterHandlerBase
 {
     private readonly ILogger<GetPlayerListHandler> _logger;
-    private readonly IOptions<ClusterOptions> _clusterOptions;
-    private readonly IClusterCacheServer _clusterCache;
+    private readonly IAccountDatabase _accountDatabase;
+    private readonly ICluster _cluster;
 
-    /// <summary>
-    /// Creates a new <see cref="CharacterHandler"/> instance.
-    /// </summary>
-    /// <param name="logger">Logger.</param>
-    /// <param name="database">Rhisis database.</param>
-    public GetPlayerListHandler(ILogger<GetPlayerListHandler> logger, 
-        IOptions<ClusterOptions> clusterOptions,
-        IRhisisDatabase database,
-        IClusterCacheServer clusterCache)
-        : base(database)
+    public GetPlayerListHandler(ILogger<GetPlayerListHandler> logger, IAccountDatabase accountDatabase, ICluster cluster)
     {
         _logger = logger;
-        _clusterOptions = clusterOptions;
-        _clusterCache = clusterCache;
+        _accountDatabase = accountDatabase;
+        _cluster = cluster;
     }
 
-    [HandlerAction(PacketType.GETPLAYERLIST)]
-    public void Execute(IClusterUser user, GetPlayerListPacket packet)
+    public void Execute(GetPlayerListPacket packet)
     {
-        WorldChannel selectedWorldServer = _clusterCache.WorldChannels.SingleOrDefault(x => x.Id == packet.ServerId);
+        WorldChannel selectedChannel = _cluster.GetChannel(packet.ServerId);
 
-        if (selectedWorldServer is null)
+        if (selectedChannel is null)
         {
             _logger.LogWarning($"Unable to get characters list for user '{packet.Username}'. " +
                 "Reason: client requested the list on a not connected World server.");
-            user.Disconnect();
+            User.Disconnect();
             return;
         }
 
-        DbUser dbUser = Database.Users.FirstOrDefault(x => x.Username == packet.Username);
+        AccountEntity userAccount = _accountDatabase.Accounts.SingleOrDefault(x => x.Username == packet.Username && x.Password == packet.Password);
 
-        if (dbUser is null)
+        if (userAccount is null)
         {
             _logger.LogWarning($"[SECURITY] Unable to load character list for user '{packet.Username}'. " +
                 "Reason: bad presented credentials compared to the database.");
-            user.Disconnect();
+            User.Disconnect();
             return;
         }
 
-        user.UserId = dbUser.Id;
-        user.Username = dbUser.Username;
+        User.AccountId = userAccount.Id;
 
-        SendPlayerList(user, packet.AuthenticationKey);
+        User.SendPlayerList();
+        User.SendChannelIpAddress(selectedChannel.Ip);
 
-        using var cacheAddressPacket = new CacheAddressPacket(selectedWorldServer.Host);
-        user.Send(cacheAddressPacket);
-
-
-        if (_clusterOptions.Value.EnableLoginProtect)
+        if (_cluster.Configuration.LoginProtectEnabled)
         {
-            using var loginNumPadPacket = new LoginProctectNumPadPacket(user.LoginProtectValue);
-            user.Send(loginNumPadPacket);
+            User.SendLoginProtect();
         }
     }
 }

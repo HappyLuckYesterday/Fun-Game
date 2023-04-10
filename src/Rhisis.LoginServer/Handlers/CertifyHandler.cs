@@ -1,145 +1,110 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Rhisis.Abstractions.Server;
-using Rhisis.Core.Common;
-using Rhisis.Core.Structures.Configuration;
+using Rhisis.Core.Configuration;
+using Rhisis.Core.Cryptography;
+using Rhisis.Game.Protocol.Packets;
+using Rhisis.Game.Protocol.Packets.Login.Clients;
+using Rhisis.Game.Protocol.Packets.Login.Server;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
-using Rhisis.LoginServer.Abstractions;
+using Rhisis.LoginServer.Core;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Packets.Client.Login;
-using Rhisis.Protocol.Packets.Server;
-using Rhisis.Protocol.Packets.Server.Login;
-using Sylver.HandlerInvoker.Attributes;
+using Rhisis.Protocol.Handlers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.LoginServer.Handlers;
 
-[Handler]
-public class CertifyHandler
+[PacketHandler(PacketType.CERTIFY)]
+public sealed class CertifyHandler : LoginPacketHandler
 {
     private readonly ILogger<CertifyHandler> _logger;
-    private readonly LoginOptions _loginConfiguration;
-    private readonly ILoginServer _loginServer;
-    private readonly ICoreServer _coreServer;
-    private readonly IRhisisDatabase _database;
+    private readonly IAccountDatabase _accountDatabase;
+    private readonly IOptions<LoginServerOptions> _options;
+    private readonly LoginServer _loginServer;
+    private readonly IClusterCache _clusterCache;
 
-    /// <summary>
-    /// Creates a new <see cref="CertifyHandler"/> instance.
-    /// </summary>
-    /// <param name="logger">Logger.</param>
-    /// <param name="loginConfiguration">Login server configuration.</param>
-    /// <param name="loginServer">Login server instance.</param>
-    /// <param name="database">Database service.</param>
-    /// <param name="coreServer">Core server.</param>
-    public CertifyHandler(ILogger<CertifyHandler> logger, IOptions<LoginOptions> loginConfiguration, ILoginServer loginServer, ICoreServer coreServer, IRhisisDatabase database)
+    public CertifyHandler(ILogger<CertifyHandler> logger, IAccountDatabase accountDatabase, IOptions<LoginServerOptions> options, LoginServer loginServer, IClusterCache clusterCache)
     {
         _logger = logger;
-        _loginConfiguration = loginConfiguration.Value;
+        _accountDatabase = accountDatabase;
+        _options = options;
         _loginServer = loginServer;
-        _coreServer = coreServer;
-        _database = database;
+        _clusterCache = clusterCache;
     }
 
-    /// <summary>
-    /// Certifies and authenticates a user.
-    /// </summary>
-    /// <param name="client">Client.</param>
-    /// <param name="certifyPacket">Certify packet.</param>
-    [HandlerAction(PacketType.CERTIFY)]
-    public void Execute(ILoginUser client, CertifyPacket certifyPacket)
+    public void Execute(CertifyPacket message)
     {
-        if (certifyPacket.BuildVersion != _loginConfiguration.BuildVersion)
+        ArgumentNullException.ThrowIfNull(message, nameof(message));
+        ArgumentException.ThrowIfNullOrEmpty(message.Username);
+        ArgumentException.ThrowIfNullOrEmpty(message.BuildVersion);
+
+        if (_options.Value.BuildVersion != message.BuildVersion)
         {
-            AuthenticationFailed(client, ErrorType.ILLEGAL_VER, "bad client build version");
+            SendAuthenticationFailed(ErrorType.ILLEGAL_VER, "Invalid client build version.");
             return;
         }
 
-        DbUser user = _database.Users.FirstOrDefault(x => x.Username.Equals(certifyPacket.Username));
-        AuthenticationResult authenticationResult = Authenticate(user, certifyPacket.Password);
+        byte[] passwordEncryptionKey = Aes.BuildEncryptionKeyFromString(_options.Value.PasswordEncryptionKey, 16);
+        string password = Aes.DecryptByteArray(message.Password, passwordEncryptionKey);
 
-        switch (authenticationResult)
+        AccountEntity account = _accountDatabase.Accounts
+            .FirstOrDefault(x => x.Username.Equals(message.Username) && x.Password.Equals(password));
+
+        if (!VerifyAccount(account))
         {
-            case AuthenticationResult.BadUsername:
-                AuthenticationFailed(client, ErrorType.FLYFF_ACCOUNT, "bad username");
-                break;
-            case AuthenticationResult.BadPassword:
-                AuthenticationFailed(client, ErrorType.FLYFF_PASSWORD, "bad password");
-                break;
-            case AuthenticationResult.AccountSuspended:
-                AuthenticationFailed(client, ErrorType.FLYFF_PERMIT, "account suspended.");
-                break;
-            case AuthenticationResult.AccountTemporarySuspended:
-                AuthenticationFailed(client, ErrorType.FLYFF_PERMIT, "account temporary suspended.");
-                break;
-            case AuthenticationResult.AccountDeleted:
-                AuthenticationFailed(client, ErrorType.ILLEGAL_ACCESS, "logged in with deleted account");
-                break;
-            case AuthenticationResult.Success:
-                if (_loginServer.IsClientConnected(certifyPacket.Username))
-                {
-                    AuthenticationFailed(client, ErrorType.DUPLICATE_ACCOUNT, "client already connected");
-                    return;
-                }
-
-                user.LastConnectionTime = DateTime.UtcNow;
-                _database.Users.Update(user);
-                _database.SaveChanges();
-
-                IEnumerable<Cluster> clusters = _coreServer.Clusters.OrderBy(x => x.Id);
-
-                using (var serverListPacket = new ServerListPacket(certifyPacket.Username, clusters))
-                {
-                    client.Send(serverListPacket);
-                }
-
-                client.SetClientUsername(certifyPacket.Username, user.Id);
-                _logger.LogInformation($"User '{client.Username}' logged succesfully.");
-                break;
-            default:
-                break;
+            return;
         }
+
+        account.LastConnectionTime = DateTime.UtcNow;
+        _accountDatabase.Accounts.Update(account);
+        _accountDatabase.SaveChanges();
+
+        User.Username = account.Username;
+        User.UserId = account.Id;
+
+        SendClusterList();
+
+        _logger.LogInformation($"User '{account.Username}' logged-in successfuly.");
     }
 
-    /// <summary>
-    /// Sends an authentication failed packet to the client.
-    /// </summary>
-    /// <param name="client">Client.</param>
-    /// <param name="error">Authentication error type.</param>
-    /// <param name="reason">Authentication error reason.</param>
-    private void AuthenticationFailed(ILoginUser client, ErrorType error, string reason)
+    private bool VerifyAccount(AccountEntity account)
     {
-        _logger.LogWarning($"Unable to authenticate user. Reason: {reason}");
+        if (account is null)
+        {
+            SendAuthenticationFailed(ErrorType.FLYFF_ACCOUNT, "Account doesn't exists. (Bad username)");
+            return false;
+        }
+        else if (account.IsDeleted)
+        {
+            SendAuthenticationFailed(ErrorType.ILLEGAL_ACCESS, "Account has been deleted.");
+            return false;
+        }
+        else if (_loginServer.IsUserConnected(account.Username))
+        {
+            SendAuthenticationFailed(ErrorType.DUPLICATE_ACCOUNT, "User already connected.");
+            return false;
+        }
 
-        using var errorPacket = new ErrorPacket(error);
-        client.Send(errorPacket);
+        return true;
     }
 
-    /// <summary>
-    /// Authenticates a user.
-    /// </summary>
-    /// <param name="user">Database user.</param>
-    /// <param name="password">Password</param>
-    /// <returns>Authentication result</returns>
-    private static AuthenticationResult Authenticate(DbUser user, string password)
+    private void SendAuthenticationFailed(ErrorType error, string reason = null)
     {
-        if (user is null)
+        if (!string.IsNullOrWhiteSpace(reason))
         {
-            return AuthenticationResult.BadUsername;
+            _logger.LogInformation($"Unable to authenticate user. Reason: {reason}");
         }
 
-        if (user.IsDeleted)
-        {
-            return AuthenticationResult.AccountDeleted;
-        }
+        using ErrorPacket packet = new(error);
 
-        if (!user.Password.Equals(password, StringComparison.OrdinalIgnoreCase))
-        {
-            return AuthenticationResult.BadPassword;
-        }
+        User.Send(packet);
+    }
 
-        return AuthenticationResult.Success;
+    private void SendClusterList()
+    {
+        using ServerListPacket serverListPacket = new(User.Username, _clusterCache.Clusters);
+        
+        User.Send(serverListPacket);
     }
 }

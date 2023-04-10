@@ -1,102 +1,151 @@
-﻿using Microsoft.Extensions.Logging;
-using Rhisis.ClusterServer.Abstractions;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Rhisis.Core.Helpers;
+using Rhisis.Core.IO;
+using Rhisis.Game;
+using Rhisis.Game.Protocol.Packets;
+using Rhisis.Game.Protocol.Packets.Cluster.Server;
+using Rhisis.Infrastructure.Persistance;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Packets.Server;
-using Sylver.HandlerInvoker;
 using System;
-using System.Net.Sockets;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Rhisis.ClusterServer;
 
-public sealed class ClusterUser : FFUserConnection, IClusterUser
+public sealed class ClusterUser : FFUserConnection
 {
-    private readonly IHandlerInvoker _handlerInvoker;
-    private readonly IClusterServer _server;
+    private readonly IGameDatabase _gameDatabase;
+    private readonly IServiceProvider _serviceProvider;
+    private int _loginProtectValue = FFRandom.Random(0, 100);
 
-    public int UserId { get; set; }
+    public int AccountId { get; set; }
 
-    public string Username { get; set; }
-
-    public int LoginProtectValue { get; set; } = new Random().Next(0, 1000);
-
-    /// <summary>
-    /// Creates a new <see cref="ClusterUser"/> instance.
-    /// </summary>
-    /// <param name="server">Cluster server.</param>
-    /// <param name="logger">Logger.</param>
-    /// <param name="handlerInvoker">Handler invoker.</param>
-    public ClusterUser(IClusterServer server, ILogger<ClusterUser> logger, IHandlerInvoker handlerInvoker)
+    public ClusterUser(ILogger<ClusterUser> logger, IGameDatabase gameDatabase, IServiceProvider serviceProvider) 
         : base(logger)
     {
-        _server = server;
-        _handlerInvoker = handlerInvoker;
+        _gameDatabase = gameDatabase;
+        _serviceProvider = serviceProvider;
     }
 
-    public void Disconnect() => _server.DisconnectUser(Id);
-
-    /// <summary>
-    /// Handle the incoming mesages.
-    /// </summary>
-    /// <param name="packet">Incoming packet</param>
     public override Task HandleMessageAsync(byte[] packetBuffer)
     {
-        uint packetHeaderNumber = 0;
-
         if (Socket is null)
         {
-            Logger.LogTrace("Skip to handle cluster packet from null socket. Reason: client is not connected.");
+            Logger.LogTrace("Skip to handle login packet. Reason: client is not connected.");
             return Task.CompletedTask;
         }
 
         try
         {
-            using var packet = new FFPacket(packetBuffer);
-
-            packet.ReadUInt32(); // DPID: Always 0xFFFFFFFF (uint.MaxValue)
-            packetHeaderNumber = packet.ReadUInt32();
-
-#if DEBUG
-            Logger.LogTrace("Received {0} packet from {1}.", (PacketType)packetHeaderNumber, Socket.RemoteEndPoint);
-#endif
-            _handlerInvoker.Invoke((PacketType)packetHeaderNumber, this, packet);
+            // We must skip the first 4 bytes because it represents the DPID which is always 0xFFFFFFFF (uint.MaxValue)
+            byte[] packetBufferArray = packetBuffer.Skip(4).ToArray();
+            FFPacket packet = new(packetBufferArray);
+            PacketDispatcher.Execute(this, packet.Header, packet, _serviceProvider);
         }
-        catch (ArgumentNullException)
+        catch (Exception e)
         {
-            if (Enum.IsDefined(typeof(PacketType), packetHeaderNumber))
-            {
-                Logger.LogTrace("Received an unimplemented Cluster packet {0} (0x{1}) from {2}.",
-                    Enum.GetName(typeof(PacketType), packetHeaderNumber),
-                    packetHeaderNumber.ToString("X4"),
-                    Socket.RemoteEndPoint);
-            }
-            else
-            {
-                Logger.LogTrace("[SECURITY] Received an unknown Cluster packet 0x{0} from {1}.",
-                    packetHeaderNumber.ToString("X4"),
-                    Socket.RemoteEndPoint);
-            }
-        }
-        catch (Exception exception)
-        {
-            Logger.LogError(exception, $"An error occured while handling a cluster packet.");
-            Logger.LogDebug(exception.InnerException?.StackTrace);
+            Logger.LogError(e, "An error occured while handling a cluster packet.");
         }
 
-        return Task.CompletedTask;
+        return base.HandleMessageAsync(packetBuffer);
     }
 
-    protected override void OnConnected()
+    public void SendPlayerList()
     {
-        Logger.LogInformation($"New client connected to cluster server from {Socket.RemoteEndPoint}.");
+        const int authenticationKey = 0;
+        IEnumerable<SelectableCharacter> characters = GetCharacterList();
 
-        using var welcomePacket = new WelcomePacket(SessionId);
-        Send(welcomePacket);
+        using var playerListPacket = new PlayerListPacket(authenticationKey, characters);
+
+        Send(playerListPacket);
     }
 
-    protected override void OnDisconnected()
+    public void SendChannelIpAddress(string channelIp)
     {
-        Logger.LogInformation($"Client disconnected from {Socket?.RemoteEndPoint.ToString() ?? "unknown location"}.");
+        using CacheAddressPacket packet = new(channelIp);
+
+        Send(packet);
+    }
+
+    public void SendLoginProtect()
+    {
+        using LoginProctectNumPadPacket packet = new(_loginProtectValue);
+
+        Send(packet);
+    }
+
+    public void SendNewNumPad()
+    {
+        _loginProtectValue = new Random().Next(0, 1000);
+
+        using LoginProtectCertPacket packet = new(_loginProtectValue);
+        Send(packet);
+    }
+
+    public void SendError(ErrorType errorType)
+    {
+        using ErrorPacket packet = new(errorType);
+
+        Send(packet);
+    }
+
+    public void SendPong(int time)
+    {
+        using PongPacket pingPacket = new(time);
+
+        Send(pingPacket);
+    }
+
+    public void SendQueryTickCount(uint time)
+    {
+        using ServerQueryTickCountPacket queryTickCountPacket = new(time, Time.GetElapsedTime());
+
+        Send(queryTickCountPacket);
+    }
+
+    public void SendPreJoin()
+    {
+        using PreJoinPacketComplete packet = new();
+
+        Send(packet);
+    }
+
+    public bool IsSecondPasswordCorrect(int userPassword, int userInputPassword)
+    {
+        return LoginNumberPad.GetNumPadToPassword(_loginProtectValue, userInputPassword) == userPassword;
+    }
+
+    private IReadOnlyList<SelectableCharacter> GetCharacterList()
+    {
+        return _gameDatabase.Players
+            .Include(x => x.Items.Where(x => x.StorageType == PlayerItemStorageType.Inventory))
+                .ThenInclude(x => x.Item)
+            .Where(x => x.AccountId == AccountId && !x.IsDeleted)
+            .ToList()
+            .Select(x => new SelectableCharacter
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Gender = (GenderType)x.Gender,
+                Level = x.Level,
+                Slot = x.Slot,
+                MapId = x.MapId,
+                PositionX = x.PosX,
+                PositionY = x.PosY,
+                PositionZ = x.PosZ,
+                SkinSetId = x.SkinSetId,
+                HairId = x.HairId,
+                HairColor = (uint)x.HairColor,
+                FaceId = x.FaceId,
+                JobId = x.JobId,
+                Strength = x.Strength,
+                Stamina = x.Stamina,
+                Intelligence = x.Intelligence,
+                Dexterity = x.Dexterity,
+                EquipedItems = x.Items.Where(i => i.Slot > 42).OrderBy(i => i.Slot).Select(i => i.Item.Id)
+            })
+            .ToList();
     }
 }

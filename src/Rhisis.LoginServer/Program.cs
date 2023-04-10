@@ -5,101 +5,80 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
-using Rhisis.Abstractions.Protocol;
+using Rhisis.Core.Configuration;
 using Rhisis.Core.Extensions;
-using Rhisis.Core.Structures.Configuration;
+using Rhisis.Infrastructure.Logging;
 using Rhisis.Infrastructure.Persistance;
-using Rhisis.LoginServer.Abstractions;
+using Rhisis.LoginServer.Core;
 using Rhisis.Protocol;
-using Sylver.HandlerInvoker;
 using System;
 using System.Threading.Tasks;
 
 namespace Rhisis.LoginServer;
 
-public static class Program
+internal static class Program
 {
-    private static async Task Main()
+    static async Task Main(string[] args)
     {
         const string culture = "en-US";
 
+        Console.Title = "Rhisis - Login Server";
         var host = new HostBuilder()
-            .ConfigureAppConfiguration((hostContext, configApp) =>
-            {
-                configApp.SetBasePath(EnvironmentExtension.GetCurrentEnvironementDirectory());
-                configApp.AddJsonFile(ConfigurationConstants.LoginServerPath, optional: false);
-                configApp.AddJsonFile(ConfigurationConstants.CoreServerPath, optional: false);
-                configApp.AddJsonFile(ConfigurationConstants.DatabasePath, optional: false);
-                configApp.AddEnvironmentVariables();
-            })
-            .ConfigureServices((hostContext, services) =>
-            {
-                services.AddOptions();
-                services.Configure<LoginOptions>(hostContext.Configuration.GetSection(ConfigurationSections.Login));
-                services.Configure<CoreOptions>(hostContext.Configuration.GetSection(ConfigurationSections.Core));
+           .ConfigureAppConfiguration((_, config) =>
+           {
+               config.AddEnvironmentVariables();
+               config.SetBasePath(EnvironmentExtension.GetCurrentEnvironementDirectory());
+               config.AddYamlFile("config/login-server.yml", optional: false, reloadOnChange: true);
+           })
+           .ConfigureServices((hostContext, services) =>
+           {
+               services.AddOptions();
+               services.Configure<LoginServerOptions>(hostContext.Configuration.GetSection("server"));
+               services.Configure<CoreCacheServerOptions>(hostContext.Configuration.GetSection("core-cache-server"));
 
-                services.AddPersistance(hostContext.Configuration);
-                services.AddHandlers();
-            })
-            .ConfigureLogging(builder =>
-            {
-                builder.AddFilter("Microsoft", LogLevel.Warning);
-                builder.SetMinimumLevel(LogLevel.Trace);
-                builder.AddNLog(new NLogProviderOptions
-                {
-                    CaptureMessageTemplates = true,
-                    CaptureMessageProperties = true
-                });
-            })
-            .ConfigureLiteNetwork((context, builder) =>
-            {
-                // Login Server
-                builder.AddLiteServer<ILoginServer, LoginServer>(options =>
-                {
-                    var serverOptions = context.Configuration.GetSection(ConfigurationSections.Login).Get<LoginOptions>();
+               services.AddAccountPersistance(hostContext.Configuration.GetSection("account-database").Get<DatabaseOptions>());
 
-                    if (serverOptions is null)
-                    {
-                        throw new InvalidProgramException($"Failed to load login server settings.");
-                    }
+               services.AddSingleton<IClusterCache, CoreCacheServer>(serviceProvider => serviceProvider.GetRequiredService<CoreCacheServer>());
+           })
+           .ConfigureLogging(builder =>
+           {
+               builder.AddConsole();
+               builder.AddLoggingFilters();
+           })
+           .ConfigureLiteNetwork((context, builder) =>
+           {
+               builder.AddLiteServer<LoginServer>(options =>
+               {
+                   var serverOptions = context.Configuration.GetSection("server").Get<LoginServerOptions>();
 
-                    options.Host = serverOptions.Host;
-                    options.Port = serverOptions.Port;
-                    options.PacketProcessor = new FlyffPacketProcessor();
-                    options.ReceiveStrategy = ReceiveStrategyType.Queued;
-                });
+                   if (serverOptions is null)
+                   {
+                       throw new InvalidProgramException($"Failed to load login server settings.");
+                   }
 
-                // Core Server
-                builder.AddLiteServer<ICoreServer, CoreServer>(options =>
-                {
-                    var serverConfiguration = context.Configuration.GetSection(ConfigurationSections.Core).Get<CoreOptions>();
+                   options.Host = serverOptions.Ip;
+                   options.Port = serverOptions.Port;
+                   options.PacketProcessor = new FlyffPacketProcessor();
+                   options.ReceiveStrategy = ReceiveStrategyType.Queued;
+               });
+               builder.AddLiteServer<CoreCacheServer>(options =>
+               {
+                   var serverOptions = context.Configuration.GetSection("core-cache-server").Get<CoreCacheServerOptions>();
 
-                    if (serverConfiguration is null)
-                    {
-                        throw new InvalidProgramException($"Failed to load core server settings.");
-                    }
+                   if (serverOptions is null)
+                   {
+                       throw new InvalidProgramException($"Failed to load core cache server settings.");
+                   }
 
-                    options.Host = serverConfiguration.Host;
-                    options.Port = serverConfiguration.Port;
-                    options.ReceiveStrategy = ReceiveStrategyType.Queued;
-                });
-            })
-            .UseConsoleLifetime()
-            .SetConsoleCulture(culture)
-            .Build();
+                   options.Host = serverOptions.Ip;
+                   options.Port = serverOptions.Port;
+                   options.ReceiveStrategy = ReceiveStrategyType.Queued;
+               });
+           })
+           .UseConsoleLifetime()
+           .SetConsoleCulture(culture)
+           .Build();
 
-        await host
-            .AddHandlerParameterTransformer<IFFPacket, IPacketDeserializer>((source, dest) =>
-            {
-                if (source is not IFFPacket packet)
-                {
-                    throw new InvalidCastException("Failed to convert a lite packet stream into a Flyff packet stream.");
-                }
-
-                dest?.Deserialize(packet);
-                return dest;
-            })
-            .RunAsync();
+        await host.RunAsync();
     }
 }

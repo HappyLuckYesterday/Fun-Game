@@ -1,5 +1,6 @@
-﻿using Rhisis.Core.Attributes;
+﻿using Rhisis.Core.Extensions;
 using Rhisis.Core.IO;
+using Rhisis.Game.IO.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Security;
 
 namespace Rhisis.Game.IO;
 
@@ -69,7 +71,7 @@ public class ResourceTableFile : FileStream, IDisposable
     /// <param name="headerLineIndex">Header index line in file.</param>
     /// <param name="defines">Defines used to transform.</param>
     /// <param name="texts">Texts used to transform.</param>
-    public ResourceTableFile(string path, int headerLineIndex, IDictionary<string, int> defines, IDictionary<string, string> texts)
+    public ResourceTableFile(string path, int headerLineIndex, IDictionary<string, int> defines = null, IDictionary<string, string> texts = null)
         : this(path, headerLineIndex, DefaultSeparator, defines, texts)
     {
     }
@@ -89,8 +91,8 @@ public class ResourceTableFile : FileStream, IDisposable
         _reader = new StreamReader(this);
         _headerLineIndex = headerLineIndex;
         _separators = separators;
-        _defines = defines;
-        _texts = texts;
+        _defines = defines ?? new Dictionary<string, int>();
+        _texts = texts ?? new Dictionary<string, string>();
         _ignoreHeader = _headerLineIndex < 0;
 
         if (!_ignoreHeader)
@@ -104,24 +106,25 @@ public class ResourceTableFile : FileStream, IDisposable
     /// <summary>
     /// Gets the list of all records mapped for the type passed as template parameter.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TRecord"></typeparam>
     /// <returns></returns>
-    public IEnumerable<T> GetRecords<T>() where T : class, new()
+    public IEnumerable<TRecord> GetRecords<TRecord>() where TRecord : class, new()
     {
-        var records = new List<T>();
-        var typeProperties = GetPropertiesWithDataMemberAttribute<T>();
-        var currentIndex = 0;
+        var records = new List<TRecord>();
+        IEnumerable<PropertyInfo> typeProperties = GetPropertiesWithDataMemberAttribute<TRecord>();
+        int currentIndex = 0;
 
         foreach (var record in _datas)
         {
-            var obj = (T)Activator.CreateInstance(typeof(T));
+            var obj = (TRecord)Activator.CreateInstance(typeof(TRecord));
 
-            foreach (var property in typeProperties)
+            foreach (PropertyInfo property in typeProperties)
             {
-                DataMemberAttribute attribute = GetPropertyAttribute<DataMemberAttribute>(property);
-                DefaultValueAttribute defaultValue = GetPropertyAttribute<DefaultValueAttribute>(property);
-                DataIndexAttribute dataIndexAttribute = GetPropertyAttribute<DataIndexAttribute>(property);
-                var index = -1;
+                DataMemberAttribute attribute = property.GetAttribute<DataMemberAttribute>();
+                DefaultValueAttribute defaultValue = property.GetAttribute<DefaultValueAttribute>();
+                DataIndexAttribute dataIndexAttribute = property.GetAttribute<DataIndexAttribute>();
+                bool transformValue = property.GetAttribute<IgnoreDataTransformation>() is null;
+                int index = -1;
 
                 if (attribute != null)
                 {
@@ -138,6 +141,11 @@ public class ResourceTableFile : FileStream, IDisposable
                 if (index != -1)
                 {
                     object value = record.ElementAt(index);
+
+                    if (transformValue)
+                    {
+                        value = Transform(value.ToString());
+                    }
 
                     if (value.ToString() == UndefinedValue)
                     {
@@ -194,27 +202,17 @@ public class ResourceTableFile : FileStream, IDisposable
                 }
 
                 line = line.Replace(",,", ",=,").Replace(",", "\t");
-                var content = line.Split(new[] { '\t', '\r', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] content = line.Split(new[] { '\t', '\r', ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
                 if (!_ignoreHeader)
                 {
                     if (content.Length == _headers.Count)
                     {
-                        for (var i = 0; i < content.Length; i++)
-                        {
-                            content[i] = Transform(content[i]);
-                        }
-
                         _datas.Add(content);
                     }
                 }
                 else
                 {
-                    for (var i = 0; i < content.Length; i++)
-                    {
-                        content[i] = Transform(content[i]);
-                    }
-
                     _datas.Add(content);
                 }
             }
@@ -316,5 +314,25 @@ public class ResourceTableFile : FileStream, IDisposable
         }
 
         base.Dispose(disposing);
+    }
+
+    private readonly struct HeaderProperties
+    {
+        public PropertyInfo Property { get; }
+
+        public string Name { get; }
+
+        public object DefaultValue { get; }
+
+        public HeaderProperties(PropertyInfo property, int index)
+        {
+            Property = property;
+
+            DataMemberAttribute attribute = property.GetAttribute<DataMemberAttribute>();
+            DefaultValueAttribute defaultValue = property.GetAttribute<DefaultValueAttribute>();
+
+            Name = attribute.Name;
+            DefaultValue = defaultValue.Value;
+        }
     }
 }

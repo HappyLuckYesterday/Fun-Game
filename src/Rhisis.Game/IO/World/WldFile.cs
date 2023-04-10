@@ -1,5 +1,4 @@
-﻿using Rhisis.Core.Structures;
-using System;
+﻿using System;
 using System.IO;
 
 namespace Rhisis.Game.IO.World;

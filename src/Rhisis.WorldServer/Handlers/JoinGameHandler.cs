@@ -1,239 +1,144 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Rhisis.Abstractions;
-using Rhisis.Abstractions.Behavior;
-using Rhisis.Abstractions.Caching;
-using Rhisis.Abstractions.Entities;
-using Rhisis.Abstractions.Map;
-using Rhisis.Abstractions.Resources;
-using Rhisis.Core.DependencyInjection.Extensions;
-using Rhisis.Core.Structures;
-using Rhisis.Core.Structures.Configuration.World;
 using Rhisis.Game;
-using Rhisis.Game.Common;
-using Rhisis.Game.Common.Resources;
-using Rhisis.Game.Components;
 using Rhisis.Game.Entities;
-using Rhisis.Game.Features;
+using Rhisis.Game.Protocol.Packets.World.Client;
+using Rhisis.Game.Protocol.Packets.World.Server;
+using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
+using Rhisis.Game.Resources;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Packets.Client.World;
-using Rhisis.Protocol.Packets.Server.World;
-using Rhisis.Protocol.Snapshots;
-using Rhisis.Protocol.Snapshots.Friends;
-using Sylver.HandlerInvoker.Attributes;
-using System;
+using Rhisis.Protocol.Handlers;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.WorldServer.Handlers;
 
-[Handler]
-public class JoinGameHandler
+[PacketHandler(PacketType.JOIN)]
+internal class JoinGameHandler : WorldPacketHandler
 {
     private readonly ILogger<JoinGameHandler> _logger;
-    private readonly IRhisisDatabase _database;
-    private readonly IGameResources _gameResources;
-    private readonly IMapManager _mapManager;
-    private readonly IBehaviorManager _behaviorManager;
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IOptions<WorldOptions> _configuration;
-    private readonly IPlayerCache _playerCache;
+    private readonly IAccountDatabase _accountDatabase;
+    private readonly IGameDatabase _gameDatabase;
 
-    /// <summary>
-    /// Creates a new <see cref="JoinGameHandler"/> instance.
-    /// </summary>
-    /// <param name="logger">Logger.</param>
-    /// <param name="database">Database access layer.</param>
-    /// <param name="gameResources">Game resources.</param>
-    /// <param name="mapManager">Map manager.</param>
-    /// <param name="behaviorManager">Behavior manager.</param>
-    /// <param name="serviceProvider">Service provider.</param>
-    public JoinGameHandler(ILogger<JoinGameHandler> logger, IRhisisDatabase database, 
-        IGameResources gameResources, IMapManager mapManager, 
-        IBehaviorManager behaviorManager, IServiceProvider serviceProvider,
-        IOptions<WorldOptions> configuration, IPlayerCache playerCache)
+    public JoinGameHandler(ILogger<JoinGameHandler> logger, IAccountDatabase accountDatabase, IGameDatabase gameDatabase)
     {
         _logger = logger;
-        _database = database;
-        _gameResources = gameResources;
-        _mapManager = mapManager;
-        _behaviorManager = behaviorManager;
-        _serviceProvider = serviceProvider;
-        _configuration = configuration;
-        _playerCache = playerCache;
+        _accountDatabase = accountDatabase;
+        _gameDatabase = gameDatabase;
     }
 
-    /// <summary>
-    /// Prepares the player to join the world.
-    /// </summary>
-    /// <param name="serverClient">Client.</param>
-    /// <param name="packet">Incoming join packet.</param>
-    [HandlerAction(PacketType.JOIN)]
-    public void OnJoin(IPlayer player, JoinPacket packet)
+    public void Execute(JoinPacket packet)
     {
-        DbCharacter character = _database.Characters
-            .Include(x => x.User)
-            .FirstOrDefault(x => x.Id == packet.PlayerId);
+        AccountEntity userAccount = _accountDatabase.Accounts.SingleOrDefault(x => x.Username == packet.Username && x.Password == packet.Password);
 
-        if (character is null)
+        if (userAccount is null)
         {
-            throw new InvalidOperationException($"Cannot find character with id: {packet.PlayerId}.");
-        }
+            _logger.LogWarning($"Unable to join for user '{packet.Username}' Reason: bad presented credentials compared to the database.");
+            User.Disconnect();
 
-        if (character.IsDeleted)
-        {
-            throw new InvalidOperationException($"Cannot connect with character '{character.Name}' for user '{character.User.Username}'. Reason: character is deleted.");
-        }
-
-        if (character.User.Authority <= 0)
-        {
-            _logger.LogWarning($"Cannot connect with '{character.Name}'. Reason: User {character.User.Username} is banned.");
-            // TODO: send error to client
             return;
         }
 
-        if (player is Player realPlayer)
+        PlayerEntity player = _gameDatabase.Players.SingleOrDefault(x => x.AccountId == userAccount.Id && x.Id == packet.PlayerId && x.Name == packet.PlayerName);
+
+        if (player is null)
         {
-            // TODO: move this to constants somewhere
-            int playerModelId = character.Gender == 0 ? 11 : 12;
+            _logger.LogWarning($"Unable to join for user '{packet.Username}' Reason: Cannot find player with id: '{packet.PlayerId}' and name: '{packet.PlayerName}'.");
+            User.Disconnect();
 
-            if (!_gameResources.Movers.TryGetValue(playerModelId, out MoverData moverData))
-            {
-                throw new ArgumentException($"Cannot find mover with id '{realPlayer.ModelId}' in game resources.", nameof(realPlayer.ModelId));
-            }
-
-            if (!_gameResources.Jobs.TryGetValue((DefineJob.Job)character.JobId, out JobData jobData))
-            {
-                throw new ArgumentException($"Cannot find job data with id: '{character.JobId}' in game resources.", nameof(character.JobId));
-            }
-
-            realPlayer.Systems = _serviceProvider;
-            realPlayer.Data = moverData;
-            realPlayer.Job = jobData;
-            realPlayer.Behavior = _behaviorManager.GetDefaultBehavior(BehaviorType.Player, realPlayer);
-            realPlayer.CharacterId = character.Id;
-            realPlayer.ModelId = playerModelId;
-            realPlayer.Type = WorldObjectType.Mover;
-            realPlayer.MapLayer = _mapManager.GetMap(character.MapId)?.GetMapLayer(character.MapLayerId) ?? throw new InvalidOperationException($"Cannot create player on map with id: {character.Id}.");
-            realPlayer.Position = new Vector3(character.PosX, character.PosY, character.PosZ);
-            realPlayer.Angle = character.Angle;
-            realPlayer.Size = GameConstants.DefaultObjectSize;
-            realPlayer.Name = character.Name;
-            realPlayer.Level = character.Level;
-            realPlayer.DeathLevel = character.Level;
-            realPlayer.ObjectState = ObjectState.OBJSTA_STAND;
-            realPlayer.ObjectStateFlags = 0;
-            realPlayer.Authority = (AuthorityType)character.User.Authority;
-            realPlayer.Mode = ModeType.NONE;
-            realPlayer.Slot = character.Slot;
-            
-            realPlayer.Appearence = new HumanVisualAppearenceComponent((GenderType)character.Gender)
-            {
-                SkinSetId = character.SkinSetId,
-                FaceId = character.FaceId,
-                HairId = character.HairId,
-                HairColor = character.HairColor
-            };
-
-            realPlayer.Gold = _serviceProvider.CreateInstance<Gold>(realPlayer, character.Gold);
-            realPlayer.Experience = _serviceProvider.CreateInstance<Experience>(realPlayer, character.Experience);
-            realPlayer.Inventory = _serviceProvider.CreateInstance<Rhisis.Game.Features.Inventory>(realPlayer);
-            realPlayer.Chat = _serviceProvider.CreateInstance<Rhisis.Game.Features.Chat.Chat>(realPlayer);
-            realPlayer.Attributes = _serviceProvider.CreateInstance<Attributes>(realPlayer);
-            realPlayer.Battle = _serviceProvider.CreateInstance<Rhisis.Game.Features.Battle>(realPlayer);
-            realPlayer.Quests = _serviceProvider.CreateInstance<QuestDiary>(realPlayer);
-            realPlayer.SkillTree = _serviceProvider.CreateInstance<SkillTree>(realPlayer, (ushort)character.SkillPoints);
-            realPlayer.Taskbar = _serviceProvider.CreateInstance<Taskbar>();
-            realPlayer.Projectiles = _serviceProvider.CreateInstance<Projectiles>();
-            realPlayer.Delayer = _serviceProvider.CreateInstance<Delayer>();
-            realPlayer.Buffs = _serviceProvider.CreateInstance<Buffs>(realPlayer);
-            realPlayer.Messenger = _serviceProvider.CreateInstance<Messenger>(realPlayer, _configuration.Value.Id, _configuration.Value.Messenger.MaximumFriends);
-
-            IEnumerable<IPlayerInitializer> playerInitializers = _serviceProvider.GetRequiredService<IEnumerable<IPlayerInitializer>>();
-
-            foreach (IPlayerInitializer initializer in playerInitializers)
-            {
-                initializer.Load(realPlayer);
-            }
-
-            realPlayer.Statistics = _serviceProvider.CreateInstance<PlayerStatistics>(realPlayer);
-            realPlayer.Statistics.AvailablePoints = (ushort)character.StatPoints;
-            realPlayer.Statistics.Strength = character.Strength;
-            realPlayer.Statistics.Stamina = character.Stamina;
-            realPlayer.Statistics.Dexterity = character.Dexterity;
-            realPlayer.Statistics.Intelligence = character.Intelligence;
-
-            realPlayer.Health = _serviceProvider.CreateInstance<Health>(realPlayer);
-            realPlayer.Health.Hp = character.Hp;
-            realPlayer.Health.Mp = character.Mp;
-            realPlayer.Health.Fp = character.Fp;
-
-            realPlayer.Defense = _serviceProvider.CreateInstance<Defense>(realPlayer);
-            realPlayer.Defense.Update();
-
-            if (realPlayer.Health.IsDead)
-            {
-                realPlayer.Experience.ApplyDeathPenality(true);
-                realPlayer.Health.ApplyDeathRecovery(true);
-
-                IMapRevivalRegion revivalRegion = realPlayer.Map.GetNearRevivalRegion(realPlayer.Position);
-
-                if (revivalRegion is null)
-                {
-                    throw new InvalidOperationException("Cannot find nearest revival region.");
-                }
-
-                if (realPlayer.Map.Id != revivalRegion.MapId)
-                {
-                    IMap revivalMap = _mapManager.GetMap(revivalRegion.MapId);
-
-                    if (revivalMap is null)
-                    {
-                        throw new InvalidOperationException($"Failed to find map with id: {revivalMap.Id}'.");
-                    }
-
-                    revivalRegion = revivalMap.GetRevivalRegion(revivalRegion.Key);
-                }
-
-                realPlayer.MapLayer = _mapManager.GetMap(revivalRegion.MapId).GetDefaultMapLayer();
-                realPlayer.Position.Copy(revivalRegion.RevivalPosition);
-            }
-
-            realPlayer.LoggedInAt = DateTime.UtcNow;
+            return;
         }
 
-        var cachedPlayer = new CachedPlayer(player.CharacterId, _configuration.Value.Id, player.Name, player.Appearence.Gender)
+        if (player.IsDeleted)
         {
+            _logger.LogWarning($"Unable to join for user '{packet.Username}' Reason: player '{player.Name}' is deleted.");
+            User.Disconnect();
+
+            return;
+        }
+
+        int modelId = player.Gender == 0 ? 11 : 12;
+
+        User.Player = new Player(User, GameResources.Current.Movers.Get(modelId))
+        {
+            Id = player.Id,
+            Name = player.Name,
+            Slot = player.Slot,
+            DeathLevel = 0,
+            Authority = (AuthorityType)userAccount.Authority,
+            Position = new Vector3(player.PosX, player.PosY, player.PosZ),
+            MapId = player.MapId,
+            MapLayerId = player.MapLayerId,
+            RotationAngle = player.Angle,
             Level = player.Level,
-            Job = player.Job.Id,
-            Version = 1,
-            IsOnline = true,
-            MessengerStatus = MessengerStatusType.Online,
-            Friends = player.Messenger.Friends.Select(x => new CachedPlayerFriend(x.Id, x.IsBlocked)).ToList()
+            ModelId = modelId,
+            ObjectState = ObjectState.OBJSTA_STAND,
+            Job = GameResources.Current.Jobs.Get(player.JobId),
+            AvailablePoints = player.StatPoints,
+            SkillPoints = (ushort)player.SkillPoints,
+            Appearence = new HumanVisualAppearance
+            {
+                Gender = player.Gender == 0 ? GenderType.Male : GenderType.Female,
+                SkinSetId = player.SkinSetId,
+                FaceId = player.FaceId,
+                HairColor = player.HairColor,
+                HairId = player.HairId,
+            }
         };
+        User.Player.Health.Hp = player.Hp;
+        User.Player.Health.Mp = player.Mp;
+        User.Player.Health.Fp = player.Fp;
 
-        _playerCache.Set(cachedPlayer);
+        User.Player.Statistics.Strength = player.Strength;
+        User.Player.Statistics.Stamina = player.Stamina;
+        User.Player.Statistics.Dexterity = player.Dexterity;
+        User.Player.Statistics.Intelligence = player.Intelligence;
 
-        using (var joinPacket = new JoinCompletePacket())
+        User.Player.Gold.Initialize(player.Gold);
+        User.Player.Experience.Initialize(player.Experience);
+
+        IEnumerable<ItemContainerSlot> playerInventoryItems = _gameDatabase.PlayerItems
+            .Include(x => x.Item)
+            .Where(x => x.PlayerId == player.Id && x.StorageType == PlayerItemStorageType.Inventory)
+            .Select(x => new ItemContainerSlot
+            {
+                Slot = x.Slot,
+                Item = new Item(GameResources.Current.Items.Get(x.Item.Id))
+                {
+                    SerialNumber = x.Item.SerialNumber,
+                    Refine = x.Item.Refine.GetValueOrDefault(0),
+                    Element = (ElementType)x.Item.Element.GetValueOrDefault(0),
+                    ElementRefine = x.Item.ElementRefine.GetValueOrDefault(0),
+                    Quantity = x.Quantity
+                }
+            });
+
+        if (playerInventoryItems.Any())
+        {
+            User.Player.Inventory.Initialize(playerInventoryItems);
+        }
+
+        // TODO: initialize inventory items
+        // TODO: initialize skills
+        // TODO: initialize quest diary
+
+        using (JoinCompletePacket joinPacket = new())
         {
             joinPacket.AddSnapshots(
-                new EnvironmentAllSnapshot(player, SeasonType.None), // TODO: get the season id using current weather time.
-                new WorldReadInfoSnapshot(player),
-                new AddObjectSnapshot(player),
-                new TaskbarSnapshot(player),
-                new QueryPlayerDataSnapshot(cachedPlayer),
-                new AddFriendGameJoinSnapshot(player)
+                new EnvironmentAllSnapshot(User.Player, SeasonType.None), // TODO: get the season id using current weather time.
+                new WorldReadInfoSnapshot(User.Player),
+                new AddObjectSnapshot(User.Player)
+                //new TaskbarSnapshot(User.Player)
+                //new QueryPlayerDataSnapshot(cachedPlayer),
+                //new AddFriendGameJoinSnapshot(User.Player)
             );
 
-            player.Connection.Send(joinPacket);
+            User.Send(joinPacket);
         }
 
-        player.MapLayer.AddPlayer(player);
-        player.Spawned = true;
-        player.OnConnected();
+        User.Player.IsSpawned = true;
     }
 }

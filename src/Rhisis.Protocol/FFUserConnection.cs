@@ -1,8 +1,7 @@
 ﻿using LiteNetwork.Server;
 using Microsoft.Extensions.Logging;
-using Rhisis.Abstractions.Protocol;
-using Rhisis.Core.Helpers;
 using System;
+using System.Net.Sockets;
 
 namespace Rhisis.Protocol;
 
@@ -14,7 +13,7 @@ public class FFUserConnection : LiteServerUser
     /// <summary>
     /// Gets the user session id.
     /// </summary>
-    public uint SessionId { get; } = RandomHelper.GenerateSessionKey();
+    public uint SessionId { get; } = (uint)new Random().Next(0, int.MaxValue);
 
     /// <summary>
     /// Gets the connection logger.
@@ -26,11 +25,39 @@ public class FFUserConnection : LiteServerUser
         Logger = logger;
     }
 
-    public override void Send(byte[] packetBuffer)
+    public void Disconnect()
     {
-        Logger.LogTrace("Send {0} packet to {1}.", (PacketType)BitConverter.ToUInt32(packetBuffer, FFPacket.PacketDataStartOffset), SessionId);
-        base.Send(packetBuffer);
+        Dispose();
     }
 
-    public void Send(IFFPacket packet) => Send(packet.Buffer);
+    public void PacketHandlerNotImplemented(PacketType packetType)
+    {
+        Logger.LogWarning($"Received an unimplemented packet {packetType} (0x{(int)packetType:X8}) from {Socket.RemoteEndPoint}.");
+    }
+
+    public void SnapshotNotImplemented(SnapshotType snapshotType)
+    {
+        Logger.LogWarning($"Received an unimplemented snapshot {snapshotType} (0x{(int)snapshotType:X8}) from {Socket.RemoteEndPoint}.");
+    }
+
+    protected override void OnConnected()
+    {
+        Logger.LogInformation($"New user connected (SessionId={SessionId}|Id={Id})");
+        
+        using FFPacket packet = new();
+        packet.WriteUInt32((uint)PacketType.WELCOME);
+        packet.WriteUInt32(SessionId);
+
+        Send(packet);
+    }
+
+    protected override void OnDisconnected()
+    {
+        Logger.LogInformation($"Client disconnected from {Socket?.RemoteEndPoint.ToString() ?? "unknown location"}.");
+    }
+
+    protected override void OnError(object sender, Exception exception)
+    {
+        Logger.LogError(exception, $"An error occured while processing a request for user '{Id}' (Session Id={SessionId})");
+    }
 }

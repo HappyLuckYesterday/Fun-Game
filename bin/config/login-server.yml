@@ -1,0 +1,13 @@
+server:
+  ip: '127.0.0.1'
+  port: 23000
+  build-version: '20100412'
+  account-verification: true
+  password-encryption-key : 'dldhsvmflvm'
+core-cache-server:
+  ip: '127.0.0.1'
+  port: 15000
+  master-password: 'StrongPassword'
+account-database:
+  provider: 'sqlite' # 'sqlite' | 'mysql' | 'mssql'
+  connection-string: 'Data Source=./data/db/accounts.db;'

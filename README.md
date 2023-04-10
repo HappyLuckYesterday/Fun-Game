@@ -39,8 +39,8 @@ We choose to use the <a href="https://github.com/Eastrall/LiteNetwork">LiteNetwo
 - Language: `C#` 10
 - Framework: `.NET 7`
 - Application type: `Console`
-- Database type: `MySQL`
-- Configuration files type: `JSON`
+- Database type: `Sqlite`, `MySQL`
+- Configuration files type: `YAML`
 - Environment: `Visual Studio 2022`
 - External libraries used:
 	- [LiteNetwork][litenetwork]

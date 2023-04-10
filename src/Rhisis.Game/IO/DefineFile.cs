@@ -28,7 +28,7 @@ public sealed class DefineFile : IDisposable
     /// <summary>
     /// Gets the define directive.
     /// </summary>
-    public IReadOnlyDictionary<string, object> Defines => _defines as IReadOnlyDictionary<string, object>;
+    public IReadOnlyDictionary<string, object> Values => _defines as IReadOnlyDictionary<string, object>;
 
     /// <summary>
     /// Gets the number of definitions.

@@ -1,5 +1,4 @@
-﻿using Rhisis.Core.Structures;
-using System.IO;
+﻿using System.IO;
 
 namespace Rhisis.Game.IO.Dyo;
 

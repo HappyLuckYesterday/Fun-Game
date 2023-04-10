@@ -1,0 +1,25 @@
+server:
+  ip: '127.0.0.1'
+  port: 5400
+  name: 'Channel 1'
+  cluster:
+    name: 'Rhisis'
+    ip: '127.0.0.1'
+    port: 16000
+    master-password: 'StrongPassword'
+  maximum-users: 100
+  pk-enabled: false
+  language: 'en'
+  maps:
+    - "WI_WORLD_MADRIGAL"
+    - "WI_DUNGEON_FL_MAS"
+  rates:
+    gold: 1
+    experience: 1
+    drop: 1
+account-database:
+  provider: 'sqlite'
+  connection-string: 'Data Source=./data/db/accounts.db;'
+game-database:
+  provider: 'sqlite'
+  connection-string: 'Data Source=./data/db/game.db;'

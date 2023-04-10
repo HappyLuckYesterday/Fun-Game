@@ -1,6 +1,4 @@
-﻿using Rhisis.Core.Structures;
-
-namespace Rhisis.Game.IO.Rgn;
+﻿namespace Rhisis.Game.IO.Rgn;
 
 /// <summary>
 /// "region3" region structure.

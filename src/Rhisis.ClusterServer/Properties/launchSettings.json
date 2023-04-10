@@ -2,10 +2,8 @@
   "profiles": {
     "Rhisis.ClusterServer": {
       "commandName": "Project",
-      "workingDirectory": "../../bin"
-    },
-    "Docker": {
-      "commandName": "Docker"
+      "workingDirectory": "../../bin",
+      "remoteDebugEnabled": false
     }
   }
 }

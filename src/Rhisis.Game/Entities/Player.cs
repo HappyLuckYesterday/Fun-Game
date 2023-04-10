@@ -1,233 +1,170 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Rhisis.Abstractions.Behavior;
-using Rhisis.Abstractions.Caching;
-using Rhisis.Abstractions.Entities;
-using Rhisis.Abstractions.Features;
-using Rhisis.Abstractions.Features.Battle;
-using Rhisis.Abstractions.Features.Chat;
-using Rhisis.Abstractions.Map;
-using Rhisis.Abstractions.Messaging;
-using Rhisis.Abstractions.Protocol;
-using Rhisis.Abstractions.Systems;
-using Rhisis.Core.Helpers;
-using Rhisis.Core.Structures;
-using Rhisis.Game.Common;
-using Rhisis.Game.Common.Resources;
-using Rhisis.Protocol.Messages.Cluster;
+﻿using Rhisis.Game.Common.Resources;
+using Rhisis.Game.Features;
+using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
+using Rhisis.Game.Resources.Properties;
+using Rhisis.Protocol;
+using Rhisis.Protocol.Snapshots;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace Rhisis.Game.Entities;
 
-[DebuggerDisplay("{Name} Lv.{Level}")]
-public class Player : IPlayer, IHuman, IMover, IWorldObject
+public sealed class Player : Mover
 {
-    private readonly Lazy<IFollowSystem> _followSystem;
-    private readonly Lazy<ITeleportSystem> _teleportSystem;
-    private readonly Lazy<IJobSystem> _jobSystem;
-    private readonly Lazy<IPlayerCache> _playerCache;
-    private readonly Lazy<IMessaging> _messaging;
+    private readonly FFUserConnection _connection;
 
-    public IGameConnection Connection { get; set; }
+    /// <summary>
+    /// Gets the player's id.
+    /// </summary>
+    /// <remarks>
+    /// This id is the player's id as stored in the database.
+    /// </remarks>
+    public int Id { get; init; }
 
-    public DateTime LoggedInAt { get; set; }
+    /// <summary>
+    /// Gets or sets the player's job.
+    /// </summary>
+    public JobProperties Job { get; set; }
 
-    public uint Id { get; }
+    /// <summary>
+    /// Gets the player login date.
+    /// </summary>
+    public DateTime LoggedInAt { get; init; }
 
-    public int CharacterId { get; set; }
+    /// <summary>
+    /// Gets the player slot.
+    /// </summary>
+    public int Slot { get; init; }
 
-    public WorldObjectType Type { get; set; }
-
-    public ObjectState ObjectState { get; set; }
-
-    public StateFlags ObjectStateFlags { get; set; }
-
-    public StateMode StateMode { get; set; } = StateMode.NONE;
-
-    public int ModelId { get; set; }
-
-    public IMap Map => MapLayer.ParentMap;
-
-    public IMapLayer MapLayer { get; set; }
-
-    public Vector3 Position { get; set; }
-
-    public float Angle { get; set; }
-
-    public short Size { get; set; }
-
-    public string Name { get; set; }
-
-    public int Level { get; set; }
-
+    /// <summary>
+    /// Gets or sets the player death level.
+    /// </summary>
     public int DeathLevel { get; set; }
 
-    public bool Spawned { get; set; }
+    /// <summary>
+    /// Gets the player authority.
+    /// </summary>
+    public AuthorityType Authority { get; init; }
 
-    public IExperience Experience { get; set; }
-
-    public IGold Gold { get; set; }
-
-    public int Slot { get; set; }
-
-    public AuthorityType Authority { get; set; }
-
+    /// <summary>
+    /// Gets or sets the player mode.
+    /// </summary>
     public ModeType Mode { get; set; }
 
-    public Vector3 DestinationPosition { get; set; } = new Vector3();
+    /// <summary>
+    /// Gets the player's appearance.
+    /// </summary>
+    public HumanVisualAppearance Appearence { get; init; }
 
-    public float Speed
+    /// <summary>
+    /// Gets or sets the player's inventory.
+    /// </summary>
+    public Inventory Inventory { get; }
+
+    /// <summary>
+    /// Gets or sets the player's available statistic points.
+    /// </summary>
+    public int AvailablePoints { get; set; }
+
+    /// <summary>
+    /// Gets or sets the player's available skill points.
+    /// </summary>
+    public ushort SkillPoints { get; set; }
+
+    /// <summary>
+    /// Gets the player's gold.
+    /// </summary>
+    public Gold Gold { get; init; }
+
+    /// <summary>
+    /// Gets the player's experience.
+    /// </summary>
+    public Experience Experience { get; init; }
+
+    /// <summary>
+    /// Gets the player's skills.
+    /// </summary>
+    public SkillTree Skills { get; init; }
+
+    /// <summary>
+    /// Gets the player's quest diary.
+    /// </summary>
+    public QuestDiary QuestDiary { get; init; }
+
+    public Player(FFUserConnection connection, MoverProperties properties)
+        : base(properties)
     {
-        get
+        _connection = connection;
+        Inventory = new Inventory(owner: this);
+        Gold = new Gold(this);
+        Experience = new Experience(this);
+        Skills = new SkillTree(this);
+        QuestDiary = new QuestDiary(this);
+    }
+
+    public void LookAround()
+    {
+    }
+
+    public void Follow(WorldObject target)
+    {
+    }
+
+    public void Unfollow()
+    {
+    }
+
+    public IEnumerable<Item> GetEquipedItems() 
+        => Inventory.GetRange(Inventory.InventorySize, Inventory.InventoryEquipParts)
+            .Select(x => x.Item);
+
+    /// <summary>
+    /// Adds the given amount of skill points to the current player.
+    /// </summary>
+    /// <param name="skillPointsToAdd">Skill point amount to add.</param>
+    /// <param name="sendToPlayer">Boolean value that indicates if the packet should be sent to the player.</param>
+    public void AddSkillPoints(ushort skillPointsToAdd, bool sendToPlayer = true)
+    {
+        SkillPoints += skillPointsToAdd;
+
+        if (sendToPlayer)
         {
-            return (Data.Speed + (Attributes.Get(DefineAttributes.SPEED) / 100)) * SpeedFactor;
+            using SetExperienceSnapshot snapshot = new(this);
+            Send(snapshot);
         }
     }
 
-    public float SpeedFactor { get; set; } = 1;
-
-    public bool IsMoving => ObjectState.HasFlag(ObjectState.OBJSTA_MOVE_ALL) && !DestinationPosition.IsZero();
-
-    public string CurrentNpcShopName { get; set; }
-
-    public MoverData Data { get; set; }
-
-    public JobData Job { get; set; }
-
-    public IHealth Health { get; set; }
-
-    public IDefense Defense { get; set; }
-
-    public IAttributes Attributes { get; set; }
-
-    public IDelayer Delayer { get; set; }
-
-    public IBuffs Buffs { get; set; }
-
-    IStatistics IMover.Statistics => Statistics;
-
-    public IPlayerStatistics Statistics { get; set; }
-
-    public IInventory Inventory { get; set; }
-
-    public IChat Chat { get; set; }
-
-    public IBattle Battle { get; set; }
-
-    public IQuestDiary Quests { get; set; }
-
-    public ISkillTree SkillTree { get; set; }
-
-    public ITaskbar Taskbar { get; set; }
-
-    public IMessenger Messenger { get; set;  }
-
-    public IProjectiles Projectiles { get; set; }
-
-    public IHumanVisualAppearance Appearence { get; set; }
-
-    public IServiceProvider Systems { get; set; }
-    
-    public IList<IWorldObject> VisibleObjects { get; set; }
-
-    public IBehavior Behavior { get; set; }
-
-    public IWorldObject FollowTarget { get; set; }
-
-    public float FollowDistance { get; set; }
-
-    public Player()
+    /// <summary>
+    /// Resets the player skill levels.
+    /// </summary>
+    public void Reskill()
     {
-        Id = RandomHelper.GenerateUniqueId();
-        VisibleObjects = new List<IWorldObject>();
-        _followSystem = new Lazy<IFollowSystem>(() => Systems.GetService<IFollowSystem>());
-        _teleportSystem = new Lazy<ITeleportSystem>(() => Systems.GetService<ITeleportSystem>());
-        _jobSystem = new Lazy<IJobSystem>(() => Systems.GetService<IJobSystem>());
-        _playerCache = new Lazy<IPlayerCache>(() => Systems.GetService<IPlayerCache>());
-        _messaging = new Lazy<IMessaging>(() => Systems.GetService<IMessaging>());
-    }
-
-    public void Follow(IWorldObject worldObject) => _followSystem.Value.Follow(this, worldObject);
-
-    public void Unfollow() => _followSystem.Value.Unfollow(this);
-
-    public void Teleport(Vector3 position, bool sendToPlayer = true) => _teleportSystem.Value.Teleport(this, position, sendToPlayer);
-
-    public void Teleport(Vector3 position, int mapId, bool sendToPlayer = true) => _teleportSystem.Value.Teleport(this, position, mapId, sendToPlayer);
-
-    public void ChangeJob(DefineJob.Job newJob) => _jobSystem.Value.ChangeJob(this, newJob);
-
-    public void UpdateCache()
-    {
-        CachedPlayer player = _playerCache.Value.Get(CharacterId);
-
-        if (player is null)
+        foreach (Skill skill in Skills)
         {
-            throw new InvalidOperationException($"Failed to retrieve cached player information.");
-        }
-
-        bool cacheUpdated = false;
-
-        if (player.Level != Level)
-        {
-            player.Level = Level;
-            cacheUpdated = true;
-        }
-
-        if (player.Job != Job.Id)
-        {
-            player.Job = Job.Id;
-            cacheUpdated = true;
-        }
-
-        if (player.MessengerStatus != Messenger.Status)
-        {
-            player.MessengerStatus = Messenger.Status;
-            cacheUpdated = true;
-        }
-
-        if (cacheUpdated)
-        {
-            _playerCache.Value.Set(player);
-            //_messaging.Value.Publish(new PlayerCacheUpdate(CharacterId));
+            SkillPoints += (ushort)(skill.Level * SkillTree.SkillPointUsage[skill.Properties.JobType]);
+            skill.Level = 0;
         }
     }
 
-    public void OnConnected()
+    /// <summary>
+    /// Resets the avaialble skill points.
+    /// </summary>
+    public void ResetAvailableSkillPoints()
     {
-        if (Messenger.Status != MessengerStatusType.Offline)
-        {
-            _messaging.Value.SendMessage(new PlayerConnectedMessage
-            {
-                Id = CharacterId,
-                Status = Messenger.Status
-            });
-        }
+        SkillPoints = 0;
     }
 
-    public void OnDisconnected()
+    /// <summary>
+    /// Sends a packet to the player.
+    /// </summary>
+    /// <param name="packet">Packet to send.</param>
+    public override void Send(FFPacket packet) => _connection.Send(packet);
+
+    public void SendDefinedText(DefineText text, params object[] parameters)
     {
+        using DefinedTextSnapshot snapshot = new(this, text, parameters);
 
+        Send(snapshot);
     }
-
-    public bool Equals(IWorldObject other) => Id == other.Id;
-
-    public void Send(IFFPacket packet) => Connection.Send(packet);
-
-    public void SendToVisible(IFFPacket packet)
-    {
-        IEnumerable<IPlayer> visiblePlayers = VisibleObjects.OfType<IPlayer>();
-
-        if (visiblePlayers.Any())
-        {
-            foreach (IPlayer player in visiblePlayers)
-            {
-                player.Send(packet);
-            }
-        }
-    }
-
-    public override string ToString() => $"{Name} (Id: {CharacterId})";
 }

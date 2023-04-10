@@ -1,76 +1,64 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Rhisis.ClusterServer.Abstractions;
-using Rhisis.Core.Structures.Configuration;
+using Rhisis.Game.Protocol.Packets.Cluster.Client;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Packets.Client.Cluster;
-using Rhisis.Protocol.Packets.Server.Cluster;
-using Sylver.HandlerInvoker.Attributes;
-using System;
+using Rhisis.Protocol.Handlers;
 using System.Linq;
 
 namespace Rhisis.ClusterServer.Handlers;
 
-[Handler]
-public class PreJoinHandler : ClusterHandlerBase
+[PacketHandler(PacketType.PRE_JOIN)]
+internal class PreJoinHandler : ClusterHandlerBase
 {
     private readonly ILogger<PreJoinHandler> _logger;
-    private readonly IOptions<ClusterOptions> _clusterOptions;
+    private readonly IAccountDatabase _accountDatabase;
+    private readonly IGameDatabase _gameDatabase;
+    private readonly ICluster _cluster;
 
-    public PreJoinHandler(ILogger<PreJoinHandler> logger, IOptions<ClusterOptions> clusterOptions, IRhisisDatabase database)
-        : base(database)
+    public PreJoinHandler(ILogger<PreJoinHandler> logger, IAccountDatabase accountDatabase, IGameDatabase gameDatabase, ICluster cluster)
     {
         _logger = logger;
-        _clusterOptions = clusterOptions;
+        _accountDatabase = accountDatabase;
+        _gameDatabase = gameDatabase;
+        _cluster = cluster;
     }
 
-    [HandlerAction(PacketType.PRE_JOIN)]
-    public void OnPreJoin(IClusterUser user, PreJoinPacket packet)
+    public void Execute(PreJoinPacket packet)
     {
-        DbCharacter character = Database.Characters.FirstOrDefault(x => x.Id == packet.CharacterId);
+        AccountEntity account = _accountDatabase.Accounts.SingleOrDefault(x => x.Username == packet.Username);
 
-        if (character is null)
+        if (account is null)
         {
-            _logger.LogWarning($"[SECURITY] Unable to prejoin character id '{packet.CharacterName}' for user '{packet.Username}'. " +
-                  $"Reason: no character with id {packet.CharacterId}.");
-            user.Disconnect();
+            _logger.LogWarning($"Cannot find account with username '{packet.Username}'.");
+            User.Disconnect();
             return;
         }
 
-        if (character.IsDeleted)
+        PlayerEntity player = _gameDatabase.Players.SingleOrDefault(x => x.AccountId == account.Id && x.Id == packet.CharacterId && x.Name == packet.CharacterName);
+
+        if (player is null)
         {
-            _logger.LogWarning($"[SECURITY] Unable to prejoin with character '{character.Name}' for user '{packet.Username}'. " +
-                "Reason: character is deleted.");
-            user.Disconnect();
+            _logger.LogWarning($"Unable to prejoin with player '{packet.CharacterName}' for user '{packet.Username}'. Reason: Player not found.");
+            User.Disconnect();
             return;
         }
 
-        if (character.Name != packet.CharacterName)
+        if (player.IsDeleted)
         {
-            _logger.LogWarning($"[SECURITY] Unable to prejoin character '{character.Name}' for user '{packet.Username}'. " +
-                "Reason: character is not owned by this user.");
-            user.Disconnect();
+            _logger.LogWarning($"Unable to prejoin with player '{packet.CharacterName}' for user '{packet.Username}'. Reason: Player is deleted.");
+            User.Disconnect();
             return;
         }
 
-        if (_clusterOptions.Value.EnableLoginProtect &&
-            LoginProtect.GetNumPadToPassword(user.LoginProtectValue, packet.BankCode) != character.BankCode)
+        if (_cluster.Configuration.LoginProtectEnabled && !User.IsSecondPasswordCorrect(player.BankCode, packet.BankCode))
         {
-            _logger.LogWarning($"Unable to prejoin character '{character.Name}' for user '{packet.Username}'. " +
-                "Reason: bad bank code.");
-            user.LoginProtectValue = new Random().Next(0, 1000);
-            
-            using var loginProtectPacket = new LoginProtectCertPacket(user.LoginProtectValue);
-            user.Send(loginProtectPacket);
-
+            _logger.LogWarning($"Unable to prejoin player '{player.Name}' for user '{packet.Username}'. Reason: bad bank code.");
+            User.SendNewNumPad();
             return;
         }
 
-        using var prejoinPacket = new PreJoinPacketComplete();
-        user.Send(prejoinPacket);
-
-        _logger.LogInformation($"Character '{character.Name}' has prejoin successfully the game for user '{packet.Username}'.");
+        User.SendPreJoin();
     }
 }

@@ -1,21 +1,17 @@
-﻿using Rhisis.ClusterServer.Abstractions;
+﻿using Rhisis.Game.Protocol.Packets;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Packets.Client;
-using Rhisis.Protocol.Packets.Server;
-using Sylver.HandlerInvoker.Attributes;
+using Rhisis.Protocol.Handlers;
 
 namespace Rhisis.ClusterServer.Handlers;
 
-[Handler]
-public class PingHandler
+[PacketHandler(PacketType.PING)]
+internal class PingHandler : ClusterHandlerBase
 {
-    [HandlerAction(PacketType.PING)]
-    public void OnPing(IClusterUser user, PingPacket packet)
+    public void Execute(PingPacket packet)
     {
         if (!packet.IsTimeOut)
         {
-            using var pingPacket = new PongPacket(packet.Time);
-            user.Send(pingPacket);
+            User.SendPong(packet.Time);
         }
     }
 }

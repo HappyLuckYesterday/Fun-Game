@@ -1,77 +1,64 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Rhisis.Abstractions.Entities;
-using Rhisis.Abstractions.Resources;
 using Rhisis.ClusterServer.Abstractions;
-using Rhisis.Core.Structures;
-using Rhisis.Core.Structures.Configuration;
-using Rhisis.Game.Common;
-using Rhisis.Game.Common.Resources;
+using Rhisis.Core.Configuration.Cluster;
+using Rhisis.Core.Extensions;
+using Rhisis.Game;
+using Rhisis.Game.Protocol.Packets.Cluster.Client;
+using Rhisis.Game.Resources;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Packets.Client.Cluster;
-using Rhisis.Protocol.Packets.Server;
-using Rhisis.Protocol.Packets.Server.Cluster;
-using Sylver.HandlerInvoker.Attributes;
-using System.Collections.Generic;
+using Rhisis.Protocol.Handlers;
 using System.Linq;
 
 namespace Rhisis.ClusterServer.Handlers;
 
-[Handler]
-public class CreatePlayerHandler : ClusterHandlerBase
+[PacketHandler(PacketType.CREATE_PLAYER)]
+internal class CreatePlayerHandler : ClusterHandlerBase
 {
-    private readonly ILogger<CreatePlayerHandler> _logger;
-    private readonly IOptions<ClusterOptions> _clusterOptions;
-    private readonly IGameResources _gameResources;
+    private static readonly byte InventoryMaxSize = 42;
+    private readonly ILogger<CreatePlayerPacket> _logger;
+    private readonly IAccountDatabase _accountDatabase;
+    private readonly IGameDatabase _gameDatabase;
+    private readonly ICluster _cluster;
 
-    public CreatePlayerHandler(ILogger<CreatePlayerHandler> logger, IOptions<ClusterOptions> clusterOptions, IRhisisDatabase database, IGameResources gameResources)
-        : base(database)
+    public CreatePlayerHandler(ILogger<CreatePlayerPacket> logger, IAccountDatabase accountDatabase, IGameDatabase gameDatabase, ICluster cluster)
     {
         _logger = logger;
-        _clusterOptions = clusterOptions;
-        _gameResources = gameResources;
+        _accountDatabase = accountDatabase;
+        _gameDatabase = gameDatabase;
+        _cluster = cluster;
     }
 
-    [HandlerAction(PacketType.CREATE_PLAYER)]
-    public void OnCreatePlayer(IClusterUser user, CreatePlayerPacket packet)
+    public void Execute(CreatePlayerPacket packet)
     {
-        DbUser dbUser = Database.Users.FirstOrDefault(x => x.Username == packet.Username && x.Password == packet.Password);
+        AccountEntity userAccount = _accountDatabase.Accounts.SingleOrDefault(x => x.Username == packet.Username && x.Password == packet.Password && x.Id == User.AccountId);
 
-        if (dbUser is null)
+        if (userAccount is null)
         {
-            _logger.LogWarning($"[SECURITY] Unable to create new character for user '{packet.Username}' " +
-                "Reason: bad presented credentials compared to the database.");
-            user.Disconnect();
+            _logger.LogWarning($"[SECURITY] Unable to create new character for user '{packet.Username}' Reason: bad presented credentials compared to the database.");
+            User.Disconnect();
+
             return;
         }
 
-        if (Database.Characters.Any(x => x.Name == packet.CharacterName))
+        if (_gameDatabase.Players.Any(x => x.Name.ToLower() == packet.CharacterName.ToLower()))
         {
             _logger.LogWarning(
                     $"Unable to create new character for user '{packet.Username}' " +
                     $"Reason: character name '{packet.CharacterName}' already exists.");
-
-            SendError(user, ErrorType.USER_EXISTS);
+            User.SendError(ErrorType.USER_EXISTS);
 
             return;
         }
 
-        DefaultCharacter defaultCharacter = _clusterOptions.Value.DefaultCharacter;
-        DefaultStartItems defaultEquipment = packet.Gender == 0 ? defaultCharacter.Man : defaultCharacter.Woman;
+        DefaultCharacterOptions defaultPlayerOptions = packet.Gender == (byte)GenderType.Male ? 
+            _cluster.Configuration.DefaultCharacter.Man : _cluster.Configuration.DefaultCharacter.Woman;
 
-        if (!_gameResources.Jobs.TryGetValue(packet.Job, out JobData jobData))
+        PlayerEntity newPlayer = new()
         {
-            _logger.LogError($"Cannot find job data for job '{packet.Job}' for user '{dbUser.Username}'.");
-            user.Disconnect();
-            return;
-        }
-
-        var newCharacter = new DbCharacter()
-        {
-            UserId = dbUser.Id,
-            Name = packet.CharacterName,
+            AccountId = userAccount.Id,
+            Name = packet.CharacterName.TakeCharacters(32),
             Slot = (byte)packet.Slot,
             SkinSetId = packet.SkinSet,
             HairColor = (int)packet.HairColor,
@@ -86,69 +73,69 @@ public class CreatePlayerHandler : ClusterHandlerBase
             Hp = 100,
             Mp = 50,
             Fp = 50,
-            Strength = defaultCharacter.Strength,
-            Stamina = defaultCharacter.Stamina,
-            Dexterity = defaultCharacter.Dexterity,
-            Intelligence = defaultCharacter.Intelligence,
-            MapId = defaultCharacter.MapId,
-            PosX = defaultCharacter.PosX,
-            PosY = defaultCharacter.PosY,
-            PosZ = defaultCharacter.PosZ,
-            Level = defaultCharacter.Level,
-            Gold = defaultCharacter.Gold,
+            Strength = defaultPlayerOptions.Strength,
+            Stamina = defaultPlayerOptions.Stamina,
+            Dexterity = defaultPlayerOptions.Dexterity,
+            Intelligence = defaultPlayerOptions.Intelligence,
+            MapId = defaultPlayerOptions.MapId,
+            PosX = defaultPlayerOptions.PositionX,
+            PosY = defaultPlayerOptions.PositionY,
+            PosZ = defaultPlayerOptions.PositionZ,
+            Level = defaultPlayerOptions.Level,
+            Gold = defaultPlayerOptions.Gold,
             StatPoints = 0, //TODO: create default stat point constant.
             SkillPoints = 0, //TODO: create default skill point constant.
-            Experience = 0,
-            ClusterId = _clusterOptions.Value.Id
+            Experience = 0
         };
 
-        //TODO: create game constants for slot.
-        newCharacter.Items.Add(new DbItemStorage
-        {
-            StorageTypeId = (int)ItemStorageType.Inventory,
-            Quantity = 1,
-            Item = new DbItem
-            {
-                GameItemId = defaultEquipment.StartSuit
-            },
-            Slot = 44
-        });
-        newCharacter.Items.Add(new DbItemStorage
-        {
-            StorageTypeId = (int)ItemStorageType.Inventory,
-            Quantity = 1,
-            Item = new DbItem
-            {
-                GameItemId = defaultEquipment.StartHand
-            },
-            Slot = 46
-        });
-        newCharacter.Items.Add(new DbItemStorage
-        {
-            StorageTypeId = (int)ItemStorageType.Inventory,
-            Quantity = 1,
-            Item = new DbItem
-            {
-                GameItemId = defaultEquipment.StartShoes
-            },
-            Slot = 47
-        });
-        newCharacter.Items.Add(new DbItemStorage
-        {
-            StorageTypeId = (int)ItemStorageType.Inventory,
-            Quantity = 1,
-            Item = new DbItem
-            {
-                GameItemId = defaultEquipment.StartWeapon
-            },
-            Slot = 52
-        });
+        CreatePlayerItem(newPlayer, defaultPlayerOptions.EquipedItems.Hat, ItemPartType.Hat);
+        CreatePlayerItem(newPlayer, defaultPlayerOptions.EquipedItems.Body, ItemPartType.UpperBody);
+        CreatePlayerItem(newPlayer, defaultPlayerOptions.EquipedItems.Hand, ItemPartType.Hand);
+        CreatePlayerItem(newPlayer, defaultPlayerOptions.EquipedItems.RightWeapon, ItemPartType.RightWeapon);
+        CreatePlayerItem(newPlayer, defaultPlayerOptions.EquipedItems.LeftWeapon, ItemPartType.LeftWeapon);
+        CreatePlayerItem(newPlayer, defaultPlayerOptions.EquipedItems.Boots, ItemPartType.Foot);
 
-        Database.Characters.Add(newCharacter);
-        Database.SaveChanges();
+        if (defaultPlayerOptions.InventoryItems.Any())
+        {
+            for (int i = 0; i < defaultPlayerOptions.InventoryItems.Count() && i < InventoryMaxSize; i++)
+            {
+                DefaultInventoryItem item = defaultPlayerOptions.InventoryItems.ElementAt(i);
 
-        _logger.LogInformation($"Character '{newCharacter.Name}' has been created successfully for user '{dbUser.Username}'.");
+                CreatePlayerItem(newPlayer, item.ItemId, (byte)i, item.Quantity, item.Refine, item.Element, item.ElementRefine);
+            }
+        }
 
-        SendPlayerList(user, packet.AuthenticationKey);
+        _gameDatabase.Players.Add(newPlayer);
+        _gameDatabase.SaveChanges();
+
+        _logger.LogInformation($"Player '{newPlayer.Name}' has been created successfully for user '{userAccount.Username}'.");
+        User.SendPlayerList();
+    }
+
+    private static void CreatePlayerItem(PlayerEntity player, string itemIdentifier, byte slot, int quantity = 1, byte refine = 0, byte element = 0, byte elementRefine = 0)
+    {
+        int itemId = GameResources.Current.Items.Get(itemIdentifier)?.Id ?? -1;
+
+        if (itemId > 0)
+        {
+            player.Items.Add(new PlayerItemEntity
+            {
+                StorageType = PlayerItemStorageType.Inventory,
+                Slot = slot,
+                Quantity = quantity,
+                Item = new ItemEntity
+                {
+                    Id = itemId,
+                    Refine = refine,
+                    Element = element,
+                    ElementRefine = elementRefine
+                }
+            });
+        }
+    }
+
+    private static void CreatePlayerItem(PlayerEntity player, string itemIdentifier, ItemPartType partType)
+    {
+        CreatePlayerItem(player, itemIdentifier, (byte)((byte)partType + InventoryMaxSize));
     }
 }

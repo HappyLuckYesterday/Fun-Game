@@ -6,127 +6,100 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
-using Rhisis.Abstractions.Protocol;
-using Rhisis.Abstractions.Resources;
 using Rhisis.ClusterServer.Abstractions;
-using Rhisis.ClusterServer.Cache;
-using Rhisis.ClusterServer.Core;
+using Rhisis.ClusterServer.Caching;
+using Rhisis.Core.Configuration;
+using Rhisis.Core.Configuration.Cluster;
 using Rhisis.Core.Extensions;
-using Rhisis.Core.Structures.Configuration;
 using Rhisis.Game.Resources;
-using Rhisis.Infrastructure.Caching;
+using Rhisis.Infrastructure.Logging;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Protocol;
-using Sylver.HandlerInvoker;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Rhisis.ClusterServer;
 
-public static class Program
+internal static class Program
 {
-    private static async Task Main()
+    public static async Task Main()
     {
         const string culture = "en-US";
 
+        Console.Title = "Rhisis - Cluster Server";
         var host = new HostBuilder()
-            .ConfigureAppConfiguration((hostContext, configApp) =>
-            {
-                configApp.SetBasePath(EnvironmentExtension.GetCurrentEnvironementDirectory());
-                configApp.AddJsonFile(ConfigurationConstants.ClusterServerPath, optional: false);
-                configApp.AddJsonFile(ConfigurationConstants.DatabasePath, optional: false);
-                configApp.AddEnvironmentVariables();
-            })
-            .ConfigureServices((hostContext, services) =>
-            {
-                services.AddOptions();
-                services.AddMemoryCache();
-                services.Configure<ClusterOptions>(hostContext.Configuration.GetSection(ConfigurationSections.Cluster));
-                services.AddPersistance(hostContext.Configuration);
-                services.AddHandlers();
-                services.AddSingleton<IGameResources, GameResources>();
-            })
-            .ConfigureLogging(builder =>
-            {
-                builder.AddFilter("Microsoft", LogLevel.Warning);
-                builder.SetMinimumLevel(LogLevel.Trace);
-                builder.AddNLog(new NLogProviderOptions
-                {
-                    CaptureMessageTemplates = true,
-                    CaptureMessageProperties = true
-                });
-            })
-            .ConfigureLiteNetwork((context, builder) =>
-            {
-                builder.AddLiteServer<IClusterServer, ClusterServer>(options =>
-                {
-                    var serverOptions = context.Configuration.GetSection(ConfigurationSections.Cluster).Get<ClusterOptions>();
+           .ConfigureAppConfiguration((_, config) =>
+           {
+               config.AddEnvironmentVariables();
+               config.SetBasePath(EnvironmentExtension.GetCurrentEnvironementDirectory());
+               config.AddYamlFile("config/cluster-server.yml", optional: false, reloadOnChange: true);
+           })
+           .ConfigureServices((hostContext, services) =>
+           {
+               services.AddOptions();
+               services.Configure<ClusterServerOptions>(hostContext.Configuration.GetSection("server"));
+               services.Configure<ClusterCacheServerOptions>(hostContext.Configuration.GetSection("cluster-cache-server"));
+               services.Configure<CoreCacheClientOptions>(hostContext.Configuration.GetSection("core-cache"));
 
-                    if (serverOptions is null)
-                    {
-                        throw new InvalidProgramException($"Failed to load cluster server settings.");
-                    }
+               services.AddAccountPersistance(hostContext.Configuration.GetSection("account-database").Get<DatabaseOptions>());
+               services.AddGamePersistance(hostContext.Configuration.GetSection("game-database").Get<DatabaseOptions>());
+           })
+           .ConfigureLogging(builder =>
+           {
+               builder.AddConsole();
+               builder.AddLoggingFilters();
+           })
+           .ConfigureLiteNetwork((context, builder) =>
+           {
+               builder.AddLiteServer<ICluster, ClusterServer>(options =>
+               {
+                   var serverOptions = context.Configuration.GetSection("server").Get<ClusterServerOptions>();
 
-                    options.Host = serverOptions.Host;
-                    options.Port = serverOptions.Port;
-                    options.PacketProcessor = new FlyffPacketProcessor();
-                    options.ReceiveStrategy = ReceiveStrategyType.Queued;
-                });
+                   if (serverOptions is null)
+                   {
+                       throw new InvalidProgramException($"Failed to load cluster server settings.");
+                   }
 
-                builder.AddLiteServer<IClusterCacheServer, ClusterCacheServer>(options =>
-                {
-                    var serverOptions = context.Configuration.GetSection(ConfigurationSections.Cluster).Get<ClusterOptions>();
+                   options.Host = serverOptions.Ip;
+                   options.Port = serverOptions.Port;
+                   options.PacketProcessor = new FlyffPacketProcessor();
+                   options.ReceiveStrategy = ReceiveStrategyType.Queued;
+               });
+               builder.AddLiteServer<WorldChannelCacheServer>(options =>
+               {
+                   var worldChannelCacheServerOptions = context.Configuration.GetSection("cluster-cache-server").Get<ClusterCacheServerOptions>();
 
-                    if (serverOptions is null)
-                    {
-                        throw new InvalidProgramException($"Failed to load cluster server settings.");
-                    }
+                   if (worldChannelCacheServerOptions is null)
+                   {
+                       throw new InvalidProgramException("Failed to load cluster cache server settings.");
+                   }
 
-                    if (serverOptions.Cache is null)
-                    {
-                        throw new InvalidOperationException("Failed to load cluster cache server settings.");
-                    }
+                   options.Host = worldChannelCacheServerOptions.Ip;
+                   options.Port = worldChannelCacheServerOptions.Port;
+                   options.ReceiveStrategy = ReceiveStrategyType.Queued;
+               });
+               builder.AddLiteClient<CoreCacheClient>(options =>
+               {
+                   var cacheClientOptions = context.Configuration.GetSection("core-cache").Get<CoreCacheClientOptions>();
 
-                    options.Host = serverOptions.Cache.Host;
-                    options.Port = serverOptions.Cache.Port;
-                    options.ReceiveStrategy = ReceiveStrategyType.Queued;
-                });
+                   if (cacheClientOptions is null)
+                   {
+                       throw new InvalidProgramException("Failed to load cluster cache client settings.");
+                   }
 
-                builder.AddLiteClient<ICoreClient, ClusterCoreClient>(options =>
-                {
-                    var serverOptions = context.Configuration.GetSection(ConfigurationSections.Cluster).Get<ClusterOptions>();
+                   options.Host = cacheClientOptions.Ip;
+                   options.Port = cacheClientOptions.Port;
+                   options.ReceiveStrategy = ReceiveStrategyType.Queued;
+               });
+           })
+           .UseConsoleLifetime()
+           .SetConsoleCulture(culture)
+           .Build();
 
-                    if (serverOptions is null)
-                    {
-                        throw new InvalidProgramException($"Failed to load cluster server settings.");
-                    }
+        GameResources.Current.Initialize(host.Services);
+        GameResources.Current.Items.Load();
 
-                    if (serverOptions.Core is null)
-                    {
-                        throw new InvalidOperationException("Failed to load core server settings.");
-                    }
-
-                    options.Host = serverOptions.Core.Host;
-                    options.Port = serverOptions.Core.Port;
-                    options.ReceiveStrategy = ReceiveStrategyType.Queued;
-                });
-            })
-            .SetConsoleCulture(culture)
-            .UseConsoleLifetime()
-            .Build();
-
-        await host
-            .AddHandlerParameterTransformer<FFPacket, IPacketDeserializer>((source, dest) =>
-            {
-                if (source is not IFFPacket packet)
-                {
-                    throw new InvalidCastException("Failed to convert a lite packet stream into a Flyff packet stream.");
-                }
-
-                dest?.Deserialize(packet);
-                return dest;
-            })
-            .RunAsync();
+        await host.RunAsync();
     }
 }

@@ -1,54 +1,48 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Rhisis.Core.IO;
-using Rhisis.Abstractions;
-using Rhisis.Abstractions.Entities;
-using Rhisis.Abstractions.Systems;
-using Rhisis.Game.Common;
-using Rhisis.Game.Common.Resources;
+﻿using Rhisis.Core.IO;
+using Rhisis.Game.Entities;
+using Rhisis.Game.Resources.Properties;
+using Rhisis.Protocol;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Rhisis.Abstractions.Protocol;
 
 namespace Rhisis.Game;
 
 [DebuggerDisplay("{Name} Lv.{Level}")]
-public class Skill : ISkill
+public class Skill
 {
-    private readonly Lazy<ISkillSystem> _skillSystem;
     private int _level;
     private long _nextSkillUsageTime;
 
-    public int Id => Data.Id;
+    public int Id => Properties.Id;
 
-    public IMover Owner { get; }
+    public Mover Owner { get; }
 
     public int? DatabaseId { get; set; }
 
     public int Level
     {
         get => _level;
-        set => _level = Math.Clamp(value, 0, Data.MaxLevel);
+        set => _level = Math.Clamp(value, 0, Properties.MaxLevel);
     }
 
-    public string Name => Data.Name;
+    public string Name => Properties.Name;
 
-    public SkillData Data { get; }
+    public SkillProperties Properties { get; }
 
-    public SkillLevelData LevelData => Data.SkillLevels[Level];
+    public SkillLevelProperties LevelData => Properties.SkillLevels[Level];
 
-    public Skill(SkillData skillData, IMover owner, int level, int? databaseId = null)
+    public Skill(SkillProperties skillProperties, Mover owner, int level, int? databaseId = null)
     {
-        Data = skillData;
+        Properties = skillProperties ?? throw new ArgumentNullException(nameof(skillProperties), "Cannot create a skill instance with undefined skill properties.");
         Owner = owner;
         Level = level;
         DatabaseId = databaseId;
-        _skillSystem = new Lazy<ISkillSystem>(() => Owner.Systems.GetService<ISkillSystem>());
     }
 
     public int GetCastingTime()
     {
-        if (Data.Type == SkillType.Skill)
+        if (Properties.Type == SkillType.Skill)
         {
             return 1000;
         }
@@ -56,7 +50,7 @@ public class Skill : ISkill
         {
             int castingTime = (int)((LevelData.CastingTime / 1000f) * (60 / 4));
 
-            castingTime -= castingTime * (Owner.Attributes.Get(DefineAttributes.SPELL_RATE) / 100);
+            castingTime -= castingTime * (Owner.Attributes.Get(DefineAttributes.DST_SPELL_RATE) / 100);
 
             return Math.Max(castingTime, 0);
         }
@@ -72,22 +66,23 @@ public class Skill : ISkill
 
     public bool IsCoolTimeElapsed() => _nextSkillUsageTime < Time.GetElapsedTime();
 
-    public void Serialize(IFFPacket packet)
+    public void Serialize(FFPacket packet)
     {
         packet.WriteInt32(Id);
         packet.WriteInt32(Level);
     }
 
-    public bool Equals([AllowNull] ISkill otherSkill) => Id == otherSkill?.Id && Owner.Id == otherSkill?.Owner.Id;
+    public bool Equals([AllowNull] Skill otherSkill) => Id == otherSkill?.Id && Owner.ObjectId == otherSkill?.Owner.ObjectId;
 
-    public bool CanUse(IMover target)
+    public bool CanUse(Mover target)
     {
-        return _skillSystem.Value.CanUseSkill(Owner as IPlayer, target, this);
+        return true;
+        //return _skillSystem.Value.CanUseSkill(Owner as IPlayer, target, this);
     }
 
-    public void Use(IMover target, SkillUseType skillUseType = SkillUseType.Normal)
+    public void Use(Mover target, SkillUseType skillUseType = SkillUseType.Normal)
     {
-        _skillSystem.Value.UseSkill(Owner as IPlayer, target, this, skillUseType);
+        //_skillSystem.Value.UseSkill(Owner as IPlayer, target, this, skillUseType);
     }
 
     public override string ToString() => Name;

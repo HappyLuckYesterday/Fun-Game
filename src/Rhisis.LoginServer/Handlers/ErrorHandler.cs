@@ -1,21 +1,24 @@
-﻿using Rhisis.LoginServer.Abstractions;
+﻿using Rhisis.Game.Protocol.Packets.Login.Clients;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Core;
-using Sylver.HandlerInvoker.Attributes;
+using Rhisis.Protocol.Handlers;
 
 namespace Rhisis.LoginServer.Handlers;
 
-[Handler]
-public class ErrorHandler
+[PacketHandler(PacketType.ERROR)]
+public sealed class ErrorHandler : LoginPacketHandler
 {
-    /// <summary>
-    /// Disconnects the client when it receives an error packet.
-    /// </summary>
-    /// <param name="client"></param>
-    /// <param name="_"></param>
-    [HandlerAction(PacketType.ERROR)]
-    public void Execute(ILoginUser client, CorePacket _)
+    private readonly LoginServer _server;
+
+    public ErrorHandler(LoginServer _server)
     {
-        client.Disconnect();
+        this._server = _server;
+    }
+
+    public void Execute(LoginErrorPacket message)
+    {
+        if (_server.IsUserConnected(User.Username))
+        {
+            User.Disconnect();
+        }
     }
 }

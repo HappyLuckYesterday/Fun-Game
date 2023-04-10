@@ -1,15 +1,13 @@
-﻿using Rhisis.Abstractions;
-using Rhisis.Abstractions.Protocol;
-using Rhisis.Game.Common.Resources.Quests;
-using System;
+﻿using Rhisis.Protocol;
 using System.Collections.Generic;
+using System;
 using System.Linq;
 
 namespace Rhisis.Game;
 
-public class Quest : IQuest
+public sealed class Quest
 {
-    public int Id => Script.Id;
+    public int Id { get; }
 
     public int? DatabaseQuestId { get; }
 
@@ -23,29 +21,13 @@ public class Quest : IQuest
 
     public bool IsPatrolDone { get; set; }
 
-    public QuestStateType State { get; set; }
+    public QuestState State { get; set; }
 
     public DateTime StartTime { get; set; }
 
     public IDictionary<int, short> Monsters { get; set; }
 
-    public IQuestScript Script { get; }
-
-    public Quest(IQuestScript script, int characterId)
-    {
-        Script = script;
-        CharacterId = characterId;
-        Monsters = new Dictionary<int, short>();
-        StartTime = DateTime.UtcNow;
-    }
-
-    public Quest(IQuestScript script, int characterId, int questDatabaseId)
-        : this(script, characterId)
-    {
-        DatabaseQuestId = questDatabaseId;
-    }
-
-    public void Serialize(IFFPacket packet)
+    public void Serialize(FFPacket packet)
     {
         packet.WriteInt16((short)State); // state
         packet.WriteInt16(0); // time limit

@@ -1,26 +1,18 @@
-﻿using Rhisis.LoginServer.Abstractions;
+﻿using Rhisis.Game.Protocol.Packets;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Packets.Client;
-using Rhisis.Protocol.Packets.Server;
-using Sylver.HandlerInvoker.Attributes;
+using Rhisis.Protocol.Handlers;
 
 namespace Rhisis.LoginServer.Handlers;
 
-[Handler]
-public class PingHandler
+[PacketHandler(PacketType.PING)]
+public sealed class PingHandler : LoginPacketHandler
 {
-    /// <summary>
-    /// Handles the PING packet.
-    /// </summary>
-    /// <param name="user">Client.</param>
-    /// <param name="packet">Ping packet.</param>
-    [HandlerAction(PacketType.PING)]
-    public void OnPing(ILoginUser user, PingPacket packet)
+    public void Execute(PingPacket message)
     {
-        if (!packet.IsTimeOut)
+        if (!message.IsTimeOut)
         {
-            using var pongPacket = new PongPacket(packet.Time);
-            user.Send(pongPacket);
+            using var pongPacket = new PongPacket(message.Time);
+            User.Send(pongPacket);
         }
     }
 }

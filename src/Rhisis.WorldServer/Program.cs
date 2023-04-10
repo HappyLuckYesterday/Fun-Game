@@ -6,101 +6,88 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
-using Rhisis.Abstractions.Protocol;
-using Rhisis.Core.DependencyInjection;
+using Rhisis.Core.Configuration;
+using Rhisis.Core.Configuration.Cluster;
 using Rhisis.Core.Extensions;
-using Rhisis.Core.Structures.Configuration;
-using Rhisis.Core.Structures.Configuration.World;
-using Rhisis.Game;
+using Rhisis.Game.Resources;
+using Rhisis.Infrastructure.Logging;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Protocol;
 using Rhisis.WorldServer.Abstractions;
-using Rhisis.WorldServer.ClusterCache;
-using Sylver.HandlerInvoker;
 using System;
 using System.Threading.Tasks;
 
 namespace Rhisis.WorldServer;
 
-public static class Program
+internal static class Program
 {
-    private static async Task Main()
+    static async Task Main(string[] args)
     {
         const string culture = "en-US";
 
+        Console.Title = "Rhisis - World Server";
         var host = new HostBuilder()
-            .ConfigureAppConfiguration((hostContext, configApp) =>
-            {
-                configApp.SetBasePath(EnvironmentExtension.GetCurrentEnvironementDirectory());
-                configApp.AddJsonFile(ConfigurationConstants.WorldServerPath, optional: false);
-                configApp.AddJsonFile(ConfigurationConstants.DatabasePath, optional: false);
-            })
-            .ConfigureServices((hostContext, services) =>
-            {
-                services.AddOptions();
-                services.AddMemoryCache();
-                services.Configure<WorldOptions>(hostContext.Configuration.GetSection(ConfigurationSections.World));
-                services.AddPersistance(hostContext.Configuration);
-                services.AddHandlers();
-                services.AddInjectableServices();
-                services.AddGameSystems();
-            })
-            .ConfigureLogging(builder =>
-            {
-                builder.AddFilter("Microsoft", LogLevel.Warning);
-                builder.SetMinimumLevel(LogLevel.Trace);
-                builder.AddNLog(new NLogProviderOptions
-                {
-                    CaptureMessageTemplates = true,
-                    CaptureMessageProperties = true
-                });
-            })
-            .ConfigureLiteNetwork((context, builder) =>
-            {
-                builder.AddLiteServer<IWorldServer, WorldServer>(options =>
-                {
-                    var serverOptions = context.Configuration.GetSection(ConfigurationSections.World).Get<WorldOptions>();
+           .ConfigureAppConfiguration((_, config) =>
+           {
+               config.AddEnvironmentVariables();
+               config.SetBasePath(EnvironmentExtension.GetCurrentEnvironementDirectory());
+               config.AddYamlFile("config/world-server.yml", optional: false, reloadOnChange: true);
+           })
+           .ConfigureServices((hostContext, services) =>
+           {
+               services.AddOptions();
+               services.Configure<WorldChannelServerOptions>(hostContext.Configuration.GetSection("server"));
 
-                    if (serverOptions is null)
-                    {
-                        throw new InvalidProgramException($"Failed to load world server settings.");
-                    }
+               services.AddAccountPersistance(hostContext.Configuration.GetSection("account-database").Get<DatabaseOptions>());
+               services.AddGamePersistance(hostContext.Configuration.GetSection("game-database").Get<DatabaseOptions>());
+           })
+           .ConfigureLogging(builder =>
+           {
+               builder.AddConsole();
+               builder.AddLoggingFilters();
+           })
+           .ConfigureLiteNetwork((context, builder) =>
+           {
+               builder.AddLiteClient<ClusterCacheClient>(options =>
+               {
+                   var cacheClientOptions = context.Configuration.GetSection("server").Get<WorldChannelServerOptions>();
 
-                    options.Host = serverOptions.Host;
-                    options.Port = serverOptions.Port;
-                    options.PacketProcessor = new FlyffPacketProcessor();
-                    options.ReceiveStrategy = ReceiveStrategyType.Queued;
-                });
-                builder.AddLiteClient<IClusterCacheClient, ClusterCacheClient>(options =>
-                {
-                    var serverOptions = context.Configuration.GetSection(ConfigurationSections.World).Get<WorldOptions>();
+                   if (cacheClientOptions is null)
+                   {
+                       throw new InvalidProgramException("Failed to load cluster cache client settings.");
+                   }
 
-                    if (serverOptions is null)
-                    {
-                        throw new InvalidProgramException($"Failed to load world server settings.");
-                    }
+                   options.Host = cacheClientOptions.Cluster.Ip;
+                   options.Port = cacheClientOptions.Cluster.Port;
+                   options.ReceiveStrategy = ReceiveStrategyType.Queued;
+               });
+               builder.AddLiteServer<IWorldChannel, WorldServer>(options =>
+               {
+                   var serverOptions = context.Configuration.GetSection("server").Get<WorldChannelServerOptions>();
 
-                    options.Host = serverOptions.ClusterCache.Host;
-                    options.Port = serverOptions.ClusterCache.Port;
-                    options.ReceiveStrategy = ReceiveStrategyType.Queued;
-                });
-            })
-            .UseConsoleLifetime()
-            .SetConsoleCulture(culture)
-            .Build();
+                   if (serverOptions is null)
+                   {
+                       throw new InvalidProgramException($"Failed to load world server settings.");
+                   }
 
-        await host
-            .AddHandlerParameterTransformer<IFFPacket, IPacketDeserializer>((source, dest) =>
-            {
-                if (source is not IFFPacket packet)
-                {
-                    throw new InvalidCastException("Failed to convert a lite packet stream into a Flyff packet stream.");
-                }
+                   options.Host = serverOptions.Ip;
+                   options.Port = serverOptions.Port;
+                   options.PacketProcessor = new FlyffPacketProcessor();
+                   options.ReceiveStrategy = ReceiveStrategyType.Queued;
+               });
+           })
+           .UseConsoleLifetime()
+           .SetConsoleCulture(culture)
+           .Build();
 
-                dest?.Deserialize(packet);
-                return dest;
-            })
-            .RunAsync();
+        GameResources.Current.Initialize(host.Services);
+        GameResources.Current.Items.Load();
+        GameResources.Current.Movers.Load();
+        GameResources.Current.Skills.Load();
+        GameResources.Current.Jobs.Load();
+        GameResources.Current.ExperienceTable.Load();
+        GameResources.Current.Penalities.Load();
+
+        await host.RunAsync();
     }
 }
