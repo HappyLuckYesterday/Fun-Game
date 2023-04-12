@@ -20,6 +20,8 @@ public class QueryPlayerData2Packet
         PlayerDictionary = new Dictionary<uint, int>();
         Size = packet.ReadUInt32();
         for (uint i = 0; i < Size; i++)
+        {
             PlayerDictionary.Add(packet.ReadUInt32(), packet.ReadInt32());
+        }
     }
 }

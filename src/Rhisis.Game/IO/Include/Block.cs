@@ -138,7 +138,9 @@ public class Block : IStatement, IDisposable
     public void Dispose()
     {
         if (_statements.Any())
+        {
             _statements.Clear();
+        }
     }
 
     /// <inheritidoc />

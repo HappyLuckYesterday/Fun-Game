@@ -54,7 +54,10 @@ public sealed class IncludeFile : IDisposable
         while ((token = _scanner.GetToken()) != "}")
         {
             if (token == null)
+            {
                 break;
+            }
+
             switch (token)
             {
                 case "{":
@@ -84,10 +87,14 @@ public sealed class IncludeFile : IDisposable
         };
 
         while ((parameter = _scanner.GetToken()) != ")")
+        {
             instruction.AddParameter(parameter);
+        }
 
         if (_scanner.CurrentTokenIs(";"))
+        {
             _scanner.GetToken();
+        }
 
         return instruction;
     }
@@ -99,7 +106,9 @@ public sealed class IncludeFile : IDisposable
         var endDelimiter = _scanner.GetToken();
 
         if (endDelimiter != ";")
+        {
             throw new InvalidDataException("Invalid variable format. Missing ';' for variable " + variableName);
+        }
 
         return new Variable(variableName, variableValue);
     }

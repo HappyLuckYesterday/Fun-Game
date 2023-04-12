@@ -98,7 +98,9 @@ public sealed class DyoCommonControlElement : DyoElement
             SetGender = reader.ReadUInt32();
 
             for (var i = 0; i < SetJob.Length; i++)
+            {
                 SetJob[i] = reader.ReadInt32() == 1;
+            }
 
             SetEndu = reader.ReadUInt32();
 
@@ -151,7 +153,9 @@ public sealed class DyoCommonControlElement : DyoElement
             SetGender = reader.ReadUInt32();
 
             for (var i = 0; i < SetJob.Length; i++)
+            {
                 SetJob[i] = reader.ReadInt32() == 1;
+            }
 
             SetEndu = reader.ReadUInt32();
 

@@ -4,7 +4,7 @@ using System;
 
 namespace Rhisis.Game;
 
-public class HealthFormulas
+public static class HealthFormulas
 {
     #region Max origin
 

@@ -139,7 +139,9 @@ public class Vector3 : IEquatable<Vector3>
         var sqLength = SquaredLength;
 
         if (sqLength <= 0)
+        {
             throw new InvalidOperationException("Cannot normalize a vector of zero length.");
+        }
 
         return this / (float)Math.Sqrt(sqLength);
     }
@@ -295,10 +297,14 @@ public class Vector3 : IEquatable<Vector3>
     public static bool operator ==(Vector3 a, Vector3 b)
     {
         if (a is null && b is null)
+        {
             return true;
+        }
 
         if (a is null || b is null)
+        {
             return false;
+        }
 
         return Math.Ceiling(a.X - b.X) < 0.01 && Math.Ceiling(a.Y - b.Y) < 0.01 && Math.Ceiling(a.Z - b.Z) < 0.01;
     }

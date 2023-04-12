@@ -51,7 +51,9 @@ public class Instruction : IStatement, IDisposable
     internal void AddParameter(object parameter)
     {
         if (parameter.ToString() != ",")
+        {
             _parameters.Add(parameter);
+        }
     }
 
     /// <summary>
@@ -70,12 +72,16 @@ public class Instruction : IStatement, IDisposable
         var parameter = Parameters.ElementAtOrDefault(parameterIndex);
 
         if (parameter is string)
+        {
             parameter = parameter.ToString().Trim(EscapeCharacters);
+        }
 
         if (typeof(T).IsEnum)
         {
             if (Enum.TryParse(typeof(T), parameter.ToString(), out var value))
+            {
                 return (T)value;
+            }
         }
 
         Type targetType = typeof(T);
@@ -87,7 +93,9 @@ public class Instruction : IStatement, IDisposable
     public void Dispose()
     {
         if (_parameters.Any())
+        {
             _parameters.Clear();
+        }
     }
 
     /// <inheritdoc />

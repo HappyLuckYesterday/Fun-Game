@@ -33,7 +33,9 @@ public class SelectPlayerGuildCombatPacket
             Size = packet.ReadInt32();
             SelectPlayer = new uint?[Size.Value];
             for (int i = 0; i < Size.Value; i++)
+            {
                 SelectPlayer[i] = packet.ReadUInt32();
+            }
         }
         else
         {

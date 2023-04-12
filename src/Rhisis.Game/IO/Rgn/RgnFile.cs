@@ -49,14 +49,18 @@ public sealed class RgnFile : FileStream, IDisposable
             var line = reader.ReadLine();
 
             if (string.IsNullOrEmpty(line) || line.StartsWith("//"))
+            {
                 continue;
+            }
 
             var data = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
             if (line.StartsWith("respawn7"))
             {
                 if (data.Length < 24)
+                {
                     continue;
+                }
 
                 _elements.Add(new RgnRespawn7(data));
             }
@@ -64,7 +68,9 @@ public sealed class RgnFile : FileStream, IDisposable
             if (line.StartsWith("region3"))
             {
                 if (data.Length < 32)
+                {
                     continue;
+                }
 
                 _elements.Add(new RgnRegion3(data));
             }
