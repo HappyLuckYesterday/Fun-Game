@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Rhisis.Game;
+using Rhisis.Game.Common;
 using Rhisis.Infrastructure.Persistance.Entities;
 
 namespace Rhisis.Infrastructure.Persistance.Sqlite.Configuration.Game;

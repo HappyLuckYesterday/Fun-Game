@@ -1,4 +1,4 @@
-﻿using Rhisis.Game;
+﻿using Rhisis.Game.Common;
 using Rhisis.Protocol;
 
 namespace Rhisis.Game.Protocol.Packets.Cluster.Client;

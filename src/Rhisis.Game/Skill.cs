@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.IO;
+using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Resources.Properties;
 using Rhisis.Protocol;

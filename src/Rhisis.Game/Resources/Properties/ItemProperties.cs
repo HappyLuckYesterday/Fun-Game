@@ -1,4 +1,5 @@
-﻿using Rhisis.Game.IO.Attributes;
+﻿using Rhisis.Game.Common;
+using Rhisis.Game.IO.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

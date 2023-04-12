@@ -1,4 +1,5 @@
-﻿using Rhisis.Game.Common.Resources;
+﻿using Rhisis.Game.Common;
+using Rhisis.Game.Common.Resources;
 using Rhisis.Game.Features;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Game.Resources.Properties;

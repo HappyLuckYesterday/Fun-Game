@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Rhisis.Game;
+using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Protocol.Packets.World.Client;
 using Rhisis.Game.Protocol.Packets.World.Server;

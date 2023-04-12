@@ -1,4 +1,6 @@
-﻿namespace Rhisis.Game;
+﻿using Rhisis.Game.Common;
+
+namespace Rhisis.Game;
 
 public sealed class HumanVisualAppearance
 {

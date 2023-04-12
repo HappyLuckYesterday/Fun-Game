@@ -1,4 +1,5 @@
-﻿using Rhisis.Game.Resources.Properties;
+﻿using Rhisis.Game.Common;
+using Rhisis.Game.Resources.Properties;
 using System;
 
 namespace Rhisis.Game.Entities;

@@ -1,4 +1,5 @@
 ﻿using System;
+using Rhisis.Game.Common;
 
 namespace Rhisis.Game.Extensions;
 

@@ -2,7 +2,7 @@
 using Rhisis.ClusterServer.Abstractions;
 using Rhisis.Core.Configuration.Cluster;
 using Rhisis.Core.Extensions;
-using Rhisis.Game;
+using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets.Cluster.Client;
 using Rhisis.Game.Resources;
 using Rhisis.Infrastructure.Persistance;

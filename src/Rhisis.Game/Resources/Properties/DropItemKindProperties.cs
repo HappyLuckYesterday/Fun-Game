@@ -1,4 +1,6 @@
-﻿namespace Rhisis.Game.Resources.Properties;
+﻿using Rhisis.Game.Common;
+
+namespace Rhisis.Game.Resources.Properties;
 
 public class DropItemKindProperties
 {

@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.Helpers;
+using Rhisis.Game.Common;
 using Rhisis.Protocol;
 using System.Collections.Generic;
 

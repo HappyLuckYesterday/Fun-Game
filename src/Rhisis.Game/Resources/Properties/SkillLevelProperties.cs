@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.Serialization;
+using Rhisis.Game.Common;
 
 namespace Rhisis.Game.Resources.Properties;
 

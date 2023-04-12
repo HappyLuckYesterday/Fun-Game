@@ -1,4 +1,5 @@
 ﻿using Rhisis.Game;
+using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets.World.Client;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;

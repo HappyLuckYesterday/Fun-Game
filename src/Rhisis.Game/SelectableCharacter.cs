@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Rhisis.Game.Common;
 
 namespace Rhisis.Game;
 

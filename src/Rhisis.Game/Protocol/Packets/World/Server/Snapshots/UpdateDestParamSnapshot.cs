@@ -1,4 +1,5 @@
-﻿using Rhisis.Game.Entities;
+﻿using Rhisis.Game.Common;
+using Rhisis.Game.Entities;
 using Rhisis.Protocol;
 
 namespace Rhisis.Game.Protocol.Packets.World.Server.Snapshots;

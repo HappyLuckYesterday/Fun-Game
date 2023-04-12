@@ -8,7 +8,7 @@ namespace Rhisis.Game;
 [DebuggerDisplay("Slot = {Slot} (Index = {Index}) | Item = {HasItem ? Item.Name : \"none\"}")]
 public class ItemContainerSlot
 {
-    public static readonly ItemContainerSlot Empty = new ItemContainerSlot()
+    public static readonly ItemContainerSlot Empty = new()
     {
         Index = -1,
         Slot = -1,

@@ -1,4 +1,4 @@
-﻿using Rhisis.Game;
+﻿using Rhisis.Game.Common;
 
 namespace Rhisis.Infrastructure.Persistance.Entities;
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Rhisis.Game.Common;
 using Rhisis.Game.IO;
 using Rhisis.Game.IO.Dyo;
 using Rhisis.Game.IO.Rgn;

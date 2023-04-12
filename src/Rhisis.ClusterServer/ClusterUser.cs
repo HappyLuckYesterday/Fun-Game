@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Core.Helpers;
 using Rhisis.Core.IO;
 using Rhisis.Game;
+using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets;
 using Rhisis.Game.Protocol.Packets.Cluster.Server;
 using Rhisis.Infrastructure.Persistance;
