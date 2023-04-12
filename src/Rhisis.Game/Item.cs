@@ -24,7 +24,7 @@ public class Item
     /// <summary>
     /// Gets the item name.
     /// </summary>
-    public string Name => Properties.Name;
+    public string Name => Properties.IdentifierName;
 
     /// <summary>
     /// Gets the item data.

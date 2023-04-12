@@ -25,6 +25,10 @@ public class ItemProperties
     [DataMember(Name = "szName")]
     public string Name { get; set; }
 
+    [DataMember(Name = "szName")]
+    [IgnoreDataTransformation]
+    public string NameKey { get; set; }
+
     [DataMember(Name = "dwPackMax")]
     public int PackMax { get; set; }
 
