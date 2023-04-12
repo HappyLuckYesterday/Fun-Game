@@ -17,7 +17,7 @@ We choose to use the <a href="https://github.com/Eastrall/LiteNetwork">LiteNetwo
 
 <p align="center">
   <a href="https://github.com/Eastrall/Rhisis/actions/workflows/dotnet.yml"><img src="https://github.com/Eastrall/Rhisis/actions/workflows/dotnet.yml/badge.svg"></a>
-  <a href="https://codecov.io/gh/Eastrall/Rhisis"><img src="https://codecov.io/gh/Eastrall/Rhisis/branch/develop/graph/badge.svg" /></a>
+  <a href="https://app.codacy.com/gh/Eastrall/Rhisis/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/a7be54202669457eaae28514c8362b5a"/></a>
   <a href="https://github.com/Eastrall/Rhisis/commits/develop"><img src="https://img.shields.io/github/last-commit/Eastrall/Rhisis.svg?style=flat-square&logo=github&logoColor=white" alt="GitHub last commit"></a>
   <a href="https://discord.gg/z8K22p8"><img src="https://discordapp.com/api/guilds/294405146300121088/widget.png"></a>
 </p>
