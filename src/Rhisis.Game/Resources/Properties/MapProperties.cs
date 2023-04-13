@@ -25,6 +25,11 @@ public sealed class MapProperties
     public int Length { get; init; }
 
     /// <summary>
+    /// Gets the map heights.
+    /// </summary>
+    public float[] Heights { get; init; }
+
+    /// <summary>
     /// Gets the revival map id when a player dies on this map.
     /// </summary>
     public int RevivalMapId { get; init; }

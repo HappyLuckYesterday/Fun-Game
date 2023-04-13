@@ -117,6 +117,7 @@ public sealed class CoreCacheClient : LiteClient
             case CoreAuthenticationResult.WrongMasterPassword:
                 _logger.LogWarning($"Authentication failed: wrong master password.");
                 break;
+            default: throw new NotImplementedException();
         }
     }
 }

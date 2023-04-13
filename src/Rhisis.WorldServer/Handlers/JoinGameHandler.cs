@@ -11,6 +11,7 @@ using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,6 +63,8 @@ internal class JoinGameHandler : WorldPacketHandler
         }
 
         int modelId = player.Gender == 0 ? 11 : 12;
+        Map map = MapManager.Current.Get(player.MapId) ?? throw new InvalidOperationException($"Failed to find map with id: '{player.MapId}'.");
+        MapLayer layer = map.GetLayer(player.MapLayerId) ?? map.GetDefaultLayer();
 
         User.Player = new Player(User, GameResources.Current.Movers.Get(modelId))
         {
@@ -71,8 +74,8 @@ internal class JoinGameHandler : WorldPacketHandler
             DeathLevel = 0,
             Authority = (AuthorityType)userAccount.Authority,
             Position = new Vector3(player.PosX, player.PosY, player.PosZ),
-            MapId = player.MapId,
-            MapLayerId = player.MapLayerId,
+            Map = map,
+            MapLayer = layer,
             RotationAngle = player.Angle,
             Level = player.Level,
             ModelId = modelId,
@@ -122,7 +125,6 @@ internal class JoinGameHandler : WorldPacketHandler
             User.Player.Inventory.Initialize(playerInventoryItems);
         }
 
-        // TODO: initialize inventory items
         // TODO: initialize skills
         // TODO: initialize quest diary
 
@@ -139,6 +141,8 @@ internal class JoinGameHandler : WorldPacketHandler
 
             User.Send(joinPacket);
         }
+
+        layer.AddPlayer(User.Player);
 
         User.Player.IsSpawned = true;
     }

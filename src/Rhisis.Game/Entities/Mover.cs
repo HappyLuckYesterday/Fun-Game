@@ -34,6 +34,11 @@ public class Mover : WorldObject
     public bool IsDead => Health.Hp <= 0;
 
     /// <summary>
+    /// Gets a boolean value that indicates if the mover is moving.
+    /// </summary>
+    public bool IsMoving => ObjectState.HasFlag(ObjectState.OBJSTA_MOVE_ALL) && !DestinationPosition.IsZero();
+
+    /// <summary>
     /// Gets the mover health.
     /// </summary>
     public Health Health { get; init; }

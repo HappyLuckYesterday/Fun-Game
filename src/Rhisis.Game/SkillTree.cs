@@ -16,7 +16,7 @@ public sealed class SkillTree : IEnumerable<Skill>
     /// <summary>
     /// Skill points usage based on the job type.
     /// </summary>
-    public static readonly Dictionary<DefineJob.JobType, int> SkillPointUsage = new()
+    public static readonly IReadOnlyDictionary<DefineJob.JobType, int> SkillPointUsage = new Dictionary<DefineJob.JobType, int>()
     {
         { DefineJob.JobType.JTYPE_BASE, 1 },
         { DefineJob.JobType.JTYPE_EXPERT, 2 },

@@ -8,7 +8,7 @@ public class WorldReadInfoSnapshot : FFSnapshot
     public WorldReadInfoSnapshot(WorldObject worldObject)
         : base(SnapshotType.WORLD_READINFO, worldObject.ObjectId)
     {
-        WriteInt32(worldObject.MapId);
+        WriteInt32(worldObject.Map.Id);
         WriteSingle(worldObject.Position.X);
         WriteSingle(worldObject.Position.Y);
         WriteSingle(worldObject.Position.Z);

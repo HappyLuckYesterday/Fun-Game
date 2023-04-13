@@ -33,7 +33,7 @@ public class FFSnapshot : FFPacket
     /// <summary>
     /// Gets the number of packets inside the current snapshot.
     /// </summary>
-    public short Count { get; private set; } = 0;
+    public short Count { get; private set; }
 
     public FFSnapshot()
         : base(PacketType.SNAPSHOT)

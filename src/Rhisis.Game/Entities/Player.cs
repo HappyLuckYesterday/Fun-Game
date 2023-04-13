@@ -1,16 +1,15 @@
 ﻿using Rhisis.Game.Common;
-using Rhisis.Game.Common.Resources;
-using Rhisis.Game.Features;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Game.Resources.Properties;
 using Rhisis.Protocol;
-using Rhisis.Protocol.Snapshots;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Rhisis.Game.Entities;
 
+[DebuggerDisplay("{Name} Lv.{Level} ({Job.Id})")]
 public sealed class Player : Mover
 {
     private readonly FFUserConnection _connection;
@@ -24,11 +23,6 @@ public sealed class Player : Mover
     public int Id { get; init; }
 
     /// <summary>
-    /// Gets or sets the player's job.
-    /// </summary>
-    public JobProperties Job { get; set; }
-
-    /// <summary>
     /// Gets the player login date.
     /// </summary>
     public DateTime LoggedInAt { get; init; }
@@ -39,14 +33,19 @@ public sealed class Player : Mover
     public int Slot { get; init; }
 
     /// <summary>
-    /// Gets or sets the player death level.
-    /// </summary>
-    public int DeathLevel { get; set; }
-
-    /// <summary>
     /// Gets the player authority.
     /// </summary>
     public AuthorityType Authority { get; init; }
+
+    /// <summary>
+    /// Gets or sets the player's job.
+    /// </summary>
+    public JobProperties Job { get; set; }
+
+    /// <summary>
+    /// Gets or sets the player death level.
+    /// </summary>
+    public int DeathLevel { get; set; }
 
     /// <summary>
     /// Gets or sets the player mode.
@@ -76,22 +75,22 @@ public sealed class Player : Mover
     /// <summary>
     /// Gets the player's gold.
     /// </summary>
-    public Gold Gold { get; init; }
+    public Gold Gold { get; }
 
     /// <summary>
     /// Gets the player's experience.
     /// </summary>
-    public Experience Experience { get; init; }
+    public Experience Experience { get; }
 
     /// <summary>
     /// Gets the player's skills.
     /// </summary>
-    public SkillTree Skills { get; init; }
+    public SkillTree Skills { get; }
 
     /// <summary>
     /// Gets the player's quest diary.
     /// </summary>
-    public QuestDiary QuestDiary { get; init; }
+    public QuestDiary QuestDiary { get; }
 
     public Player(FFUserConnection connection, MoverProperties properties)
         : base(properties)
@@ -104,16 +103,62 @@ public sealed class Player : Mover
         QuestDiary = new QuestDiary(this);
     }
 
+    public void Update()
+    {
+        if (IsDead || !IsSpawned)
+        {
+            return;
+        }
+
+        LookAround();
+    }
+
     public void LookAround()
     {
+        if (!IsSpawned || !IsVisible)
+        {
+            return;
+        }
+
+        IEnumerable<WorldObject> currentVisibleEntities = MapLayer.GetVisibleObjects(this).ToList();
+        IEnumerable<WorldObject> appearingEntities = currentVisibleEntities.Except(VisibleObjects).ToList();
+        IEnumerable<WorldObject> disapearingEntities = VisibleObjects.Except(currentVisibleEntities).ToList();
+
+        if (appearingEntities.Any() || disapearingEntities.Any())
+        {
+            FFSnapshot snapshot = new();
+
+            foreach (WorldObject appearingObject in appearingEntities)
+            {
+                snapshot.Merge(new AddObjectSnapshot(appearingObject, AddObjectSnapshot.PlayerAddObjMethodType.ExcludeItems));
+
+                if (appearingObject is Mover appearingMover && appearingMover.IsMoving)
+                {
+                    snapshot.Merge(new DestPositionSnapshot(appearingMover));
+                }
+
+                AddVisibleEntity(appearingObject);
+            }
+
+            foreach (WorldObject disapearingObject in disapearingEntities)
+            {
+                snapshot.Merge(new DeleteObjectSnapshot(disapearingObject));
+
+                RemoveVisibleEntity(disapearingObject);
+            }
+
+            Send(snapshot);
+        }
     }
 
     public void Follow(WorldObject target)
     {
+        throw new NotImplementedException();
     }
 
     public void Unfollow()
     {
+        throw new NotImplementedException();
     }
 
     public IEnumerable<Item> GetEquipedItems() 
@@ -165,7 +210,32 @@ public sealed class Player : Mover
     public void SendDefinedText(DefineText text, params object[] parameters)
     {
         using DefinedTextSnapshot snapshot = new(this, text, parameters);
-
         Send(snapshot);
+    }
+
+    private void AddVisibleEntity(WorldObject entity)
+    {
+        if (!VisibleObjects.Contains(entity))
+        {
+            VisibleObjects.Add(entity);
+        }
+
+        if (entity is not Player && !entity.VisibleObjects.Contains(this))
+        {
+            entity.VisibleObjects.Add(this);
+        }
+    }
+
+    private void RemoveVisibleEntity(WorldObject entity)
+    {
+        if (VisibleObjects.Contains(entity))
+        {
+            VisibleObjects.Remove(entity);
+        }
+
+        if (entity.VisibleObjects.Contains(this))
+        {
+            entity.VisibleObjects.Remove(this);
+        }
     }
 }

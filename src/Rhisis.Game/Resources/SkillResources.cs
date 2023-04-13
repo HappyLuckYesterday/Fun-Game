@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Rhisis.Core.Extensions;
 using Rhisis.Game.IO;
 using Rhisis.Game.Resources.Properties;

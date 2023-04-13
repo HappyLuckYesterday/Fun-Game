@@ -316,7 +316,7 @@ public class ResourceTableFile : FileStream, IDisposable
         base.Dispose(disposing);
     }
 
-    private readonly struct HeaderProperties
+    private readonly struct HeaderProperties : IEquatable<HeaderProperties>
     {
         public PropertyInfo Property { get; }
 
@@ -334,5 +334,14 @@ public class ResourceTableFile : FileStream, IDisposable
             Name = attribute.Name;
             DefaultValue = defaultValue.Value;
         }
+
+        public bool Equals(HeaderProperties other)
+        {
+            return Name == other.Name && DefaultValue == other.DefaultValue;
+        }
+
+        public override bool Equals(object obj) => obj is HeaderProperties properties && Equals(properties);
+
+        public override int GetHashCode() => HashCode.Combine(Name, DefaultValue);
     }
 }

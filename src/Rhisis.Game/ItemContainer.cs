@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Rhisis.Game;
 
@@ -19,8 +20,6 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
     public int ExtraCapacity { get; }
 
     public int MaxCapacity => Capacity + ExtraCapacity;
-
-    public Item this[int index] => _items[index].Item;
 
     public ItemContainer(int capacity, int extraCapacity = 0)
     {
@@ -74,7 +73,7 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
     {
         if (slot < 0 || slot >= MaxCapacity)
         {
-            throw new IndexOutOfRangeException();
+            throw new InvalidOperationException($"Item slot is out of range: '{slot}'");
         }
 
         return _items[slot];

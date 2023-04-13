@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Rhisis.Protocol;
 using Rhisis.Game.Entities;
+using System;
 
 namespace Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 
@@ -264,6 +265,8 @@ public class AddObjectSnapshot : FFSnapshot
             case MapItemObject mapItem:
                 mapItem.Serialize(this);
                 break;
+            default: 
+                throw new NotImplementedException();
         }
     }
 }

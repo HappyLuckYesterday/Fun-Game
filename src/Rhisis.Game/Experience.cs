@@ -7,7 +7,7 @@ using Rhisis.Game.Resources.Properties;
 using System;
 using System.Collections.Generic;
 
-namespace Rhisis.Game.Features;
+namespace Rhisis.Game;
 
 public class Experience
 {
@@ -204,7 +204,7 @@ public class Experience
     private void SendLevelUpPackets()
     {
         using SetLevelSnapshot levelSnapshot = new(_player, _player.Level);
-        
+
         _player.SendToVisible(levelSnapshot);
     }
 }

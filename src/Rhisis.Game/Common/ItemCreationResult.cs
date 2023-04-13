@@ -1,9 +1,11 @@
-﻿namespace Rhisis.Game.Common;
+﻿using System;
+
+namespace Rhisis.Game.Common;
 
 /// <summary>
 /// Represents the result of an item creation.
 /// </summary>
-public struct ItemCreationResult
+public readonly struct ItemCreationResult : IEquatable<ItemCreationResult>
 {
     /// <summary>
     /// Gets the item action type.
@@ -39,4 +41,25 @@ public struct ItemCreationResult
         Slot = slot;
         Index = index;
     }
+
+    /// <summary>
+    /// Compares two <see cref="ItemCreationResult"/> objects.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns>True if both are the same; false otherwise.</returns>
+    public bool Equals(ItemCreationResult other) 
+        => Slot == other.Slot && Index == other.Index && ActionType == other.ActionType && Item == other.Item;
+
+    /// <summary>
+    /// Compares the current <see cref="ItemCreationResult"/> with another object.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns>True if both are the same; false otherwise.</returns>
+    public override bool Equals(object obj) => obj is ItemCreationResult result && Equals(result);
+
+    /// <summary>
+    /// Gets the hashcode of the current <see cref="ItemCreationResult"/>
+    /// </summary>
+    /// <returns></returns>
+    public override int GetHashCode() => HashCode.Combine(ActionType, Item, Slot, Index);
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Rhisis.Game.Common.Resources;
+namespace Rhisis.Game.Resources.Properties;
 
 public class DeathPenalityProperties
 {

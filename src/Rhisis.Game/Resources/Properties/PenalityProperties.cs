@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Rhisis.Game.Common.Resources;
+namespace Rhisis.Game.Resources.Properties;
 
 [DataContract]
 public class PenalityProperties

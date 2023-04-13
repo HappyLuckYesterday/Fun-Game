@@ -41,4 +41,13 @@ public sealed class WorldUser : FFUserConnection
 
         return base.HandleMessageAsync(packetBuffer);
     }
+
+    protected override void OnDisconnected()
+    {
+        Player.MapLayer.RemovePlayer(Player);
+        // TODO: save player to database
+        // TODO: notify cluster and disconnect from messenger
+
+        base.OnDisconnected();
+    }
 }

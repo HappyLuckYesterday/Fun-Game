@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Rhisis.Game.Common.Resources;
+using Rhisis.Game.Resources.Properties;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

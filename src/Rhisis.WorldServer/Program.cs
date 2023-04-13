@@ -83,6 +83,7 @@ internal static class Program
         GameResources.Current.Initialize(host.Services);
         GameResources.Current.Items.Load();
         GameResources.Current.Movers.Load();
+        GameResources.Current.Npcs.Load();
         GameResources.Current.Skills.Load();
         GameResources.Current.Jobs.Load();
         GameResources.Current.ExperienceTable.Load();

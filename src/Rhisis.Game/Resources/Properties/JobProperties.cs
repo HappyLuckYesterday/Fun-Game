@@ -1,7 +1,8 @@
-﻿using System.Diagnostics;
+﻿using Rhisis.Game.Common;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 
-namespace Rhisis.Game.Common.Resources;
+namespace Rhisis.Game.Resources.Properties;
 
 [DataContract]
 [DebuggerDisplay("{Id}")]

@@ -1,9 +1,11 @@
-﻿using Rhisis.Game.Common;
+﻿using Rhisis.Core.IO;
+using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Game.Resources;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Rhisis.Game;
@@ -151,6 +153,82 @@ public sealed class Inventory : ItemContainer
         }
 
         return true;
+    }
+
+    public void UseItem(Item item)
+    {
+        ItemContainerSlot itemSlot = _items.FirstOrDefault(x => x.HasItem && x.Item.Id == item.Id && x.Item.SerialNumber == item.SerialNumber);
+
+        if (itemSlot is null)
+        {
+            throw new InvalidOperationException("Failed to find item in inventory.");
+        }
+
+        if (item.Properties.IsUseable && item.Quantity > 0)
+        {
+            if (ItemHasCoolTime(item) && !CanUseItemWithCoolTime(item))
+            {
+                return;
+            }
+
+            // TODO: implement custom item usage
+            // TODO: check for custom items usages
+
+            switch (item.Properties.ItemKind2)
+            {
+                case ItemKind2.POTION:
+                case ItemKind2.REFRESHER:
+                case ItemKind2.FOOD:
+                    //_inventoryItemUsage.Value.UseFoodItem(_player, item);
+                    break;
+                case ItemKind2.BLINKWING:
+                    //_inventoryItemUsage.Value.UseBlinkwingItem(_player, item);
+                    break;
+                case ItemKind2.MAGIC:
+                    //_inventoryItemUsage.Value.UseMagicItem(_player, item);
+                    break;
+                default: throw new NotImplementedException($"Item usage {item.Properties.ItemKind2} is not implemented.");
+            }
+        }
+    }
+
+    public bool ItemHasCoolTime(Item item) => GetItemCoolTimeGroup(item) != CoolTimeType.None;
+
+    public bool CanUseItemWithCoolTime(Item item)
+    {
+        CoolTimeType group = GetItemCoolTimeGroup(item);
+
+        return group != CoolTimeType.None && _itemsCoolTimes[group] < Time.GetElapsedTime();
+    }
+
+    public void SetCoolTime(Item item, int cooltime)
+    {
+        CoolTimeType group = GetItemCoolTimeGroup(item);
+
+        if (group != CoolTimeType.None)
+        {
+            _itemsCoolTimes[group] = Time.GetElapsedTime() + cooltime;
+        }
+    }
+
+    /// <summary>
+    /// Gets the item cool time group.
+    /// </summary>
+    /// <param name="item">Item.</param>
+    /// <returns>Returns the item cool time group.</returns>
+    private static CoolTimeType GetItemCoolTimeGroup(Item item)
+    {
+        if (item.Properties.CoolTime <= 0)
+        {
+            return CoolTimeType.None;
+        }
+
+        return item.Properties.ItemKind2 switch
+        {
+            ItemKind2.FOOD => item.Properties.ItemKind3 == ItemKind3.PILL ? CoolTimeType.Pills : CoolTimeType.Food,
+            ItemKind2.SKILL => CoolTimeType.Skill,
+            _ => CoolTimeType.None,
+        };
     }
 
     private bool UnequipSlot(ItemContainerSlot itemSlot)

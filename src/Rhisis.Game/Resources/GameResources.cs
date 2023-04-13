@@ -17,6 +17,8 @@ public class GameResources : Singleton<GameResources>
     public ItemResources Items { get; private set; }
 
     public MoverResources Movers { get; private set; }
+
+    public NpcResources Npcs { get; private set; }
     
     public SkillResources Skills { get; private set; }
 
@@ -35,6 +37,7 @@ public class GameResources : Singleton<GameResources>
 
         Items = new(serviceProvider.GetRequiredService<ILogger<ItemResources>>(), _defines);
         Movers = new(serviceProvider.GetRequiredService<ILogger<MoverResources>>(), _defines);
+        Npcs = new(serviceProvider.GetRequiredService<ILogger<NpcResources>>());
         Skills = new(serviceProvider.GetRequiredService<ILogger<SkillResources>>(), _defines);
         Jobs = new(serviceProvider.GetRequiredService<ILogger<JobResources>>(), _defines);
         ExperienceTable = new(serviceProvider.GetRequiredService<ILogger<ExperienceTableResources>>());
@@ -62,5 +65,7 @@ public class GameResources : Singleton<GameResources>
                 }
             }
         }
+
+        _logger.LogTrace("Definitions loaded from resources (*.h).");
     }
 }

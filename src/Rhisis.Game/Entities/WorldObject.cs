@@ -15,9 +15,9 @@ public class WorldObject
 
     public virtual WorldObjectType Type => WorldObjectType.Object;
 
-    public int MapId { get; init; }
+    public Map Map { get; set; }
 
-    public int MapLayerId { get; init; }
+    public MapLayer MapLayer { get; set; }
 
     public Vector3 Position { get; init; }
 
@@ -26,6 +26,8 @@ public class WorldObject
     public string Name { get; init; }
 
     public bool IsSpawned { get; set; }
+
+    public bool IsVisible { get; set; } = true;
 
     public ObjectState ObjectState { get; set; }
 

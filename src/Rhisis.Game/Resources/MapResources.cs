@@ -27,6 +27,8 @@ public sealed class MapResources
         _defines = defines;
     }
 
+    public IEnumerable<MapProperties> GetAll() => _mapsById.Values;
+
     public void Load(params string[] mapIdentifiers)
     {
         Stopwatch watch = new();
@@ -66,7 +68,8 @@ public sealed class MapResources
                     Length = worldInformation.Length,
                     RevivalMapId = worldInformation.RevivalMapId,
                     Regions = LoadRegions(worldName, worldInformation.RevivalMapId),
-                    Objects = LoadObjects(worldName)
+                    Objects = LoadObjects(worldName),
+                    Heights = LoadHeights(worldName, worldInformation.Width, worldInformation.Length)
                 };
 
                 _mapsById.TryAdd(map.Id, map);
@@ -181,6 +184,36 @@ public sealed class MapResources
                 Position = x.Position.Clone(),
                 Angle = x.Angle,
                 Name = x.CharacterKey
-            });
+            })
+            .ToList();
+    }
+
+    private static float[] LoadHeights(string mapName, int width, int length)
+    {
+        const int LandscapeSize = 128;
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < length; y++)
+            {
+                float[] landHeights = new float[(LandscapeSize + 1) * (LandscapeSize + 1)];
+                string landFilePath = Path.Combine(GameResourcePaths.MapsPath, mapName, $"{mapName}{x:00}-{y:00}.lnd");
+
+                if (File.Exists(landFilePath))
+                {
+                    using BinaryReader reader = new(File.Open(landFilePath, FileMode.Open, FileAccess.Read));
+
+                    int version = reader.ReadInt32();
+
+                    if (version >= 1)
+                    {
+                        byte[] heightmap = reader.ReadBytes(landHeights.Length * sizeof(float));
+                        Buffer.BlockCopy(heightmap, 0, landHeights, 0, heightmap.Length);
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }

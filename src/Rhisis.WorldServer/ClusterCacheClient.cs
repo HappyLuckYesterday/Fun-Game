@@ -18,12 +18,14 @@ public class ClusterCacheClient : LiteClient
 {
     private readonly ILogger<ClusterCacheClient> _logger;
     private readonly IOptions<WorldChannelServerOptions> _channelOptions;
+    private readonly IServiceProvider _serviceProvider;
 
     public ClusterCacheClient(LiteClientOptions options, ILogger<ClusterCacheClient> logger, IOptions<WorldChannelServerOptions> channelOptions, IServiceProvider serviceProvider = null)
         : base(options, serviceProvider)
     {
         _logger = logger;
         _channelOptions = channelOptions;
+        _serviceProvider = serviceProvider;
     }
 
     public override Task HandleMessageAsync(byte[] packetBuffer)
@@ -109,6 +111,7 @@ public class ClusterCacheClient : LiteClient
             case CoreAuthenticationResult.WrongMasterPassword:
                 _logger.LogWarning($"Authentication failed: wrong master password.");
                 break;
+            default: throw new NotImplementedException();
         }
     }
 
@@ -120,5 +123,6 @@ public class ClusterCacheClient : LiteClient
         GameOptions.Current.Messenger = packet.MessengerOptions;
         GameOptions.Current.Customization = packet.CustomizationOptions;
         GameResources.Current.Maps.Load(packet.Maps);
+        MapManager.Current.Initialize(_serviceProvider);
     }
 }
