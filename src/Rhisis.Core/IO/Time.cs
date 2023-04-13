@@ -24,7 +24,9 @@ public static class Time
     public static long TimeInSeconds(DateTime date)
     {
         if (date < Utc)
+        {
             date = Utc;
+        }
 
         return (long)(date - Utc).TotalSeconds;
     }
@@ -47,7 +49,9 @@ public static class Time
         var date = DateTime.UtcNow;
 
         if (date < Utc)
+        {
             date = Utc;
+        }
 
         return (date - Utc).TotalMilliseconds;
 

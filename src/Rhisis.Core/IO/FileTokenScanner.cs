@@ -57,7 +57,9 @@ public class FileTokenScanner : IDisposable
                 }
 
                 if (line.Contains(SingleLineComment))
+                {
                     splitFileContent[i] = line.Remove(line.IndexOf(SingleLineComment, StringComparison.Ordinal)).Trim();
+                }
 
                 if (line.Contains(MultiLineCommentBegin))
                 {
@@ -119,7 +121,9 @@ public class FileTokenScanner : IDisposable
     public bool NextTokenIs(string token)
     {
         if (_currentTokenIndex > _tokens.Count())
+        {
             return false;
+        }
 
         return string.Equals(_tokens[_currentTokenIndex + 1], token, StringComparison.OrdinalIgnoreCase);
     }
@@ -142,7 +146,9 @@ public class FileTokenScanner : IDisposable
     public string GetCommentAtLine(int position)
     {
         if (position >= 0 && position < _comments.Length)
+        {
             return _comments[position];
+        }
 
         return null;
     }

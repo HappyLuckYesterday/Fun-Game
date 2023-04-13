@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Rhisis.Game.Resources;
 
-public sealed class GameResourcePaths
+public static class GameResourcePaths
 {
     public static readonly string DataPath = Path.Combine(EnvironmentExtension.GetCurrentEnvironementDirectory(), "data");
     public static readonly string DialogsPath = Path.Combine(DataPath, "dialogs");

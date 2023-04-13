@@ -5,7 +5,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Rhisis.Game;
 
@@ -13,12 +12,24 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
 {
     protected readonly List<ItemContainerSlot> _items;
 
+    /// <summary>
+    /// Gets the number of items inside the container.
+    /// </summary>
     public int Count => _items.Count(x => x.HasItem);
 
+    /// <summary>
+    /// Gets the container capacity.
+    /// </summary>
     public int Capacity { get; }
 
+    /// <summary>
+    /// Gets the container extra capacity.
+    /// </summary>
     public int ExtraCapacity { get; }
 
+    /// <summary>
+    /// Gets the container maximum capacity.
+    /// </summary>
     public int MaxCapacity => Capacity + ExtraCapacity;
 
     public ItemContainer(int capacity, int extraCapacity = 0)
@@ -29,7 +40,7 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
 
         for (int i = 0; i < MaxCapacity; i++)
         {
-            _items[i] = new ItemContainerSlot()
+            _items[i] = new()
             {
                 Index = i,
                 Slot = i < Capacity ? i : -1,
@@ -38,6 +49,10 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
         }
     }
 
+    /// <summary>
+    /// Initializes the container slots.
+    /// </summary>
+    /// <param name="items">Collection of item slots.</param>
     public void Initialize(IEnumerable<ItemContainerSlot> items)
     {
         int itemIndex;
@@ -57,8 +72,19 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
         }
     }
 
+    /// <summary>
+    /// Gets an item matching the given item id.
+    /// </summary>
+    /// <param name="itemId">Item id to get from the container.</param>
+    /// <returns>The item found; null otherwise.</returns>
     public Item GetItem(int itemId) => _items.FirstOrDefault(x => x.HasItem && x.Item.Id == itemId).Item;
 
+    /// <summary>
+    /// Gets an item slot matching the given item idnex.
+    /// </summary>
+    /// <param name="index">Item index.</param>
+    /// <returns>The item slot.</returns>
+    /// <exception cref="InvalidOperationException">The item index is out of range of the container's maximum capacity.</exception>
     public ItemContainerSlot GetAtIndex(int index)
     {
         if (index < 0 || index >= MaxCapacity)
@@ -69,6 +95,12 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
         return _items.Single(x => x.Index == index);
     }
 
+    /// <summary>
+    /// Gets an item slot matching the given slot.
+    /// </summary>
+    /// <param name="slot">Item slot.</param>
+    /// <returns>The item slot.</returns>
+    /// <exception cref="InvalidOperationException">The item index is out of range of the container's maximum capacity.</exception>
     public ItemContainerSlot GetAtSlot(int slot)
     {
         if (slot < 0 || slot >= MaxCapacity)
@@ -79,8 +111,19 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
         return _items[slot];
     }
 
+    /// <summary>
+    /// Get a range of slots.
+    /// </summary>
+    /// <param name="start">Start slot</param>
+    /// <param name="count">Number of slots to get.</param>
+    /// <returns>A collection of slots.</returns>
     public IEnumerable<ItemContainerSlot> GetRange(int start, int count) => _items.GetRange(start, count);
 
+    /// <summary>
+    /// Checks if the given item can be stored in the container.
+    /// </summary>
+    /// <param name="itemToStore">Item to store.</param>
+    /// <returns>True if the item can be stored; false otherwise.</returns>
     public bool CanStoreItem(Item itemToStore)
     {
         if (itemToStore is null)
@@ -122,6 +165,11 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
         return false;
     }
 
+    /// <summary>
+    /// Creates an item inside the container.
+    /// </summary>
+    /// <param name="item">Item to create.</param>
+    /// <returns>Collection of <see cref="ItemCreationResult"/>.</returns>
     public IEnumerable<ItemCreationResult> CreateItem(Item item)
     {
         int quantity = item.Quantity;
@@ -202,6 +250,10 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
         return result;
     }
 
+    /// <summary>
+    /// Deletes the given item from the container.
+    /// </summary>
+    /// <param name="item">Item to delete.</param>
     public void DeleteItem(Item item)
     {
         if (item is null)
@@ -219,13 +271,13 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
         }
     }
 
+    /// <summary>
+    /// Swap two slots.
+    /// </summary>
+    /// <param name="sourceSlot">Source slot.</param>
+    /// <param name="destinationSlot">Destination slot.</param>
     public void SwapItem(int sourceSlot, int destinationSlot)
     {
-        //_itemsMask.Swap(sourceSlot, destinationSlot);
-
-        //int itemSourceIndex = _itemsMask[sourceSlot];
-        //int itemDestinationIndex = _itemsMask[destinationSlot];
-
         if (sourceSlot != -1)
         {
             _items[sourceSlot].Slot = destinationSlot;
@@ -239,6 +291,10 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
         _items.Swap(sourceSlot, destinationSlot);
     }
 
+    /// <summary>
+    /// Serializes the item container to the given packet stream.
+    /// </summary>
+    /// <param name="packet">Packet stream.</param>
     public void Serialize(FFPacket packet)
     {
         for (int i = 0; i < MaxCapacity; i++)

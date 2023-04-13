@@ -77,7 +77,9 @@ public static class Aes
             using (var memoryStream = new MemoryStream(input))
             using (var crypto = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read))
             using (var sr = new StreamReader(crypto))
+            {
                 decrypted = sr.ReadToEnd().Trim('\0');
+            }
         }
 
         return decrypted;

@@ -12,7 +12,7 @@ public class ShopProperties
     /// <summary>
     /// Gets the default shop tab count.
     /// </summary>
-    public const int DefaultTabCount = 4;
+    public static readonly int DefaultTabCount = 4;
 
     /// <summary>
     /// Gets or sets the shop name.

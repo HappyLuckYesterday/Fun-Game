@@ -5,7 +5,6 @@ using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Game.Resources;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace Rhisis.Game;
@@ -27,12 +26,22 @@ public sealed class Inventory : ItemContainer
         { CoolTimeType.Skill, 0 }
     };
 
+    /// <summary>
+    /// Creates a new <see cref="Inventory"/> instance.
+    /// </summary>
+    /// <param name="owner">Player owner.</param>
     public Inventory(Player owner)
         : base(InventorySize, InventoryEquipParts)
     {
         _owner = owner;
     }
 
+    /// <summary>
+    /// Moves an item within the player's inventory.
+    /// </summary>
+    /// <param name="sourceSlot">Source slot.</param>
+    /// <param name="destinationSlot">Destination slot.</param>
+    /// <exception cref="InvalidOperationException">Source slot or destination slot are not valid.</exception>
     public void MoveItem(int sourceSlot, int destinationSlot)
     {
         if (sourceSlot < 0 || sourceSlot >= MaxCapacity)
@@ -66,6 +75,11 @@ public sealed class Inventory : ItemContainer
         }
     }
 
+    /// <summary>
+    /// Gets the equiped item from the given item part.
+    /// </summary>
+    /// <param name="equipedItemPart">Item part.</param>
+    /// <returns>The item if found; hand otherwise.</returns>
     public Item GetEquipedItem(ItemPartType equipedItemPart)
     {
         ItemContainerSlot equipedItemSlot = GetEquipedItemSlot(equipedItemPart);
@@ -73,6 +87,11 @@ public sealed class Inventory : ItemContainer
         return equipedItemSlot.HasItem ? equipedItemSlot.Item : Hand;
     }
 
+    /// <summary>
+    /// Equip an item.
+    /// </summary>
+    /// <param name="item">Item to equip.</param>
+    /// <returns>True if equiped; false otherwise.</returns>
     public bool Equip(Item item)
     {
         if (!IsItemEquipable(item))
@@ -102,6 +121,11 @@ public sealed class Inventory : ItemContainer
         return false;
     }
 
+    /// <summary>
+    /// Unequip an item;
+    /// </summary>
+    /// <param name="item">Item to unequip.</param>
+    /// <returns>True if unequiped; false otherwise.</returns>
     public bool Unequip(Item item)
     {
         ItemContainerSlot itemSlot = _items.FirstOrDefault(x => x.HasItem && x.Item.Id == item.Id && x.Item.SerialNumber == item.SerialNumber);
@@ -122,6 +146,11 @@ public sealed class Inventory : ItemContainer
         return false;
     }
 
+    /// <summary>
+    /// Checks if the given item can be equiped based on the player's information.
+    /// </summary>
+    /// <param name="item">Item to equip.</param>
+    /// <returns>True if the item can be equiped; false otherwise.</returns>
     public bool IsItemEquipable(Item item)
     {
         if (item.Properties.ItemSex != int.MaxValue && (GenderType)item.Properties.ItemSex != _owner.Appearence.Gender)
@@ -155,6 +184,12 @@ public sealed class Inventory : ItemContainer
         return true;
     }
 
+    /// <summary>
+    /// Use an item.
+    /// </summary>
+    /// <param name="item">Item to use.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the item has not been found.</exception>
+    /// <exception cref="NotImplementedException"></exception>
     public void UseItem(Item item)
     {
         ItemContainerSlot itemSlot = _items.FirstOrDefault(x => x.HasItem && x.Item.Id == item.Id && x.Item.SerialNumber == item.SerialNumber);
@@ -192,8 +227,11 @@ public sealed class Inventory : ItemContainer
         }
     }
 
-    public bool ItemHasCoolTime(Item item) => GetItemCoolTimeGroup(item) != CoolTimeType.None;
-
+    /// <summary>
+    /// Checks if the item can be used.
+    /// </summary>
+    /// <param name="item">Item to use.</param>
+    /// <returns>True if the item can be used; false otherwise.</returns>
     public bool CanUseItemWithCoolTime(Item item)
     {
         CoolTimeType group = GetItemCoolTimeGroup(item);
@@ -201,6 +239,11 @@ public sealed class Inventory : ItemContainer
         return group != CoolTimeType.None && _itemsCoolTimes[group] < Time.GetElapsedTime();
     }
 
+    /// <summary>
+    /// Sets a cool time for the given item.
+    /// </summary>
+    /// <param name="item">Item.</param>
+    /// <param name="cooltime">Cool time</param>
     public void SetCoolTime(Item item, int cooltime)
     {
         CoolTimeType group = GetItemCoolTimeGroup(item);
@@ -210,6 +253,13 @@ public sealed class Inventory : ItemContainer
             _itemsCoolTimes[group] = Time.GetElapsedTime() + cooltime;
         }
     }
+
+    /// <summary>
+    /// Check if the item has a cool down.
+    /// </summary>
+    /// <param name="item">Item.</param>
+    /// <returns>True if the item has a cool down time; false otherwise.</returns>
+    private static bool ItemHasCoolTime(Item item) => GetItemCoolTimeGroup(item) != CoolTimeType.None;
 
     /// <summary>
     /// Gets the item cool time group.
@@ -245,10 +295,7 @@ public sealed class Inventory : ItemContainer
         return false;
     }
 
-    private ItemContainerSlot GetEmptySlot()
-    {
-        return _items.FirstOrDefault(x => !x.HasItem);
-    }
+    private ItemContainerSlot GetEmptySlot() => _items.FirstOrDefault(x => !x.HasItem);
 
     private ItemContainerSlot GetEquipedItemSlot(ItemPartType equipedItemPart)
     {
