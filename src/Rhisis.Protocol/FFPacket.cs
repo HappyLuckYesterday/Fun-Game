@@ -1,4 +1,5 @@
 ﻿using Rhisis.Core.IO;
+using System;
 using System.Text;
 
 namespace Rhisis.Protocol;
@@ -40,10 +41,14 @@ public class FFPacket : BinaryStream
     /// Creates a new <see cref="FFPacket"/> with an existing content.
     /// </summary>
     /// <param name="packetBuffer"></param>
-    public FFPacket(byte[] packetBuffer)
+    /// <param name="ignorePacketHeader">Boolean value that indicates if the packet header should be ignored during packet initialization.</param>
+    public FFPacket(byte[] packetBuffer, bool ignorePacketHeader = false)
         : base(packetBuffer) 
     {
-        Header = (PacketType)ReadUInt32();
+        if (!ignorePacketHeader)
+        {
+            Header = (PacketType)ReadUInt32();
+        }
     }
 
     /// <summary>

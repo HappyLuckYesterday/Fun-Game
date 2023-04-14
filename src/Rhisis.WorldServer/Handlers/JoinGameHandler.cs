@@ -12,7 +12,6 @@ using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 

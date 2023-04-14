@@ -1,5 +1,7 @@
 ﻿using Rhisis.Game.Common;
+using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Game.Resources.Properties;
+using Rhisis.Protocol;
 using System;
 
 namespace Rhisis.Game.Entities;
@@ -59,5 +61,12 @@ public class Mover : WorldObject
         Health = new Health(this);
         Attributes = new Attributes(this);
         Statistics = new Statistics(this);
+    }
+    public void Move(float x, float y, float z)
+    {
+        DestinationPosition = new(x, y, z);
+
+        using DestPositionSnapshot packet = new(this);
+        SendToVisible(packet);
     }
 }
