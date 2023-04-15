@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Rhisis.Core.Configuration;
 using Rhisis.Core.Configuration.Cluster;
 using Rhisis.Core.Extensions;
+using Rhisis.Game.Chat;
 using Rhisis.Game.Resources;
 using Rhisis.Infrastructure.Logging;
 using Rhisis.Infrastructure.Persistance;
@@ -88,6 +89,7 @@ internal static class Program
         GameResources.Current.Jobs.Load();
         GameResources.Current.ExperienceTable.Load();
         GameResources.Current.Penalities.Load();
+        ChatCommandManager.Current.Load(host.Services);
 
         await host.RunAsync();
     }

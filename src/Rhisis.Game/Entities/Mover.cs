@@ -122,6 +122,7 @@ public class Mover : WorldObject
             ObjectState |= ObjectState.OBJSTA_STAND;
             Position.Copy(DestinationPosition);
             DestinationPosition.Reset();
+            OnArrived();
         }
         else
         {
@@ -157,5 +158,9 @@ public class Mover : WorldObject
             Position.X += (float)offsetX;
             Position.Z += (float)offsetZ;
         }
+    }
+
+    protected virtual void OnArrived()
+    {
     }
 }

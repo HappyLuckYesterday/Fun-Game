@@ -206,6 +206,17 @@ public sealed class Player : Mover
     }
 
     /// <summary>
+    /// Sends an oral text message to every entities around.
+    /// </summary>
+    /// <param name="message">Message.</param>
+    public void Speak(string message)
+    {
+        using ChatSnapshot snapshot = new(this, message);
+
+        SendToVisible(snapshot, sendToSelf: true);
+    }
+
+    /// <summary>
     /// Sends a packet to the player.
     /// </summary>
     /// <param name="packet">Packet to send.</param>

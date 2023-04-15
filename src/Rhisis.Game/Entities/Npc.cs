@@ -3,7 +3,6 @@ using Rhisis.Core.IO;
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Game.Resources.Properties;
-using Rhisis.Protocol;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
