@@ -110,7 +110,13 @@ public sealed class Player : Mover
             return;
         }
 
+        if (!IsFighting)
+        {
+            Health.IdleHeal();
+        }
+
         LookAround();
+        UpdateMoves();
     }
 
     public void LookAround()
@@ -161,9 +167,7 @@ public sealed class Player : Mover
         throw new NotImplementedException();
     }
 
-    public IEnumerable<Item> GetEquipedItems() 
-        => Inventory.GetRange(Inventory.InventorySize, Inventory.InventoryEquipParts)
-            .Select(x => x.Item);
+    public IEnumerable<Item> GetEquipedItems() => Inventory.GetRange(Inventory.InventorySize, Inventory.InventoryEquipParts).Select(x => x.Item);
 
     /// <summary>
     /// Adds the given amount of skill points to the current player.

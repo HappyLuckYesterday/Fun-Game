@@ -1,32 +1,33 @@
 ﻿using Rhisis.Game.Common;
-using System.Runtime.Serialization;
+using System.Diagnostics;
+using System.Text.Json.Serialization;
 
 namespace Rhisis.Game.Resources.Properties;
 
-[DataContract]
+[DebuggerDisplay("ShopItem: {Id} +{Refine} {Element}+{ElementRefine}")]
 public class ShopItemProperties
 {
     /// <summary>
     /// Gets the item Id.
     /// </summary>
-    [DataMember(Name = "itemId")]
-    public int Id { get; protected set; }
+    [JsonPropertyName("itemId")]
+    public int Id { get; set; }
 
     /// <summary>
     /// Gets or sets the item refine.
     /// </summary>
-    [DataMember(Name = "refine")]
+    [JsonPropertyName("refine")]
     public byte Refine { get; set; }
 
     /// <summary>
     /// Gets or sets the item element. (Fire, water, electricity, etc...)
     /// </summary>
-    [DataMember(Name = "element")]
+    [JsonPropertyName("element")]
     public ElementType Element { get; set; }
 
     /// <summary>
     /// Gets or sets the item element refine.
     /// </summary>
-    [DataMember(Name = "elementRefine")]
+    [JsonPropertyName("elementRefine")]
     public byte ElementRefine { get; set; }
 }

@@ -62,7 +62,7 @@ public sealed class NpcResources
                 //TODO: implement other npc settings (image, music, actions...)
                 //      + constants for statement (like SetName)
 
-                string shopFilePath = Path.Combine(GameResourcePaths.ShopsPath, $"{npcName}.json");
+                string shopFilePath = Path.Combine(GameResourcePaths.ShopsPath, $"{npcId}.json");
                 ShopProperties npcShop = null;
 
                 if (File.Exists(shopFilePath))
@@ -70,7 +70,7 @@ public sealed class NpcResources
                     npcShop = JsonSerializer.Deserialize<ShopProperties>(File.ReadAllText(shopFilePath));
                 }
 
-                string dialogFilePath = Path.Combine(GameResourcePaths.DialogsPath, "en", $"{npcName}.json");
+                string dialogFilePath = Path.Combine(GameResourcePaths.DialogsPath, "en", $"{npcId}.json");
                 DialogProperties npcDialog = null;
 
                 if (File.Exists(dialogFilePath))

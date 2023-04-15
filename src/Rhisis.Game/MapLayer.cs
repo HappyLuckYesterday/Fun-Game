@@ -114,6 +114,25 @@ public sealed class MapLayer : IDisposable
         }
     }
 
+    /// <summary>
+    /// Updates the map layer logic every seconds.
+    /// </summary>
+    public void UpdateSeconds()
+    {
+        lock (_npcs)
+        {
+            if (!_npcs.Any())
+            {
+                return;
+            }
+
+            foreach (Npc npc in _npcs)
+            {
+                npc.Update();
+            }
+        }
+    }
+
     public void Dispose()
     {
         lock (_players)

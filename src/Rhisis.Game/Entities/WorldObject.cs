@@ -21,7 +21,7 @@ public class WorldObject
 
     public Vector3 Position { get; init; }
 
-    public float RotationAngle { get; init; }
+    public float RotationAngle { get; set; }
 
     public string Name { get; init; }
 

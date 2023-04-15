@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Rhisis.Game.Resources.Properties.Dialogs;
 
@@ -9,31 +10,31 @@ public class DialogProperties
     /// <summary>
     /// Gets or sets the dialog name.
     /// </summary>
-    [DataMember(Name = "name")]
+    [JsonPropertyName("name")]
     public string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the dialog's oral text.
     /// </summary>
-    [DataMember(Name = "oralText")]
+    [JsonPropertyName("oralText")]
     public string OralText { get; set; }
 
     /// <summary>
     /// Gets or sets the dialog's introduction text.
     /// </summary>
-    [DataMember(Name = "introText")]
+    [JsonPropertyName("introText")]
     public IEnumerable<string> IntroText { get; set; }
 
     /// <summary>
     /// Gets or sets the dialog's goodbye text.
     /// </summary>
-    [DataMember(Name = "byeText")]
+    [JsonPropertyName("byeText")]
     public string ByeText { get; set; }
 
     /// <summary>
     /// Gets the dialog's links.
     /// </summary>
-    [DataMember(Name = "links")]
+    [JsonPropertyName("links")]
     public List<DialogLink> Links { get; }
 
     /// <summary>

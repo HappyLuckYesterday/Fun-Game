@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Rhisis.Game.Resources.Properties.Dialogs;
 
@@ -9,13 +10,13 @@ public class DialogLink
     /// <summary>
     /// Gets or sets the dialog link id.
     /// </summary>
-    [DataMember(Name = "id")]
+    [JsonPropertyName("id")]
     public string Id { get; set; }
 
     /// <summary>
     /// Gets or sets the dialog link title.
     /// </summary>
-    [DataMember(Name = "title")]
+    [JsonPropertyName("title")]
     public string Title { get; set; }
 
     /// <summary>
@@ -24,13 +25,13 @@ public class DialogLink
     /// <remarks>
     /// This text will appear once the client has clicked on the link title.
     /// </remarks>
-    [DataMember(Name = "texts")]
+    [JsonPropertyName("texts")]
     public IList<string> Texts { get; set; }
 
     /// <summary>
     /// Gets or sets the link quest id.
     /// </summary>
-    [IgnoreDataMember]
+    [JsonIgnore]
     public int? QuestId { get; set; }
 
     /// <summary>

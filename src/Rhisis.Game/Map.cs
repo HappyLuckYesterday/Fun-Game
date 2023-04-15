@@ -88,6 +88,14 @@ public sealed class Map : IDisposable
     {
         while (!MainProcessTaskCancelToken.IsCancellationRequested)
         {
+            lock (_layers)
+            {
+                foreach (MapLayer layer in _layers)
+                {
+                    layer.UpdateSeconds();
+                }
+            }
+
             await Task.Delay(1000, MainProcessTaskCancelToken);
         }
     }
