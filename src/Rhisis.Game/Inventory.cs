@@ -3,9 +3,12 @@ using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Game.Resources;
+using Rhisis.Protocol;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace Rhisis.Game;
 
@@ -73,6 +76,73 @@ public sealed class Inventory : ItemContainer
             using MoveItemSnapshot moveItemSnapshot = new(_owner, sourceSlot, destinationSlot);
             _owner.Send(moveItemSnapshot);
         }
+    }
+
+    public int CreateItem(Item item, bool sendToPlayer = true)
+    {
+        IEnumerable<ItemCreationResult> creationResult = base.CreateItem(item);
+
+        if (creationResult.Any())
+        {
+            if (sendToPlayer)
+            {
+                using var snapshot = new FFSnapshot();
+
+                foreach (ItemCreationResult itemResult in creationResult)
+                {
+                    if (itemResult.ActionType == ItemCreationActionType.Add)
+                    {
+                        snapshot.Merge(new CreateItemSnapshot(_owner, itemResult.Item, itemResult.Index));
+                    }
+                    else if (itemResult.ActionType == ItemCreationActionType.Update)
+                    {
+                        snapshot.Merge(new UpdateItemSnapshot(_owner, UpdateItemType.UI_NUM, itemResult.Index, itemResult.Item.Quantity));
+                    }
+                }
+
+                _owner.Send(snapshot);
+            }
+        }
+        else
+        {
+            _owner.SendDefinedText(DefineText.TID_GAME_LACKSPACE);
+        }
+
+        return creationResult.Sum(x => x.Item.Quantity);
+    }
+
+    /// <summary>
+    /// Deletes an given quantity from an item container slot.
+    /// </summary>
+    /// <param name="itemSlot">Item slot.</param>
+    /// <param name="quantity">Quantity to delete.</param>
+    /// <param name="updateType">Item update type.</param>
+    /// <param name="sendToPlayer">Boolean value that indicates if the player should be notified.</param>
+    /// <returns>Deleted item quantity.</returns>
+    public int DeleteItem(ItemContainerSlot itemSlot, int quantity, UpdateItemType updateType = UpdateItemType.UI_NUM, bool sendToPlayer = true)
+    {
+        int quantityToDelete = Math.Min(itemSlot.Item.Quantity, quantity);
+
+        itemSlot.Item.Quantity -= quantityToDelete;
+
+        if (sendToPlayer)
+        {
+            using var snapshot = new UpdateItemSnapshot(_owner, updateType, itemSlot.Index, itemSlot.Item.Quantity);
+
+            _owner.Send(snapshot);
+        }
+
+        if (itemSlot.Item.Quantity <= 0)
+        {
+            if (itemSlot.Slot > EquipOffset)
+            {
+                UnequipSlot(itemSlot);
+            }
+
+            itemSlot.Item = null;
+        }
+
+        return quantityToDelete;
     }
 
     /// <summary>

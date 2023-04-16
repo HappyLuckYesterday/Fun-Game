@@ -265,8 +265,6 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
 
         if (itemSlot.Slot >= Capacity)
         {
-            //_itemsMask[itemSlot.Slot] = -1;
-            //itemSlot.Slot = -1;
             itemSlot.Item = null;
         }
     }

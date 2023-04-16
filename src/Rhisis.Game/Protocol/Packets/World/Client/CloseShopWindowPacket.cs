@@ -4,8 +4,8 @@ namespace Rhisis.Game.Protocol.Packets.World.Client;
 
 public class CloseShopWindowPacket
 {
-    public CloseShopWindowPacket(FFPacket packet)
+    public CloseShopWindowPacket(FFPacket _)
     {
-        throw new System.NotImplementedException();
+        // Nothing to do.
     }
 }

@@ -92,6 +92,11 @@ public sealed class Player : Mover
     /// </summary>
     public QuestDiary QuestDiary { get; }
 
+    /// <summary>
+    /// Gets or sets the current shop name that the player is visiting.
+    /// </summary>
+    public string CurrentShopName { get; set; }
+
     public Player(FFUserConnection connection, MoverProperties properties)
         : base(properties)
     {

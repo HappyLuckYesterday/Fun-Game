@@ -4,7 +4,6 @@ using System.Text.Json.Serialization;
 
 namespace Rhisis.Game.Resources.Properties.Dialogs;
 
-[DataContract]
 public class DialogLink
 {
     /// <summary>
@@ -33,37 +32,4 @@ public class DialogLink
     /// </summary>
     [JsonIgnore]
     public int? QuestId { get; set; }
-
-    /// <summary>
-    /// Create an empty <see cref="DialogLink"/> instance.
-    /// </summary>
-    public DialogLink()
-        : this(string.Empty, string.Empty)
-    {
-    }
-
-    /// <summary>
-    /// Create a <see cref="DialogLink"/> instance.
-    /// </summary>
-    /// <param name="id">Dialog link id</param>
-    /// <param name="title">Dialog link title</param>
-    /// <param name="text">Dialog link text</param>
-    public DialogLink(string id, string title)
-        : this(id, title, default)
-    {
-    }
-
-    /// <summary>
-    /// Creates a new <see cref="DialogLink"/> instance for a quest.
-    /// </summary>
-    /// <param name="id">Dialog link id.</param>
-    /// <param name="title">Dialog link title.</param>
-    /// <param name="questId">Dialog link quest id.</param>
-    public DialogLink(string id, string title, int? questId)
-    {
-        Id = id;
-        Title = title;
-        QuestId = questId;
-        Texts = new List<string>();
-    }
 }

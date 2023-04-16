@@ -35,7 +35,7 @@ public class DialogProperties
     /// Gets the dialog's links.
     /// </summary>
     [JsonPropertyName("links")]
-    public List<DialogLink> Links { get; }
+    public List<DialogLink> Links { get; set; }
 
     /// <summary>
     /// Creates a new <see cref="DialogProperties"/> instance.
