@@ -90,6 +90,9 @@ public sealed class Health
     {
         _mover = mover;
         _nextHealTime = Time.TimeInSeconds();
+        Hp = mover.Properties.AddHp;
+        Mp = mover.Properties.AddMp;
+        Fp = 0;
     }
 
     public void RegenerateAll()

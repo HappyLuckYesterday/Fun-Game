@@ -1,6 +1,8 @@
-﻿using Rhisis.Game.Common;
+﻿using Rhisis.Core.Helpers;
+using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Resources;
+using Rhisis.Game.Resources.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,7 @@ public sealed class MapLayer : IDisposable
     private readonly Map _parentMap;
     private readonly List<Player> _players = new();
     private readonly List<Npc> _npcs = new();
+    private readonly List<Monster> _monsters = new();
 
     /// <summary>
     /// Gets the layer id.
@@ -44,7 +47,34 @@ public sealed class MapLayer : IDisposable
             })
             .ToList();
 
+        IEnumerable<Monster> monsters = parentMap.Properties.Regions
+            .OfType<MapRespawnRegionProperties>()
+            .Where(x => x.ObjectType == WorldObjectType.Mover)
+            .SelectMany(x =>
+            {
+                Rectangle region = new(x.X, x.Z, x.Width, x.Length);
+                MoverProperties moverProperties = GameResources.Current.Movers.Get(x.ModelId);
+
+                return Enumerable.Range(0, x.Count).Select(i => new Monster(moverProperties)
+                {
+                    Name = moverProperties.Name,
+                    Level = moverProperties.Level,
+                    Size = moverProperties.Class == MoverClassType.RANK_BOSS ? (short)200 : (short)100,
+                    ModelId = moverProperties.Id,
+                    RespawnTime = x.Time,
+                    Region = region,
+                    Position = region.GetRandomPosition(x.Height),
+                    RotationAngle = FFRandom.FloatRandom(0, 360),
+                    IsSpawned = true,
+                    ObjectState = ObjectState.OBJSTA_STAND,
+                    Map = parentMap,
+                    MapLayer = this
+                }).ToList();
+            })
+            .ToList();
+
         _npcs.AddRange(npcs);
+        _monsters.AddRange(monsters);
     }
 
     /// <summary>
@@ -112,6 +142,19 @@ public sealed class MapLayer : IDisposable
                 player.Update();
             }
         }
+
+        lock (_monsters)
+        {
+            if (!_monsters.Any())
+            {
+                return;
+            }
+
+            foreach (Monster monster in _monsters)
+            {
+                monster.Update();
+            }
+        }
     }
 
     /// <summary>
@@ -153,6 +196,11 @@ public sealed class MapLayer : IDisposable
         lock (_npcs)
         {
             objects.AddRange(GetVisibleObjects(worldObject, _npcs));
+        }
+
+        lock (_monsters)
+        {
+            objects.AddRange(GetVisibleObjects(worldObject, _monsters));
         }
 
         return objects;

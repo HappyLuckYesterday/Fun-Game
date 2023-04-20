@@ -48,17 +48,16 @@ public class Rectangle
     /// <summary>
     /// Generates a random position inside the rectangle.
     /// </summary>
+    /// <param name="height">Optional height.</param>
     /// <returns>A new <see cref="Vector3"/></returns>
-    public Vector3 GetRandomPosition()
+    public Vector3 GetRandomPosition(float height = 0)
     {
-        var position = new Vector3()
+        return new Vector3()
         {
             X = FFRandom.FloatRandom(X, X + Width),
-            Y = 0,
+            Y = height,
             Z = FFRandom.FloatRandom(Z, Z + Length)
         };
-
-        return position;
     }
 
     /// <summary>
@@ -76,4 +75,6 @@ public class Rectangle
     /// <param name="z">Z coordinate.</param>
     /// <returns></returns>
     public bool Contains(float x, float y, float z) => x >= X && x <= X + Width && z >= Z && z <= Z + Length;
+
+
 }

@@ -54,6 +54,11 @@ public sealed class Map : IDisposable
 
     public MapLayer GetLayer(int layerId) => _layers.SingleOrDefault(x => x.Id == layerId);
 
+    public float GetHeight(float positionX, float positionZ)
+    {
+        return 0;
+    }
+
     private async Task UpdateAsync()
     {
         while (!MainProcessTaskCancelToken.IsCancellationRequested)

@@ -82,9 +82,9 @@ public class Mover : WorldObject
     protected Mover(MoverProperties properties)
     {
         Properties = properties ?? throw new ArgumentNullException(nameof(properties), "Cannot create a mover with no properties.");
-        Health = new Health(this);
         Attributes = new Attributes(this);
         Statistics = new Statistics(this);
+        Health = new Health(this);
     }
     
     /// <summary>
