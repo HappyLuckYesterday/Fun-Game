@@ -1,4 +1,5 @@
-﻿using Rhisis.Game.Common;
+﻿using Rhisis.Core.IO;
+using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Game.Resources.Properties;
 using System;
@@ -102,6 +103,27 @@ public class Mover : WorldObject
 
         using DestPositionSnapshot packet = new(this);
         SendToVisible(packet);
+    }
+
+    /// <summary>
+    /// Drops the given item to the ground.
+    /// </summary>
+    /// <param name="item">Item to drop.</param>
+    /// <param name="owner">Item owner.</param>
+    public void DropItem(Item item, Mover owner = null)
+    {
+        MapItemObject itemObject = new(item)
+        {
+            Position = Position.Clone(),
+            IsSpawned = true,
+            IsVisible = true,
+            Map = Map,
+            MapLayer = MapLayer,
+            Owner = owner,
+            OwnershipTime = owner is not null ? Time.TimeInSeconds() + GameOptions.Current.Drops.OwnershipTime : 0
+        };
+
+        MapLayer.AddItem(itemObject);
     }
 
     /// <summary>

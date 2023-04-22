@@ -76,4 +76,10 @@ public sealed class ClusterServerOptions
     /// </summary>
     [ConfigurationKeyName("customization")]
     public CustomizationOptions Customization { get; set; }
+
+    /// <summary>
+    /// Gets or sets the drops configuration.
+    /// </summary>
+    [ConfigurationKeyName("drops")]
+    public DropOptions Drops { get; set; }
 }

@@ -6,4 +6,5 @@ public sealed record ChannelConfigurationPacket(
     RateOptions Rates, 
     MessengerOptions MessengerOptions, 
     CustomizationOptions CustomizationOptions, 
+    DropOptions DropOptions,
     string[] Maps);

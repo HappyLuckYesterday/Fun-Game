@@ -36,4 +36,3 @@ internal sealed class EquipItemHandler : WorldPacketHandler
         }
     }
 }
-

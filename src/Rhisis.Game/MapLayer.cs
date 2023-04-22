@@ -17,6 +17,7 @@ public sealed class MapLayer : IDisposable
     private readonly List<Player> _players = new();
     private readonly List<Npc> _npcs = new();
     private readonly List<Monster> _monsters = new();
+    private readonly List<MapItemObject> _items = new();
 
     /// <summary>
     /// Gets the layer id.
@@ -126,6 +127,54 @@ public sealed class MapLayer : IDisposable
     }
 
     /// <summary>
+    /// Add a map item object to the current map layer.
+    /// </summary>
+    /// <param name="mapItem">Map item to add.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the given map item object instance is null.</exception>
+    public void AddItem(MapItemObject mapItem)
+    {
+        if (mapItem is null)
+        {
+            throw new ArgumentNullException(nameof(mapItem), "Cannot add a undefined map item object instance.");
+        }
+
+        if (!_items.Contains(mapItem))
+        {
+            lock (_items)
+            {
+                if (!_items.Contains(mapItem))
+                {
+                    _items.Add(mapItem);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Removes a map item object from the current map layer.
+    /// </summary>
+    /// <param name="mapItem">Map item to remove.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the given map item object instance is null.</exception>
+    public void RemoveItem(MapItemObject mapItem)
+    {
+        if (mapItem is null)
+        {
+            throw new ArgumentNullException(nameof(mapItem), "Cannot remove a undefined map item object instance.");
+        }
+
+        if (_items.Contains(mapItem))
+        {
+            lock (_items)
+            {
+                if (_items.Contains(mapItem))
+                {
+                    _items.Remove(mapItem);
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// Updates the map layer logic.
     /// </summary>
     public void Update()
@@ -201,6 +250,11 @@ public sealed class MapLayer : IDisposable
         lock (_monsters)
         {
             objects.AddRange(GetVisibleObjects(worldObject, _monsters));
+        }
+
+        lock (_items)
+        {
+            objects.AddRange(GetVisibleObjects(worldObject, _items));
         }
 
         return objects;

@@ -99,4 +99,15 @@ public class Item
         packet.WriteByte(0); // pet
         packet.WriteInt32(0); // m_bTranformVisPet
     }
+
+    public Item Clone()
+    {
+        return new Item(Properties)
+        {
+            Quantity = Quantity,
+            Element = Element,
+            ElementRefine = ElementRefine,
+            Refine = Refine
+        };
+    }
 }

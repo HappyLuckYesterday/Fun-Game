@@ -29,7 +29,7 @@ public class WorldObject
 
     public bool IsVisible { get; set; } = true;
 
-    public ObjectState ObjectState { get; set; }
+    public ObjectState ObjectState { get; set; } 
 
     public StateFlags ObjectStateFlags { get; set; }
 

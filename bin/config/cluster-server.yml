@@ -19,6 +19,9 @@ server:
     face-cost: 1000000
     hair-cost: 2000000
     hair-color-cost: 4000000
+  drops:
+    ownership-time: 7
+    despawn-time: 120
   default-character:
     man:
       level: 1

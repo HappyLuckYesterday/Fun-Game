@@ -120,6 +120,7 @@ public class WorldChannelUser : FFInterServerConnection
             _cluster.Configuration.Rates,
             _cluster.Configuration.Messenger, 
             _cluster.Configuration.Customization, 
+            _cluster.Configuration.Drops,
             _cluster.Configuration.Maps.ToArray()));
 
         Name = channel.Name;

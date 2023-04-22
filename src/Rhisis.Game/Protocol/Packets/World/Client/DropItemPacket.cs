@@ -1,5 +1,4 @@
-﻿using Rhisis.Game;
-using Rhisis.Protocol;
+﻿using Rhisis.Protocol;
 
 namespace Rhisis.Game.Protocol.Packets.World.Client;
 
@@ -11,9 +10,9 @@ public class DropItemPacket
     public uint ItemType { get; private set; }
 
     /// <summary>
-    /// Gets the unique item id.
+    /// Gets the item index in the inventory.
     /// </summary>
-    public int ItemUniqueId { get; private set; }
+    public int ItemIndex { get; private set; }
 
     /// <summary>
     /// Gets the item quantity.
@@ -28,7 +27,7 @@ public class DropItemPacket
     public DropItemPacket(FFPacket packet)
     {
         ItemType = packet.ReadUInt32();
-        ItemUniqueId = packet.ReadInt32();
+        ItemIndex = packet.ReadInt32();
         ItemQuantity = packet.ReadInt16();
         Position = new Vector3(packet.ReadSingle(), packet.ReadSingle(), packet.ReadSingle());
     }
