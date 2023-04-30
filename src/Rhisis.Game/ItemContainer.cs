@@ -52,32 +52,20 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
     /// <summary>
     /// Initializes the container slots.
     /// </summary>
-    /// <param name="items">Collection of item slots.</param>
-    public void Initialize(IEnumerable<ItemContainerSlot> items)
+    /// <param name="items">Dictionary of items where key is the slot and value the item.</param>
+    public void Initialize(IReadOnlyDictionary<int, Item> items)
     {
-        int itemIndex;
-        int itemsCount = Math.Min(items.Count(), MaxCapacity);
-
-        for (itemIndex = 0; itemIndex < itemsCount; itemIndex++)
+        foreach (KeyValuePair<int, Item> item in items)
         {
-            ItemContainerSlot item = items.ElementAtOrDefault(itemIndex);
+            int itemSlot = item.Key;
 
-            if (item != null)
+            if (itemSlot < MaxCapacity)
             {
-                int slot = item.Slot;
-
-                _items[slot].Item = item.Item;
-                _items[slot].Slot = slot;
+                _items[itemSlot].Item = item.Value;
+                _items[itemSlot].Slot = itemSlot;
             }
         }
     }
-
-    /// <summary>
-    /// Gets an item matching the given item id.
-    /// </summary>
-    /// <param name="itemId">Item id to get from the container.</param>
-    /// <returns>The item found; null otherwise.</returns>
-    public Item GetItem(int itemId) => _items.FirstOrDefault(x => x.HasItem && x.Item.Id == itemId).Item;
 
     /// <summary>
     /// Gets an item slot matching the given item idnex.
@@ -248,25 +236,6 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
         }
 
         return result;
-    }
-
-    /// <summary>
-    /// Deletes the given item from the container.
-    /// </summary>
-    /// <param name="item">Item to delete.</param>
-    public void DeleteItem(Item item)
-    {
-        if (item is null)
-        {
-            return;
-        }
-
-        ItemContainerSlot itemSlot = _items.FirstOrDefault(x => x.HasItem && x.Item.SerialNumber == item.SerialNumber);
-
-        if (itemSlot.Slot >= Capacity)
-        {
-            itemSlot.Item = null;
-        }
     }
 
     /// <summary>

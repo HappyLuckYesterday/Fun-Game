@@ -1,5 +1,6 @@
 ﻿using Rhisis.Core.Helpers;
 using Rhisis.Game.Common;
+using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Protocol;
 using System.Collections.Generic;
 
@@ -42,6 +43,17 @@ public class WorldObject
 
     protected WorldObject()
     {
+    }
+
+    /// <summary>
+    /// Sends a defined text to the current world object.
+    /// </summary>
+    /// <param name="text">Defined text.</param>
+    /// <param name="parameters">Text parameters.</param>
+    public void SendDefinedText(DefineText text, params object[] parameters)
+    {
+        using DefinedTextSnapshot snapshot = new(this, text, parameters);
+        Send(snapshot);
     }
 
     /// <summary>

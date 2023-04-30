@@ -7,7 +7,6 @@ using Rhisis.Game.Resources.Properties;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
 
 namespace Rhisis.Game.Entities;
 
@@ -39,25 +38,26 @@ public sealed class Npc : WorldObject
             for (int i = 0; i < Properties.Shop.Items.Length; i++)
             {
                 Shop[i] = new ItemContainer(100);
-                IEnumerable<ItemContainerSlot> items = Properties.Shop.Items[i].Select((x, index) =>
-                {
-                    ItemProperties itemProperties = GameResources.Current.Items.Get(x.Id);
-
-                    return new ItemContainerSlot
+                Dictionary<int, Item> shopItems = Properties.Shop.Items[i]
+                    .Select((x, index) => new
                     {
-                        Index = index,
-                        Slot = index,
-                        Item = new Item(itemProperties)
-                        {
-                            Refine = x.Refine,
-                            Element = x.Element,
-                            ElementRefine = x.ElementRefine,
-                            Quantity = itemProperties.PackMax
-                        }
-                    };
-                });
+                        ShopItem = x,
+                        Slot = index
+                    })
+                    .ToDictionary(x => x.Slot, x =>
+                    {
+                        ItemProperties itemProperties = GameResources.Current.Items.Get(x.ShopItem.Id);
 
-                Shop[i].Initialize(items);
+                        return new Item(itemProperties)
+                        {
+                            Refine = x.ShopItem.Refine,
+                            Element = x.ShopItem.Element,
+                            ElementRefine = x.ShopItem.ElementRefine,
+                            Quantity = itemProperties.PackMax
+                        };
+                    });
+
+                Shop[i].Initialize(shopItems);
             }
         }
     }

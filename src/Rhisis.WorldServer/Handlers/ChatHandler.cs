@@ -54,4 +54,3 @@ internal sealed class ChatHandler : WorldPacketHandler
         }
     }
 }
-

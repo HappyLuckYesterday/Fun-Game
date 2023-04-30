@@ -58,6 +58,7 @@ public sealed class Gold
         {
             Amount = (int)gold;
             SendUpdatedGold();
+            _player.SendDefinedText(DefineText.TID_GAME_REAPMONEY, amount.ToString("###,###,###,###"), Amount.ToString("###,###,###,###"));
         }
 
         return true;

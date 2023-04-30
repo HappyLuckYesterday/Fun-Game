@@ -103,21 +103,18 @@ internal class JoinGameHandler : WorldPacketHandler
         User.Player.Gold.Initialize(player.Gold);
         User.Player.Experience.Initialize(player.Experience);
 
-        IEnumerable<ItemContainerSlot> playerInventoryItems = _gameDatabase.PlayerItems
+        Dictionary<int, Item> playerInventoryItems = _gameDatabase.PlayerItems
             .Include(x => x.Item)
             .Where(x => x.PlayerId == player.Id && x.StorageType == PlayerItemStorageType.Inventory)
-            .Select(x => new ItemContainerSlot
-            {
-                Slot = x.Slot,
-                Item = new Item(GameResources.Current.Items.Get(x.Item.Id))
+            .ToDictionary(x => (int)x.Slot,
+                x => new Item(GameResources.Current.Items.Get(x.Item.Id))
                 {
                     SerialNumber = x.Item.SerialNumber,
                     Refine = x.Item.Refine.GetValueOrDefault(0),
                     Element = (ElementType)x.Item.Element.GetValueOrDefault(0),
                     ElementRefine = x.Item.ElementRefine.GetValueOrDefault(0),
                     Quantity = x.Quantity
-                }
-            });
+                });
 
         if (playerInventoryItems.Any())
         {

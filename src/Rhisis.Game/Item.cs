@@ -8,7 +8,7 @@ using System.Diagnostics;
 namespace Rhisis.Game;
 
 [DebuggerDisplay("{Properties.IdentifierName} +{Refine} ({Element}+{ElementRefine}) x{Quantity}")]
-public class Item
+public class Item : IEquatable<Item>
 {
     private int _quantity;
 
@@ -110,4 +110,17 @@ public class Item
             Refine = Refine
         };
     }
+
+    public bool Equals(Item other)
+    {
+        return Id == other.Id && 
+            SerialNumber == other.SerialNumber && 
+            Refine == other.Refine && 
+            Element == other.Element && 
+            ElementRefine == other.ElementRefine;
+    }
+
+    public override bool Equals(object obj) => Equals(obj as Item);
+
+    public override int GetHashCode() => HashCode.Combine(Id, SerialNumber, Refine, Element, ElementRefine);
 }

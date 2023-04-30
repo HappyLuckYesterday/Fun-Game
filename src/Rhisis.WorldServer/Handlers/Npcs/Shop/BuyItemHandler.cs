@@ -34,36 +34,32 @@ internal sealed class BuyItemHandler : WorldPacketHandler
             throw new InvalidOperationException($"Item slot index was out of tab bounds. Slot: {packet.Slot}");
         }
 
-        ItemContainerSlot shopItemSlot = shopTab.GetAtSlot(packet.Slot);
-
-        if (!shopItemSlot.HasItem)
-        {
+        Item shopItem = shopTab.GetAtSlot(packet.Slot)?.Item ?? 
             throw new InvalidOperationException($"Item slot at '{packet.Slot}' doesn't contain any item.");
-        }
-
-        if (shopItemSlot.Item.Id != packet.ItemId)
+        
+        if (shopItem.Id != packet.ItemId)
         {
             throw new InvalidOperationException($"Shop item id doens't match the item id that {Player.Name} is trying to buy.");
         }
 
-        if (Player.Gold.Amount < shopItemSlot.Item.Properties.Cost)
+        if (Player.Gold.Amount < shopItem.Properties.Cost)
         {
             Player.SendDefinedText(DefineText.TID_GAME_LACKMONEY);
 
-            throw new InvalidOperationException($"{Player.Name} doens't have enough gold to buy item {shopItemSlot.Item.Name} at {shopItemSlot.Item.Properties.Cost}.");
+            throw new InvalidOperationException($"{Player.Name} doens't have enough gold to buy item {shopItem.Name} at {shopItem.Properties.Cost}.");
         }
 
-        int createdItemsAmount = Player.Inventory.CreateItem(new Item(shopItemSlot.Item.Properties)
+        int createdItemsAmount = Player.Inventory.CreateItem(new Item(shopItem.Properties)
         {
-            Refine = shopItemSlot.Item.Refine,
-            Element = shopItemSlot.Item.Element,
-            ElementRefine = shopItemSlot.Item.ElementRefine,
+            Refine = shopItem.Refine,
+            Element = shopItem.Element,
+            ElementRefine = shopItem.ElementRefine,
             Quantity = packet.Quantity
         });
 
         if (createdItemsAmount > 0)
         {
-            Player.Gold.Decrease(shopItemSlot.Item.Properties.Cost * createdItemsAmount);
+            Player.Gold.Decrease(shopItem.Properties.Cost * createdItemsAmount);
         }
     }
 }

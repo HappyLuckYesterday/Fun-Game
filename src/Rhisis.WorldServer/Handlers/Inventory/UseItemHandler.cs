@@ -13,9 +13,9 @@ internal sealed class UseItemHandler : WorldPacketHandler
 {
     public void Execute(DoUseItemPacket packet)
     {
-        ItemContainerSlot slot = Player.Inventory.GetAtIndex(packet.ItemIndex);
+        ItemContainerSlot itemSlot = Player.Inventory.GetAtIndex(packet.ItemIndex);
 
-        if (slot is not null && slot.HasItem)
+        if (itemSlot is not null && itemSlot.HasItem)
         {
             if (packet.Part > 0)
             {
@@ -24,11 +24,11 @@ internal sealed class UseItemHandler : WorldPacketHandler
                     throw new InvalidOperationException($"Invalid equipement part.");
                 }
 
-                Player.Inventory.Equip(slot.Item);
+                Player.Inventory.Equip(itemSlot.Item);
             }
             else
             {
-                Player.Inventory.UseItem(slot.Item);
+                Player.Inventory.UseItem(itemSlot.Item);
             }
         }
     }

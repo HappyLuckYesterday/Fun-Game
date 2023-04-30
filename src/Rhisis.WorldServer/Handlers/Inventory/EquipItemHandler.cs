@@ -14,7 +14,7 @@ internal sealed class EquipItemHandler : WorldPacketHandler
     public void Execute(EquipItemPacket packet)
     {
         ItemContainerSlot itemSlot = Player.Inventory.GetAtIndex(packet.ItemIndex);
-        var parts = (ItemPartType)packet.Part;
+        ItemPartType parts = packet.Part;
 
         if (!itemSlot.HasItem)
         {

@@ -16,18 +16,19 @@ internal sealed class DropItemHandler : WorldPacketHandler
             throw new InvalidOperationException("Invalid drop quantity.");
         }
 
-        ItemContainerSlot slot = Player.Inventory.GetAtIndex(packet.ItemIndex);
+        ItemContainerSlot itemSlot = Player.Inventory.GetAtIndex(packet.ItemIndex) ??
+            throw new InvalidOperationException($"Cannot find item slot with index: {packet.ItemIndex} in player's inventory.");
 
-        if (!slot.HasItem)
+        if (!itemSlot.HasItem)
         {
-            throw new InvalidOperationException($"Cannot find item with index: {packet.ItemIndex} in player's inventory.");
+            throw new InvalidOperationException("Cannot drop an item of an empty slot.");
         }
 
-        int quantityToDrop = Math.Min(packet.ItemQuantity, slot.Item.Quantity);
-        Item droppedItem = slot.Item.Clone();
+        int quantityToDrop = Math.Min(packet.ItemQuantity, itemSlot.Item.Quantity);
+        Item droppedItem = itemSlot.Item.Clone();
         droppedItem.Quantity = quantityToDrop;
 
-        if (Player.Inventory.DeleteItem(slot, quantityToDrop) > 0)
+        if (Player.Inventory.DeleteItem(itemSlot, quantityToDrop) > 0)
         {
             Player.DropItem(droppedItem);
         }

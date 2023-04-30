@@ -1,4 +1,5 @@
-﻿using Rhisis.Protocol;
+﻿using Rhisis.Game.Common;
+using Rhisis.Protocol;
 
 namespace Rhisis.Game.Protocol.Packets.World.Client;
 
@@ -12,11 +13,11 @@ public class EquipItemPacket
     /// <summary>
     /// Gets the equip item destination part.
     /// </summary>
-    public int Part { get; private set; }
+    public ItemPartType Part { get; private set; }
 
     public EquipItemPacket(FFPacket packet)
     {
         ItemIndex = packet.ReadInt32();
-        Part = packet.ReadInt32();
+        Part = (ItemPartType)packet.ReadInt32();
     }
 }

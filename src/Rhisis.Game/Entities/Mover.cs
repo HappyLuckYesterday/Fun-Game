@@ -68,7 +68,7 @@ public class Mover : WorldObject
     /// <summary>
     /// Gets or sets the follow target.
     /// </summary>
-    public Mover FollowTarget { get; set; }
+    public WorldObject FollowTarget { get; set; }
 
     /// <summary>
     /// Gets a boolean value that indicates if the mover is following another mover.
@@ -103,6 +103,32 @@ public class Mover : WorldObject
 
         using DestPositionSnapshot packet = new(this);
         SendToVisible(packet);
+    }
+
+    /// <summary>
+    /// Follows a target.
+    /// </summary>
+    /// <param name="target">Target to follow.</param>
+    /// <param name="distance">Follow distance.</param>
+    public void Follow(WorldObject target, float distance = 1f)
+    {
+        FollowTarget = target;
+        FollowDistance = distance;
+        DestinationPosition.Copy(target.Position);
+        ObjectState &= ~ObjectState.OBJSTA_STAND;
+        ObjectState |= ObjectState.OBJSTA_FMOVE;
+
+        using MoverSetDestObjectSnapshot snapshot = new(this, target, distance);
+        SendToVisible(snapshot);
+    }
+
+    /// <summary>
+    /// Unfollow a target.
+    /// </summary>
+    public void Unfollow()
+    {
+        FollowTarget = null;
+        FollowDistance = 0;
     }
 
     /// <summary>

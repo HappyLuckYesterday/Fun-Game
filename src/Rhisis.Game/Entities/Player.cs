@@ -162,16 +162,6 @@ public sealed class Player : Mover
         }
     }
 
-    public void Follow(WorldObject target)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Unfollow()
-    {
-        throw new NotImplementedException();
-    }
-
     public IEnumerable<Item> GetEquipedItems() => Inventory.GetRange(Inventory.InventorySize, Inventory.InventoryEquipParts).Select(x => x.Item);
 
     /// <summary>
@@ -221,17 +211,42 @@ public sealed class Player : Mover
         SendToVisible(snapshot, sendToSelf: true);
     }
 
+    public void PickupItem(MapItemObject mapItem, bool sendPickupMotion = true)
+    {
+        if (mapItem.HasOwner && mapItem.Owner != this)
+        {
+            SendDefinedText(DefineText.TID_GAME_PRIORITYITEMPER, $"\"{mapItem.Item.Name}\"");
+            return;
+        }
+
+        bool itemPickedUp = mapItem.IsGold ? Gold.Increase(mapItem.Item.Quantity) : Inventory.CreateItem(mapItem.Item) > 0;
+
+        if (itemPickedUp)
+        {
+            MapLayer.RemoveItem(mapItem);
+        }
+
+        if (sendPickupMotion)
+        {
+            using MotionSnapshot motionSnapshot = new(this, ObjectMessageType.OBJMSG_PICKUP);
+            SendToVisible(motionSnapshot, sendToSelf: true);
+        }
+    }
+
+    protected override void OnArrived()
+    {
+        if (IsFollowing && FollowTarget is MapItemObject mapItem)
+        {
+            PickupItem(mapItem);
+            Unfollow();
+        }
+    }
+
     /// <summary>
     /// Sends a packet to the player.
     /// </summary>
     /// <param name="packet">Packet to send.</param>
     public override void Send(FFPacket packet) => _connection.Send(packet);
-
-    public void SendDefinedText(DefineText text, params object[] parameters)
-    {
-        using DefinedTextSnapshot snapshot = new(this, text, parameters);
-        Send(snapshot);
-    }
 
     private void AddVisibleEntity(WorldObject entity)
     {

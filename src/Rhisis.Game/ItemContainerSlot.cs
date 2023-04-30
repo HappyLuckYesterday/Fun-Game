@@ -18,7 +18,7 @@ public class ItemContainerSlot
     /// <summary>
     /// Gets or sets the slot index.
     /// </summary>
-    public int Index { get; init; }
+    public int Index { get; set; }
 
     /// <summary>
     /// Gets or sets the slot number.

@@ -12,11 +12,12 @@ internal sealed class SellItemHandler : WorldPacketHandler
 {
     public void Execute(SellItemPacket packet)
     {
-        ItemContainerSlot itemSlot = Player.Inventory.GetAtIndex(packet.ItemIndex);
+        ItemContainerSlot itemSlot = Player.Inventory.GetAtIndex(packet.ItemIndex) ?? 
+            throw new InvalidOperationException($"Cannot find item with index: {packet.ItemIndex} in player's inventory.");
 
         if (!itemSlot.HasItem)
         {
-            throw new InvalidOperationException($"Cannot find item with index: {packet.ItemIndex} in player's inventory.");
+            throw new InvalidOperationException("Cannot drop an item of an empty slot.");
         }
 
         int sellPrice = itemSlot.Item.Properties.Cost / 4; // TODO: make this configurable
