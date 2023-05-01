@@ -238,12 +238,26 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
         return result;
     }
 
+    public void Remove(ItemContainerSlot itemSlot)
+    {
+        if (itemSlot.Index >= MaxCapacity || itemSlot.Slot >= MaxCapacity)
+        {
+            return;
+        }
+
+        itemSlot.Item = null;
+        if (itemSlot.Slot >= Capacity)
+        {
+            itemSlot.Slot = -1;
+        }
+    }
+
     /// <summary>
     /// Swap two slots.
     /// </summary>
     /// <param name="sourceSlot">Source slot.</param>
     /// <param name="destinationSlot">Destination slot.</param>
-    public void SwapItem(int sourceSlot, int destinationSlot)
+    protected void SwapItem(int sourceSlot, int destinationSlot)
     {
         if (sourceSlot != -1)
         {

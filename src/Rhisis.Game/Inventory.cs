@@ -127,7 +127,7 @@ public sealed class Inventory : ItemContainer
 
         if (sendToPlayer)
         {
-            using var snapshot = new UpdateItemSnapshot(_owner, updateType, itemSlot.Index, itemSlot.Item.Quantity);
+            using UpdateItemSnapshot snapshot = new(_owner, updateType, itemSlot.Index, itemSlot.Item.Quantity);
 
             _owner.Send(snapshot);
         }
@@ -139,7 +139,7 @@ public sealed class Inventory : ItemContainer
                 UnequipSlot(itemSlot);
             }
 
-            itemSlot.Item = null;
+            Remove(itemSlot);
         }
 
         return quantityToDelete;
