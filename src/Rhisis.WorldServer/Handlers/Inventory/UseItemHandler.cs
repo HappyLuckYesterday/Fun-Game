@@ -24,7 +24,7 @@ internal sealed class UseItemHandler : WorldPacketHandler
                     throw new InvalidOperationException($"Invalid equipement part.");
                 }
 
-                Player.Inventory.Equip(itemSlot.Item);
+                Player.Inventory.Equip(itemSlot);
             }
             else
             {

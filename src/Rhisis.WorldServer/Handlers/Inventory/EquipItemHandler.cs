@@ -21,18 +21,18 @@ internal sealed class EquipItemHandler : WorldPacketHandler
             throw new InvalidOperationException($"Item slot at index '{packet.ItemIndex}' doesn't have any item.");
         }
 
-        if (itemSlot.Slot > Rhisis.Game.Inventory.EquipOffset)
+        if (itemSlot.Number > Rhisis.Game.Inventory.EquipOffset)
         {
             if (parts != itemSlot.Item.Properties.Parts)
             {
                 throw new InvalidDataException($"Item parts doesn't match client parts.");
             }
 
-            Player.Inventory.Unequip(itemSlot.Item);
+            Player.Inventory.Unequip(itemSlot);
         }
         else
         {
-            Player.Inventory.Equip(itemSlot.Item);
+            Player.Inventory.Equip(itemSlot);
         }
     }
 }

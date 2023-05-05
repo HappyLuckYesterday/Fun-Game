@@ -1,4 +1,5 @@
-﻿using Rhisis.Core.IO;
+﻿using Rhisis.Core.Extensions;
+using Rhisis.Core.IO;
 using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
@@ -6,9 +7,7 @@ using Rhisis.Game.Resources;
 using Rhisis.Protocol;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Xml.Linq;
 
 namespace Rhisis.Game;
 
@@ -59,7 +58,7 @@ public sealed class Inventory : ItemContainer
 
         if (sourceSlot == destinationSlot)
         {
-            throw new InvalidOperationException("Cannot move an item to the same slot.");
+            return;
         }
 
         ItemContainerSlot source = GetAtSlot(sourceSlot) ?? throw new InvalidOperationException("Source slot not found.");
@@ -134,7 +133,7 @@ public sealed class Inventory : ItemContainer
 
         if (itemSlot.Item.Quantity <= 0)
         {
-            if (itemSlot.Slot > EquipOffset)
+            if (itemSlot.Number > EquipOffset)
             {
                 UnequipSlot(itemSlot);
             }
@@ -162,30 +161,56 @@ public sealed class Inventory : ItemContainer
     /// </summary>
     /// <param name="item">Item to equip.</param>
     /// <returns>True if equiped; false otherwise.</returns>
-    public bool Equip(Item item)
+    public bool Equip(ItemContainerSlot slot)
     {
-        if (!IsItemEquipable(item))
+        if (!slot.HasItem)
         {
             return false;
         }
 
-        ItemContainerSlot equipedItemSlot = GetEquipedItemSlot(item.Properties.Parts);
-
-        if (equipedItemSlot.HasItem)
+        if (!IsItemEquipable(slot.Item))
         {
-            UnequipSlot(equipedItemSlot);
+            return false;
         }
 
-        ItemContainerSlot itemSlot = _items.FirstOrDefault(x => x.HasItem && x.Item.Id == item.Id && x.Item.SerialNumber == item.SerialNumber);
-
-        if (itemSlot is not null && itemSlot.HasItem)
+        if (EquipInternal(slot))
         {
-            SwapItem(itemSlot.Slot, equipedItemSlot.Slot);
-
-            using DoEquipSnapshot equipSnapshot = new(_owner, item, itemSlot.Index, true);
+            using DoEquipSnapshot equipSnapshot = new(_owner, slot.Item, slot.Index, true);
             _owner.Send(equipSnapshot);
+        }
 
-            return true;
+        return false;
+    }
+
+    private bool EquipInternal(ItemContainerSlot slot)
+    {
+        ItemContainerSlot equipedItem = GetEquipedItemSlot(slot.Item.Properties.Parts);
+
+        if (equipedItem is not null && equipedItem.HasItem)
+        {
+            UnequipInternal(equipedItem);
+        }
+
+        int sourceSlot = slot.Number;
+        int destinationSlot = Capacity + (int)slot.Item.Properties.Parts;
+
+        if (slot.Number == destinationSlot || slot.Number >= MaxCapacity || destinationSlot >= MaxCapacity)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < MaxCapacity; i++)
+        {
+            if (!_items[i].HasItem && _items[i].Number == -1)
+            {
+                _slots[destinationSlot] = _slots[sourceSlot];
+                _slots[sourceSlot] = i;
+
+                _items[_slots[sourceSlot]].Number = sourceSlot;
+                _items[_slots[destinationSlot]].Number = destinationSlot;
+
+                return true;
+            }
         }
 
         return false;
@@ -196,21 +221,58 @@ public sealed class Inventory : ItemContainer
     /// </summary>
     /// <param name="item">Item to unequip.</param>
     /// <returns>True if unequiped; false otherwise.</returns>
-    public bool Unequip(Item item)
+    public bool Unequip(ItemContainerSlot slot)
     {
-        ItemContainerSlot itemSlot = _items.FirstOrDefault(x => x.HasItem && x.Item.Id == item.Id && x.Item.SerialNumber == item.SerialNumber);
-
-        if (itemSlot is null)
+        if (!slot.HasItem)
         {
             return false;
         }
 
-        if (UnequipSlot(itemSlot))
+        if (UnequipInternal(slot))
         {
-            using DoEquipSnapshot equipSnapshot = new(_owner, item, itemSlot.Index, false);
+            using DoEquipSnapshot equipSnapshot = new(_owner, slot.Item, slot.Index, false);
             _owner.Send(equipSnapshot);
 
             return true;
+        }
+
+        return false;
+    }
+
+    private bool UnequipInternal(ItemContainerSlot slot)
+    {
+        if (slot.Number >= MaxCapacity)
+        {
+            return false;
+        }
+
+        int itemIndex = _slots[slot.Number];
+
+        if (itemIndex >= MaxCapacity)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < Capacity; i++)
+        {
+            // Find empty slot
+            int emptyItemIndex = _slots[i];
+
+            if (emptyItemIndex < 0 || emptyItemIndex >= MaxCapacity)
+            {
+                return false;
+            }
+
+            if (!_items[emptyItemIndex].HasItem)
+            {
+                _items[emptyItemIndex].Number = -1;
+                _slots[slot.Number] = -1;
+
+                _items[itemIndex].Number = i;
+                _slots[i] = itemIndex;
+
+                return true;
+            }
         }
 
         return false;
@@ -353,19 +415,8 @@ public sealed class Inventory : ItemContainer
 
     private bool UnequipSlot(ItemContainerSlot itemSlot)
     {
-        ItemContainerSlot emptySlot = GetEmptySlot();
-
-        if (emptySlot is not null && !emptySlot.HasItem)
-        {
-            SwapItem(itemSlot.Slot, emptySlot.Slot);
-
-            return true;
-        }
-
         return false;
     }
-
-    private ItemContainerSlot GetEmptySlot() => _items.FirstOrDefault(x => !x.HasItem);
 
     private ItemContainerSlot GetEquipedItemSlot(ItemPartType equipedItemPart)
     {

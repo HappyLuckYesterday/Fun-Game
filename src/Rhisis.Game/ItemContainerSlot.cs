@@ -11,19 +11,19 @@ public class ItemContainerSlot
     public static readonly ItemContainerSlot Empty = new()
     {
         Index = -1,
-        Slot = -1,
+        Number = -1,
         Item = null
     };
 
     /// <summary>
-    /// Gets or sets the slot index.
+    /// Gets or sets the slot index in the item container.
     /// </summary>
-    public int Index { get; set; }
+    public int Index { get; set; } = -1;
 
     /// <summary>
     /// Gets or sets the slot number.
     /// </summary>
-    public int Slot { get; set; }
+    public int Number { get; set; } = -1;
 
     /// <summary>
     /// Gets or sets the item on the current slot.

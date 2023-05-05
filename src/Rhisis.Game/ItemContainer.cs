@@ -2,15 +2,15 @@
 using Rhisis.Game.Common;
 using Rhisis.Protocol;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Rhisis.Game;
 
-public class ItemContainer : IEnumerable<ItemContainerSlot>
+public class ItemContainer
 {
-    protected readonly List<ItemContainerSlot> _items;
+    protected readonly ItemContainerSlot[] _items;
+    protected readonly int[] _slots;
 
     /// <summary>
     /// Gets the number of items inside the container.
@@ -36,16 +36,26 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
     {
         Capacity = capacity;
         ExtraCapacity = extraCapacity;
-        _items = Enumerable.Repeat((ItemContainerSlot)null, MaxCapacity).ToList();
+        _items = new ItemContainerSlot[MaxCapacity];
+        _slots = new int[MaxCapacity];
 
         for (int i = 0; i < MaxCapacity; i++)
         {
             _items[i] = new()
             {
                 Index = i,
-                Slot = i < Capacity ? i : -1,
                 Item = null
             };
+
+            if (i < Capacity)
+            {
+                _items[i].Number = i;
+                _slots[i] = i;
+            }
+            else
+            {
+                _slots[i] = -1;
+            }
         }
     }
 
@@ -62,7 +72,9 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
             if (itemSlot < MaxCapacity)
             {
                 _items[itemSlot].Item = item.Value;
-                _items[itemSlot].Slot = itemSlot;
+                _items[itemSlot].Number = itemSlot;
+                _items[itemSlot].Index = itemSlot;
+                _slots[itemSlot] = itemSlot;
             }
         }
     }
@@ -80,7 +92,7 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
             throw new InvalidOperationException($"Item index is out of range: '{index}'");
         }
 
-        return _items.Single(x => x.Index == index);
+        return _items[index];
     }
 
     /// <summary>
@@ -96,7 +108,14 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
             throw new InvalidOperationException($"Item slot is out of range: '{slot}'");
         }
 
-        return _items[slot];
+        int itemIndex = _slots[slot];
+
+        if (itemIndex < 0 || itemIndex >= MaxCapacity)
+        {
+            return ItemContainerSlot.Empty;
+        }
+
+        return _items[itemIndex];
     }
 
     /// <summary>
@@ -105,7 +124,7 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
     /// <param name="start">Start slot</param>
     /// <param name="count">Number of slots to get.</param>
     /// <returns>A collection of slots.</returns>
-    public IEnumerable<ItemContainerSlot> GetRange(int start, int count) => _items.GetRange(start, count);
+    public IEnumerable<ItemContainerSlot> GetRange(int start, int count) => _slots.GetRange(start, count).Select(x => x > 0 ? _items[x] : ItemContainerSlot.Empty);
 
     /// <summary>
     /// Checks if the given item can be stored in the container.
@@ -170,16 +189,23 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
 
         if (item.Properties.IsStackable)
         {
-            for (int slotIndex = 0; slotIndex < Capacity; slotIndex++)
+            for (int i = 0; i < Capacity; i++)
             {
-                ItemContainerSlot slot = GetAtSlot(slotIndex);
+                int index = _slots[i];
 
-                if (slot.HasItem && slot.Item.Id == item.Id && slot.Item.Quantity < slot.Item.Properties.PackMax)
+                if (index < 0 || index >= MaxCapacity)
                 {
-                    if (slot.Item.Quantity + quantity > slot.Item.Properties.PackMax)
+                    continue;
+                }
+
+                ItemContainerSlot slot = _items[index];
+
+                if (!slot.HasItem && slot.Item.Id == item.Id && item.Quantity < item.Properties.PackMax)
+                {
+                    if (slot.Item.Quantity + quantity > item.Properties.PackMax)
                     {
-                        quantity -= slot.Item.Properties.PackMax - slot.Item.Quantity;
-                        slot.Item.Quantity = slot.Item.Properties.PackMax;
+                        quantity -= item.Properties.PackMax - slot.Item.Quantity;
+                        slot.Item.Quantity = item.Properties.PackMax;
                     }
                     else
                     {
@@ -187,7 +213,7 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
                         quantity = 0;
                     }
 
-                    result.Add(new ItemCreationResult(ItemCreationActionType.Update, slot.Item, slot.Slot, slot.Index));
+                    result.Add(new ItemCreationResult(ItemCreationActionType.Update, slot.Item, slot.Number, slot.Index));
 
                     if (quantity == 0)
                     {
@@ -199,33 +225,41 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
 
         if (quantity > 0)
         {
-            for (int slotIndex = 0; slotIndex < Capacity; slotIndex++)
+            for (int i = 0; i < Capacity; i++)
             {
-                ItemContainerSlot inventoryItemSlot = GetAtSlot(slotIndex);
+                int index = _slots[i];
 
-                if (!inventoryItemSlot.HasItem)
+                if (index < 0 || index >= MaxCapacity)
                 {
-                    inventoryItemSlot.Item = new Item(item.Properties)
+                    continue;
+                }
+
+                ItemContainerSlot slot = _items[index];
+
+                if (!slot.HasItem)
+                {
+                    slot.Index = index;
+                    slot.Number = i;
+                    slot.Item = new Item(item.Properties)
                     {
                         Refine = item.Refine,
                         Element = item.Element,
                         ElementRefine = item.ElementRefine,
                         CreatorId = item.CreatorId
                     };
-                    inventoryItemSlot.Slot = slotIndex;
 
-                    if (quantity > inventoryItemSlot.Item.Properties.PackMax)
+                    if (quantity > slot.Item.Properties.PackMax)
                     {
-                        inventoryItemSlot.Item.Quantity = inventoryItemSlot.Item.Properties.PackMax;
-                        quantity -= inventoryItemSlot.Item.Quantity;
+                        slot.Item.Quantity = slot.Item.Properties.PackMax;
+                        quantity -= slot.Item.Quantity;
                     }
                     else
                     {
-                        inventoryItemSlot.Item.Quantity = quantity;
+                        slot.Item.Quantity = quantity;
                         quantity = 0;
                     }
 
-                    result.Add(new ItemCreationResult(ItemCreationActionType.Add, inventoryItemSlot.Item, inventoryItemSlot.Slot, inventoryItemSlot.Index));
+                    result.Add(new ItemCreationResult(ItemCreationActionType.Add, slot.Item, slot.Number, slot.Index));
 
                     if (quantity == 0)
                     {
@@ -240,15 +274,16 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
 
     public void Remove(ItemContainerSlot itemSlot)
     {
-        if (itemSlot.Index >= MaxCapacity || itemSlot.Slot >= MaxCapacity)
+        if (!itemSlot.HasItem || itemSlot.Index >= MaxCapacity || itemSlot.Number >= MaxCapacity)
         {
             return;
         }
 
         itemSlot.Item = null;
-        if (itemSlot.Slot >= Capacity)
+        if (itemSlot.Number >= Capacity)
         {
-            itemSlot.Slot = -1;
+            _slots[itemSlot.Number] = - 1;
+            itemSlot.Number = -1;
         }
     }
 
@@ -259,17 +294,20 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
     /// <param name="destinationSlot">Destination slot.</param>
     protected void SwapItem(int sourceSlot, int destinationSlot)
     {
-        if (sourceSlot != -1)
+        _slots.Swap(sourceSlot, destinationSlot);
+
+        int sourceIndex = _slots[sourceSlot];
+        int destinationIndex = _slots[destinationSlot];
+        
+        if (sourceIndex != -1)
         {
-            _items[sourceSlot].Slot = destinationSlot;
+            _items[sourceIndex].Number = sourceSlot;
         }
 
-        if (destinationSlot != -1)
+        if (destinationIndex != -1)
         {
-            _items[destinationSlot].Slot = sourceSlot;
+            _items[destinationIndex].Number = destinationSlot;
         }
-
-        _items.Swap(sourceSlot, destinationSlot);
     }
 
     /// <summary>
@@ -299,11 +337,7 @@ public class ItemContainer : IEnumerable<ItemContainerSlot>
 
         for (int i = 0; i < MaxCapacity; i++)
         {
-            packet.WriteInt32(_items[i].HasItem ? _items[i].Slot : -1);
+            packet.WriteInt32(_items[i].Number);
         }
     }
-
-    public IEnumerator<ItemContainerSlot> GetEnumerator() => _items.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => _items.GetEnumerator();
 }
