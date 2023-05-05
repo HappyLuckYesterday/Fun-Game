@@ -106,6 +106,18 @@ public class Mover : WorldObject
     }
 
     /// <summary>
+    /// Stops moving the current entity.
+    /// </summary>
+    public void StopMoving()
+    {
+        ObjectState &= ~ObjectState.OBJSTA_FMOVE;
+        ObjectState |= ObjectState.OBJSTA_STAND;
+
+        DestinationPosition.Reset();
+        OnArrived();
+    }
+
+    /// <summary>
     /// Follows a target.
     /// </summary>
     /// <param name="target">Target to follow.</param>
@@ -166,11 +178,8 @@ public class Mover : WorldObject
 
         if (Position.IsInCircle(DestinationPosition, arrivalRange))
         {
-            ObjectState &= ~ObjectState.OBJSTA_FMOVE;
-            ObjectState |= ObjectState.OBJSTA_STAND;
             Position.Copy(DestinationPosition);
-            DestinationPosition.Reset();
-            OnArrived();
+            StopMoving();
         }
         else
         {

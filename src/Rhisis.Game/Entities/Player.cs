@@ -210,7 +210,12 @@ public sealed class Player : Mover
 
         SendToVisible(snapshot, sendToSelf: true);
     }
-
+    
+    /// <summary>
+    /// Picks up an item from the map.
+    /// </summary>
+    /// <param name="mapItem">Map item to pickup.</param>
+    /// <param name="sendPickupMotion">Boolean value that indicates if the player should play a pickup motion.</param>
     public void PickupItem(MapItemObject mapItem, bool sendPickupMotion = true)
     {
         if (mapItem.HasOwner && mapItem.Owner != this)
@@ -231,6 +236,19 @@ public sealed class Player : Mover
             using MotionSnapshot motionSnapshot = new(this, ObjectMessageType.OBJMSG_PICKUP);
             SendToVisible(motionSnapshot, sendToSelf: true);
         }
+    }
+
+    public override void Dispose()
+    {
+        foreach (WorldObject visibleObject in VisibleObjects)
+        {
+            if (visibleObject is not Player)
+            {
+                visibleObject.VisibleObjects.Remove(this);
+            }
+        }
+
+        MapLayer.RemovePlayer(this);
     }
 
     protected override void OnArrived()

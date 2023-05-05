@@ -23,6 +23,7 @@ internal sealed class ScriptDialogHandler : WorldPacketHandler
 
         Npc npc = Player.VisibleObjects.OfType<Npc>().SingleOrDefault(x => x.ObjectId == packet.ObjectId)
             ?? throw new ArgumentException($"Cannot find NPC with object id: {packet.ObjectId}");
+        Player.StopMoving();
 
         string dialogKey = packet.DialogKey;
         int questId = packet.QuestId;

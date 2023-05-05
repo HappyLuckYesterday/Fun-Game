@@ -21,6 +21,7 @@ internal sealed class OpenShopWindowHandler : WorldPacketHandler
             ?? throw new ArgumentException($"Cannot find NPC with object id: {packet.ObjectId}");
 
         npc.OpenShop(Player);
+        Player.StopMoving();
         Player.CurrentShopName = npc.Name;
     }
 }

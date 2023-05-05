@@ -2,38 +2,81 @@
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Protocol;
+using System;
 using System.Collections.Generic;
 
 namespace Rhisis.Game.Entities;
 
-public class WorldObject
+public class WorldObject : IDisposable
 {
+    /// <summary>
+    /// Gets the object's id.
+    /// </summary>
     public uint ObjectId { get; } = FFRandom.GenerateUniqueId();
 
+    /// <summary>
+    /// Gets the object model id.
+    /// </summary>
     public int ModelId { get; init; }
 
+    /// <summary>
+    /// Gets or sets the object size.
+    /// </summary>
     public short Size { get; set; } = 100;
 
+    /// <summary>
+    /// Gets the object type.
+    /// </summary>
     public virtual WorldObjectType Type => WorldObjectType.Object;
 
+    /// <summary>
+    /// Gets or sets the current object's map.
+    /// </summary>
     public Map Map { get; set; }
 
+    /// <summary>
+    /// Gets or sets the current object's map layer.
+    /// </summary>
     public MapLayer MapLayer { get; set; }
 
+    /// <summary>
+    /// Gets the current object's position.
+    /// </summary>
     public Vector3 Position { get; init; }
 
+    /// <summary>
+    /// Gets the current object's rotation angle.
+    /// </summary>
     public float RotationAngle { get; set; }
 
+    /// <summary>
+    /// Gets the current object's name.
+    /// </summary>
     public string Name { get; init; }
 
+    /// <summary>
+    /// Gets or sets a boolean value that indicates if the object is spawned.
+    /// </summary>
     public bool IsSpawned { get; set; }
 
+    /// <summary>
+    /// Gets or sets a boolean value that indicates if the object is visible from other objects.
+    /// </summary>
     public bool IsVisible { get; set; } = true;
-
+    
+    /// <summary>
+    /// Gets or sets the object state.
+    /// </summary>
     public ObjectState ObjectState { get; set; } 
 
+    /// <summary>
+    /// Gets or sets the object state flags.
+    /// </summary>
     public StateFlags ObjectStateFlags { get; set; }
 
+    /// <summary>
+    /// Gets or sets the object state mode.
+    /// </summary>
     public StateMode StateMode { get; set; } = StateMode.NONE;
 
     /// <summary>
@@ -80,5 +123,12 @@ public class WorldObject
         {
             Send(packet);
         }
+    }
+
+    /// <summary>
+    /// Disposes the current object.
+    /// </summary>
+    public virtual void Dispose()
+    {
     }
 }
