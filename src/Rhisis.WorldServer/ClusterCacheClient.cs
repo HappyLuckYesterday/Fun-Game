@@ -123,6 +123,7 @@ public class ClusterCacheClient : LiteClient
         GameOptions.Current.Messenger = packet.MessengerOptions;
         GameOptions.Current.Customization = packet.CustomizationOptions;
         GameOptions.Current.Drops = packet.DropOptions;
+        GameOptions.Current.DefaultCharacter = packet.DefaultCharacterOptions;
         GameResources.Current.Maps.Load(packet.Maps);
         MapManager.Current.Initialize(_serviceProvider);
     }

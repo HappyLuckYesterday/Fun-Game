@@ -1,4 +1,5 @@
-﻿using Rhisis.Game.Common;
+﻿using Rhisis.Core.Configuration.Cluster;
+using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Game.Resources.Properties;
 using Rhisis.Protocol;
@@ -109,6 +110,9 @@ public sealed class Player : Mover
         QuestDiary = new QuestDiary(this);
     }
 
+    /// <summary>
+    /// Update the player's logic.
+    /// </summary>
     public void Update()
     {
         if (IsDead || !IsSpawned)
@@ -125,6 +129,9 @@ public sealed class Player : Mover
         UpdateMoves();
     }
 
+    /// <summary>
+    /// Looks around for other entities.
+    /// </summary>
     public void LookAround()
     {
         if (!IsSpawned || !IsVisible)
@@ -163,7 +170,70 @@ public sealed class Player : Mover
         }
     }
 
+    /// <summary>
+    /// Gets the equiped items.
+    /// </summary>
+    /// <returns></returns>
     public IEnumerable<Item> GetEquipedItems() => Inventory.GetRange(Inventory.InventorySize, Inventory.InventoryEquipParts).Select(x => x.Item);
+
+    /// <summary>
+    /// Updates the player's statistics.
+    /// </summary>
+    /// <param name="strength"></param>
+    /// <param name="stamina"></param>
+    /// <param name="dexterity"></param>
+    /// <param name="intelligence"></param>
+    /// <exception cref="InvalidOperationException"></exception>
+    public void UpdateStatistics(int strength, int stamina, int dexterity, int intelligence)
+    {
+        int total = strength + stamina + dexterity + intelligence;
+
+        if (AvailablePoints <= 0 || total > AvailablePoints)
+        {
+            throw new InvalidOperationException($"{Name} doesn't have enough statistic points.");
+        }
+
+        if (strength > AvailablePoints || stamina > AvailablePoints ||
+            dexterity > AvailablePoints || intelligence > AvailablePoints || total <= 0 ||
+            total > ushort.MaxValue)
+        {
+            throw new InvalidOperationException("Statistics point bad calculation. (Hack attempt)");
+        }
+
+        Statistics.Strength += strength;
+        Statistics.Stamina += stamina;
+        Statistics.Dexterity += dexterity;
+        Statistics.Intelligence += intelligence;
+        AvailablePoints -= (ushort)total;
+
+        Health.RegenerateAll();
+        Defense.Update();
+
+        using SetStatisticsStateSnapshot setStateSnapshot = new(this);
+        Send(setStateSnapshot);
+    }
+
+    /// <summary>
+    /// Resets the player's statistics.
+    /// </summary>
+    public void ResetStatistics()
+    {
+        DefaultCharacterOptions defaultCharacter = Appearence.Gender == GenderType.Male ? 
+            GameOptions.Current.DefaultCharacter.Man : 
+            GameOptions.Current.DefaultCharacter.Woman;
+
+        Statistics.Strength = defaultCharacter.Strength;
+        Statistics.Stamina = defaultCharacter.Stamina;
+        Statistics.Dexterity = defaultCharacter.Dexterity;
+        Statistics.Intelligence = defaultCharacter.Intelligence;
+        AvailablePoints = (ushort)((Level - 1) * 2);
+
+        Health.RegenerateAll();
+        Defense.Update();
+
+        using SetStatisticsStateSnapshot setStateSnapshot = new(this);
+        Send(setStateSnapshot);
+    }
 
     /// <summary>
     /// Adds the given amount of skill points to the current player.
