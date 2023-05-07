@@ -229,6 +229,19 @@ public sealed class MapLayer : IDisposable
                 npc.Update();
             }
         }
+
+        lock (_items)
+        {
+            if (!_items.Any())
+            {
+                return;
+            }
+
+            foreach (MapItemObject mapItem in _items)
+            {
+                mapItem.Update();
+            }
+        }
     }
 
     public void Dispose()

@@ -224,12 +224,29 @@ public sealed class Player : Mover
             SendDefinedText(DefineText.TID_GAME_PRIORITYITEMPER, $"\"{mapItem.Item.Name}\"");
             return;
         }
+        
+        bool itemPickedUp;
 
-        bool itemPickedUp = mapItem.IsGold ? Gold.Increase(mapItem.Item.Quantity) : Inventory.CreateItem(mapItem.Item) > 0;
+        if (mapItem.IsGold)
+        {
+            itemPickedUp = Gold.Increase(mapItem.Item.Quantity);
+        }
+        else
+        {
+            itemPickedUp = Inventory.CreateItem(mapItem.Item) > 0;
+            SendDefinedText(DefineText.TID_GAME_REAPITEM, $"\"{mapItem.Item.Name}\"");
+        }
 
         if (itemPickedUp)
         {
-            MapLayer.RemoveItem(mapItem);
+            if (mapItem.ItemType == MapItemType.QuestItem)
+            {
+                mapItem.Despawn();
+            }
+            else
+            {
+                MapLayer.RemoveItem(mapItem);
+            }
         }
 
         if (sendPickupMotion)
@@ -239,6 +256,13 @@ public sealed class Player : Mover
         }
     }
 
+    /// <summary>
+    /// Teleports the player to the given map and position.
+    /// </summary>
+    /// <param name="mapId">Map Id.</param>
+    /// <param name="position">Destination position.</param>
+    /// <param name="sendToPlayer">Boolean value that indicates if the information should be sent to the player.</param>
+    /// <exception cref="InvalidOperationException"></exception>
     public void Teleport(int mapId, Vector3 position, bool sendToPlayer = true)
     {
         void SetPlayerPosition(Vector3 newPosition)
@@ -296,6 +320,23 @@ public sealed class Player : Mover
 
             IsSpawned = true;
         }
+    }
+
+    public override void OnTargetKilled(Mover target)
+    {
+        if (target is Player)
+        {
+            // TODO: PK
+        }
+        else if (target is Monster monster)
+        {
+            Experience.Increase(monster.Properties.Experience * GameOptions.Current.Rates.Experience);
+        }
+    }
+
+    public override void OnKilled(Mover killer)
+    {
+        base.OnKilled(killer);
     }
 
     public override void Dispose()

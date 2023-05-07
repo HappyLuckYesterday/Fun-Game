@@ -263,7 +263,8 @@ public sealed class Monster : Mover
                 ItemProperties itemProperties = GameResources.Current.Items.Get(dropItemProperties.ItemId);
                 Item itemToDrop = new(itemProperties)
                 {
-                    Refine = (byte)itemRefine
+                    Refine = (byte)itemRefine,
+                    Quantity = 1
                 };
 
                 DropItem(itemToDrop, owner);
@@ -295,7 +296,8 @@ public sealed class Monster : Mover
                 {
                     Item itemToDrop = new(itemProperties)
                     {
-                        Refine = (byte)itemRefine
+                        Refine = (byte)itemRefine,
+                        Quantity = 1
                     };
 
                     DropItem(itemToDrop, owner);
