@@ -200,7 +200,7 @@ public class ItemContainer
 
                 ItemContainerSlot slot = _items[index];
 
-                if (!slot.HasItem && slot.Item.Id == item.Id && item.Quantity < item.Properties.PackMax)
+                if (slot.HasItem && slot.Item.Id == item.Id && item.Quantity < item.Properties.PackMax)
                 {
                     if (slot.Item.Quantity + quantity > item.Properties.PackMax)
                     {

@@ -50,14 +50,46 @@ public sealed class Map : IDisposable
         Task.Factory.StartNew(UpdateSecondsAsync, MainProcessTaskCancelToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
     }
 
+    /// <summary>
+    /// Gets the default map layer.
+    /// </summary>
+    /// <returns>The default map layer.</returns>
     public MapLayer GetDefaultLayer() => _defaultMapLayer;
 
+    /// <summary>
+    /// Gets a map layer by its id.
+    /// </summary>
+    /// <param name="layerId">Layer id.</param>
+    /// <returns>The layer if found; the default map layer otherwise.</returns>
     public MapLayer GetLayer(int layerId) => _layers.SingleOrDefault(x => x.Id == layerId);
 
+    /// <summary>
+    /// Gets the map height at a given X and Z position.
+    /// </summary>
+    /// <param name="positionX">X coordinate.</param>
+    /// <param name="positionZ">Z coordinate.</param>
+    /// <returns>Height.</returns>
     public float GetHeight(float positionX, float positionZ)
     {
+        // TODO
         return 0;
     }
+
+    /// <summary>
+    /// Check if the given X,Y,Z coordinates are in map bounds.
+    /// </summary>
+    /// <param name="x">X coordinate.</param>
+    /// <param name="y">Y coordinate.</param>
+    /// <param name="z">Z coordinate.</param>
+    /// <returns>True if the position is in map bounds; false otherwise.</returns>
+    public bool IsInBounds(float x, float y, float z) => Properties.Bounds.Contains(x, y, z);
+
+    /// <summary>
+    /// Check if the given position is in map bounds.
+    /// </summary>
+    /// <param name="position">Position.</param>
+    /// <returns>True if the position is in map bounds; false otherwise.</returns>
+    public bool IsInBounds(Vector3 position) => IsInBounds(position.X, position.Y, position.Z);
 
     private async Task UpdateAsync()
     {

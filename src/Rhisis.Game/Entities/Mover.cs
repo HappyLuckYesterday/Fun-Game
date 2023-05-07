@@ -1,6 +1,11 @@
 ﻿using Rhisis.Core.IO;
+using Rhisis.Game.Battle;
+using Rhisis.Game.Battle.AttackArbiters;
+using Rhisis.Game.Battle.AttackArbiters.Reducers;
 using Rhisis.Game.Common;
+using Rhisis.Game.Extensions;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
+using Rhisis.Game.Protocol.Packets.World.Server.Snapshots.Battle;
 using Rhisis.Game.Resources.Properties;
 using System;
 
@@ -80,12 +85,23 @@ public class Mover : WorldObject
     /// </summary>
     public float FollowDistance { get; set; }
 
+    /// <summary>
+    /// Gets or sets the mover's actual target.
+    /// </summary>
+    public Mover Target { get; set; }
+
+    /// <summary>
+    /// Gets the mover's defense.
+    /// </summary>
+    public Defense Defense { get; }
+
     protected Mover(MoverProperties properties)
     {
         Properties = properties ?? throw new ArgumentNullException(nameof(properties), "Cannot create a mover with no properties.");
         Attributes = new Attributes(this);
         Statistics = new Statistics(this);
         Health = new Health(this);
+        Defense = new Defense(this);
     }
     
     /// <summary>
@@ -165,6 +181,89 @@ public class Mover : WorldObject
     }
 
     /// <summary>
+    /// Check if the current mover can attack the given target.
+    /// </summary>
+    /// <param name="target">Target to attack.</param>
+    /// <returns>True if can attack; false otherwise.</returns>
+    public bool CanAttack(Mover target)
+    {
+        if (IsDead)
+        {
+            return false;
+        }
+
+        if (target == this)
+        {
+            return false;
+        }
+
+        if (target.IsDead)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Tries to inflect a melee attack to the given target.
+    /// </summary>
+    /// <param name="target">Target to attack.</param>
+    /// <param name="attackType">Attack type.</param>
+    /// <returns>True if the melee attack succeded; false othewise.</returns>
+    public bool TryMeleeAttack(Mover target, AttackType attackType)
+    {
+        if (!CanAttack(target) || !attackType.IsMeleeAttack())
+        {
+            return false;
+        }
+
+        Target = target;
+
+        if (!TryInflictDamagesIfOneHitKillMode(target, attackType, out AttackResult attackResult))
+        {
+            attackResult = new MeleeAttackArbiter(this, target).CalculateDamages();
+
+            if (!attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+            {
+                attackResult = new MeleeAttackReducer(this, target).ReduceDamages(attackResult);
+
+                InflictDamages(target, attackResult, attackType);
+            }
+        }
+
+        using MeleeAttackSnapshot meleeAttackSnapshot = new(this, target, attackType, attackResult.Flags);
+        SendToVisible(meleeAttackSnapshot);
+        
+        return true;
+    }
+
+    private void InflictDamages(Mover target, AttackResult attackResult, AttackType attackType)
+    {
+        Target = target;
+        target.Health.SufferDamages(this, Math.Max(0, attackResult.Damages), attackType, attackResult.Flags);
+        target.OnSufferDamages(this, attackResult.Damages, attackResult.Flags);
+    }
+
+    private bool TryInflictDamagesIfOneHitKillMode(Mover target, AttackType attackType, out AttackResult attackResult)
+    {
+        if (this is Player player && player.Mode.HasFlag(ModeType.ONEKILL_MODE))
+        {
+            attackResult = new AttackResult()
+            {
+                Damages = target.Health.Hp,
+                Flags = AttackFlags.AF_GENERIC
+            };
+
+            InflictDamages(target, attackResult, attackType);
+            return true;
+        }
+
+        attackResult = null;
+        return false;
+    }
+
+    /// <summary>
     /// Updates
     /// </summary>
     protected void UpdateMoves()
@@ -218,6 +317,26 @@ public class Mover : WorldObject
     }
 
     protected virtual void OnArrived()
+    {
+    }
+
+    protected virtual void OnSufferDamages(Mover attacker, int damages, AttackFlags attackFlags)
+    {
+    }
+
+    /// <summary>
+    /// Triggered when the current mover has been killed.
+    /// </summary>
+    /// <param name="killer">Killer.</param>
+    public virtual void OnKilled(Mover killer)
+    {
+    }
+
+    /// <summary>
+    /// Triggered when the current mover has killed the given target.
+    /// </summary>
+    /// <param name="target">Killed target.</param>
+    public virtual void OnTargetKilled(Mover target)
     {
     }
 }

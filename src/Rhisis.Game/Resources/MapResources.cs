@@ -67,6 +67,10 @@ public sealed class MapResources
                     Width = worldInformation.Width,
                     Length = worldInformation.Length,
                     RevivalMapId = worldInformation.RevivalMapId,
+                    MPU = worldInformation.MPU,
+                    Bounds = new Rectangle(0, 0, 
+                        width: worldInformation.Width * worldInformation.MPU * MapProperties.RegionSize, 
+                        length: worldInformation.Length * worldInformation.MPU * MapProperties.RegionSize),
                     Regions = LoadRegions(worldName, worldInformation.RevivalMapId),
                     Objects = LoadObjects(worldName),
                     Heights = LoadHeights(worldName, worldInformation.Width, worldInformation.Length)

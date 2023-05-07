@@ -34,5 +34,7 @@ internal sealed class EquipItemHandler : WorldPacketHandler
         {
             Player.Inventory.Equip(itemSlot);
         }
+
+        Player.Defense.Update();
     }
 }

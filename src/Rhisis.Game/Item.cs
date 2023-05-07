@@ -10,6 +10,13 @@ namespace Rhisis.Game;
 [DebuggerDisplay("{Properties.IdentifierName} +{Refine} ({Element}+{ElementRefine}) x{Quantity}")]
 public class Item : IEquatable<Item>
 {
+    public class ItemConstants
+    {
+        public static readonly int WeaponArmonRefineMax = 10;
+        public static readonly int JewleryRefineMax = 20;
+        public static readonly int ElementRefineMax = 10;
+    }
+
     private int _quantity;
 
     /// <summary>

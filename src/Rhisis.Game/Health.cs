@@ -110,7 +110,7 @@ public sealed class Health
 
         if (_mover is Player && killer is Player)
         {
-            // TODO: PVP
+            // TODO: PVP & PK
         }
         else
         {
@@ -125,8 +125,8 @@ public sealed class Health
             _mover.SendToVisible(moverDeathSnapshot, sendToSelf: true);
         }
 
-        //_mover.Behavior.OnKilled(killer);
-        //killer.Behavior.OnTargetKilled(_mover);
+        _mover.OnKilled(killer);
+        killer.OnTargetKilled(_mover);
     }
 
     public void SufferDamages(Mover attacker, int damages, AttackType attackType, AttackFlags attackFlags = AttackFlags.AF_GENERIC)

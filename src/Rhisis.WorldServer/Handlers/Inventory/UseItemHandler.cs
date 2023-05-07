@@ -25,6 +25,7 @@ internal sealed class UseItemHandler : WorldPacketHandler
                 }
 
                 Player.Inventory.Equip(itemSlot);
+                Player.Defense.Update();
             }
             else
             {

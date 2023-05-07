@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 
 namespace Rhisis.Game.Entities;
 
@@ -235,6 +236,65 @@ public sealed class Player : Mover
         {
             using MotionSnapshot motionSnapshot = new(this, ObjectMessageType.OBJMSG_PICKUP);
             SendToVisible(motionSnapshot, sendToSelf: true);
+        }
+    }
+
+    public void Teleport(int mapId, Vector3 position, bool sendToPlayer = true)
+    {
+        void SetPlayerPosition(Vector3 newPosition)
+        {
+            Unfollow();
+            StopMoving();
+            Position.Copy(newPosition);
+        }
+
+        if (Map.Id == mapId)
+        {
+            if (!Map.IsInBounds(position))
+            {
+                throw new InvalidOperationException($"Attempt to teleport '{Name}' to an invalid position: {position} in map: '{Map.Name}'.");
+            }
+
+            SetPlayerPosition(position);
+
+            using FFSnapshot snapshots = new(new FFSnapshot[]
+            {
+                new SetPositionSnapshot(this), 
+                new WorldReadInfoSnapshot(this)
+            });
+            SendToVisible(snapshots, sendToPlayer);
+        }
+        else
+        {
+            Map destinationMap = MapManager.Current.Get(mapId) ?? throw new InvalidOperationException($"Cannot teleport to map with id: '{mapId}'. Map not found.");
+
+            if (!destinationMap.IsInBounds(position))
+            {
+                throw new InvalidOperationException($"Attempt to teleport '{Name}' to an invalid position: {position} in map: '{destinationMap.Name}'.");
+            }
+
+            IsSpawned = false;
+            MapLayer.RemovePlayer(this);
+
+            SetPlayerPosition(position);
+
+            Map = destinationMap;
+            MapLayer = destinationMap.GetDefaultLayer();
+            MapLayer.AddPlayer(this);
+
+            if (sendToPlayer)
+            {
+                using FFSnapshot snapshots = new(new FFSnapshot[]
+                {
+                    new ReplaceSnapshot(this),
+                    new WorldReadInfoSnapshot(this),
+                    new AddObjectSnapshot(this)
+                });
+
+                Send(snapshots);
+            }
+
+            IsSpawned = true;
         }
     }
 

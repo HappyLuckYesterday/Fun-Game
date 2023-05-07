@@ -1,5 +1,4 @@
-﻿using Rhisis.Core.Extensions;
-using Rhisis.Core.IO;
+﻿using Rhisis.Core.IO;
 using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
@@ -11,6 +10,9 @@ using System.Linq;
 
 namespace Rhisis.Game;
 
+/// <summary>
+/// Provides a mechanism to manage a player's inventory.
+/// </summary>
 public sealed class Inventory : ItemContainer
 {
     public static readonly int InventorySize = 42;
@@ -66,7 +68,26 @@ public sealed class Inventory : ItemContainer
 
         if (source.HasItem && destination.HasItem && source.Item.Id == destination.Item.Id && source.Item.Properties.IsStackable)
         {
-            // TODO: stack items
+            int newQuantity = source.Item.Quantity + destination.Item.Quantity;
+
+            using var snapshots = new FFSnapshot();
+
+            if (newQuantity > destination.Item.Properties.PackMax)
+            {
+                destination.Item.Quantity = destination.Item.Properties.PackMax;
+                source.Item.Quantity = newQuantity - source.Item.Properties.PackMax;
+
+                snapshots.Merge(new UpdateItemSnapshot(_owner, UpdateItemType.UI_NUM, source.Index, source.Item.Quantity));
+                snapshots.Merge(new UpdateItemSnapshot(_owner, UpdateItemType.UI_NUM, destination.Index, destination.Item.Quantity));
+            }
+            else
+            {
+                destination.Item.Quantity = newQuantity;
+                DeleteItem(source, source.Item.Quantity);
+                snapshots.Merge(new UpdateItemSnapshot(_owner, UpdateItemType.UI_NUM, destination.Index, destination.Item.Quantity));
+            }
+
+            _owner.Send(snapshots);
         }
         else
         {
@@ -77,6 +98,12 @@ public sealed class Inventory : ItemContainer
         }
     }
 
+    /// <summary>
+    /// Creates the given item into the inventory.
+    /// </summary>
+    /// <param name="item">Item to create.</param>
+    /// <param name="sendToPlayer">Boolean value that indicates if the item creation information should be sent to the owner.</param>
+    /// <returns>Quantity created.</returns>
     public int CreateItem(Item item, bool sendToPlayer = true)
     {
         IEnumerable<ItemCreationResult> creationResult = base.CreateItem(item);
@@ -135,7 +162,7 @@ public sealed class Inventory : ItemContainer
         {
             if (itemSlot.Number > EquipOffset)
             {
-                UnequipSlot(itemSlot);
+                UnequipInternal(itemSlot);
             }
 
             Remove(itemSlot);
@@ -154,6 +181,23 @@ public sealed class Inventory : ItemContainer
         ItemContainerSlot equipedItemSlot = GetEquipedItemSlot(equipedItemPart);
 
         return equipedItemSlot.HasItem ? equipedItemSlot.Item : Hand;
+    }
+
+    /// <summary>
+    /// Gets the equiped item slot from the given item part.
+    /// </summary>
+    /// <param name="equipedItemPart">Item part.</param>
+    /// <returns>The item slot if found; or an empty slot otherwise.</returns>
+    private ItemContainerSlot GetEquipedItemSlot(ItemPartType equipedItemPart)
+    {
+        int equipedItemSlot = EquipOffset + (int)equipedItemPart;
+
+        if (equipedItemSlot > MaxCapacity || equipedItemSlot < EquipOffset)
+        {
+            return ItemContainerSlot.Empty;
+        }
+
+        return GetAtSlot(equipedItemSlot);
     }
 
     /// <summary>
@@ -411,22 +455,5 @@ public sealed class Inventory : ItemContainer
             ItemKind2.SKILL => CoolTimeType.Skill,
             _ => CoolTimeType.None,
         };
-    }
-
-    private bool UnequipSlot(ItemContainerSlot itemSlot)
-    {
-        return false;
-    }
-
-    private ItemContainerSlot GetEquipedItemSlot(ItemPartType equipedItemPart)
-    {
-        int equipedItemSlot = EquipOffset + (int)equipedItemPart;
-
-        if (equipedItemSlot > MaxCapacity || equipedItemSlot < EquipOffset)
-        {
-            return ItemContainerSlot.Empty;
-        }
-
-        return GetAtSlot(equipedItemSlot);
     }
 }
