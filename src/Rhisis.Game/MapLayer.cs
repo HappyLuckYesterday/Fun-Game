@@ -56,20 +56,26 @@ public sealed class MapLayer : IDisposable
                 Rectangle region = new(x.X, x.Z, x.Width, x.Length);
                 MoverProperties moverProperties = GameResources.Current.Movers.Get(x.ModelId);
 
-                return Enumerable.Range(0, x.Count).Select(i => new Monster(moverProperties)
+                return Enumerable.Range(0, x.Count).Select(i =>
                 {
-                    Name = moverProperties.Name,
-                    Level = moverProperties.Level,
-                    Size = moverProperties.Class == MoverClassType.RANK_BOSS ? (short)200 : (short)100,
-                    ModelId = moverProperties.Id,
-                    RespawnTime = x.Time,
-                    Region = region,
-                    Position = region.GetRandomPosition(x.Height),
-                    RotationAngle = FFRandom.FloatRandom(0, 360),
-                    IsSpawned = true,
-                    ObjectState = ObjectState.OBJSTA_STAND,
-                    Map = parentMap,
-                    MapLayer = this
+                    Vector3 initialPosition = region.GetRandomPosition(x.Height);
+
+                    return new Monster(moverProperties)
+                    {
+                        Name = moverProperties.Name,
+                        Level = moverProperties.Level,
+                        Size = moverProperties.Class == MoverClassType.RANK_BOSS ? (short)200 : (short)100,
+                        ModelId = moverProperties.Id,
+                        RespawnTime = x.Time,
+                        Region = region,
+                        Position = initialPosition.Clone(),
+                        BeginPosition = initialPosition.Clone(),
+                        RotationAngle = FFRandom.FloatRandom(0, 360),
+                        IsSpawned = true,
+                        ObjectState = ObjectState.OBJSTA_STAND,
+                        Map = parentMap,
+                        MapLayer = this
+                    };
                 }).ToList();
             })
             .ToList();

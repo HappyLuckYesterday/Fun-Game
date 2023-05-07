@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Rhisis.Game.IO;
 using Rhisis.Game.Resources.Properties;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace Rhisis.Game.Resources;
 
@@ -34,6 +36,8 @@ public sealed class ItemResources
     }
 
     public ItemProperties Get(int itemId) => _itemsById.TryGetValue(itemId, out ItemProperties item) ? item : null;
+
+    public IEnumerable<ItemProperties> Where(Func<ItemProperties, bool> predicate) => _itemsById.Values.Where(predicate);
 
     public void Load()
     {

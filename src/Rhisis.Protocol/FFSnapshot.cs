@@ -43,6 +43,19 @@ public class FFSnapshot : FFPacket
     }
 
     /// <summary>
+    /// Creates a new <see cref="FFSnapshot"/> instance and merges the given snapshots into it.
+    /// </summary>
+    /// <param name="snapshots">Snapshots to merge.</param>
+    public FFSnapshot(FFSnapshot[] snapshots)
+        : this()
+    {
+        foreach (var snapshot in snapshots)
+        {
+            Merge(snapshot);
+        }
+    }
+
+    /// <summary>
     /// Creates a new <see cref="FFSnapshot"/> instance for a given object.
     /// </summary>
     /// <param name="snapshot">Snapshot type.</param>

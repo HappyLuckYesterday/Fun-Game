@@ -4,6 +4,8 @@ namespace Rhisis.Game.Resources.Properties;
 
 public sealed class MapProperties
 {
+    public static readonly int RegionSize = 128;
+
     /// <summary>
     /// Gets the map id.
     /// </summary>
@@ -33,6 +35,16 @@ public sealed class MapProperties
     /// Gets the revival map id when a player dies on this map.
     /// </summary>
     public int RevivalMapId { get; init; }
+
+    /// <summary>
+    /// Gets the map MPU. (Meters Per Unit)
+    /// </summary>
+    public int MPU { get; init; }
+
+    /// <summary>
+    /// Gets the map bounds.
+    /// </summary>
+    public Rectangle Bounds { get; init; }
 
     /// <summary>
     /// Gets the map regions.

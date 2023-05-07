@@ -4,6 +4,7 @@ using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Protocol;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rhisis.Game.Entities;
 
@@ -87,6 +88,15 @@ public class WorldObject : IDisposable
     protected WorldObject()
     {
     }
+
+    /// <summary>
+    /// Gets the object identified by the given id that is visible from the current object.
+    /// </summary>
+    /// <typeparam name="TEntity">Entity type.</typeparam>
+    /// <param name="objectId">Object id to search for.</param>
+    /// <returns>World object entity if found; null otherwise.</returns>
+    public TEntity GetVisibleObject<TEntity>(uint objectId) where TEntity : WorldObject 
+        => VisibleObjects.OfType<TEntity>().SingleOrDefault(x => x.ObjectId == objectId);
 
     /// <summary>
     /// Sends a defined text to the current world object.

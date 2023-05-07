@@ -124,6 +124,10 @@ internal class JoinGameHandler : WorldPacketHandler
         // TODO: initialize skills
         // TODO: initialize quest diary
 
+        User.Player.Defense.Update();
+
+        // TODO: if dead, apply penality and revive to nearest region
+
         using (JoinCompletePacket joinPacket = new())
         {
             joinPacket.AddSnapshots(
