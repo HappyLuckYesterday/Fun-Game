@@ -10,7 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Rhisis.Game;
 
 [DebuggerDisplay("{Name} Lv.{Level}")]
-public class Skill
+public class Skill : IPacketSerializer
 {
     private int _level;
     private long _nextSkillUsageTime;

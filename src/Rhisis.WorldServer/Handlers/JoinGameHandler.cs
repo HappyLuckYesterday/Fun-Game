@@ -134,7 +134,7 @@ internal class JoinGameHandler : WorldPacketHandler
                 new EnvironmentAllSnapshot(User.Player, SeasonType.None), // TODO: get the season id using current weather time.
                 new WorldReadInfoSnapshot(User.Player),
                 new AddObjectSnapshot(User.Player)
-                //new TaskbarSnapshot(User.Player)
+                // new TaskbarSnapshot(User.Player)
                 //new QueryPlayerDataSnapshot(cachedPlayer),
                 //new AddFriendGameJoinSnapshot(User.Player)
             );
