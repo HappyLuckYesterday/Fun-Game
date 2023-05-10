@@ -10,7 +10,7 @@ public class Taskbar : IPacketSerializer
 
     public MultipleTaskbarContainer<Shortcut> Items { get; }
 
-    // public TaskbarContainer<Skill> ActionSlot { get; }
+    public TaskbarContainer<Skill> ActionSlot { get; }
 
     public Taskbar()
     {
@@ -23,7 +23,7 @@ public class Taskbar : IPacketSerializer
         Applets.Serialize(packet);
         Items.Serialize(packet);
         packet.WriteInt32(0);
-        //ActionSlot.Serialize(packet);
+        ActionSlot.Serialize(packet);
         packet.WriteInt32(ActionPoints);
     }
 }
