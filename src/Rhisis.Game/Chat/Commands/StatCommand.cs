@@ -41,25 +41,19 @@ internal sealed class StatCommand : IChatCommand
         switch (attribute)
         {
             case DefineAttributes.DST_STR:
-                {
-                    player.Statistics.Strength = (int)quantity;
-                    break;
-                }
+                player.Statistics.Strength = (int)quantity;
+                break;
             case DefineAttributes.DST_STA:
-                {
-                    player.Statistics.Stamina = (int)quantity;
-                    break;
-                }
+                player.Statistics.Stamina = (int)quantity;
+                break;
             case DefineAttributes.DST_DEX:
-                {
-                    player.Statistics.Dexterity = (int)quantity;
-                    break;
-                }
+                player.Statistics.Dexterity = (int)quantity;
+                break;
             case DefineAttributes.DST_INT:
-                {
-                    player.Statistics.Intelligence = (int)quantity;
-                    break;
-                }
+                player.Statistics.Intelligence = (int)quantity;
+                break;
+            default:
+                break;
         }
 
         _logger.LogTrace($"Player {player.Name} update attribute {attribute} value to {quantity}");
