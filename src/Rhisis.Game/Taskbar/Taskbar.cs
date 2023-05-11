@@ -16,6 +16,7 @@ public class Taskbar : IPacketSerializer
     {
         Applets = new TaskbarContainer<Shortcut>(18);
         Items = new MultipleTaskbarContainer<Shortcut>(8, 9);
+        ActionSlot = new TaskbarContainer<Skill>(5);
     }
 
     public void Serialize(FFPacket packet)

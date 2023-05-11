@@ -1,26 +1,45 @@
 
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Rhisis.Protocol;
 
 namespace Rhisis.Game.TaskbarPlayer;
 
-public class TaskbarContainer<TObject> : IPacketSerializer where TObject : class, IPacketSerializer
+public class TaskbarContainer<TObject> : IEnumerable<TObject>, IPacketSerializer 
+    where TObject : class, IPacketSerializer
 {
-    private readonly List<TObject> _objects;
+    private readonly TObject[] _objects;
 
+    /// <summary>
+    /// Gets the taskbar capacity.
+    /// </summary>
     public int Capacity { get; }
 
-    public int Count => _objects.Count(x => x != null);
+    /// <summary>
+    /// Get the number of objects in the taskbar.
+    /// </summary>
+    public int Count => _objects.Count(x => x is not null);
 
     public TaskbarContainer(int capacity)
     {
-        _objects = new List<TObject>(new TObject[capacity]);
+        _objects = new TObject[capacity];
         Capacity = capacity;
     }
 
+    /// <summary>
+    /// Adds an object at a given slot.
+    /// </summary>
+    /// <param name="object">Object to add.</param>
+    /// <param name="slotIndex">Slot.</param>
+    /// <returns>True if the object is added; false otherwise.</returns>
     public bool Add(TObject @object, int slotIndex) => SetAt(slotIndex, @object);
 
+    /// <summary>
+    /// Removes an object at the given slot.
+    /// </summary>
+    /// <param name="slotIndex">Slot index.</param>
+    /// <returns>True if the object has been removed; false otherwise.</returns>
     public bool Remove(int slotIndex) => SetAt(slotIndex, null);
 
     public void Serialize(FFPacket packet)
@@ -29,14 +48,12 @@ public class TaskbarContainer<TObject> : IPacketSerializer where TObject : class
 
         for (int i = 0; i < Capacity; i++)
         {
-            if (_objects[i] != null)
+            if (_objects[i] is not null)
             {
                 _objects[i].Serialize(packet);
             }
         }
     }
-
-    public IEnumerator<TObject> GetEnumerator() => _objects.GetEnumerator();
 
     private bool SetAt(int slotIndex, TObject @object)
     {
@@ -49,4 +66,8 @@ public class TaskbarContainer<TObject> : IPacketSerializer where TObject : class
 
         return true;
     }
+
+    public IEnumerator<TObject> GetEnumerator() => (IEnumerator<TObject>)_objects.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => _objects.GetEnumerator();
 }
