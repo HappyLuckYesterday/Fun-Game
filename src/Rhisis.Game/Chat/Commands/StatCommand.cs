@@ -53,15 +53,14 @@ internal sealed class StatCommand : IChatCommand
                 player.Statistics.Intelligence = (int)quantity;
                 break;
             default:
-                break;
+                throw new ArgumentException($"Set stat command attribute not found.", nameof(parameters));
         }
 
         _logger.LogTrace($"Player {player.Name} update attribute {attribute} value to {quantity}");
 
         using (var snapshot = new ModifyStateSnapshot(player))
         {
-            player.Send(snapshot);
             player.SendToVisible(snapshot, true);
         }
     }
-}
+}   
