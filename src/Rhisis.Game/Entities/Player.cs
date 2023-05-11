@@ -2,6 +2,7 @@
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Game.Resources.Properties;
+using Rhisis.Game.TaskbarPlayer;
 using Rhisis.Protocol;
 using System;
 using System.Collections.Generic;
@@ -99,6 +100,11 @@ public sealed class Player : Mover
     /// </summary>
     public string CurrentShopName { get; set; }
 
+    /// <summary>
+    /// Gets the player taskbar.
+    /// </summary>
+    public Taskbar Taskbar { get; }
+
     public Player(FFUserConnection connection, MoverProperties properties)
         : base(properties)
     {
@@ -108,6 +114,7 @@ public sealed class Player : Mover
         Experience = new Experience(this);
         Skills = new SkillTree(this);
         QuestDiary = new QuestDiary(this);
+        Taskbar = new Taskbar();
     }
 
     /// <summary>
@@ -218,8 +225,8 @@ public sealed class Player : Mover
     /// </summary>
     public void ResetStatistics()
     {
-        DefaultCharacterOptions defaultCharacter = Appearence.Gender == GenderType.Male ? 
-            GameOptions.Current.DefaultCharacter.Man : 
+        DefaultCharacterOptions defaultCharacter = Appearence.Gender == GenderType.Male ?
+            GameOptions.Current.DefaultCharacter.Man :
             GameOptions.Current.DefaultCharacter.Woman;
 
         Statistics.Strength = defaultCharacter.Strength;
@@ -281,7 +288,7 @@ public sealed class Player : Mover
 
         SendToVisible(snapshot, sendToSelf: true);
     }
-    
+
     /// <summary>
     /// Picks up an item from the map.
     /// </summary>
@@ -294,7 +301,7 @@ public sealed class Player : Mover
             SendDefinedText(DefineText.TID_GAME_PRIORITYITEMPER, $"\"{mapItem.Item.Name}\"");
             return;
         }
-        
+
         bool itemPickedUp;
 
         if (mapItem.IsGold)
@@ -353,7 +360,7 @@ public sealed class Player : Mover
 
             using FFSnapshot snapshots = new(new FFSnapshot[]
             {
-                new SetPositionSnapshot(this), 
+                new SetPositionSnapshot(this),
                 new WorldReadInfoSnapshot(this)
             });
             SendToVisible(snapshots, sendToPlayer);
