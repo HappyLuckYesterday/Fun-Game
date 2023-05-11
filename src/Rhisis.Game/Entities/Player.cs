@@ -103,7 +103,7 @@ public sealed class Player : Mover
     /// <summary>
     /// Gets the player taskbar.
     /// </summary>
-    public Taskbar Taskbar { get; set; }
+    public Taskbar Taskbar { get; }
 
     public Player(FFUserConnection connection, MoverProperties properties)
         : base(properties)

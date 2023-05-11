@@ -22,7 +22,6 @@ public class Taskbar : IPacketSerializer
     {
         Applets.Serialize(packet);
         Items.Serialize(packet);
-        packet.WriteInt32(0);
         ActionSlot.Serialize(packet);
         packet.WriteInt32(ActionPoints);
     }
