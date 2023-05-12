@@ -1,7 +1,7 @@
 using Rhisis.Game.Common;
 using Rhisis.Protocol;
 
-namespace Rhisis.Game.TaskbarPlayer;
+namespace Rhisis.Game;
 
 public class Shortcut : IPacketSerializer
 {

@@ -2,7 +2,6 @@
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Game.Resources.Properties;
-using Rhisis.Game.TaskbarPlayer;
 using Rhisis.Protocol;
 using System;
 using System.Collections.Generic;

@@ -89,6 +89,7 @@ internal static class Program
         GameResources.Current.Jobs.Load();
         GameResources.Current.ExperienceTable.Load();
         GameResources.Current.Penalities.Load();
+        GameResources.Current.Quests.Load();
         ChatCommandManager.Current.Load(host.Services);
 
         await host.RunAsync();

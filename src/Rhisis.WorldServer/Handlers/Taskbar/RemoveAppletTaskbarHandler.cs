@@ -3,7 +3,7 @@ using Rhisis.Game.Protocol.Packets.World.Client.Taskbar;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Handlers;
 
-namespace Rhisis.WorldServer.Handlers.PlayerTaskbar;
+namespace Rhisis.WorldServer.Handlers.Taskbar;
 
 [PacketHandler(PacketType.REMOVEAPPLETTASKBAR)]
 internal sealed class RemoveAppletTaskbarHandler : WorldPacketHandler
@@ -11,7 +11,6 @@ internal sealed class RemoveAppletTaskbarHandler : WorldPacketHandler
     /// <summary>
     /// Removes an applet from the applet taskbar.
     /// </summary>
-    /// <param name="serverClient">Current client.</param>
     /// <param name="packet">Incoming packet.</param>
     public void Execute(RemoveTaskbarAppletPacket packet)
     {

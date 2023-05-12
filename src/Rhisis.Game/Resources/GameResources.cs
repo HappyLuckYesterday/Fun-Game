@@ -30,6 +30,8 @@ public class GameResources : Singleton<GameResources>
 
     public MapResources Maps { get; private set; }
 
+    public QuestResources Quests { get; private set; }
+
     public void Initialize(IServiceProvider serviceProvider)
     {
         _logger = serviceProvider.GetRequiredService<ILogger<GameResources>>();
@@ -43,6 +45,7 @@ public class GameResources : Singleton<GameResources>
         ExperienceTable = new(serviceProvider.GetRequiredService<ILogger<ExperienceTableResources>>());
         Penalities = new(serviceProvider.GetRequiredService<ILogger<PenalityResources>>());
         Maps = new(serviceProvider.GetRequiredService<ILogger<MapResources>>(), _defines);
+        Quests = new(serviceProvider.GetRequiredService<ILogger<QuestResources>>(), _defines);
     }
 
     private void LoadDefines()

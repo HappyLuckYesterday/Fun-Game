@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rhisis.Game.TaskbarPlayer;
+namespace Rhisis.Game;
 
 /// <summary>
 /// Provides a mechanism to manage a multi-level taskbar.
 /// </summary>
 /// <typeparam name="TObject">Object type that implements the <see cref="IPacketSerializer"/> interface.</typeparam>
-public class MultipleTaskbarContainer<TObject> : IEnumerable<TaskbarContainer<TObject>>, IPacketSerializer 
+public class MultipleTaskbarContainer<TObject> : IEnumerable<TaskbarContainer<TObject>>, IPacketSerializer
     where TObject : class, IPacketSerializer
 {
     private readonly TaskbarContainer<TObject>[] _levels;
@@ -27,6 +27,11 @@ public class MultipleTaskbarContainer<TObject> : IEnumerable<TaskbarContainer<TO
     /// </remarks>
     public int Count => _levels.Sum(x => x.Count);
 
+    /// <summary>
+    /// Creates a new <see cref="MultipleTaskbarContainer{TObject}"/>.
+    /// </summary>
+    /// <param name="capacity">Number of levels.</param>
+    /// <param name="capacityPerLevels">Capacity per level.</param>
     public MultipleTaskbarContainer(int capacity, int capacityPerLevels)
     {
         _levels = new TaskbarContainer<TObject>[capacity];
@@ -35,7 +40,7 @@ public class MultipleTaskbarContainer<TObject> : IEnumerable<TaskbarContainer<TO
         {
             _levels[i] = new TaskbarContainer<TObject>(capacityPerLevels);
         }
-        
+
         Capacity = capacity;
     }
 
@@ -54,6 +59,10 @@ public class MultipleTaskbarContainer<TObject> : IEnumerable<TaskbarContainer<TO
         return _levels[level];
     }
 
+    /// <summary>
+    /// Serializes the current multiple taskbar into the packet.
+    /// </summary>
+    /// <param name="packet">Packet.</param>
     public void Serialize(FFPacket packet)
     {
         packet.WriteInt32(Count);
@@ -73,7 +82,7 @@ public class MultipleTaskbarContainer<TObject> : IEnumerable<TaskbarContainer<TO
         }
     }
 
-    public IEnumerator<TaskbarContainer<TObject>> GetEnumerator() => (IEnumerator<TaskbarContainer<TObject>>)_levels.GetEnumerator();
+    public IEnumerator<TaskbarContainer<TObject>> GetEnumerator() => _levels.AsEnumerable().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => _levels.GetEnumerator();
 }

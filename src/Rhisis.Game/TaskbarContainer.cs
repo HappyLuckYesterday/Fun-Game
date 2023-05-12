@@ -1,12 +1,11 @@
-
+using Rhisis.Protocol;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Rhisis.Protocol;
 
-namespace Rhisis.Game.TaskbarPlayer;
+namespace Rhisis.Game;
 
-public class TaskbarContainer<TObject> : IEnumerable<TObject>, IPacketSerializer 
+public class TaskbarContainer<TObject> : IEnumerable<TObject>, IPacketSerializer
     where TObject : class, IPacketSerializer
 {
     private readonly TObject[] _objects;
@@ -21,6 +20,10 @@ public class TaskbarContainer<TObject> : IEnumerable<TObject>, IPacketSerializer
     /// </summary>
     public int Count => _objects.Count(x => x is not null);
 
+    /// <summary>
+    /// Creates a new <see cref="TaskbarContainer{TObject}"/> with a given capacity.
+    /// </summary>
+    /// <param name="capacity">Taskbar capacity.</param>
     public TaskbarContainer(int capacity)
     {
         _objects = new TObject[capacity];
@@ -42,6 +45,10 @@ public class TaskbarContainer<TObject> : IEnumerable<TObject>, IPacketSerializer
     /// <returns>True if the object has been removed; false otherwise.</returns>
     public bool Remove(int slotIndex) => SetAt(slotIndex, null);
 
+    /// <summary>
+    /// Serializes the taskbar into the packet.
+    /// </summary>
+    /// <param name="packet">Packet.</param>
     public void Serialize(FFPacket packet)
     {
         packet.WriteInt32(Count);
@@ -67,7 +74,7 @@ public class TaskbarContainer<TObject> : IEnumerable<TObject>, IPacketSerializer
         return true;
     }
 
-    public IEnumerator<TObject> GetEnumerator() => (IEnumerator<TObject>)_objects.GetEnumerator();
+    public IEnumerator<TObject> GetEnumerator() => _objects.AsEnumerable().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => _objects.GetEnumerator();
 }
