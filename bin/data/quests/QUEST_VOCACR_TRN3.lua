@@ -20,7 +20,7 @@ QUEST_VOCACR_TRN3 = {
 		job = 'JOB_ACROBAT',
 		restat = true,
 		reskill = true,
-		skillPoints = 50
+		skill_points = 50
 	},
 	end_conditions = {
 		items = {

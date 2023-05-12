@@ -106,10 +106,7 @@ public sealed class QuestResources
                             Bottom = lua.GetValue<int>("bottom")
                         })
                     },
-                    Rewards = new QuestRewardProperties
-                    {
-                        // TODO
-                    },
+                    Rewards = new QuestRewardProperties(questTable),
                     Drops = LoadQuestItemDrops(questTable["drops"].ToLuaTable()),
                     BeginDialogs = (questTable["dialogs.begin"] as LuaTable)?.Values.ToArray<string>() ?? Enumerable.Empty<string>(),
                     AcceptedDialogs = (questTable["dialogs.begin_yes"] as LuaTable)?.Values.ToArray<string>() ?? Enumerable.Empty<string>(),

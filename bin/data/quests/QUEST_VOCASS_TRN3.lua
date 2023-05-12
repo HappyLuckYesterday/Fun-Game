@@ -20,7 +20,7 @@ QUEST_VOCASS_TRN3 = {
 		job = 'JOB_ASSIST',
 		restat = true,
 		reskill = true,
-		skillPoints = 60
+		skill_points = 60
 	},
 	end_conditions = {
 		items = {

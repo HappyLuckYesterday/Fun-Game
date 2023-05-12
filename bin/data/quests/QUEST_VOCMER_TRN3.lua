@@ -20,7 +20,7 @@ QUEST_VOCMER_TRN3 = {
 		job = 'JOB_MERCENARY',
 		restat = true,
 		reskill = true,
-		skillPoints = 40
+		skill_points = 40
 	},
 	end_conditions = {
 		items = {

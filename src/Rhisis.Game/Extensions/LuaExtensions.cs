@@ -41,7 +41,7 @@ public static class LuaExtensions
     /// <returns>Lua script value converted into the target type or the default value if not found.</returns>
     public static TValue GetValueOrDefault<TValue>(this LuaTable luaTable, string path, TValue defaultValue) where TValue : IConvertible
     {
-        if (luaTable[path] == null)
+        if (luaTable is null || luaTable[path] == null)
         {
             return defaultValue;
         }
@@ -55,4 +55,11 @@ public static class LuaExtensions
     /// <param name="luaObject">Lua object.</param>
     /// <returns>Lua object if it's valid; null otherwise.</returns>
     public static LuaTable ToLuaTable(this object luaObject) => luaObject as LuaTable;
+
+    /// <summary>
+    /// Converts the current object into a <see cref="LuaFunction"/>.
+    /// </summary>
+    /// <param name="luaObject">Lua object</param>
+    /// <returns>Lua function if it's valid; null otherwise.</returns>
+    public static LuaFunction ToLuaFunction(this object luaObject) => luaObject as LuaFunction;
 }

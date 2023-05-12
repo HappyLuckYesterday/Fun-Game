@@ -20,7 +20,7 @@ QUEST_VOCMAG_TRN3 = {
 		job = 'JOB_MAGICIAN',
 		restat = true,
 		reskill = true,
-		skillPoints = 90
+		skill_points = 90
 	},
 	end_conditions = {
 		items = {
