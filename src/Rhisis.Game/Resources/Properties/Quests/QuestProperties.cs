@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Rhisis.Game.Resources.Properties.Quests;
 
+[DebuggerDisplay("{Name} from {StartCharacter}: {StartRequirements.MinLevel}-{StartRequirements.MaxLevel}")]
 public sealed class QuestProperties
 {
     /// <summary>

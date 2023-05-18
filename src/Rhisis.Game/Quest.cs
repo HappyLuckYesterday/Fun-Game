@@ -1,4 +1,8 @@
 ﻿using Rhisis.Game.Common;
+using Rhisis.Game.Entities;
+using Rhisis.Game.Resources;
+using Rhisis.Game.Resources.Properties;
+using Rhisis.Game.Resources.Properties.Quests;
 using Rhisis.Protocol;
 using System;
 using System.Collections.Generic;
@@ -8,10 +12,17 @@ namespace Rhisis.Game;
 
 public sealed class Quest : IPacketSerializer
 {
+    private readonly Player _owner;
+
+    /// <summary>
+    /// Gest the quest properties.
+    /// </summary>
+    public QuestProperties Properties { get; }
+
     /// <summary>
     /// Gets the quest id.
     /// </summary>
-    public int Id { get; }
+    public int Id => Properties.Id;
 
     /// <summary>
     /// Gets the quest database id.
@@ -49,14 +60,26 @@ public sealed class Quest : IPacketSerializer
     public QuestState State { get; set; }
 
     /// <summary>
-    /// Gets the quest start time.
+    /// Gets or sets the quest start time.
     /// </summary>
     public DateTime StartTime { get; set; }
+
+    /// <summary>
+    /// Gets or sets the quest end time.
+    /// </summary>
+    public DateTime EndTime { get; set; }
 
     /// <summary>
     /// Gets a dictionary of the killed monsters. Key is the monster id; Value is the killed amount.
     /// </summary>
     public IDictionary<int, short> Monsters { get; set; }
+
+    public Quest(QuestProperties properties, Player owner)
+    {
+        Properties = properties;
+        Monsters = Properties.QuestEndCondition.Monsters?.ToDictionary(x => GameResources.Current.GetDefinedValue(x.Id), _ => (short)0);
+        _owner = owner;
+    }
 
     public void Serialize(FFPacket packet)
     {
@@ -68,5 +91,54 @@ public sealed class Quest : IPacketSerializer
         packet.WriteInt16(Monsters?.ElementAtOrDefault(1).Value ?? 0); // monster 2 killed
         packet.WriteByte(Convert.ToByte(IsPatrolDone)); // patrol done
         packet.WriteByte(0); // dialog done
+    }
+
+    public bool CanFinish()
+    { 
+        if (Properties.QuestEndCondition.Items != null && Properties.QuestEndCondition.Items.Any())
+        {
+            foreach (QuestItemProperties questItem in Properties.QuestEndCondition.Items)
+            {
+                if (questItem.Sex == GenderType.Any || questItem.Sex == _owner.Appearence.Gender)
+                {
+                    ItemProperties itemProperties = GameResources.Current.Items.Get(questItem.Id);
+
+                    if (itemProperties is null)
+                    {
+                        continue;
+                    }
+
+                    Item inventoryItem = _owner.Inventory.FindItem(x => x.Id == itemProperties.Id);
+
+                    if (inventoryItem is null || inventoryItem.Quantity < questItem.Quantity)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        if (Properties.QuestEndCondition.Monsters != null && Properties.QuestEndCondition.Monsters.Any())
+        {
+            foreach (QuestMonsterProperties questMonster in Properties.QuestEndCondition.Monsters)
+            {
+                MoverProperties monsterProperties = GameResources.Current.Movers.Get(questMonster.Id);
+
+                if (monsterProperties is null)
+                {
+                    continue;
+                }
+
+                if (Monsters.TryGetValue(monsterProperties.Id, out short killedQuantity))
+                {
+                    if (killedQuantity < questMonster.Amount)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 }

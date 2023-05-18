@@ -44,7 +44,7 @@ public sealed class MapLayer : IDisposable
                 RotationAngle = x.NpcObject.Angle,
                 ModelId = x.NpcObject.ModelId,
                 IsSpawned = true,
-                ObjectState = ObjectState.OBJSTA_STAND
+                ObjectState = ObjectState.OBJSTA_STAND,
             })
             .ToList();
 

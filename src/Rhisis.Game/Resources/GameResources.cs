@@ -13,6 +13,7 @@ public class GameResources : Singleton<GameResources>
 {
     private ILogger<GameResources> _logger;
     private readonly ConcurrentDictionary<string, int> _defines = new();
+    private readonly ConcurrentDictionary<string, string> _texts = new();
 
     public ItemResources Items { get; private set; }
 
@@ -36,6 +37,7 @@ public class GameResources : Singleton<GameResources>
     {
         _logger = serviceProvider.GetRequiredService<ILogger<GameResources>>();
         LoadDefines();
+        LoadTexts();
 
         Items = new(serviceProvider.GetRequiredService<ILogger<ItemResources>>(), _defines);
         Movers = new(serviceProvider.GetRequiredService<ILogger<MoverResources>>(), _defines);
@@ -47,6 +49,10 @@ public class GameResources : Singleton<GameResources>
         Maps = new(serviceProvider.GetRequiredService<ILogger<MapResources>>(), _defines);
         Quests = new(serviceProvider.GetRequiredService<ILogger<QuestResources>>(), _defines);
     }
+
+    public int GetDefinedValue(string identifierName) => _defines.TryGetValue(identifierName, out int value) ? value : default;
+
+    public string GetText(string identifierName) => _texts.TryGetValue(identifierName, out string text) ? text : default;
 
     private void LoadDefines()
     {
@@ -70,5 +76,24 @@ public class GameResources : Singleton<GameResources>
         }
 
         _logger.LogTrace("Definitions loaded from resources (*.h).");
+    }
+
+    private void LoadTexts()
+    {
+        var textFiles = from x in Directory.GetFiles(GameResourcePaths.ResourcePath, "*.*", SearchOption.AllDirectories)
+                        where TextFile.Extensions.Contains(Path.GetExtension(x)) && x.EndsWith(".txt.txt")
+                        select x;
+
+        foreach (var textFilePath in textFiles)
+        {
+            using TextFile textFile = new(textFilePath);
+
+            foreach (var text in textFile.Texts)
+            {
+                _texts.TryAdd(text.Key, text.Value);
+            }
+        }
+
+        _logger.LogTrace("Texts loaded from resources (*.txt.txt).");
     }
 }

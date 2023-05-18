@@ -184,6 +184,13 @@ public sealed class Inventory : ItemContainer
     }
 
     /// <summary>
+    /// Finds the item matching the given predicate.
+    /// </summary>
+    /// <param name="predicate">Item predicate.</param>
+    /// <returns>Item if found; null otherwise.</returns>
+    public Item FindItem(Func<Item, bool> predicate) => _items.Where(x => x.HasItem).Select(x => x.Item).FirstOrDefault(predicate);
+
+    /// <summary>
     /// Gets the equiped item slot from the given item part.
     /// </summary>
     /// <param name="equipedItemPart">Item part.</param>

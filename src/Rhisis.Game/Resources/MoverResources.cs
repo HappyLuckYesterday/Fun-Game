@@ -28,6 +28,18 @@ public sealed class MoverResources
 
     public MoverProperties Get(int moverId) => _moversById.GetValueOrDefault(moverId);
 
+    public MoverProperties Get(string moverIdentifier)
+    {
+        if (int.TryParse(moverIdentifier, out int moverId))
+        {
+            return Get(moverId);
+        }
+        else
+        {
+            return _moversByIdentifierName.TryGetValue(moverIdentifier, out MoverProperties mover) ? mover : null;
+        }
+    }
+
     public void Load()
     {
         Stopwatch watch = new();

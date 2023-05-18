@@ -260,7 +260,7 @@ public sealed class Player : Mover
     /// <summary>
     /// Resets the player skill levels.
     /// </summary>
-    public void Reskill()
+    public void ResetSkills()
     {
         foreach (Skill skill in Skills)
         {

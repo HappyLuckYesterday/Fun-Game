@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Rhisis.Game.Resources.Properties.Dialogs;
@@ -32,4 +31,15 @@ public class DialogLink
     /// </summary>
     [JsonIgnore]
     public int? QuestId { get; set; }
+
+    public DialogLink()
+    {
+    }
+
+    public DialogLink(string questStateId, string title, int? questId = null)
+    {
+        Id = questStateId;
+        Title = title;
+        QuestId = questId;
+    }
 }

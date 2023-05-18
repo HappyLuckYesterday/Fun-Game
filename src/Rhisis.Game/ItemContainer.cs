@@ -118,6 +118,8 @@ public class ItemContainer
         return _items[itemIndex];
     }
 
+    public ItemContainerSlot FindSlot(Func<ItemContainerSlot, bool> predicate) => _items.FirstOrDefault(predicate);
+
     /// <summary>
     /// Get a range of slots.
     /// </summary>
@@ -125,6 +127,12 @@ public class ItemContainer
     /// <param name="count">Number of slots to get.</param>
     /// <returns>A collection of slots.</returns>
     public IEnumerable<ItemContainerSlot> GetRange(int start, int count) => _slots.GetRange(start, count).Select(x => x > 0 ? _items[x] : ItemContainerSlot.Empty);
+
+    /// <summary>
+    /// Gets the number of available slots in the storage container.
+    /// </summary>
+    /// <returns>Number of available slots.</returns>
+    public int GetStorageCount() => GetRange(0, Capacity).Count(x => !x.HasItem);
 
     /// <summary>
     /// Checks if the given item can be stored in the container.

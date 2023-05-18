@@ -1,8 +1,11 @@
-﻿using System;
-using NLua;
+﻿using NLua;
+using System;
 
 namespace Rhisis.Game.Extensions;
 
+/// <summary>
+/// Provides extensions for Lua interop.
+/// </summary>
 public static class LuaExtensions
 {
     /// <summary>

@@ -26,8 +26,21 @@ public sealed class QuestResources
         _defines = defines;
     }
 
+    /// <summary>
+    /// Gets the quest properties based on the given quest id.
+    /// </summary>
+    /// <param name="questId">Quest id.</param>
+    /// <returns>Quest properties matching the id; null otherwise.</returns>
     public QuestProperties Get(int questId) => _quests.TryGetValue(questId, out QuestProperties quest) ? quest : null;
 
+    /// <summary>
+    /// Gets the quest properties based on the given quest identifier.
+    /// </summary>
+    /// <remarks>
+    /// The identifier can either be the quest id or the full text identifier.
+    /// </remarks>
+    /// <param name="questIdentifier">Quest identifier.</param>
+    /// <returns>Quest properties matching the identifier; null otherwise.</returns>
     public QuestProperties Get(string questIdentifier)
     {
         if (int.TryParse(questIdentifier, out int questId))
@@ -40,6 +53,16 @@ public sealed class QuestResources
         }
     }
 
+    /// <summary>
+    /// Gets a collection of <see cref="QuestProperties"/> matching the given predicate.
+    /// </summary>
+    /// <param name="predicate">Quest predicate.</param>
+    /// <returns>Collection of <see cref="QuestProperties"/>.</returns>
+    public IEnumerable<QuestProperties> Where(Func<QuestProperties, bool> predicate) => _quests.Values.Where(predicate);
+
+    /// <summary>
+    /// Loads the quests.
+    /// </summary>
     public void Load()
     {
         Stopwatch watch = new();
