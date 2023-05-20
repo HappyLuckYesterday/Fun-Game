@@ -1,5 +1,7 @@
-﻿using Rhisis.Game.Common;
+﻿using Rhisis.Core.Helpers;
+using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
+using Rhisis.Game.Factories;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots.Quests;
 using Rhisis.Game.Resources;
 using Rhisis.Game.Resources.Properties;
@@ -7,6 +9,7 @@ using Rhisis.Game.Resources.Properties.Quests;
 using Rhisis.Protocol;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Rhisis.Game;
@@ -241,13 +244,69 @@ public sealed class QuestDiary
     }
 
     /// <summary>
-    /// Updates the diary with the given action;
+    /// Updates the quest diary when a monster is killed.
     /// </summary>
-    /// <param name="actionType">Quest action type.</param>
-    /// <param name="values">Quest action values.</param>
-    public void Update(QuestActionType actionType, params object[] values)
+    /// <param name="killedMonster">Killed monster.</param>
+    public void OnMonsterKilled(Monster killedMonster)
     {
-        // TODO
+        int killedMonsterId = killedMonster.Properties.Id;
+
+        foreach (Quest quest in ActiveQuests)
+        {
+            bool updateQuest = false;
+
+            QuestMonsterProperties questMonster = quest.Properties.QuestEndCondition.Monsters.FirstOrDefault(x => killedMonsterId == GameResources.Current.GetDefinedValue(x.Id));
+
+            if (questMonster is not null && quest.Monsters.ContainsKey(killedMonsterId) && quest.Monsters[killedMonsterId] < questMonster.Amount)
+            {
+                quest.Monsters[killedMonsterId] += 1;
+                updateQuest = true;
+            }
+
+            IEnumerable<QuestItemDropProperties> questItemDrops = quest.Properties.Drops.Where(x => killedMonsterId == GameResources.Current.GetDefinedValue(x.MonsterId));
+
+            if (questItemDrops.Any())
+            {
+                foreach (QuestItemDropProperties questItem in questItemDrops)
+                {
+                    // TODO: move this constant to configuration file
+                    const long MaxDropChance = 3000000000;
+                    long dropChance = FFRandom.LongRandom(0, MaxDropChance);
+
+                    if (dropChance < questItem.Probability * GameOptions.Current.Rates.Drop)
+                    {
+                        int itemId = GameResources.Current.GetDefinedValue(questItem.ItemId);
+                        Item item = new(GameResources.Current.Items.Get(itemId))
+                        {
+                            Quantity = questItem.Quantity,
+                            CreatorId = _player.Id
+                        };
+                        int createdQuantity = _player.Inventory.CreateItem(item);
+
+                        if (createdQuantity > 0)
+                        {
+                            _player.SendDefinedText(DefineText.TID_EVE_REAPITEM, $"\"{item.Name ?? "[undefined]"}\"");
+                        }
+                        else
+                        {
+                            MapItemObject mapItem = new(item)
+                            {
+                                Map = _player.Map,
+                                MapLayer = _player.MapLayer,
+                                Position = _player.Position.Clone()
+                            };
+
+                            _player.MapLayer.AddItem(mapItem);
+                        }
+                    }
+                }
+            }
+
+            if (updateQuest)
+            {
+                SendSetQuestPacket(_player, quest);
+            }
+        }
     }
 
     /// <summary>

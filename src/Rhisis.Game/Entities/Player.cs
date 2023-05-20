@@ -407,6 +407,7 @@ public sealed class Player : Mover
         else if (target is Monster monster)
         {
             Experience.Increase(monster.Properties.Experience * GameOptions.Current.Rates.Experience);
+            QuestDiary.OnMonsterKilled(monster);
         }
     }
 
