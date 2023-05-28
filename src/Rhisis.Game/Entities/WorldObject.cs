@@ -106,7 +106,20 @@ public class WorldObject : IDisposable
     public void SendDefinedText(DefineText text, params object[] parameters)
     {
         using DefinedTextSnapshot snapshot = new(this, text, parameters);
+
         Send(snapshot);
+    }
+
+    /// <summary>
+    /// Sends a special effect to the current world object.
+    /// </summary>
+    /// <param name="specialEffect">Special effect.</param>
+    /// <param name="followObject">Boolean value that indicates if the effect should follow the object.</param>
+    public void SendSpecialEffect(DefineSpecialEffects specialEffect, bool followObject = true)
+    {
+        using CreateSfxObjectSnapshot snapshot = new(this, specialEffect, followObject);
+
+        SendToVisible(snapshot, sendToSelf: true);
     }
 
     /// <summary>

@@ -11,8 +11,14 @@ public sealed class Defense
 {
     private readonly Mover _mover;
 
+    /// <summary>
+    /// Gets the minimum defense.
+    /// </summary>
     public int Minimum { get; private set; }
 
+    /// <summary>
+    /// Gets the maximum defense.
+    /// </summary>
     public int Maximum { get; private set; }
 
     public Defense(Mover mover)
@@ -20,6 +26,10 @@ public sealed class Defense
         _mover = mover;
     }
 
+    /// <summary>
+    /// Gets the defense.
+    /// </summary>
+    /// <returns></returns>
     public int Get()
     {
         if (Minimum == Maximum)

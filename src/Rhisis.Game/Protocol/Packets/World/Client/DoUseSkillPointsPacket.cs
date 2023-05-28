@@ -6,22 +6,13 @@ namespace Rhisis.Game.Protocol.Packets.World.Client;
 
 public class DoUseSkillPointsPacket
 {
-    private readonly Dictionary<int, int> _skills;
-
-    /// <summary>
-    /// Creates a new <see cref="DoUseSkillPointsPacket"/> instance.
-    /// </summary>
-    public DoUseSkillPointsPacket()
-    {
-        _skills = new Dictionary<int, int>();
-    }
+    private readonly Dictionary<int, int> _skills = new();
 
     /// <summary>
     /// Gets the skills to be updated.
     /// </summary>
     public IReadOnlyDictionary<int, int> Skills => _skills;
 
-    /// <inheritdoc />
     public DoUseSkillPointsPacket(FFPacket packet)
     {
         while (!packet.IsEndOfStream())

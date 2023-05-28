@@ -7,6 +7,7 @@ using Rhisis.Game.Protocol.Packets.World.Client;
 using Rhisis.Game.Protocol.Packets.World.Server;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Game.Resources;
+using Rhisis.Game.Resources.Properties;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
@@ -121,7 +122,13 @@ internal class JoinGameHandler : WorldPacketHandler
             User.Player.Inventory.Initialize(playerInventoryItems);
         }
 
-        // TODO: initialize skills
+        // TODO: load skills from database
+        IEnumerable<Skill> skills = GameResources.Current.Skills
+            .GetJobSkills(User.Player.Job.Id)
+            .Select(x => new Skill(x, User.Player, 0));
+
+        User.Player.Skills.SetSkills(skills);
+
         // TODO: initialize quest diary
 
         User.Player.Defense.Update();

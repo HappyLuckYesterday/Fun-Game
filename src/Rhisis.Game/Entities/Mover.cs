@@ -95,6 +95,11 @@ public class Mover : WorldObject
     /// </summary>
     public Defense Defense { get; }
 
+    /// <summary>
+    /// Gets the mover's delayer.
+    /// </summary>
+    public Delayer Delayer { get; } = new();
+
     protected Mover(MoverProperties properties)
     {
         Properties = properties ?? throw new ArgumentNullException(nameof(properties), "Cannot create a mover with no properties.");
@@ -238,7 +243,7 @@ public class Mover : WorldObject
         return true;
     }
 
-    private void InflictDamages(Mover target, AttackResult attackResult, AttackType attackType)
+    public void InflictDamages(Mover target, AttackResult attackResult, AttackType attackType)
     {
         Target = target;
         target.Health.SufferDamages(this, Math.Max(0, attackResult.Damages), attackType, attackResult.Flags);

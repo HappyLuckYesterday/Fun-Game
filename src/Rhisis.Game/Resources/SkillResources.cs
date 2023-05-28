@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Rhisis.Core.Extensions;
+using Rhisis.Game.Common;
 using Rhisis.Game.IO;
 using Rhisis.Game.Resources.Properties;
 using System.Collections.Concurrent;
@@ -24,6 +25,28 @@ public sealed class SkillResources
     }
 
     public SkillProperties Get(int skillId) => _skillsById.GetValueOrDefault(skillId);
+
+    public IEnumerable<SkillProperties> GetJobSkills(DefineJob.Job job)
+    {
+        List<SkillProperties> skills = new();
+        JobProperties jobProperties = GameResources.Current.Jobs.Get(job);
+
+        if (jobProperties is not null)
+        {
+            if (jobProperties.Parent is not null)
+            {
+                skills.AddRange(GetJobSkills(jobProperties.Parent.Id));
+            }
+
+            IEnumerable<SkillProperties> jobSkills = _skillsById.Values
+                .Where(x => x.Job == jobProperties.Id && x.JobType != DefineJob.JobType.JTYPE_COMMON && x.JobType != DefineJob.JobType.JTYPE_TROUPE)
+                .ToList();
+
+            skills.AddRange(jobSkills);
+        }
+
+        return skills;
+    }
 
     public void Load()
     {

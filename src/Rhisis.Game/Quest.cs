@@ -93,6 +93,10 @@ public sealed class Quest : IPacketSerializer
         packet.WriteByte(0); // dialog done
     }
 
+    /// <summary>
+    /// Checks if the quest can be finished.
+    /// </summary>
+    /// <returns>True if the quest can be finished; false otherwise.</returns>
     public bool CanFinish()
     { 
         if (Properties.QuestEndCondition.Items != null && Properties.QuestEndCondition.Items.Any())

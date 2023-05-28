@@ -1,6 +1,7 @@
 ﻿using Rhisis.Core.Configuration.Cluster;
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
+using Rhisis.Game.Protocol.Packets.World.Server.Snapshots.Skills;
 using Rhisis.Game.Resources.Properties;
 using Rhisis.Protocol;
 using System;
@@ -445,6 +446,16 @@ public sealed class Player : Mover
     public void Motion(ObjectMessageType motionEnum)
     {
         using MotionSnapshot snapshot = new(this, motionEnum);
+
+        SendToVisible(snapshot, sendToSelf: true);
+    }
+
+    /// <summary>
+    /// Cancels the skill usage.
+    /// </summary>
+    public void CancelSkillUsage()
+    {
+        using ClearUseSkillSnapshot snapshot = new(this);
 
         SendToVisible(snapshot, sendToSelf: true);
     }
