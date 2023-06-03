@@ -9,7 +9,7 @@ using System;
 namespace Rhisis.WorldServer.Handlers.Skills;
 
 [PacketHandler(PacketType.USESKILL)]
-internal sealed class UseSkillHanler : WorldPacketHandler
+internal sealed class UseSkillHandler : WorldPacketHandler
 {
     public void Execute(UseSkillPacket packet)
     {

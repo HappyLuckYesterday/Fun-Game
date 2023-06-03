@@ -2,6 +2,7 @@
 using Rhisis.Game.Battle;
 using Rhisis.Game.Battle.AttackArbiters;
 using Rhisis.Game.Battle.AttackArbiters.Reducers;
+using Rhisis.Game.Battle.Projectiles;
 using Rhisis.Game.Common;
 using Rhisis.Game.Extensions;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
@@ -99,6 +100,11 @@ public class Mover : WorldObject
     /// Gets the mover's delayer.
     /// </summary>
     public Delayer Delayer { get; } = new();
+
+    /// <summary>
+    /// Gets the mover's projectiles.
+    /// </summary>
+    public ProjectileList Projectiles { get; } = new();
 
     protected Mover(MoverProperties properties)
     {

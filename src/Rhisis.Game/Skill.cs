@@ -2,6 +2,7 @@
 using Rhisis.Game.Battle;
 using Rhisis.Game.Battle.AttackArbiters;
 using Rhisis.Game.Battle.AttackArbiters.Reducers;
+using Rhisis.Game.Battle.Projectiles;
 using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Extensions;
@@ -227,7 +228,7 @@ public class Skill : IPacketSerializer
                 CastMagicSkill(target, skillUseType);
                 break;
             case SkillExecuteTargetType.MagicAttackShot:
-                //CastMagicAttackShot(player, target, skill, skillUseType);
+                CastMagicAttackShot(target, skillUseType);
                 break;
             case SkillExecuteTargetType.AnotherWith:
                 CastBuffSkill(target, skillUseType);
@@ -237,7 +238,7 @@ public class Skill : IPacketSerializer
         }
     }
 
-    private void CastMeleeSkill(Mover target, SkillUseType skillUseType = SkillUseType.Normal)
+    private void CastMeleeSkill(Mover target, SkillUseType skillUseType)
     {
         var skillCastingTime = GetCastingTime();
 
@@ -254,7 +255,7 @@ public class Skill : IPacketSerializer
         }
     }
 
-    private void CastMagicSkill(Mover target, SkillUseType skillUseType = SkillUseType.Normal)
+    private void CastMagicSkill(Mover target, SkillUseType skillUseType)
     { 
         var skillCastingTime = GetCastingTime();
 
@@ -271,7 +272,22 @@ public class Skill : IPacketSerializer
         }
     }
 
-    private void CastBuffSkill(Mover target, SkillUseType skillUseType = SkillUseType.Normal)
+    private void CastMagicAttackShot(Mover target, SkillUseType skillUseType)
+    {
+        var skillCastingTime = GetCastingTime();
+        MagicSkillProjectile projectile = new(Owner, target, this, () =>
+        {
+            Execute(target, reduceCasterPoints: false);
+        });
+        Owner.Projectiles.Add(projectile);
+
+        CastSkill(target, skillCastingTime, LevelProperties.CastingTime, skillUseType, () =>
+        {
+            ReduceCasterPoints();
+        });
+    }
+
+    private void CastBuffSkill(Mover target, SkillUseType skillUseType)
     {
         var skillCastingTime = GetCastingTime();
 

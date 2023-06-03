@@ -71,6 +71,30 @@ public class JobProperties
     [IgnoreDataMember]
     public JobProperties Parent { get; set; }
 
+    [IgnoreDataMember]
+    public int MinLevel
+    {
+        get => Type switch
+        {
+            DefineJob.JobType.JTYPE_BASE => 1,
+            DefineJob.JobType.JTYPE_EXPERT => (int)DefineJob.JobMax.MAX_JOB_LEVEL,
+            DefineJob.JobType.JTYPE_PRO => (int)DefineJob.JobMax.MAX_JOB_LEVEL + (int)DefineJob.JobMax.MAX_EXP_LEVEL,
+            _ => (int)DefineJob.JobMax.MAX_LEVEL
+        };
+    }
+
+    [IgnoreDataMember]
+    public int MaxLevel
+    {
+        get => Type switch
+        {
+            DefineJob.JobType.JTYPE_BASE => (int)DefineJob.JobMax.MAX_JOB_LEVEL,
+            DefineJob.JobType.JTYPE_EXPERT => (int)DefineJob.JobMax.MAX_JOB_LEVEL + (int)DefineJob.JobMax.MAX_EXP_LEVEL,
+            DefineJob.JobType.JTYPE_PRO => (int)DefineJob.JobMax.MAX_LEVEL,
+            _ => (int)DefineJob.JobMax.MAX_LEVEL
+        };
+    }
+
     /// <summary>
     /// Checks if the given job is anterior to the player's job.
     /// </summary>

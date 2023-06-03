@@ -2,7 +2,7 @@
 using Rhisis.Game.Entities;
 using System;
 
-namespace Rhisis.Game.Battle;
+namespace Rhisis.Game.Battle.Projectiles;
 
 public class Projectile
 {
