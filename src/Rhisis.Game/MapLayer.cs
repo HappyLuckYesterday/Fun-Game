@@ -217,6 +217,32 @@ public sealed class MapLayer : IDisposable
     /// </summary>
     public void UpdateSeconds()
     {
+        lock (_players)
+        {
+            if (!_players.Any())
+            {
+                return;
+            }
+
+            foreach (Player player in _players)
+            {
+                player.Buffs.Update();
+            }
+        }
+
+        lock (_monsters)
+        {
+            if (!_monsters.Any())
+            {
+                return;
+            }
+
+            foreach (Monster monster in _monsters)
+            {
+                monster.Buffs.Update();
+            }
+        }
+
         lock (_npcs)
         {
             if (!_npcs.Any())

@@ -305,13 +305,19 @@ public class Skill : IPacketSerializer
             }
             else
             {
-                // TODO: heal
+                Owner.Delayer.DelayActionMilliseconds(skillCastingTime, () =>
+                {
+                    ApplyHealSkill(target);
+                });
             }
         }
 
         if (LevelProperties.DestParam2 == DefineAttributes.DST_HP)
         {
-            // TODO: heal
+            Owner.Delayer.DelayActionMilliseconds(skillCastingTime, () =>
+            {
+                ApplyHealSkill(target);
+            });
         }
 
         var timeBonusValues = new int[]
@@ -337,7 +343,16 @@ public class Skill : IPacketSerializer
 
             Owner.Delayer.DelayActionMilliseconds(GetCastingTime(), () =>
             {
-                // TODO: apply buff
+                BuffSkill buff = new(target, attributes, Properties, Level)
+                {
+                    RemainingTime = buffTime
+                };
+
+                if (target.Buffs.Add(buff) != BuffResultType.None)
+                {
+                    using SetSkillStateSnapshot snapshot = new(target, Id, Level, buffTime);
+                    target.SendToVisible(snapshot, sendToSelf: true);
+                }
             });
         }
 
@@ -463,6 +478,25 @@ public class Skill : IPacketSerializer
         };
 
         return (int)(value / 10f * attributeValue + skillLevel * (attributeValue / 50f));
+    }
+
+    private void ApplyHealSkill(Mover target)
+    {
+        if (Properties.ReferTarget1 == SkillReferTargetType.Heal || Properties.ReferTarget2 == SkillReferTargetType.Heal)
+        {
+            var hpValues = new int[]
+            {
+                Properties.ReferTarget1 == SkillReferTargetType.Heal ? GetReferBonus(Properties.ReferStat1, Properties.ReferValue1, Level) : 0,
+                Properties.ReferTarget2 == SkillReferTargetType.Heal ? GetReferBonus(Properties.ReferStat2, Properties.ReferValue2, Level) : 0
+            };
+
+            int recoveredHp = LevelProperties.DestParam1Value + hpValues.Sum();
+
+            if (recoveredHp > 0)
+            {
+                target.Health.Hp += recoveredHp;
+            }
+        }
     }
 
     public override string ToString() => Name;

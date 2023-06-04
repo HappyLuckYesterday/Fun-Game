@@ -106,6 +106,8 @@ public class Mover : WorldObject
     /// </summary>
     public ProjectileList Projectiles { get; } = new();
 
+    public Buffs Buffs { get; }
+
     protected Mover(MoverProperties properties)
     {
         Properties = properties ?? throw new ArgumentNullException(nameof(properties), "Cannot create a mover with no properties.");
@@ -113,6 +115,7 @@ public class Mover : WorldObject
         Statistics = new Statistics(this);
         Health = new Health(this);
         Defense = new Defense(this);
+        Buffs = new Buffs(this);
     }
     
     /// <summary>

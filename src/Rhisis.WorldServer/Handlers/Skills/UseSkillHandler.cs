@@ -35,6 +35,7 @@ internal sealed class UseSkillHandler : WorldPacketHandler
 
         if (target is null)
         {
+            Player.CancelSkillUsage();
             throw new InvalidOperationException($"Failed to find target with id: {packet.TargetObjectId}.");
         }
 
