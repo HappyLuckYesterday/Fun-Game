@@ -15,11 +15,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Rhisis.Game;
 
-[DebuggerDisplay("{Name} Lv.{Level}")]
+[DebuggerDisplay("{Properties.IdentifierName} Lv.{Level}")]
 public class Skill : IPacketSerializer
 {
     private int _level;
@@ -46,11 +45,6 @@ public class Skill : IPacketSerializer
     public Mover Owner { get; }
 
     /// <summary>
-    /// Gets or sets the skill database id in case of the owner is a <see cref="Player"/>.
-    /// </summary>
-    public int? DatabaseId { get; set; }
-
-    /// <summary>
     /// Gets or sets the skill level.
     /// </summary>
     public int Level
@@ -69,12 +63,11 @@ public class Skill : IPacketSerializer
     /// </summary>
     public SkillLevelProperties LevelProperties => Properties.SkillLevels[Level];
 
-    public Skill(SkillProperties skillProperties, Mover owner, int level, int? databaseId = null)
+    public Skill(SkillProperties skillProperties, Mover owner, int level)
     {
         Properties = skillProperties ?? throw new ArgumentNullException(nameof(skillProperties), "Cannot create a skill instance with undefined skill properties.");
         Owner = owner;
         Level = level;
-        DatabaseId = databaseId;
     }
 
     /// <summary>

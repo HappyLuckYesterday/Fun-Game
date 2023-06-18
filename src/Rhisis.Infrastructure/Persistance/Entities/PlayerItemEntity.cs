@@ -4,7 +4,7 @@ namespace Rhisis.Infrastructure.Persistance.Entities;
 
 public class PlayerItemEntity
 {
-    public int ItemSerialNumber { get; set; }
+    public int ItemId { get; set; }
 
     public ItemEntity Item { get; set; }
 

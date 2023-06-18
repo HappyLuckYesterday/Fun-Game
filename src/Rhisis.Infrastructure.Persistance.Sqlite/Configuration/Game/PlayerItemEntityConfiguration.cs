@@ -12,7 +12,7 @@ public sealed class PlayerItemEntityConfiguration : IEntityTypeConfiguration<Pla
         builder.HasKey(x => new { x.PlayerId, x.StorageType, x.Slot });
         builder.HasIndex(x => new { x.PlayerId, x.StorageType, x.Slot }).IsUnique();
         builder.Property(x => x.PlayerId).IsRequired();
-        builder.Property(x => x.ItemSerialNumber).IsRequired();
+        builder.Property(x => x.ItemId).IsRequired();
         builder.Property(x => x.StorageType).IsRequired().HasColumnType("INTEGER")
             .HasConversion(
                 x => (byte)x,
@@ -22,7 +22,7 @@ public sealed class PlayerItemEntityConfiguration : IEntityTypeConfiguration<Pla
 
         builder.HasOne(x => x.Item)
             .WithOne()
-            .HasForeignKey<PlayerItemEntity>(x => x.ItemSerialNumber)
+            .HasForeignKey<PlayerItemEntity>(x => x.ItemId)
             .OnDelete(DeleteBehavior.NoAction);
         builder.HasOne(x => x.Player)
             .WithMany(x => x.Items)

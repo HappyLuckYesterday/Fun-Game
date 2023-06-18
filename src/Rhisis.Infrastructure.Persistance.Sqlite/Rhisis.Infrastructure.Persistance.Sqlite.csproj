@@ -14,4 +14,8 @@
     <ProjectReference Include="..\Rhisis.Infrastructure\Rhisis.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\Game\" />
+  </ItemGroup>
+
 </Project>

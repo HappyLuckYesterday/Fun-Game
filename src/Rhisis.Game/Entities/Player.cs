@@ -77,6 +77,11 @@ public sealed class Player : Mover
     public ushort SkillPoints { get; set; }
 
     /// <summary>
+    /// Gets or sets the player's bank code.
+    /// </summary>
+    public int BankCode { get; set; }
+
+    /// <summary>
     /// Gets the player's gold.
     /// </summary>
     public Gold Gold { get; }

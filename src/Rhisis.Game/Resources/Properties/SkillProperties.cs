@@ -24,6 +24,13 @@ public class SkillProperties
     public int Id { get; internal set; }
 
     /// <summary>
+    /// Gets the skill identifier name.
+    /// </summary>
+    [DataMember(Name = "dwID")]
+    [IgnoreDataTransformation]
+    public string IdentifierName { get; internal set; }
+
+    /// <summary>
     /// Gets the skill index.
     /// </summary>
     [DataIndex]

@@ -12,6 +12,14 @@ public interface IGameDatabase : IDisposable
 
     DbSet<PlayerItemEntity> PlayerItems { get; }
 
+    DbSet<PlayerSkillEntity> PlayerSkills { get; }
+
+    DbSet<PlayerSkillBuffEntity> PlayerSkillBuffs { get; }
+
+    DbSet<PlayerSkillBuffAttributeEntity> PlayerSkillBuffAttributes { get; }
+
+    DbSet<PlayerQuestEntity> PlayerQuests { get; }
+
     void Migrate();
 
     int SaveChanges();
