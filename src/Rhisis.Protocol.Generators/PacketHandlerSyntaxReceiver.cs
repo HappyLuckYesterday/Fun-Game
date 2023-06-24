@@ -12,8 +12,7 @@ internal class PacketHandlerSyntaxReceiver : ISyntaxReceiver
     private readonly List<PacketHandlerObject> _packetHandler = new();
     private readonly string[] _attributeNames = new[]
     {
-        PacketDispatcherConstants.PacketHandlerAttributeName,
-        PacketDispatcherConstants.CoreHandlerAttributeName
+        PacketDispatcherConstants.PacketHandlerAttributeName
     };
 
     public IReadOnlyList<PacketHandlerObject> Handlers => _packetHandler;

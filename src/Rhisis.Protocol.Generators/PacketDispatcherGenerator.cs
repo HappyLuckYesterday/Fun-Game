@@ -28,17 +28,11 @@ public class PacketDispatcherGenerator : ISourceGenerator
 
         AssemblySymbolDefinitions.Load(context.Compilation.SourceModule);
         string packetDispatcherCode = GeneratePacketDispatcherCode(context, syntaxReceiver.Handlers.Where(x => x.PacketType.Contains("PacketType")));
-        string corePacketDispatcherCode = GeneratePacketDispatcherCode(context, syntaxReceiver.Handlers.Where(x => x.PacketType.Contains("CorePacketType")));
 
         // Add the source code to the compilation
         if (!string.IsNullOrWhiteSpace(packetDispatcherCode))
         {
             context.AddSource($"PacketTypeDispatcher.g.cs", packetDispatcherCode);
-        }
-
-        if (!string.IsNullOrWhiteSpace(corePacketDispatcherCode))
-        {
-            context.AddSource($"CorePacketTypeDispatcher.g.cs", corePacketDispatcherCode);
         }
     }
 
@@ -50,13 +44,6 @@ public class PacketDispatcherGenerator : ISourceGenerator
         }
 
         PacketDispatcherCodeGenerator generator = new(context, PacketDispatcherConstants.PacketDispatcherClassName, handlers, PacketDispatcherConstants.PacketTypeName);
-
-        return generator.GenerateCode();
-    }
-
-    private string GenerateSnapshotDispatcherCode(GeneratorExecutionContext context, IEnumerable<PacketHandlerObject> handlers)
-    {
-        PacketDispatcherCodeGenerator generator = new(context, PacketDispatcherConstants.SnapshotDispatcherClassName, handlers, PacketDispatcherConstants.SnapshotTypeName);
 
         return generator.GenerateCode();
     }
