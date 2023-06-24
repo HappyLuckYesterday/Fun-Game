@@ -13,22 +13,29 @@ public class Rectangle
     /// <summary>
     /// Gets the X position of the rectangle.
     /// </summary>
-    public int X { get; protected set; }
+    public int X { get; init; }
 
     /// <summary>
     /// Gets the Z position of the rectangle.
     /// </summary>
-    public int Z { get; protected set; }
+    public int Z { get; init; }
 
     /// <summary>
     /// Gets the width of the rectangle.
     /// </summary>
-    public int Width { get; protected set; }
+    public int Width { get; init; }
 
     /// <summary>
     /// Gets the length of the rectangle.
     /// </summary>
-    public int Length { get; protected set; }
+    public int Length { get; init; }
+
+    /// <summary>
+    /// Creates a new <see cref="Rectangle"/> initialized to 0.
+    /// </summary>
+    protected Rectangle()
+    {
+    }
 
     /// <summary>
     /// Creates a new <see cref="Rectangle"/>.
