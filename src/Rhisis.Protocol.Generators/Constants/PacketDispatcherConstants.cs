@@ -16,7 +16,6 @@ internal static class PacketDispatcherConstants
     public static readonly string ProtocolNamspace = "Rhisis.Protocol";
 
     public static readonly string PacketHandlerAttributeName = "PacketHandler";
-    public static readonly string SnapshotHandlerAttributeName = "SnapshotHandler";
     public static readonly string CoreHandlerAttributeName = "CoreHandler";
 
     public static readonly string ServiceProviderTypeName = "System.IServiceProvider";

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Rhisis.ClusterServer.Abstractions;
 using Rhisis.ClusterServer.Caching;
+using Rhisis.ClusterServer.Caching.Server;
 using Rhisis.Core.Configuration;
 using Rhisis.Core.Configuration.Cluster;
 using Rhisis.Core.Extensions;
@@ -16,7 +17,6 @@ using Rhisis.Infrastructure.Logging;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Protocol;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Rhisis.ClusterServer;
@@ -66,7 +66,7 @@ internal static class Program
                    options.PacketProcessor = new FlyffPacketProcessor();
                    options.ReceiveStrategy = ReceiveStrategyType.Queued;
                });
-               builder.AddLiteServer<WorldChannelCacheServer>(options =>
+               builder.AddLiteServer<ClusterCacheServer>(options =>
                {
                    var worldChannelCacheServerOptions = context.Configuration.GetSection("cluster-cache-server").Get<ClusterCacheServerOptions>();
 

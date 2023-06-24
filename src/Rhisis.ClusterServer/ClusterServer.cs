@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rhisis.ClusterServer.Abstractions;
 using Rhisis.ClusterServer.Caching;
+using Rhisis.ClusterServer.Caching.Server;
 using Rhisis.Core.Configuration.Cluster;
 using Rhisis.Game.Protocol.Packets.Core;
 using Rhisis.Infrastructure.Persistance;
@@ -23,7 +24,7 @@ public sealed class ClusterServer : LiteServer<ClusterUser>, ICluster
     private readonly IServiceProvider _serviceProvider;
     private readonly ConcurrentDictionary<string, WorldChannel> _channels = new();
 
-    private readonly WorldChannelCacheServer _worldChannelCacheServer;
+    private readonly ClusterCacheServer _worldChannelCacheServer;
     private readonly CoreCacheClient _coreCacheClient;
 
     public string Name => Configuration.Name;
@@ -35,7 +36,7 @@ public sealed class ClusterServer : LiteServer<ClusterUser>, ICluster
     public ClusterServer(LiteServerOptions options, 
         ILogger<ClusterServer> logger,
         IOptions<ClusterServerOptions> clusterOptions,
-        WorldChannelCacheServer worldChannelCacheServer, 
+        ClusterCacheServer worldChannelCacheServer, 
         CoreCacheClient coreCacheClient, 
         IServiceProvider serviceProvider = null) 
         : base(options, serviceProvider)
@@ -81,7 +82,7 @@ public sealed class ClusterServer : LiteServer<ClusterUser>, ICluster
             throw new InvalidOperationException($"Channel '{channel.Name}' already exists.");
         }
 
-        _coreCacheClient.Send(CorePacketType.AddChannel, new ClusterAddChannelPacket(new WorldChannelInfo
+        _coreCacheClient.SendMessage(new ClusterAddChannelPacket(new WorldChannelInfo
         {
             Id = channel.Id,
             Ip = channel.Ip,
@@ -103,7 +104,7 @@ public sealed class ClusterServer : LiteServer<ClusterUser>, ICluster
         }
 
         _worldChannelCacheServer.DisconnectUser(channel.ConnectionId);
-        _coreCacheClient.Send(CorePacketType.RemoveChannel, new ClusterRemoveChannelPacket(channel.Name));
+        _coreCacheClient.SendMessage(new ClusterRemoveChannelPacket(channel.Name));
     }
 
     public WorldChannel GetChannel(string channelName) => _channels.GetValueOrDefault(channelName);
@@ -116,7 +117,7 @@ public sealed class ClusterServer : LiteServer<ClusterUser>, ICluster
     {
         foreach (WorldChannel channel in _channels.Values)
         {
-            _coreCacheClient.Send(CorePacketType.AddChannel, new ClusterAddChannelPacket(new WorldChannelInfo
+            _coreCacheClient.SendMessage(new ClusterAddChannelPacket(new WorldChannelInfo
             {
                 Id = channel.Id,
                 Ip = channel.Ip,

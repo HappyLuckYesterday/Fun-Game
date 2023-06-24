@@ -47,4 +47,16 @@ public static class ReflectionExtensions
 
         return property.GetCustomAttribute(typeof(TAttribute)) as TAttribute;
     }
+
+    public static Type FindType(this string typeAsString)
+    {
+        return AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).FirstOrDefault(x => x.Name == typeAsString);
+    }
+
+    public static void InvokeMethod(this object @object, string methodName, params object[] parameters)
+    {
+        MethodInfo method = @object.GetType().GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+
+        method?.Invoke(@object, parameters);
+    }
 }
