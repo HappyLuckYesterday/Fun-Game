@@ -11,11 +11,6 @@ public class BuffSkill : Buff
     public override BuffType Type => BuffType.Skill;
 
     /// <summary>
-    /// Gets the buff database id.
-    /// </summary>
-    public int? DatabaseId { get; }
-
-    /// <summary>
     /// Gets the buff skill id.
     /// </summary>
     public int SkillId => SkillProperties.Id;
@@ -40,11 +35,11 @@ public class BuffSkill : Buff
     /// </summary>
     public SkillLevelProperties SkillLevelProperties => SkillProperties.SkillLevels[SkillLevel];
 
-    public BuffSkill(Mover owner, IDictionary<DefineAttributes, int> attributes, SkillProperties skillProperties, int skillLevel, int? databaseId = null)
+    public BuffSkill(Mover owner, IDictionary<DefineAttributes, int> attributes, SkillProperties skillProperties, int skillLevel)
         : base(owner, attributes)
     {
-        DatabaseId = databaseId;
         SkillProperties = skillProperties;
+        SkillLevel = skillLevel;
     }
 
     public override bool Equals(object obj)

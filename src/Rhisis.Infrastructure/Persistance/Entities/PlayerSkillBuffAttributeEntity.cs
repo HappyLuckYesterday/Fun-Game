@@ -5,14 +5,14 @@ namespace Rhisis.Infrastructure.Persistance.Entities;
 public class PlayerSkillBuffAttributeEntity
 {
     /// <summary>
-    /// Gets or sets the player skill buff id.
+    /// Gets or sets the player id.
     /// </summary>
-    public int PlayerSkillBuffId { get; set; }
+    public int PlayerId { get; set; }
 
     /// <summary>
-    /// Gets or sets the player skill buff instance.
+    /// Gets or sets the skill id.
     /// </summary>
-    public PlayerSkillBuffEntity PlayerBuff { get; set; }
+    public int SkillId { get; set; }
 
     /// <summary>
     /// Gets or sets the buff attribute.

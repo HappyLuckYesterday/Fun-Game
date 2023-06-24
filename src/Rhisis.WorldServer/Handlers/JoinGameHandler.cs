@@ -202,5 +202,23 @@ internal class JoinGameHandler : WorldPacketHandler
 
     private static void LoadBuffs(Player player, IGameDatabase gameDatabase)
     {
+        IEnumerable<PlayerSkillBuffEntity> buffs = gameDatabase.PlayerSkillBuffs
+            .Include(x => x.Attributes)
+            .Where(x => x.PlayerId == player.Id)
+            .ToList();
+
+        foreach (PlayerSkillBuffEntity buff in buffs)
+        {
+            BuffSkill buffSkill = new(
+                owner: player,
+                attributes: buff.Attributes.ToDictionary(x => x.Attribute, x => x.Value),
+                skillProperties: GameResources.Current.Skills.Get(buff.SkillId),
+                skillLevel: buff.SkillLevel)
+            {
+                RemainingTime = buff.RemainingTime
+            };
+
+            player.Buffs.Add(buffSkill);
+        }
     }
 }

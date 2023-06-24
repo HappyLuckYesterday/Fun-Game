@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rhisis.Game;
 using Rhisis.Game.Common;
@@ -10,7 +9,6 @@ using Rhisis.Protocol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Rhisis.WorldServer;
@@ -127,9 +125,8 @@ public sealed class WorldUser : FFUserConnection
 
             if (slot.HasItem)
             {
-                ItemEntity item = gameDatabase.Items.FirstOrDefault(x => x.SerialNumber == slot.Item.SerialNumber);
+                ItemEntity item = gameDatabase.Items.FirstOrDefault(x => x.SerialNumber == slot.Item.SerialNumber) ?? new ItemEntity();
 
-                item ??= new ItemEntity();
                 item.Refine = slot.Item.Refine;
                 item.Element = (byte)slot.Item.Element;
                 item.ElementRefine = slot.Item.ElementRefine;
@@ -138,7 +135,7 @@ public sealed class WorldUser : FFUserConnection
                 if (item.SerialNumber == 0)
                 {
                     item.Id = slot.Item.Id;
-                    gameDatabase.Items.Add(item);
+                    //gameDatabase.Items.Add(item);
                 }
 
                 PlayerItemEntity playerItem = new()
@@ -236,5 +233,39 @@ public sealed class WorldUser : FFUserConnection
 
     private static void SavePlayerBuffs(Player player, IGameDatabase gameDatabase)
     {
+        IEnumerable<PlayerSkillBuffAttributeEntity> buffAttributes = gameDatabase.PlayerSkillBuffAttributes.Where(x => x.PlayerId == player.Id);
+        IEnumerable<PlayerSkillBuffEntity> buffs = gameDatabase.PlayerSkillBuffs.Where(x => x.PlayerId == player.Id);
+
+        foreach (PlayerSkillBuffAttributeEntity buffAttribute in buffAttributes)
+        {
+            gameDatabase.PlayerSkillBuffAttributes.Remove(buffAttribute);
+        }
+        
+        foreach (PlayerSkillBuffEntity skillBuff in buffs)
+        {
+            gameDatabase.PlayerSkillBuffs.Remove(skillBuff);
+        }
+
+        foreach (BuffSkill buff in player.Buffs.OfType<BuffSkill>())
+        {
+            PlayerSkillBuffEntity skillBuff = new()
+            {
+                PlayerId = player.Id,
+                SkillId = buff.SkillId,
+                SkillLevel = buff.SkillLevel,
+                RemainingTime = buff.RemainingTime,
+                Attributes = buff.Attributes.Select(x => new PlayerSkillBuffAttributeEntity()
+                {
+                    SkillId = buff.SkillId,
+                    PlayerId = player.Id,
+                    Attribute = x.Key,
+                    Value = x.Value
+                }).ToList()
+            };
+
+            gameDatabase.PlayerSkillBuffs.Add(skillBuff);
+        }
+
+        gameDatabase.SaveChanges();
     }
 }

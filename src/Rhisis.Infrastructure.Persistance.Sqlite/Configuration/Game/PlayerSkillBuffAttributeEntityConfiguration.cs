@@ -10,16 +10,13 @@ public sealed class PlayerSkillBuffAttributeEntityConfiguration : IEntityTypeCon
 {
     public void Configure(EntityTypeBuilder<PlayerSkillBuffAttributeEntity> builder)
     {
-        builder.HasKey(x => new { x.PlayerSkillBuffId, x.Attribute });
-        builder.Property(x => x.PlayerSkillBuffId).IsRequired();
+        builder.HasKey(x => new { x.PlayerId, x.SkillId, x.Attribute });
+        builder.Property(x => x.PlayerId).IsRequired();
+        builder.Property(x => x.SkillId).IsRequired();
         builder.Property(x => x.Value).IsRequired();
         builder.Property(x => x.Attribute)
             .IsRequired()
             .HasColumnType("TEXT")
             .HasConversion(x => x.ToString(), x => (DefineAttributes)Enum.Parse(typeof(DefineAttributes), x));
-        builder.HasOne(x => x.PlayerBuff)
-            .WithMany(x => x.Attributes)
-            .HasForeignKey(x => x.PlayerSkillBuffId)
-            .OnDelete(DeleteBehavior.NoAction);
     }
 }

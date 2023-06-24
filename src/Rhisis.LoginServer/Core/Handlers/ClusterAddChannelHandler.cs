@@ -2,7 +2,6 @@
 using Rhisis.Game.Protocol.Packets.Core;
 using Rhisis.Protocol;
 using Rhisis.Protocol.Networking;
-using System;
 using System.Linq;
 
 namespace Rhisis.LoginServer.Core.Handlers;
@@ -22,7 +21,8 @@ internal sealed class ClusterAddChannelHandler : IFFInterServerConnectionHandler
         {
             if (user.Cluster.Channels.Any(x => x.Name == message.Channel.Name))
             {
-                throw new InvalidOperationException($"Failed to add channel '{message.Channel.Name}' to cluster '{user.Cluster.Name}' because a channel with the same name already exists.");
+                _logger.LogWarning($"Failed to add channel '{message.Channel.Name}' to cluster '{user.Cluster.Name}' because a channel with the same name already exists.");
+                return;
             }
 
             user.Cluster.Channels.Add(new WorldChannelInfo

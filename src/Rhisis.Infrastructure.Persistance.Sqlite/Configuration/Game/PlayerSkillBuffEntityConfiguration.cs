@@ -9,15 +9,14 @@ public sealed class PlayerSkillBuffEntityConfiguration : IEntityTypeConfiguratio
     public void Configure(EntityTypeBuilder<PlayerSkillBuffEntity> builder)
     {
         builder.HasIndex(x => new { x.PlayerId, x.SkillId }).IsUnique();
-        builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.HasKey(x => new { x.PlayerId, x.SkillId });
         builder.Property(x => x.PlayerId).IsRequired();
         builder.Property(x => x.SkillId).IsRequired();
         builder.Property(x => x.SkillLevel).IsRequired();
         builder.Property(x => x.RemainingTime).IsRequired();
         builder.HasMany(x => x.Attributes)
-            .WithOne(x => x.PlayerBuff)
-            .HasForeignKey(x => x.PlayerSkillBuffId)
+            .WithOne()
+            .HasForeignKey(x => new { x.PlayerId, x.SkillId })
             .OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(x => x.Player)
             .WithMany(x => x.Buffs)
