@@ -39,6 +39,8 @@ internal sealed class RevivalToLodestarHandler : WorldPacketHandler
                 ?? throw new InvalidOperationException($"Cannot find revival region for map '{targetRevivalMap.Id}'.");
         }
 
+        // TODO: Remove buffs
+
         Player.Teleport(revivalRegion.MapId, revivalRegion.RevivalPosition);
 
         using FFSnapshot snapshots = new(new FFSnapshot[]

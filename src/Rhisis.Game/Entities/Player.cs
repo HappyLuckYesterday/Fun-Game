@@ -480,17 +480,6 @@ public sealed class Player : Mover
     }
 
     /// <summary>
-    /// Sends a motion to every entities around.
-    /// </summary>
-    /// <param name="motion">motionId.</param>
-    public void Motion(ObjectMessageType motionEnum)
-    {
-        using MotionSnapshot snapshot = new(this, motionEnum);
-
-        SendToVisible(snapshot, sendToSelf: true);
-    }
-
-    /// <summary>
     /// Cancels the skill usage.
     /// </summary>
     public void CancelSkillUsage()

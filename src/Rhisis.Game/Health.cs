@@ -31,6 +31,9 @@ public sealed class Health
             }
 
             _hp = Math.Clamp(value, 0, MaxHp);
+
+            using UpdateParamPointSnapshot healthSnapshot = new(_mover, DefineAttributes.DST_HP, _hp);
+            _mover.SendToVisible(healthSnapshot, sendToSelf: true);
         }
     }
 
@@ -48,6 +51,9 @@ public sealed class Health
             }
 
             _mp = Math.Clamp(value, 0, MaxMp);
+
+            using UpdateParamPointSnapshot healthSnapshot = new(_mover, DefineAttributes.DST_MP, _mp);
+            _mover.SendToVisible(healthSnapshot, sendToSelf: true);
         }
     }
 
@@ -65,6 +71,9 @@ public sealed class Health
             }
 
             _fp = Math.Clamp(value, 0, MaxFp);
+
+            using UpdateParamPointSnapshot healthSnapshot = new(_mover, DefineAttributes.DST_FP, _fp);
+            _mover.SendToVisible(healthSnapshot, sendToSelf: true);
         }
     }
 

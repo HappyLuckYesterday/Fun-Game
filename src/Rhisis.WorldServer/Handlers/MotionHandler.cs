@@ -10,7 +10,7 @@ internal sealed class MotionHandler : WorldPacketHandler
 {
     public void Execute(MotionPacket packet)
     {
-        Player.Motion(packet.MotionEnum);
+        Player.SendMotion(packet.MotionEnum);
     }
 }
 

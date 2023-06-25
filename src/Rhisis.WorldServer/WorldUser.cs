@@ -42,7 +42,7 @@ public sealed class WorldUser : FFUserConnection
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "An error occured while handling a login packet.");
+            Logger.LogError(e, "An error occured while handling a world packet.");
         }
 
         return base.HandleMessageAsync(packetBuffer);

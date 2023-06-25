@@ -227,7 +227,9 @@ public sealed class Inventory : ItemContainer
         if (EquipInternal(slot))
         {
             using DoEquipSnapshot equipSnapshot = new(_owner, slot.Item, slot.Index, true);
-            _owner.Send(equipSnapshot);
+
+            _owner.SendToVisible(equipSnapshot, sendToSelf: true);
+            //_owner.Send(equipSnapshot);
         }
 
         return false;
@@ -282,7 +284,7 @@ public sealed class Inventory : ItemContainer
         if (UnequipInternal(slot))
         {
             using DoEquipSnapshot equipSnapshot = new(_owner, slot.Item, slot.Index, false);
-            _owner.Send(equipSnapshot);
+            _owner.SendToVisible(equipSnapshot, sendToSelf: true);
 
             return true;
         }
