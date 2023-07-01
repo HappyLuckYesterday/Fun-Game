@@ -146,8 +146,8 @@ public class Mover : WorldObject
 
         DestinationPosition.Reset();
         OnArrived();
-        SendMotion(ObjectMessageType.OBJMSG_STOP_TURN);
-        SendMotion(ObjectMessageType.OBJMSG_STAND);
+        SendMotion(ObjectMessageType.OBJMSG_STOP_TURN, sendToSelf: false);
+        SendMotion(ObjectMessageType.OBJMSG_STAND, sendToSelf: false);
     }
 
     /// <summary>
@@ -180,11 +180,11 @@ public class Mover : WorldObject
     /// Sends a motion to every entities around.
     /// </summary>
     /// <param name="motion">motion.</param>
-    public void SendMotion(ObjectMessageType motion)
+    public void SendMotion(ObjectMessageType motion, bool sendToSelf = true)
     {
         using MotionSnapshot snapshot = new(this, motion);
 
-        SendToVisible(snapshot, sendToSelf: true);
+        SendToVisible(snapshot, sendToSelf);
     }
 
     /// <summary>
