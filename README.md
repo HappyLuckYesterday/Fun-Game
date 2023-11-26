@@ -8,7 +8,7 @@
   <a href="http://forthebadge.com"><img src="http://forthebadge.com/images/badges/built-with-love.svg"></a><br>
 </p>
 
-<h4>Built with C# 10 and the <a href="https://dotnet.microsoft.com/download/dotnet-core" target="_blank">.NET 7</a>.</h4>
+<h4>Built with C# 12 and the <a href="https://dotnet.microsoft.com/download/dotnet-core" target="_blank">.NET 8</a>.</h4>
 
 <p>This project has been created for learning purposes about the network and game logic problematics on the server-side.<br>
 
