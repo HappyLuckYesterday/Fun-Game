@@ -3,7 +3,6 @@
 internal static class PacketDispatcherConstants
 {
     public static readonly string PacketDispatcherClassName = "PacketDispatcher";
-    public static readonly string SnapshotDispatcherClassName = "SnapshotDispatcher";
     public static readonly string ExecuteMethodName = "Execute";
     public static readonly string OnBeforeExecuteMethodName = "OnBeforeExecute";
     public static readonly string OnAfterExecuteMethodName = "OnAfterExecute";
@@ -16,8 +15,6 @@ internal static class PacketDispatcherConstants
     public static readonly string ProtocolNamspace = "Rhisis.Protocol";
 
     public static readonly string PacketHandlerAttributeName = "PacketHandler";
-    public static readonly string SnapshotHandlerAttributeName = "SnapshotHandler";
-    public static readonly string CoreHandlerAttributeName = "CoreHandler";
 
     public static readonly string ServiceProviderTypeName = "System.IServiceProvider";
     public static readonly string ActivatorUtilitiesClassName = "Microsoft.Extensions.DependencyInjection.ActivatorUtilities";

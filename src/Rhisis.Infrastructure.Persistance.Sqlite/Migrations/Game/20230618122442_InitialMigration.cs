@@ -35,7 +35,7 @@ namespace Rhisis.Infrastructure.Persistance.Sqlite.Migrations.Game
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     AccountId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     Gender = table.Column<byte>(type: "INTEGER", nullable: false),
                     Level = table.Column<int>(type: "INTEGER", nullable: false),
                     Experience = table.Column<long>(type: "INTEGER", nullable: false, defaultValue: 0L),
@@ -78,15 +78,15 @@ namespace Rhisis.Infrastructure.Persistance.Sqlite.Migrations.Game
                     PlayerId = table.Column<int>(type: "INTEGER", nullable: false),
                     StorageType = table.Column<byte>(type: "INTEGER", nullable: false),
                     Slot = table.Column<byte>(type: "INTEGER", nullable: false),
-                    ItemSerialNumber = table.Column<int>(type: "INTEGER", nullable: false),
+                    ItemId = table.Column<int>(type: "INTEGER", nullable: false),
                     Quantity = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PlayerItems", x => new { x.PlayerId, x.StorageType, x.Slot });
                     table.ForeignKey(
-                        name: "FK_PlayerItems_Items_ItemSerialNumber",
-                        column: x => x.ItemSerialNumber,
+                        name: "FK_PlayerItems_Items_ItemId",
+                        column: x => x.ItemId,
                         principalTable: "Items",
                         principalColumn: "SerialNumber");
                     table.ForeignKey(
@@ -96,16 +96,117 @@ namespace Rhisis.Infrastructure.Persistance.Sqlite.Migrations.Game
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "PlayerQuests",
+                columns: table => new
+                {
+                    QuestId = table.Column<int>(type: "INTEGER", nullable: false),
+                    PlayerId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Finished = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsChecked = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsPatrolDone = table.Column<bool>(type: "INTEGER", nullable: false),
+                    MonsterKilled1 = table.Column<int>(type: "INTEGER", nullable: false),
+                    MonsterKilled2 = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlayerQuests", x => new { x.PlayerId, x.QuestId });
+                    table.ForeignKey(
+                        name: "FK_PlayerQuests_Players_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "Players",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PlayerSkillBuffs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    RemainingTime = table.Column<int>(type: "INTEGER", nullable: false),
+                    SkillId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SkillLevel = table.Column<int>(type: "INTEGER", nullable: false),
+                    PlayerId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlayerSkillBuffs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PlayerSkillBuffs_Players_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "Players",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PlayerSkills",
+                columns: table => new
+                {
+                    SkillId = table.Column<int>(type: "INTEGER", nullable: false),
+                    PlayerId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SkillLevel = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlayerSkills", x => new { x.PlayerId, x.SkillId });
+                    table.ForeignKey(
+                        name: "FK_PlayerSkills_Players_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "Players",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PlayerSkillBuffAttributes",
+                columns: table => new
+                {
+                    PlayerSkillBuffId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Attribute = table.Column<string>(type: "TEXT", nullable: false),
+                    Value = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlayerSkillBuffAttributes", x => new { x.PlayerSkillBuffId, x.Attribute });
+                    table.ForeignKey(
+                        name: "FK_PlayerSkillBuffAttributes_PlayerSkillBuffs_PlayerSkillBuffId",
+                        column: x => x.PlayerSkillBuffId,
+                        principalTable: "PlayerSkillBuffs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
-                name: "IX_PlayerItems_ItemSerialNumber",
+                name: "IX_PlayerItems_ItemId",
                 table: "PlayerItems",
-                column: "ItemSerialNumber",
+                column: "ItemId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlayerItems_PlayerId_StorageType_Slot",
                 table: "PlayerItems",
                 columns: new[] { "PlayerId", "StorageType", "Slot" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayerQuests_PlayerId_QuestId",
+                table: "PlayerQuests",
+                columns: new[] { "PlayerId", "QuestId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayerSkillBuffs_PlayerId_SkillId",
+                table: "PlayerSkillBuffs",
+                columns: new[] { "PlayerId", "SkillId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayerSkills_PlayerId_SkillId",
+                table: "PlayerSkills",
+                columns: new[] { "PlayerId", "SkillId" },
                 unique: true);
         }
 
@@ -116,7 +217,19 @@ namespace Rhisis.Infrastructure.Persistance.Sqlite.Migrations.Game
                 name: "PlayerItems");
 
             migrationBuilder.DropTable(
+                name: "PlayerQuests");
+
+            migrationBuilder.DropTable(
+                name: "PlayerSkillBuffAttributes");
+
+            migrationBuilder.DropTable(
+                name: "PlayerSkills");
+
+            migrationBuilder.DropTable(
                 name: "Items");
+
+            migrationBuilder.DropTable(
+                name: "PlayerSkillBuffs");
 
             migrationBuilder.DropTable(
                 name: "Players");

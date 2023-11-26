@@ -212,8 +212,7 @@ public class AddObjectSnapshot : FFSnapshot
                     }
 
                     // buffs
-                    WriteInt32(0);
-                    //player.Buffs.Serialize(this);
+                    player.Buffs.Serialize(this);
                 }
                 break;
             case Monster monster:

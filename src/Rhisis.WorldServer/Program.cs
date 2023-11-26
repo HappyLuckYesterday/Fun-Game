@@ -15,6 +15,7 @@ using Rhisis.Infrastructure.Logging;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Protocol;
 using Rhisis.WorldServer.Abstractions;
+using Rhisis.WorldServer.Caching;
 using System;
 using System.Threading.Tasks;
 

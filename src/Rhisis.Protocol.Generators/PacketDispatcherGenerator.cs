@@ -48,13 +48,6 @@ public class PacketDispatcherGenerator : ISourceGenerator
         return generator.GenerateCode();
     }
 
-    private string GenerateSnapshotDispatcherCode(GeneratorExecutionContext context, IEnumerable<PacketHandlerObject> handlers)
-    {
-        PacketDispatcherCodeGenerator generator = new(context, PacketDispatcherConstants.SnapshotDispatcherClassName, handlers, PacketDispatcherConstants.SnapshotTypeName);
-
-        return generator.GenerateCode();
-    }
-
     public void Initialize(GeneratorInitializationContext context)
     {
         context.RegisterForSyntaxNotifications(() => new PacketHandlerSyntaxReceiver());

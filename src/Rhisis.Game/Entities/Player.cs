@@ -2,6 +2,7 @@
 using Rhisis.Game.Common;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots.Skills;
+using Rhisis.Game.Resources;
 using Rhisis.Game.Resources.Properties;
 using Rhisis.Protocol;
 using System;
@@ -74,6 +75,11 @@ public sealed class Player : Mover
     /// Gets or sets the player's available skill points.
     /// </summary>
     public ushort SkillPoints { get; set; }
+
+    /// <summary>
+    /// Gets or sets the player's bank code.
+    /// </summary>
+    public int BankCode { get; set; }
 
     /// <summary>
     /// Gets the player's gold.
@@ -279,6 +285,40 @@ public sealed class Player : Mover
     }
 
     /// <summary>
+    /// Changes the player's job.
+    /// </summary>
+    /// <param name="job"></param>
+    /// <exception cref="InvalidOperationException"></exception>
+    public void ChangeJob(DefineJob.Job job)
+    {
+        if (Job.Id == job)
+        {
+            return;
+        }
+
+        JobProperties jobProperties = GameResources.Current.Jobs.Get(job) ?? throw new InvalidOperationException($"Failed to find job '{job}'.");
+        IEnumerable<SkillProperties> jobSkills = GameResources.Current.Skills.GetJobSkills(job);
+
+        if (jobSkills.Any())
+        {
+            foreach (SkillProperties skill in jobSkills)
+            {
+                Skills.SetSkill(new Skill(skill, this, 0));
+            }
+        }
+
+        Job = jobProperties;
+
+        using FFSnapshot snapshots = new(new FFSnapshot[]
+        {
+            new SetJobSkill(this),
+            new CreateSfxObjectSnapshot(this, DefineSpecialEffects.XI_GEN_LEVEL_UP01)
+        });
+
+        SendToVisible(snapshots, sendToSelf: true);
+    }
+
+    /// <summary>
     /// Sends an oral text message to every entities around.
     /// </summary>
     /// <param name="message">Message.</param>
@@ -440,17 +480,6 @@ public sealed class Player : Mover
     }
 
     /// <summary>
-    /// Sends a motion to every entities around.
-    /// </summary>
-    /// <param name="motion">motionId.</param>
-    public void Motion(ObjectMessageType motionEnum)
-    {
-        using MotionSnapshot snapshot = new(this, motionEnum);
-
-        SendToVisible(snapshot, sendToSelf: true);
-    }
-
-    /// <summary>
     /// Cancels the skill usage.
     /// </summary>
     public void CancelSkillUsage()
@@ -458,6 +487,17 @@ public sealed class Player : Mover
         using ClearUseSkillSnapshot snapshot = new(this);
 
         SendToVisible(snapshot, sendToSelf: true);
+    }
+
+    /// <summary>
+    /// Sends a snoop message to the current player.
+    /// </summary>
+    /// <param name="message">Message to send.</param>
+    public void SendSnoopMessage(string message)
+    {
+        using SnoopSnapshot snapshot = new(message);
+
+        Send(snapshot);
     }
 
     /// <summary>

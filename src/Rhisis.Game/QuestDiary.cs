@@ -8,13 +8,14 @@ using Rhisis.Game.Resources.Properties;
 using Rhisis.Game.Resources.Properties.Quests;
 using Rhisis.Protocol;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
 namespace Rhisis.Game;
 
-public sealed class QuestDiary
+public sealed class QuestDiary : IEnumerable<Quest>
 {
     private readonly Player _player;
     private readonly List<Quest> _quests = new();
@@ -37,6 +38,15 @@ public sealed class QuestDiary
     public QuestDiary(Player owner)
     {
         _player = owner;
+    }
+
+    /// <summary>
+    /// Sets the given collection of quests into the current quest diary.
+    /// </summary>
+    /// <param name="quests">Quests.</param>
+    public void SetQuests(IEnumerable<Quest> quests)
+    {
+        _quests.AddRange(quests.ToList());
     }
 
     /// <summary>
@@ -196,15 +206,6 @@ public sealed class QuestDiary
     public bool HasActiveQuest(int questId) => ActiveQuests.Any(x => x.Id == questId);
 
     /// <summary>
-    /// Removes the given quest from the diary.
-    /// </summary>
-    /// <param name="quest">Quest to remove.</param>
-    public void Remove(Quest quest)
-    {
-        quest.IsDeleted = true;
-    }
-
-    /// <summary>
     /// Check if the player can start the given quest script.
     /// </summary>
     /// <param name="questProperties">Quest properties.</param>
@@ -340,4 +341,8 @@ public sealed class QuestDiary
 
         player.Send(questSnapshot);
     }
+
+    public IEnumerator<Quest> GetEnumerator() => _quests.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => _quests.GetEnumerator();
 }

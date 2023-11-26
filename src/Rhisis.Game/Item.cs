@@ -22,7 +22,7 @@ public class Item : IEquatable<Item>
     /// <summary>
     /// Gets or sets the item serial number.
     /// </summary>
-    public int SerialNumber { get; init; }
+    public int? SerialNumber { get; set; }
 
     /// <summary>
     /// Gets the item id.
@@ -85,7 +85,7 @@ public class Item : IEquatable<Item>
     public void Serialize(FFPacket packet)
     {
         packet.WriteInt32(Id);
-        packet.WriteInt32(SerialNumber);
+        packet.WriteInt32(SerialNumber.GetValueOrDefault(0));
         packet.WriteString(Name.TakeCharacters(31));
         packet.WriteInt16((short)Quantity);
         packet.WriteByte(0); // Repair number

@@ -91,6 +91,31 @@ public sealed class Map : IDisposable
     /// <returns>True if the position is in map bounds; false otherwise.</returns>
     public bool IsInBounds(Vector3 position) => IsInBounds(position.X, position.Y, position.Z);
 
+    public MapRevivalRegionProperties GetNearestRevivalRegion(Vector3 position, bool isChaoMode)
+    {
+        MapRevivalRegionProperties definedRevivalRegion = Properties.Regions
+            .OfType<MapRevivalRegionProperties>()
+            .FirstOrDefault(x => x.MapId == Id && x.Contains(position) && x.IsChaoRegion == isChaoMode && x.TargetRevivalKey);
+
+        if (definedRevivalRegion is not null)
+        {
+            return GetRevivalRegion(definedRevivalRegion.Key, isChaoMode);
+        }
+
+        return Properties.Regions
+            .OfType<MapRevivalRegionProperties>()
+            .Where(x => x.IsChaoRegion == isChaoMode && !x.TargetRevivalKey)
+            .OrderBy(x => position.GetDistance3D(x.RevivalPosition))
+            .FirstOrDefault();
+    }
+
+    public MapRevivalRegionProperties GetRevivalRegion(string revivalKey, bool isChaoMode)
+    {
+        return Properties.Regions
+            .OfType<MapRevivalRegionProperties>()
+            .FirstOrDefault(x => x.Key.Equals(revivalKey, StringComparison.OrdinalIgnoreCase) && x.IsChaoRegion == isChaoMode && !x.TargetRevivalKey);
+    }
+
     private async Task UpdateAsync()
     {
         while (!MainProcessTaskCancelToken.IsCancellationRequested)

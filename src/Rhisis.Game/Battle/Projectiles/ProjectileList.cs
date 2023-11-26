@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Rhisis.Game.Battle;
+namespace Rhisis.Game.Battle.Projectiles;
 
-public class Projectiles
+public class ProjectileList
 {
     private readonly Dictionary<int, Projectile> _projectiles = new();
     private int _projectileCounter = 1;
@@ -34,6 +34,13 @@ public class Projectiles
     {
         _projectiles.Remove(projectileId);
     }
+
+    /// <summary>
+    /// Gets the projectile identified by the given id.
+    /// </summary>
+    /// <param name="projectileId">Projectile id.</param>
+    /// <returns>Projectile if found; null otherwise.</returns>
+    public Projectile Get(int projectileId) => _projectiles.GetValueOrDefault(projectileId);
 
     /// <summary>
     /// Clears the projectiles.

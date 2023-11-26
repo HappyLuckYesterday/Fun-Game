@@ -151,6 +151,12 @@ public class ItemProperties
     [DataMember(Name = "dwAddSkillMax")]
     public int AttackSkillMax { get; set; }
 
+    [DataMember(Name = "dwReqMp")]
+    public int RequiredMp { get; set; }
+
+    [DataMember(Name = "dwReqFp")]
+    public int RequiredFp { get; set; }
+
     [IgnoreDataMember]
     public bool IsStackable => PackMax > 1;
 

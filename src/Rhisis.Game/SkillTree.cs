@@ -52,6 +52,25 @@ public sealed class SkillTree : IEnumerable<Skill>
 
     public bool HasSkill(int skillId) => _skills.Any(x => x.Id == skillId);
 
+    public void SetSkill(Skill skill)
+    {
+        if (skill is null)
+        {
+            throw new ArgumentNullException(nameof(skill));
+        }
+
+        Skill existingSkill = GetSkill(skill.Id);
+
+        if (existingSkill is not null)
+        {
+            existingSkill.Level = skill.Level;
+        }
+        else
+        {
+            _skills.Add(skill);
+        }
+    }
+
     public void SetSkillLevel(int skillId, int level)
     {
         Skill skill = GetSkill(skillId);

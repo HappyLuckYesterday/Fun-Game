@@ -2,6 +2,7 @@
 using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
+using Rhisis.Game.Resources;
 using Rhisis.Protocol;
 using System;
 
@@ -30,6 +31,9 @@ public sealed class Health
             }
 
             _hp = Math.Clamp(value, 0, MaxHp);
+
+            using UpdateParamPointSnapshot healthSnapshot = new(_mover, DefineAttributes.DST_HP, _hp);
+            _mover.SendToVisible(healthSnapshot, sendToSelf: true);
         }
     }
 
@@ -47,6 +51,9 @@ public sealed class Health
             }
 
             _mp = Math.Clamp(value, 0, MaxMp);
+
+            using UpdateParamPointSnapshot healthSnapshot = new(_mover, DefineAttributes.DST_MP, _mp);
+            _mover.SendToVisible(healthSnapshot, sendToSelf: true);
         }
     }
 
@@ -64,6 +71,9 @@ public sealed class Health
             }
 
             _fp = Math.Clamp(value, 0, MaxFp);
+
+            using UpdateParamPointSnapshot healthSnapshot = new(_mover, DefineAttributes.DST_FP, _fp);
+            _mover.SendToVisible(healthSnapshot, sendToSelf: true);
         }
     }
 
@@ -170,20 +180,20 @@ public sealed class Health
         SendHealth();
     }
 
-    public void ApplyDeathRecovery(bool send = false)
+    public void ApplyDeathRecovery(bool sendToPlayer = true)
     {
         if (Hp > 0 || _mover is not Player)
         {
             return;
         }
 
-        decimal recoveryRate = 0;//_gameResources.Penalities.GetRevivalPenality(_mover.Level) / 100;
+        decimal recoveryRate = GameResources.Current.Penalities.GetRevivalPenality(_mover.Level) / 100;
 
         Hp = (int)(MaxHp * recoveryRate);
         Mp = (int)(MaxMp * recoveryRate);
         Fp = (int)(MaxFp * recoveryRate);
 
-        if (send)
+        if (sendToPlayer)
         {
             SendHealth();
         }

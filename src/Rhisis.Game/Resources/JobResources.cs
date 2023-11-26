@@ -2,10 +2,12 @@
 using Rhisis.Game.Common;
 using Rhisis.Game.IO;
 using Rhisis.Game.Resources.Properties;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -26,6 +28,8 @@ public sealed class JobResources
     public JobProperties Get(DefineJob.Job job) => _jobsById.TryGetValue(job, out JobProperties jobProperties) ? jobProperties : null;
 
     public JobProperties Get(int jobId) => Get((DefineJob.Job)jobId);
+
+    public JobProperties Find(Func<JobProperties, bool> predicate) => _jobsById.Values.FirstOrDefault(predicate);
 
     public void Load()
     {

@@ -9,7 +9,7 @@ using System;
 namespace Rhisis.WorldServer.Handlers.Skills;
 
 [PacketHandler(PacketType.USESKILL)]
-internal sealed class UseSkillHanler : WorldPacketHandler
+internal sealed class UseSkillHandler : WorldPacketHandler
 {
     public void Execute(UseSkillPacket packet)
     {
@@ -35,6 +35,7 @@ internal sealed class UseSkillHanler : WorldPacketHandler
 
         if (target is null)
         {
+            Player.CancelSkillUsage();
             throw new InvalidOperationException($"Failed to find target with id: {packet.TargetObjectId}.");
         }
 

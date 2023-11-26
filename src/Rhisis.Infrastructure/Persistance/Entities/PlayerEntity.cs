@@ -169,4 +169,19 @@ public sealed class PlayerEntity
     /// Gets or sets the player items.
     /// </summary>
     public ICollection<PlayerItemEntity> Items { get; set; } = new HashSet<PlayerItemEntity>();
+
+    /// <summary>
+    /// Gets or sets the player skills.
+    /// </summary>
+    public ICollection<PlayerSkillEntity> Skills { get; set; } = new HashSet<PlayerSkillEntity>();
+
+    /// <summary>
+    /// Gets or sets the player skill buffs.
+    /// </summary>
+    public ICollection<PlayerSkillBuffEntity> Buffs { get; set; } = new HashSet<PlayerSkillBuffEntity>();
+
+    /// <summary>
+    /// Gets or sets the player quests.
+    /// </summary>
+    public ICollection<PlayerQuestEntity> Quests { get; set; } = new HashSet<PlayerQuestEntity>();
 }

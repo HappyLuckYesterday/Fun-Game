@@ -25,16 +25,6 @@ public sealed class Quest : IPacketSerializer
     public int Id => Properties.Id;
 
     /// <summary>
-    /// Gets the quest database id.
-    /// </summary>
-    public int? DatabaseQuestId { get; }
-
-    /// <summary>
-    /// Gets the quest character id.
-    /// </summary>
-    public int CharacterId { get; }
-
-    /// <summary>
     /// Gets or sets a boolean value that indiciates the quest checked in state in the player's interface.
     /// </summary>
     public bool IsChecked { get; set; }
@@ -76,7 +66,7 @@ public sealed class Quest : IPacketSerializer
 
     public Quest(QuestProperties properties, Player owner)
     {
-        Properties = properties;
+        Properties = properties ?? throw new ArgumentNullException(nameof(properties), "Cannot create a quest with undefined quest properties.");
         Monsters = Properties.QuestEndCondition.Monsters?.ToDictionary(x => GameResources.Current.GetDefinedValue(x.Id), _ => (short)0);
         _owner = owner;
     }

@@ -11,14 +11,14 @@ using Rhisis.Infrastructure.Persistance.Contexts;
 namespace Rhisis.Infrastructure.Persistance.Sqlite.Migrations.Game
 {
     [DbContext(typeof(GameDbContext))]
-    [Migration("20230312195607_InitialMigration")]
+    [Migration("20230618122442_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.2");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.4");
 
             modelBuilder.Entity("Rhisis.Infrastructure.Persistance.Entities.ItemEntity", b =>
                 {
@@ -124,7 +124,6 @@ namespace Rhisis.Infrastructure.Persistance.Sqlite.Migrations.Game
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
                     b.Property<long>("PlayTime")
@@ -175,7 +174,7 @@ namespace Rhisis.Infrastructure.Persistance.Sqlite.Migrations.Game
                     b.Property<byte>("Slot")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ItemSerialNumber")
+                    b.Property<int>("ItemId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Quantity")
@@ -183,7 +182,7 @@ namespace Rhisis.Infrastructure.Persistance.Sqlite.Migrations.Game
 
                     b.HasKey("PlayerId", "StorageType", "Slot");
 
-                    b.HasIndex("ItemSerialNumber")
+                    b.HasIndex("ItemId")
                         .IsUnique();
 
                     b.HasIndex("PlayerId", "StorageType", "Slot")
@@ -192,11 +191,112 @@ namespace Rhisis.Infrastructure.Persistance.Sqlite.Migrations.Game
                     b.ToTable("PlayerItems");
                 });
 
+            modelBuilder.Entity("Rhisis.Infrastructure.Persistance.Entities.PlayerQuestEntity", b =>
+                {
+                    b.Property<int>("PlayerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("QuestId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Finished")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsChecked")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsPatrolDone")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MonsterKilled1")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MonsterKilled2")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("PlayerId", "QuestId");
+
+                    b.HasIndex("PlayerId", "QuestId")
+                        .IsUnique();
+
+                    b.ToTable("PlayerQuests");
+                });
+
+            modelBuilder.Entity("Rhisis.Infrastructure.Persistance.Entities.PlayerSkillBuffAttributeEntity", b =>
+                {
+                    b.Property<int>("PlayerSkillBuffId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Attribute")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("PlayerSkillBuffId", "Attribute");
+
+                    b.ToTable("PlayerSkillBuffAttributes");
+                });
+
+            modelBuilder.Entity("Rhisis.Infrastructure.Persistance.Entities.PlayerSkillBuffEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PlayerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RemainingTime")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SkillId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SkillLevel")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerId", "SkillId")
+                        .IsUnique();
+
+                    b.ToTable("PlayerSkillBuffs");
+                });
+
+            modelBuilder.Entity("Rhisis.Infrastructure.Persistance.Entities.PlayerSkillEntity", b =>
+                {
+                    b.Property<int>("PlayerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SkillId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SkillLevel")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("PlayerId", "SkillId");
+
+                    b.HasIndex("PlayerId", "SkillId")
+                        .IsUnique();
+
+                    b.ToTable("PlayerSkills");
+                });
+
             modelBuilder.Entity("Rhisis.Infrastructure.Persistance.Entities.PlayerItemEntity", b =>
                 {
                     b.HasOne("Rhisis.Infrastructure.Persistance.Entities.ItemEntity", "Item")
                         .WithOne()
-                        .HasForeignKey("Rhisis.Infrastructure.Persistance.Entities.PlayerItemEntity", "ItemSerialNumber")
+                        .HasForeignKey("Rhisis.Infrastructure.Persistance.Entities.PlayerItemEntity", "ItemId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -211,9 +311,64 @@ namespace Rhisis.Infrastructure.Persistance.Sqlite.Migrations.Game
                     b.Navigation("Player");
                 });
 
+            modelBuilder.Entity("Rhisis.Infrastructure.Persistance.Entities.PlayerQuestEntity", b =>
+                {
+                    b.HasOne("Rhisis.Infrastructure.Persistance.Entities.PlayerEntity", "Player")
+                        .WithMany("Quests")
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Player");
+                });
+
+            modelBuilder.Entity("Rhisis.Infrastructure.Persistance.Entities.PlayerSkillBuffAttributeEntity", b =>
+                {
+                    b.HasOne("Rhisis.Infrastructure.Persistance.Entities.PlayerSkillBuffEntity", "PlayerBuff")
+                        .WithMany("Attributes")
+                        .HasForeignKey("PlayerSkillBuffId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PlayerBuff");
+                });
+
+            modelBuilder.Entity("Rhisis.Infrastructure.Persistance.Entities.PlayerSkillBuffEntity", b =>
+                {
+                    b.HasOne("Rhisis.Infrastructure.Persistance.Entities.PlayerEntity", "Player")
+                        .WithMany("Buffs")
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Player");
+                });
+
+            modelBuilder.Entity("Rhisis.Infrastructure.Persistance.Entities.PlayerSkillEntity", b =>
+                {
+                    b.HasOne("Rhisis.Infrastructure.Persistance.Entities.PlayerEntity", "Player")
+                        .WithMany("Skills")
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Player");
+                });
+
             modelBuilder.Entity("Rhisis.Infrastructure.Persistance.Entities.PlayerEntity", b =>
                 {
+                    b.Navigation("Buffs");
+
                     b.Navigation("Items");
+
+                    b.Navigation("Quests");
+
+                    b.Navigation("Skills");
+                });
+
+            modelBuilder.Entity("Rhisis.Infrastructure.Persistance.Entities.PlayerSkillBuffEntity", b =>
+                {
+                    b.Navigation("Attributes");
                 });
 #pragma warning restore 612, 618
         }

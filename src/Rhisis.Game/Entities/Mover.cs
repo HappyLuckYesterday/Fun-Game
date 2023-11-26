@@ -2,11 +2,13 @@
 using Rhisis.Game.Battle;
 using Rhisis.Game.Battle.AttackArbiters;
 using Rhisis.Game.Battle.AttackArbiters.Reducers;
+using Rhisis.Game.Battle.Projectiles;
 using Rhisis.Game.Common;
 using Rhisis.Game.Extensions;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots.Battle;
 using Rhisis.Game.Resources.Properties;
+using Rhisis.Protocol;
 using System;
 
 namespace Rhisis.Game.Entities;
@@ -100,6 +102,13 @@ public class Mover : WorldObject
     /// </summary>
     public Delayer Delayer { get; } = new();
 
+    /// <summary>
+    /// Gets the mover's projectiles.
+    /// </summary>
+    public ProjectileList Projectiles { get; } = new();
+
+    public Buffs Buffs { get; }
+
     protected Mover(MoverProperties properties)
     {
         Properties = properties ?? throw new ArgumentNullException(nameof(properties), "Cannot create a mover with no properties.");
@@ -107,6 +116,7 @@ public class Mover : WorldObject
         Statistics = new Statistics(this);
         Health = new Health(this);
         Defense = new Defense(this);
+        Buffs = new Buffs(this);
     }
     
     /// <summary>
@@ -136,6 +146,8 @@ public class Mover : WorldObject
 
         DestinationPosition.Reset();
         OnArrived();
+        SendMotion(ObjectMessageType.OBJMSG_STOP_TURN, sendToSelf: false);
+        SendMotion(ObjectMessageType.OBJMSG_STAND, sendToSelf: false);
     }
 
     /// <summary>
@@ -162,6 +174,17 @@ public class Mover : WorldObject
     {
         FollowTarget = null;
         FollowDistance = 0;
+    }
+
+    /// <summary>
+    /// Sends a motion to every entities around.
+    /// </summary>
+    /// <param name="motion">motion.</param>
+    public void SendMotion(ObjectMessageType motion, bool sendToSelf = true)
+    {
+        using MotionSnapshot snapshot = new(this, motion);
+
+        SendToVisible(snapshot, sendToSelf);
     }
 
     /// <summary>
@@ -240,6 +263,72 @@ public class Mover : WorldObject
         using MeleeAttackSnapshot meleeAttackSnapshot = new(this, target, attackType, attackResult.Flags);
         SendToVisible(meleeAttackSnapshot);
         
+        return true;
+    }
+
+    public bool TryRangeAttack(Mover target, int power, AttackType attackType)
+    {
+        if (!CanAttack(target) && !attackType.IsRangeAttack())
+        {
+            return false;
+        }
+
+        Projectile projectile = null;
+
+        if (attackType.CausesArrowProjectile())
+        {
+            projectile = new ArrowProjectile(this, target, power, () =>
+            {
+                if (!TryInflictDamagesIfOneHitKillMode(target, attackType, out _))
+                {
+                    AttackResult attackResult = new MeleeAttackArbiter(this, target, AttackFlags.AF_GENERIC | AttackFlags.AF_RANGE).CalculateDamages();
+
+                    if (!attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+                    {
+                        attackResult = new MeleeAttackReducer(this, target).ReduceDamages(attackResult);
+
+                        InflictDamages(target, attackResult, attackType);
+                    }
+                }
+            });
+        }
+        else if (attackType.CausesMagicProjectile())
+        {
+            projectile = new MagicProjectile(this, target, power, () =>
+            {
+                if (!TryInflictDamagesIfOneHitKillMode(target, attackType, out _))
+                {
+                    AttackResult attackResult = new MagicAttackArbiter(this, target, power).CalculateDamages();
+
+                    if (!attackResult.Flags.HasFlag(AttackFlags.AF_MISS))
+                    {
+                        InflictDamages(target, attackResult, attackType);
+                    }
+                }
+            });
+        }
+
+        if (projectile is null)
+        {
+            return false;
+        }
+
+        int projectileId = Projectiles.Add(projectile);
+
+        using FFSnapshot snapshot = projectile switch
+        {
+            MagicProjectile => new MagicAttackSnapshot(this, attackType, target.ObjectId, power, projectileId),
+            ArrowProjectile => new RangeAttackSnapshot(this, attackType, target.ObjectId, power, projectileId),
+            _ => null
+        };
+
+        if (snapshot is null)
+        {
+            return false;
+        }
+        
+        SendToVisible(snapshot);
+
         return true;
     }
 

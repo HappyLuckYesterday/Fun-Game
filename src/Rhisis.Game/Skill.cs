@@ -2,6 +2,7 @@
 using Rhisis.Game.Battle;
 using Rhisis.Game.Battle.AttackArbiters;
 using Rhisis.Game.Battle.AttackArbiters.Reducers;
+using Rhisis.Game.Battle.Projectiles;
 using Rhisis.Game.Common;
 using Rhisis.Game.Entities;
 using Rhisis.Game.Extensions;
@@ -14,11 +15,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Rhisis.Game;
 
-[DebuggerDisplay("{Name} Lv.{Level}")]
+[DebuggerDisplay("{Properties.IdentifierName} Lv.{Level}")]
 public class Skill : IPacketSerializer
 {
     private int _level;
@@ -45,11 +45,6 @@ public class Skill : IPacketSerializer
     public Mover Owner { get; }
 
     /// <summary>
-    /// Gets or sets the skill database id in case of the owner is a <see cref="Player"/>.
-    /// </summary>
-    public int? DatabaseId { get; set; }
-
-    /// <summary>
     /// Gets or sets the skill level.
     /// </summary>
     public int Level
@@ -68,12 +63,11 @@ public class Skill : IPacketSerializer
     /// </summary>
     public SkillLevelProperties LevelProperties => Properties.SkillLevels[Level];
 
-    public Skill(SkillProperties skillProperties, Mover owner, int level, int? databaseId = null)
+    public Skill(SkillProperties skillProperties, Mover owner, int level)
     {
         Properties = skillProperties ?? throw new ArgumentNullException(nameof(skillProperties), "Cannot create a skill instance with undefined skill properties.");
         Owner = owner;
         Level = level;
-        DatabaseId = databaseId;
     }
 
     /// <summary>
@@ -227,7 +221,7 @@ public class Skill : IPacketSerializer
                 CastMagicSkill(target, skillUseType);
                 break;
             case SkillExecuteTargetType.MagicAttackShot:
-                //CastMagicAttackShot(player, target, skill, skillUseType);
+                CastMagicAttackShot(target, skillUseType);
                 break;
             case SkillExecuteTargetType.AnotherWith:
                 CastBuffSkill(target, skillUseType);
@@ -237,7 +231,7 @@ public class Skill : IPacketSerializer
         }
     }
 
-    private void CastMeleeSkill(Mover target, SkillUseType skillUseType = SkillUseType.Normal)
+    private void CastMeleeSkill(Mover target, SkillUseType skillUseType)
     {
         var skillCastingTime = GetCastingTime();
 
@@ -254,7 +248,7 @@ public class Skill : IPacketSerializer
         }
     }
 
-    private void CastMagicSkill(Mover target, SkillUseType skillUseType = SkillUseType.Normal)
+    private void CastMagicSkill(Mover target, SkillUseType skillUseType)
     { 
         var skillCastingTime = GetCastingTime();
 
@@ -271,7 +265,22 @@ public class Skill : IPacketSerializer
         }
     }
 
-    private void CastBuffSkill(Mover target, SkillUseType skillUseType = SkillUseType.Normal)
+    private void CastMagicAttackShot(Mover target, SkillUseType skillUseType)
+    {
+        var skillCastingTime = GetCastingTime();
+        MagicSkillProjectile projectile = new(Owner, target, this, () =>
+        {
+            Execute(target, reduceCasterPoints: false);
+        });
+        Owner.Projectiles.Add(projectile);
+
+        CastSkill(target, skillCastingTime, LevelProperties.CastingTime, skillUseType, () =>
+        {
+            ReduceCasterPoints();
+        });
+    }
+
+    private void CastBuffSkill(Mover target, SkillUseType skillUseType)
     {
         var skillCastingTime = GetCastingTime();
 
@@ -289,13 +298,19 @@ public class Skill : IPacketSerializer
             }
             else
             {
-                // TODO: heal
+                Owner.Delayer.DelayActionMilliseconds(skillCastingTime, () =>
+                {
+                    ApplyHealSkill(target);
+                });
             }
         }
 
         if (LevelProperties.DestParam2 == DefineAttributes.DST_HP)
         {
-            // TODO: heal
+            Owner.Delayer.DelayActionMilliseconds(skillCastingTime, () =>
+            {
+                ApplyHealSkill(target);
+            });
         }
 
         var timeBonusValues = new int[]
@@ -321,7 +336,16 @@ public class Skill : IPacketSerializer
 
             Owner.Delayer.DelayActionMilliseconds(GetCastingTime(), () =>
             {
-                // TODO: apply buff
+                BuffSkill buff = new(target, attributes, Properties, Level)
+                {
+                    RemainingTime = buffTime
+                };
+
+                if (target.Buffs.Add(buff) != BuffResultType.None)
+                {
+                    using SetSkillStateSnapshot snapshot = new(target, Id, Level, buffTime);
+                    target.SendToVisible(snapshot, sendToSelf: true);
+                }
             });
         }
 
@@ -447,6 +471,25 @@ public class Skill : IPacketSerializer
         };
 
         return (int)(value / 10f * attributeValue + skillLevel * (attributeValue / 50f));
+    }
+
+    private void ApplyHealSkill(Mover target)
+    {
+        if (Properties.ReferTarget1 == SkillReferTargetType.Heal || Properties.ReferTarget2 == SkillReferTargetType.Heal)
+        {
+            var hpValues = new int[]
+            {
+                Properties.ReferTarget1 == SkillReferTargetType.Heal ? GetReferBonus(Properties.ReferStat1, Properties.ReferValue1, Level) : 0,
+                Properties.ReferTarget2 == SkillReferTargetType.Heal ? GetReferBonus(Properties.ReferStat2, Properties.ReferValue2, Level) : 0
+            };
+
+            int recoveredHp = LevelProperties.DestParam1Value + hpValues.Sum();
+
+            if (recoveredHp > 0)
+            {
+                target.Health.Hp += recoveredHp;
+            }
+        }
     }
 
     public override string ToString() => Name;

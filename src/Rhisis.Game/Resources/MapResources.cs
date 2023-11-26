@@ -29,6 +29,8 @@ public sealed class MapResources
 
     public IEnumerable<MapProperties> GetAll() => _mapsById.Values;
 
+    public MapProperties Get(int mapId) => _mapsById.GetValueOrDefault(mapId);
+
     public void Load(params string[] mapIdentifiers)
     {
         Stopwatch watch = new();
@@ -60,18 +62,19 @@ public sealed class MapResources
 
                 WldFileInformations worldInformation = LoadWorldInformation(worldName);
 
+                int revivalMapId = worldInformation.RevivalMapId == 0 ? mapId : worldInformation.RevivalMapId;
                 MapProperties map = new()
                 {
                     Id = mapId,
                     Name = worldName,
                     Width = worldInformation.Width,
                     Length = worldInformation.Length,
-                    RevivalMapId = worldInformation.RevivalMapId,
+                    RevivalMapId = revivalMapId,
                     MPU = worldInformation.MPU,
                     Bounds = new Rectangle(0, 0, 
                         width: worldInformation.Width * worldInformation.MPU * MapProperties.RegionSize, 
                         length: worldInformation.Length * worldInformation.MPU * MapProperties.RegionSize),
-                    Regions = LoadRegions(worldName, worldInformation.RevivalMapId),
+                    Regions = LoadRegions(worldName, revivalMapId),
                     Objects = LoadObjects(worldName),
                     Heights = LoadHeights(worldName, worldInformation.Width, worldInformation.Length)
                 };

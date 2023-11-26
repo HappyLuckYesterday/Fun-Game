@@ -7,7 +7,7 @@ using Rhisis.Game.Protocol.Packets.World.Client;
 using Rhisis.Game.Protocol.Packets.World.Server;
 using Rhisis.Game.Protocol.Packets.World.Server.Snapshots;
 using Rhisis.Game.Resources;
-using Rhisis.Game.Resources.Properties;
+using Rhisis.Game.Resources.Properties.Quests;
 using Rhisis.Infrastructure.Persistance;
 using Rhisis.Infrastructure.Persistance.Entities;
 using Rhisis.Protocol;
@@ -90,7 +90,8 @@ internal class JoinGameHandler : WorldPacketHandler
                 FaceId = player.FaceId,
                 HairColor = player.HairColor,
                 HairId = player.HairId,
-            }
+            },
+            BankCode = player.BankCode,
         };
         User.Player.Health.Hp = player.Hp;
         User.Player.Health.Mp = player.Mp;
@@ -104,32 +105,11 @@ internal class JoinGameHandler : WorldPacketHandler
         User.Player.Gold.Initialize(player.Gold);
         User.Player.Experience.Initialize(player.Experience);
 
-        Dictionary<int, Item> playerInventoryItems = _gameDatabase.PlayerItems
-            .Include(x => x.Item)
-            .Where(x => x.PlayerId == player.Id && x.StorageType == PlayerItemStorageType.Inventory)
-            .ToDictionary(x => (int)x.Slot,
-                x => new Item(GameResources.Current.Items.Get(x.Item.Id))
-                {
-                    SerialNumber = x.Item.SerialNumber,
-                    Refine = x.Item.Refine.GetValueOrDefault(0),
-                    Element = (ElementType)x.Item.Element.GetValueOrDefault(0),
-                    ElementRefine = x.Item.ElementRefine.GetValueOrDefault(0),
-                    Quantity = x.Quantity
-                });
 
-        if (playerInventoryItems.Any())
-        {
-            User.Player.Inventory.Initialize(playerInventoryItems);
-        }
-
-        // TODO: load skills from database
-        IEnumerable<Skill> skills = GameResources.Current.Skills
-            .GetJobSkills(User.Player.Job.Id)
-            .Select(x => new Skill(x, User.Player, 0));
-
-        User.Player.Skills.SetSkills(skills);
-
-        // TODO: initialize quest diary
+        LoadInventory(User.Player, _gameDatabase);
+        LoadSkills(User.Player, _gameDatabase);
+        LoadQuests(User.Player, _gameDatabase);
+        LoadBuffs(User.Player, _gameDatabase);
 
         User.Player.Defense.Update();
 
@@ -152,5 +132,93 @@ internal class JoinGameHandler : WorldPacketHandler
         layer.AddPlayer(User.Player);
 
         User.Player.IsSpawned = true;
+    }
+
+    private static void LoadInventory(Player player, IGameDatabase gameDatabase)
+    {
+        Dictionary<int, Item> playerInventoryItems = gameDatabase.PlayerItems
+            .Include(x => x.Item)
+            .Where(x => x.PlayerId == player.Id && x.StorageType == PlayerItemStorageType.Inventory)
+            .ToDictionary(x => (int)x.Slot,
+                x => new Item(GameResources.Current.Items.Get(x.Item.Id))
+                {
+                    SerialNumber = x.Item.SerialNumber,
+                    Refine = x.Item.Refine.GetValueOrDefault(0),
+                    Element = (ElementType)x.Item.Element.GetValueOrDefault(0),
+                    ElementRefine = x.Item.ElementRefine.GetValueOrDefault(0),
+                    Quantity = x.Quantity
+                });
+
+        if (playerInventoryItems.Any())
+        {
+            player.Inventory.Initialize(playerInventoryItems);
+        }
+    }
+
+    private static void LoadSkills(Player player, IGameDatabase gameDatabase)
+    {
+        IEnumerable<PlayerSkillEntity> playerSkills = gameDatabase.PlayerSkills
+            .Where(x => x.PlayerId == player.Id)
+            .ToList();
+
+        IEnumerable<Skill> skills = from skill in GameResources.Current.Skills.GetJobSkills(player.Job.Id)
+                                    join playerSkill in playerSkills on skill.Id equals playerSkill.SkillId into sj
+                                    from s in sj.DefaultIfEmpty()
+                                    select new Skill(skill, player, s?.SkillLevel ?? 0);
+
+        player.Skills.SetSkills(skills);
+    }
+
+    private static void LoadQuests(Player player, IGameDatabase gameDatabase)
+    {
+        IEnumerable<Quest> playerQuests = gameDatabase.PlayerQuests
+            .Where(x => x.PlayerId == player.Id)
+            .ToList()
+            .Select(x =>
+            {
+                QuestProperties questProperties = GameResources.Current.Quests.Get(x.QuestId);
+                Quest quest = new(questProperties, player)
+                {
+                    IsChecked = x.IsChecked,
+                    IsFinished = x.Finished,
+                    StartTime = x.StartTime,
+                    IsPatrolDone = x.IsPatrolDone
+                };
+
+                if (quest.Properties.QuestEndCondition.Monsters is not null && quest.Properties.QuestEndCondition.Monsters.Any())
+                {
+                    quest.Monsters = new Dictionary<int, short>
+                    {
+                        { GameResources.Current.GetDefinedValue(quest.Properties.QuestEndCondition.Monsters.ElementAtOrDefault(0)?.Id), (short)x.MonsterKilled1 },
+                        { GameResources.Current.GetDefinedValue(quest.Properties.QuestEndCondition.Monsters.ElementAtOrDefault(1)?.Id), (short)x.MonsterKilled2 }
+                    };
+                }
+
+                return quest;
+            });
+
+        player.QuestDiary.SetQuests(playerQuests);
+    }
+
+    private static void LoadBuffs(Player player, IGameDatabase gameDatabase)
+    {
+        IEnumerable<PlayerSkillBuffEntity> buffs = gameDatabase.PlayerSkillBuffs
+            .Include(x => x.Attributes)
+            .Where(x => x.PlayerId == player.Id)
+            .ToList();
+
+        foreach (PlayerSkillBuffEntity buff in buffs)
+        {
+            BuffSkill buffSkill = new(
+                owner: player,
+                attributes: buff.Attributes.ToDictionary(x => x.Attribute, x => x.Value),
+                skillProperties: GameResources.Current.Skills.Get(buff.SkillId),
+                skillLevel: buff.SkillLevel)
+            {
+                RemainingTime = buff.RemainingTime
+            };
+
+            player.Buffs.Add(buffSkill);
+        }
     }
 }
